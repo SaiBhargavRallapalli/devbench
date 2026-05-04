@@ -3,13 +3,14 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Code Beautify — Formatters, Validators, Converters | DevForge",
   description:
-    "Beautify and format JSON, XML, YAML, CSS, SQL, HTML; Base64 and hex tools; hash generators, JWT decode, diff, and more — all client-side in your browser.",
+    "Online beautifiers for HTML, CSS, JavaScript, TypeScript, TSX, JSON, Markdown, YAML, GraphQL, XML, SQL (Prettier / sql-formatter), plus Python indent cleanup — all client-side.",
   keywords: [
-    "JSON beautifier",
-    "code formatter",
-    "XML formatter",
-    "Base64 decode",
+    "HTML formatter",
+    "CSS beautifier",
+    "JavaScript prettifier",
+    "Python indent",
     "SQL formatter",
+    "JSON beautifier",
     "online formatter",
   ],
 };

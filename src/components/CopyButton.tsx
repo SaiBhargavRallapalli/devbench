@@ -6,9 +6,14 @@ import { Clipboard, Check } from "lucide-react";
 interface CopyButtonProps {
   text: string;
   className?: string;
+  disabled?: boolean;
 }
 
-export default function CopyButton({ text, className = "" }: CopyButtonProps) {
+export default function CopyButton({
+  text,
+  className = "",
+  disabled = false,
+}: CopyButtonProps) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = useCallback(async () => {
@@ -32,11 +37,15 @@ export default function CopyButton({ text, className = "" }: CopyButtonProps) {
 
   return (
     <button
+      type="button"
       onClick={handleCopy}
+      disabled={disabled || !text}
       className={`inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-sm font-medium transition-colors ${
         copied
           ? "border-success/40 bg-success/10 text-success"
-          : "text-muted-foreground hover:bg-muted hover:text-foreground"
+          : disabled || !text
+            ? "cursor-not-allowed opacity-40"
+            : "text-muted-foreground hover:bg-muted hover:text-foreground"
       } ${className}`}
     >
       {copied ? (

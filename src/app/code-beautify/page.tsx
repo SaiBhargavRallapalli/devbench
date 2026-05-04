@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import CodeBeautifyWorkspace from "@/components/CodeBeautifyWorkspace";
 import { TOOLS, CATEGORIES } from "@/lib/tools-registry";
 
 function toolHref(slug: string) {
@@ -243,7 +244,7 @@ export default function CodeBeautifyPage() {
       <Header />
       <main className="flex-1">
         <section className="border-b border-border bg-[radial-gradient(ellipse_at_top,var(--accent-light),transparent_65%)]">
-          <div className="mx-auto max-w-6xl px-4 py-14 text-center sm:py-20">
+          <div className="mx-auto max-w-6xl px-4 pt-12 pb-4 text-center sm:pt-16">
             <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-sm text-muted-foreground">
               <Paintbrush className="h-3.5 w-3.5 text-accent" />
               <span>Formatter &amp; converter hub</span>
@@ -252,20 +253,27 @@ export default function CodeBeautifyPage() {
               Code Beautify
             </h1>
             <p className="mx-auto mb-2 max-w-2xl text-lg text-muted-foreground sm:text-xl">
-              Code formatter, JSON beautifier, validators, encoders, and
-              converters — pick a tool or search the catalog.
+              Beautify HTML, CSS, JavaScript, Python-style indents, SQL, and more
+              below — then browse validators and converters in the catalog.
             </p>
-            <p className="mx-auto mb-10 flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
+            <p className="mx-auto mb-6 flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
               <Sparkles className="h-3.5 w-3.5 text-accent" />
               Everything runs in your browser on DevForge — no uploads.
             </p>
+          </div>
 
-            <div className="relative mx-auto mb-12 max-w-xl">
+          <CodeBeautifyWorkspace />
+
+          <div className="mx-auto max-w-6xl px-4 pb-14 pt-4">
+            <h2 className="mb-4 text-center text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+              Find more tools
+            </h2>
+            <div className="relative mx-auto max-w-xl">
               <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
               <input
                 type="search"
                 autoComplete="off"
-                placeholder="Search tools (e.g. base64, yaml, sql, hash)…"
+                placeholder="Search catalog (e.g. base64, yaml, hash)…"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-full rounded-xl border border-border bg-card py-3.5 pl-12 pr-4 text-base text-foreground shadow-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/40"
