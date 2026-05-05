@@ -1869,6 +1869,63 @@ export function calcGcdLcmPair(input: string): Result {
   return [`GCD(${x}, ${y}) = ${g}`, `LCM(${x}, ${y}) = ${l}`].join("\n");
 }
 
+export function convertUnits(value: number, from: string, to: string, category: string): Result {
+  try {
+    type UnitMap = Record<string, number>;
+    const tables: Record<string, UnitMap> = {
+      length: {
+        mm: 0.001, cm: 0.01, m: 1, km: 1000,
+        inch: 0.0254, ft: 0.3048, yd: 0.9144, mi: 1609.344,
+        nm: 1852, "ly": 9.461e15,
+      },
+      weight: {
+        mg: 1e-6, g: 0.001, kg: 1, t: 1000,
+        oz: 0.028349523, lb: 0.453592, st: 6.35029,
+      },
+      area: {
+        "mm²": 1e-6, "cm²": 0.0001, "m²": 1, "km²": 1e6,
+        "in²": 6.4516e-4, "ft²": 0.092903, "yd²": 0.836127, "mi²": 2.58999e6,
+        ha: 10000, ac: 4046.86,
+      },
+      volume: {
+        ml: 0.001, cl: 0.01, dl: 0.1, l: 1, "m³": 1000,
+        tsp: 0.00492892, tbsp: 0.0147868, "fl oz": 0.0295735,
+        cup: 0.236588, pt: 0.473176, qt: 0.946353, gal: 3.78541,
+        "in³": 0.016387, "ft³": 28.3168,
+      },
+      speed: {
+        "m/s": 1, "km/h": 1 / 3.6, mph: 0.44704, knot: 0.514444,
+        "ft/s": 0.3048, mach: 340.29,
+      },
+      temperature: { C: 1, F: 1, K: 1 },
+    };
+
+    if (category === "temperature") {
+      let celsius: number;
+      if (from === "C") celsius = value;
+      else if (from === "F") celsius = (value - 32) * 5 / 9;
+      else celsius = value - 273.15;
+      let result: number;
+      if (to === "C") result = celsius;
+      else if (to === "F") result = celsius * 9 / 5 + 32;
+      else result = celsius + 273.15;
+      return `${value} ${from} = ${+result.toFixed(6)} ${to}`;
+    }
+
+    const table = tables[category];
+    if (!table) return { output: "", error: `Unknown category: ${category}` };
+    const fromFactor = table[from];
+    const toFactor = table[to];
+    if (fromFactor === undefined) return { output: "", error: `Unknown unit: ${from}` };
+    if (toFactor === undefined) return { output: "", error: `Unknown unit: ${to}` };
+    const base = value * fromFactor;
+    const result = base / toFactor;
+    return `${value} ${from} = ${+result.toPrecision(8)} ${to}`;
+  } catch (e) {
+    return { output: "", error: (e as Error).message };
+  }
+}
+
 // ============================================================
 // JSON CONVERSION
 // ============================================================

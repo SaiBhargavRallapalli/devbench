@@ -19,18 +19,19 @@ import * as engines from "@/lib/tool-engines";
 import CustomToolOutlet from "@/components/tools/CustomToolOutlet";
 
 const CUSTOM_TOOL_SLUGS = new Set([
-  "image-resizer",
-  "image-compressor",
-  "pdf-page-editor",
-  "xml-suite",
-  "qr-code",
-  "age-calculator",
-  "bmi-calculator",
-  "compound-interest",
-  "loan-emi-calculator",
-  "contrast-checker",
-  "gradient-generator",
-  "currency-converter",
+  // rich UI workspaces
+  "image-resizer", "image-compressor", "pdf-page-editor", "xml-suite",
+  "qr-code", "age-calculator", "bmi-calculator", "compound-interest",
+  "loan-emi-calculator", "contrast-checker", "gradient-generator", "currency-converter",
+  // finance form tools
+  "simple-interest", "gst-calculator", "discount-calculator",
+  "tip-calculator", "roi-calculator", "profit-loss-calculator",
+  // health form tools
+  "bmr-calculator", "calorie-calculator", "water-intake-calculator", "body-fat-calculator",
+  // math form tools
+  "quadratic-solver", "pythagorean-theorem", "gcd-lcm-calculator",
+  // datetime form tools
+  "days-between-dates", "countdown-calculator", "week-number-calculator", "due-date-calculator",
 ]);
 
 function CopyBtn({ text }: { text: string }) {
@@ -618,6 +619,40 @@ function renderOptions(
           </label>
         </div>
       );
+    case "unit-converter": {
+      const unitOptions: Record<string, string[]> = {
+        length: ["mm", "cm", "m", "km", "inch", "ft", "yd", "mi", "nm"],
+        weight: ["mg", "g", "kg", "t", "oz", "lb", "st"],
+        area: ["mm²", "cm²", "m²", "km²", "in²", "ft²", "yd²", "mi²", "ha", "ac"],
+        volume: ["ml", "cl", "dl", "l", "m³", "tsp", "tbsp", "fl oz", "cup", "pt", "qt", "gal", "in³", "ft³"],
+        speed: ["m/s", "km/h", "mph", "knot", "ft/s", "mach"],
+        temperature: ["C", "F", "K"],
+      };
+      const cat = (options.unitCategory as string) || "length";
+      const units = unitOptions[cat] || unitOptions.length;
+      return (
+        <div className="mb-4 flex flex-wrap gap-3">
+          <div>
+            <label className="text-sm font-medium mr-2">Category:</label>
+            <select value={cat} onChange={(e) => setOption("unitCategory", e.target.value)} className={selectClass}>
+              {Object.keys(unitOptions).map((c) => <option key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="text-sm font-medium mr-2">From:</label>
+            <select value={(options.unitFrom as string) || units[0]} onChange={(e) => setOption("unitFrom", e.target.value)} className={selectClass}>
+              {units.map((u) => <option key={u} value={u}>{u}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="text-sm font-medium mr-2">To:</label>
+            <select value={(options.unitTo as string) || units[1]} onChange={(e) => setOption("unitTo", e.target.value)} className={selectClass}>
+              {units.map((u) => <option key={u} value={u}>{u}</option>)}
+            </select>
+          </div>
+        </div>
+      );
+    }
     case "temperature-converter":
       return (
         <div className="mb-4">
@@ -941,6 +976,13 @@ async function runTool(
       return engines.mimeLookup(input);
 
     // Conversion
+    case "unit-converter":
+      return engines.convertUnits(
+        parseFloat(input) || 0,
+        (options.unitFrom as string) || "m",
+        (options.unitTo as string) || "km",
+        (options.unitCategory as string) || "length"
+      );
     case "temperature-converter":
       return engines.convertTemperature(
         parseFloat(input) || 0,

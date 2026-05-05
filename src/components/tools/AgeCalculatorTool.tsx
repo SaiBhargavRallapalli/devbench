@@ -7,15 +7,20 @@ import ToolPageHero from "@/components/tools/ToolPageHero";
 export default function AgeCalculatorTool({ tool }: { tool: Tool }) {
   const [birth, setBirth] = useState("2000-01-01");
 
-  const { breakdown, nextBirthdayLabel } = useMemo(() => {
+  type Breakdown =
+    | null
+    | { error: string }
+    | { years: number; months: number; days: number; totalDays: number };
+
+  const { breakdown, nextBirthdayLabel } = useMemo((): {
+    breakdown: Breakdown;
+    nextBirthdayLabel: string;
+  } => {
     const b = new Date(`${birth}T12:00:00`);
-    if (Number.isNaN(b.getTime())) return { breakdown: null as null, nextBirthdayLabel: "" };
+    if (Number.isNaN(b.getTime())) return { breakdown: null, nextBirthdayLabel: "" };
     const now = new Date();
     if (b > now) {
-      return {
-        breakdown: { error: "Birth date is in the future." } as const,
-        nextBirthdayLabel: "",
-      };
+      return { breakdown: { error: "Birth date is in the future." }, nextBirthdayLabel: "" };
     }
 
     let years = now.getFullYear() - b.getFullYear();
