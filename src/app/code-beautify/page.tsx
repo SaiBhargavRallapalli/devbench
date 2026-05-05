@@ -14,6 +14,7 @@ import {
   ArrowRightLeft,
   ChevronRight,
   Paintbrush,
+  FileImage,
 } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -87,7 +88,11 @@ const POPULAR: HubLink[] = [
   { href: "/tools/markdown-to-html", label: "Markdown → HTML" },
   { href: "/tools/html-to-markdown", label: "HTML → Markdown" },
   { href: "/tools/json-to-typescript", label: "JSON → TypeScript" },
+  { href: "/tools/curl-formatter", label: "cURL Formatter" },
   { href: "/tools/curl-to-fetch", label: "cURL → Fetch" },
+  { href: "/tools/image-resizer", label: "Image Resizer" },
+  { href: "/tools/pdf-page-editor", label: "PDF Page Editor" },
+  { href: "/tools/xml-suite", label: "XML Tools Suite" },
   { href: "/tools/morse-code", label: "Morse Code Translator" },
   { href: "/tools/color-converter", label: "HEX ↔ RGB ↔ HSL" },
   { href: "/epoch", label: "Unix Timestamp" },
@@ -109,6 +114,7 @@ const CATEGORY_SECTIONS: {
       { href: "/tools/yaml-to-json", label: "YAML → JSON" },
       { href: "/tools/json-to-xml", label: "JSON → XML" },
       { href: "/tools/xml-to-json", label: "XML → JSON" },
+      { href: "/tools/xml-suite", label: "XML Tools Suite (validate, XPath, …)" },
       { href: "/tools/json-to-csv", label: "JSON → CSV" },
       { href: "/tools/csv-to-json", label: "CSV → JSON" },
       { href: "/tools/toml-to-json", label: "TOML → JSON" },
@@ -180,10 +186,19 @@ const CATEGORY_SECTIONS: {
       { href: "/tools/uuid-generator", label: "UUID v4" },
       { href: "/tools/url-parser", label: "URL parser" },
       { href: "/tools/base-converter", label: "Number bases" },
+      { href: "/tools/curl-formatter", label: "cURL formatter (cleanup)" },
       { href: "/tools/curl-to-fetch", label: "cURL → fetch" },
       { href: "/tools/mime-lookup", label: "MIME lookup" },
       { href: "/tools/color-converter", label: "Color converter" },
       { href: "/tools/qr-code", label: "QR code" },
+    ],
+  },
+  {
+    title: "Images & PDF",
+    icon: FileImage,
+    links: [
+      { href: "/tools/image-resizer", label: "Image resizer (PNG, JPEG, WebP)" },
+      { href: "/tools/pdf-page-editor", label: "PDF page editor (remove / extract)" },
     ],
   },
   {

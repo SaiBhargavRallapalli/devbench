@@ -87,6 +87,7 @@ export const TOOLS: Tool[] = [
   { slug: "sql-formatter", name: "SQL Formatter", shortName: "SQL", description: "Format and pretty-print SQL queries", category: "dev", icon: "SQL" },
   { slug: "toml-to-json", name: "TOML → JSON", shortName: "TOML → JSON", description: "Convert TOML to JSON format", category: "dev", icon: "T→J" },
   { slug: "curl-to-fetch", name: "cURL → Fetch", shortName: "cURL", description: "Convert cURL commands to JavaScript fetch()", category: "dev", icon: "→JS" },
+  { slug: "curl-formatter", name: "cURL Formatter", shortName: "cURL fmt", description: "Normalize messy cURL into clean, copy-pasteable commands (quotes, flags, line breaks)", category: "dev", icon: "⌘", inputLabel: "Messy cURL", outputLabel: "Formatted cURL" },
   { slug: "string-escape", name: "String Escape", shortName: "Escape", description: "Escape strings for JSON, JS, SQL, Regex", category: "dev", icon: "\\\\" },
   { slug: "mime-lookup", name: "MIME Type Lookup", shortName: "MIME", description: "Look up MIME types by file extension", category: "dev", icon: "📋" },
 
@@ -100,6 +101,34 @@ export const TOOLS: Tool[] = [
   { slug: "duration-converter", name: "Duration Converter", shortName: "Duration", description: "Convert seconds to HH:MM:SS and breakdown", category: "conversion", icon: "⏳" },
   { slug: "percentage-calc", name: "Percentage Calculator", shortName: "%", description: "Calculate percentages — X% of Y, % change", category: "conversion", icon: "%" },
   { slug: "aspect-ratio", name: "Aspect Ratio Calculator", shortName: "Ratio", description: "Calculate aspect ratio from dimensions", category: "conversion", icon: "⊞" },
+
+  // Browser-based files & XML suite
+  {
+    slug: "image-resizer",
+    name: "Image Resizer",
+    shortName: "Resize",
+    description: "Resize JPG, PNG, or WebP in the browser — set width & height, optional aspect lock, download result",
+    category: "image",
+    icon: "🖼",
+  },
+  {
+    slug: "pdf-page-editor",
+    name: "PDF Page Editor",
+    shortName: "PDF",
+    description: "Remove pages or extract selected pages into a new PDF — 100% client-side with pdf-lib",
+    category: "dev",
+    icon: "📄",
+  },
+  {
+    slug: "xml-suite",
+    name: "XML Tools Suite",
+    shortName: "XML",
+    description: "Validate XML, pretty-print & minify, run XPath queries, and search for strings — all in one place",
+    category: "text",
+    icon: "〈/",
+    inputLabel: "XML document",
+    outputLabel: "Result",
+  },
 ];
 
 export function getToolBySlug(slug: string): Tool | undefined {

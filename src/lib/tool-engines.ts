@@ -781,6 +781,346 @@ export function formatSql(input: string): Result {
   return sql;
 }
 
+/** Shell-like tokenizer: splits on whitespace; respects '...' and "..." with \\ escapes in double quotes. */
+export function tokenizeShellArgs(line: string): string[] {
+  const out: string[] = [];
+  let i = 0;
+  const n = line.length;
+  while (i < n) {
+    while (i < n && /\s/.test(line[i])) i++;
+    if (i >= n) break;
+    const c = line[i];
+    if (c === "'") {
+      i++;
+      let s = "";
+      while (i < n && line[i] !== "'") s += line[i++];
+      if (line[i] === "'") i++;
+      out.push(s);
+      continue;
+    }
+    if (c === '"') {
+      i++;
+      let s = "";
+      while (i < n) {
+        if (line[i] === "\\" && i + 1 < n) {
+          s += line[i + 1];
+          i += 2;
+          continue;
+        }
+        if (line[i] === '"') {
+          i++;
+          break;
+        }
+        s += line[i++];
+      }
+      out.push(s);
+      continue;
+    }
+    let s = "";
+    while (i < n && !/\s/.test(line[i])) s += line[i++];
+    out.push(s);
+  }
+  return out;
+}
+
+/** Join curl line continuations (`\\\n`) and trim. */
+function preprocessCurlRaw(raw: string): string {
+  return raw
+    .replace(/\r\n/g, "\n")
+    .replace(/\\\n[ \t]*/g, " ")
+    .trim();
+}
+
+function shellSingleQuote(s: string): string {
+  return `'${s.replace(/'/g, `'\\''`)}'`;
+}
+
+export type CurlFormatLayout = "multiline" | "oneline";
+
+/**
+ * Parse messy cURL input and emit a clean, copy-pasteable command (consistent flags & quoting).
+ */
+export function formatCurl(input: string, layout: CurlFormatLayout = "multiline"): Result {
+  try {
+    const pre = preprocessCurlRaw(input);
+    if (!pre) return { output: "", error: "Paste a cURL command" };
+
+    const tokens = tokenizeShellArgs(pre);
+    if (tokens.length === 0) return { output: "", error: "Could not parse input" };
+
+    const exe = tokens[0].split(/[/\\]/).pop()?.toLowerCase() ?? "";
+    if (exe !== "curl") {
+      return {
+        output: "",
+        error: "First token must be curl (e.g. curl or /usr/bin/curl)",
+      };
+    }
+
+    let i = 1;
+    let url = "";
+    let urlFromFlag = "";
+    let method = "";
+    let methodExplicit = false;
+    const headers: [string, string][] = [];
+    const dataParts: string[] = [];
+    let dataKind: "data" | "data-raw" | "data-binary" | "data-urlencode" | "json" | null = null;
+    let user: string | null = null;
+    let cookie: string | null = null;
+    let cookieJar: string | null = null;
+    const forms: string[] = [];
+    const booleans = new Set<string>();
+    const passthrough: string[] = [];
+
+    const takeBool = (short: string, long?: string) => {
+      booleans.add(short);
+      if (long) booleans.add(long);
+    };
+
+    const splitOpt = (tok: string): [string, string | null] => {
+      const eq = tok.indexOf("=");
+      if (eq === -1) return [tok, null];
+      return [tok.slice(0, eq), tok.slice(eq + 1)];
+    };
+
+    while (i < tokens.length) {
+      let tok = tokens[i];
+      if (/^https?:\/\//i.test(tok)) {
+        url = tok;
+        i++;
+        continue;
+      }
+
+      if (!tok.startsWith("-")) {
+        passthrough.push(tok);
+        i++;
+        continue;
+      }
+
+      let opt = tok;
+      let inlineVal: string | null = null;
+      if (opt.includes("=")) {
+        const [o, v] = splitOpt(opt);
+        opt = o;
+        inlineVal = v ?? "";
+      }
+
+      const next = () => {
+        if (inlineVal !== null) {
+          const v = inlineVal;
+          inlineVal = null;
+          return v;
+        }
+        if (i + 1 >= tokens.length) return "";
+        i++;
+        return tokens[i];
+      };
+
+      const optNorm = opt.replace(/^--/, "-");
+
+      if (optNorm === "-X" || opt === "--request") {
+        method = next().toUpperCase();
+        methodExplicit = true;
+        i++;
+        continue;
+      }
+      if (optNorm === "-H" || opt === "--header") {
+        const h = next();
+        const colon = h.indexOf(":");
+        if (colon === -1) {
+          headers.push([h.trim(), ""]);
+        } else {
+          headers.push([h.slice(0, colon).trim(), h.slice(colon + 1).trim()]);
+        }
+        i++;
+        continue;
+      }
+      if (
+        optNorm === "-d" ||
+        opt === "--data" ||
+        opt === "--data-raw" ||
+        opt === "--data-binary" ||
+        opt === "--data-urlencode"
+      ) {
+        const body = next();
+        dataParts.push(body);
+        if (opt === "--data-raw" || optNorm === "-d") dataKind = "data-raw";
+        else if (opt === "--data-binary") dataKind = "data-binary";
+        else if (opt === "--data-urlencode") dataKind = "data-urlencode";
+        else dataKind = dataKind || "data";
+        i++;
+        continue;
+      }
+      if (opt === "--json") {
+        const body = next();
+        dataParts.push(body);
+        dataKind = "json";
+        i++;
+        continue;
+      }
+      if (optNorm === "-u" || opt === "--user") {
+        user = next();
+        i++;
+        continue;
+      }
+      if (optNorm === "-b" || opt === "--cookie") {
+        cookie = next();
+        i++;
+        continue;
+      }
+      if (optNorm === "-c" || opt === "--cookie-jar") {
+        cookieJar = next();
+        i++;
+        continue;
+      }
+      if (opt === "--url") {
+        urlFromFlag = next();
+        i++;
+        continue;
+      }
+      if (optNorm === "-F" || opt === "--form") {
+        forms.push(next());
+        i++;
+        continue;
+      }
+      if (optNorm === "-L" || opt === "--location") {
+        takeBool("L", "location");
+        i++;
+        continue;
+      }
+      if (optNorm === "-k" || opt === "--insecure") {
+        takeBool("k", "insecure");
+        i++;
+        continue;
+      }
+      if (optNorm === "-s" || opt === "--silent") {
+        takeBool("s", "silent");
+        i++;
+        continue;
+      }
+      if (opt === "-S" || opt === "--show-error") {
+        takeBool("S", "show-error");
+        i++;
+        continue;
+      }
+      if (optNorm === "-i" || opt === "--include") {
+        takeBool("i", "include");
+        i++;
+        continue;
+      }
+      if (opt === "--compressed") {
+        takeBool("compressed");
+        i++;
+        continue;
+      }
+      if (optNorm === "-v" || opt === "--verbose") {
+        takeBool("v", "verbose");
+        i++;
+        continue;
+      }
+
+      const val = inlineVal !== null ? inlineVal : i + 1 < tokens.length && !tokens[i + 1].startsWith("-") ? tokens[++i] : null;
+      if (val !== null) passthrough.push(opt, val);
+      else passthrough.push(opt);
+      i++;
+    }
+
+    const finalUrl = url || urlFromFlag;
+    if (!finalUrl) {
+      return {
+        output: "",
+        error: "No URL found — include https://... or --url",
+      };
+    }
+
+    let outMethod = method || "GET";
+    if (!methodExplicit && dataParts.length > 0 && outMethod === "GET") {
+      outMethod = "POST";
+    }
+
+    const mergedData =
+      dataParts.length === 0
+        ? null
+        : dataParts.length === 1
+          ? dataParts[0]
+          : dataParts.join("&");
+
+    const flagOrder: { key: string; long: string }[] = [
+      { key: "location", long: "--location" },
+      { key: "insecure", long: "--insecure" },
+      { key: "silent", long: "--silent" },
+      { key: "show-error", long: "--show-error" },
+      { key: "include", long: "--include" },
+      { key: "compressed", long: "--compressed" },
+      { key: "verbose", long: "--verbose" },
+    ];
+
+    const parts: string[] = ["curl"];
+
+    for (const { key, long } of flagOrder) {
+      if (booleans.has(key) || booleans.has(long.replace(/^--/, ""))) {
+        parts.push(long);
+      }
+    }
+
+    if (outMethod !== "GET" || methodExplicit) {
+      parts.push("-X", outMethod);
+    }
+
+    if (user) {
+      parts.push("-u", shellSingleQuote(user));
+    }
+    if (cookie) {
+      parts.push("-b", shellSingleQuote(cookie));
+    }
+    if (cookieJar) {
+      parts.push("-c", shellSingleQuote(cookieJar));
+    }
+
+    for (const [hk, hv] of headers) {
+      parts.push("-H", shellSingleQuote(`${hk}: ${hv}`));
+    }
+
+    if (mergedData !== null) {
+      if (dataKind === "json") {
+        parts.push("--json", shellSingleQuote(mergedData));
+      } else {
+        const dataFlag =
+          dataKind === "data-binary"
+            ? "--data-binary"
+            : dataKind === "data-urlencode"
+              ? "--data-urlencode"
+              : "--data-raw";
+        parts.push(dataFlag, shellSingleQuote(mergedData));
+      }
+    }
+
+    for (const f of forms) {
+      parts.push("-F", shellSingleQuote(f));
+    }
+
+    for (let j = 0; j < passthrough.length; j++) {
+      parts.push(passthrough[j]);
+    }
+
+    parts.push(shellSingleQuote(finalUrl));
+
+    if (layout === "oneline") {
+      return parts.join(" ");
+    }
+
+    const lines: string[] = [];
+    lines.push("curl \\");
+    for (let k = 1; k < parts.length; k++) {
+      const isLast = k === parts.length - 1;
+      const seg = parts[k];
+      lines.push(`  ${seg}${isLast ? "" : " \\"}`);
+    }
+    return lines.join("\n");
+  } catch (e) {
+    return { output: "", error: `Could not format cURL: ${(e as Error).message}` };
+  }
+}
+
 export function curlToFetch(input: string): Result {
   try {
     const args = input.trim();
@@ -1297,6 +1637,197 @@ function xmlNodeToObj(node: Element): unknown {
   }
 
   return obj;
+}
+
+function escapeXmlTextChunk(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+function escapeXmlAttrValue(s: string): string {
+  return escapeXmlTextChunk(s).replace(/"/g, "&quot;");
+}
+
+function parseXmlDoc(input: string): { doc: Document; error?: string } {
+  const doc = new DOMParser().parseFromString(input, "text/xml");
+  const errorNode = doc.querySelector("parsererror");
+  if (errorNode) {
+    return {
+      doc,
+      error: errorNode.textContent?.trim() || "Malformed XML",
+    };
+  }
+  return { doc };
+}
+
+/** Well-formedness check for the XML Tools Suite. */
+export function xmlSuiteValidate(input: string): Result {
+  const trimmed = input.trim();
+  if (!trimmed) return { output: "", error: "Paste XML to validate" };
+  const { error } = parseXmlDoc(trimmed);
+  if (error) return { output: "", error };
+  return {
+    output:
+      "Document is well-formed.\n\nTip: validation uses the browser XML parser (same engine as XML → JSON).",
+  };
+}
+
+function serializeXmlPretty(el: Element, depth: number): string {
+  const pad = "  ".repeat(depth);
+  const name = el.tagName;
+  const attrs = [...el.attributes]
+    .map((a) => ` ${a.name}="${escapeXmlAttrValue(a.value)}"`)
+    .join("");
+  const rawChildren = [...el.childNodes];
+  const meaningful = rawChildren.filter((ch) => {
+    if (ch.nodeType === Node.TEXT_NODE) {
+      return Boolean((ch.textContent ?? "").trim());
+    }
+    return (
+      ch.nodeType === Node.ELEMENT_NODE ||
+      ch.nodeType === Node.COMMENT_NODE ||
+      ch.nodeType === Node.CDATA_SECTION_NODE
+    );
+  });
+
+  if (meaningful.length === 0) return `${pad}<${name}${attrs}/>`;
+
+  if (
+    meaningful.length === 1 &&
+    meaningful[0].nodeType === Node.TEXT_NODE
+  ) {
+    const t = meaningful[0].textContent ?? "";
+    return `${pad}<${name}${attrs}>${escapeXmlTextChunk(t)}</${name}>`;
+  }
+
+  const inner = meaningful
+    .map((ch) => {
+      if (ch.nodeType === Node.TEXT_NODE) {
+        const t = (ch.textContent ?? "").trim();
+        return t ? `${pad}  ${escapeXmlTextChunk(t)}` : "";
+      }
+      if (ch.nodeType === Node.ELEMENT_NODE) {
+        return serializeXmlPretty(ch as Element, depth + 1);
+      }
+      if (ch.nodeType === Node.COMMENT_NODE) {
+        return `${pad}  <!--${(ch as Comment).data}-->`;
+      }
+      if (ch.nodeType === Node.CDATA_SECTION_NODE) {
+        return `${pad}  <![CDATA[${(ch as CDATASection).data}]]>`;
+      }
+      return "";
+    })
+    .filter(Boolean)
+    .join("\n");
+
+  return `${pad}<${name}${attrs}>\n${inner}\n${pad}</${name}>`;
+}
+
+export function xmlSuitePrettyPrint(input: string): Result {
+  const trimmed = input.trim();
+  if (!trimmed) return { output: "", error: "Paste XML to format" };
+  const { doc, error } = parseXmlDoc(trimmed);
+  if (error) return { output: "", error };
+  const declMatch = trimmed.match(/^<\?xml[^?]*\?>\s*/);
+  const decl = declMatch ? declMatch[0].trimEnd() : "";
+  const body = serializeXmlPretty(doc.documentElement, 0);
+  const out = decl ? `${decl}\n${body}` : body;
+  return { output: out };
+}
+
+function minifyXmlElement(el: Element): string {
+  const name = el.tagName;
+  const attrs = [...el.attributes]
+    .map((a) => ` ${a.name}="${escapeXmlAttrValue(a.value)}"`)
+    .join("");
+  let inner = "";
+  for (const ch of el.childNodes) {
+    if (ch.nodeType === Node.TEXT_NODE) {
+      inner += escapeXmlTextChunk(ch.textContent ?? "");
+    } else if (ch.nodeType === Node.ELEMENT_NODE) {
+      inner += minifyXmlElement(ch as Element);
+    } else if (ch.nodeType === Node.CDATA_SECTION_NODE) {
+      inner += `<![CDATA[${(ch as CDATASection).data}]]>`;
+    } else if (ch.nodeType === Node.COMMENT_NODE) {
+      inner += `<!--${(ch as Comment).data}-->`;
+    }
+  }
+  if (!inner) return `<${name}${attrs}/>`;
+  return `<${name}${attrs}>${inner}</${name}>`;
+}
+
+export function xmlSuiteMinify(input: string): Result {
+  const trimmed = input.trim();
+  if (!trimmed) return { output: "", error: "Paste XML to minify" };
+  const { doc, error } = parseXmlDoc(trimmed);
+  if (error) return { output: "", error };
+  const declMatch = trimmed.match(/^<\?xml[^?]*\?>/);
+  const decl = declMatch ? declMatch[0] : "";
+  const body = minifyXmlElement(doc.documentElement);
+  const out = decl ? `${decl}${body}` : body;
+  return { output: out };
+}
+
+export function xmlSuiteXPath(input: string, xpathExpr: string): Result {
+  const trimmed = input.trim();
+  if (!trimmed) return { output: "", error: "Paste XML first" };
+  const expr = xpathExpr.trim();
+  if (!expr) return { output: "", error: "Enter an XPath expression" };
+  const { doc, error } = parseXmlDoc(trimmed);
+  if (error) return { output: "", error };
+  try {
+    const snapshot = doc.evaluate(
+      expr,
+      doc,
+      null,
+      XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,
+      null
+    );
+    const lines: string[] = [];
+    const max = Math.min(snapshot.snapshotLength, 500);
+    for (let i = 0; i < max; i++) {
+      const node = snapshot.snapshotItem(i);
+      if (!node) continue;
+      if (node.nodeType === Node.ELEMENT_NODE) {
+        lines.push((node as Element).outerHTML);
+      } else if (node.nodeType === Node.ATTRIBUTE_NODE) {
+        lines.push(`${(node as Attr).name}="${(node as Attr).value}"`);
+      } else {
+        lines.push(node.textContent ?? "");
+      }
+    }
+    if (snapshot.snapshotLength > 500) {
+      lines.push(`… truncated (${snapshot.snapshotLength} total matches, showing 500)`);
+    }
+    return {
+      output:
+        lines.length > 0 ? lines.join("\n---\n") : "(no matches for this XPath)",
+    };
+  } catch (e) {
+    return { output: "", error: `XPath error: ${(e as Error).message}` };
+  }
+}
+
+export function xmlSuiteSearch(input: string, needle: string): Result {
+  const n = needle.trim();
+  if (!input.trim()) return { output: "", error: "Paste XML to search" };
+  if (!n) return { output: "", error: "Enter text to find" };
+  const lines = input.split(/\n/);
+  const hits: string[] = [];
+  lines.forEach((line, i) => {
+    if (line.includes(n)) {
+      const preview = line.trim().slice(0, 240);
+      hits.push(`${i + 1}: ${preview}${line.trim().length > 240 ? "…" : ""}`);
+    }
+  });
+  return {
+    output:
+      hits.length > 0
+        ? `${hits.length} line(s) containing "${n}":\n\n${hits.join("\n")}`
+        : `No lines contain "${n}".`,
+  };
 }
 
 export function tomlToJson(input: string): Result {

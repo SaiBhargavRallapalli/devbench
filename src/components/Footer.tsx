@@ -18,12 +18,18 @@ export default function Footer() {
             </p>
           </div>
 
-          <div className="flex items-center gap-6">
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 sm:justify-end">
             <Link
               href="/about"
               className="text-sm text-muted-foreground transition-colors hover:text-foreground"
             >
               About
+            </Link>
+            <Link
+              href="/contact"
+              className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+            >
+              Contact
             </Link>
             <Link
               href="/privacy"

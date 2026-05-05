@@ -36,6 +36,7 @@ export default function Header() {
     { href: "/diff-checker", label: "Diff Checker" },
     { href: "/code-beautify", label: "Code Beautify" },
     { href: "/graph-calculator", label: "Math Suite" },
+    { href: "/contact", label: "Contact" },
   ];
 
   return (

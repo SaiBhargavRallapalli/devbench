@@ -10,13 +10,21 @@ import {
   Trash2,
   Download,
   Shield,
-  RotateCcw,
   Sparkles,
 } from "lucide-react";
 import { getToolBySlug, CATEGORIES } from "@/lib/tools-registry";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import * as engines from "@/lib/tool-engines";
+import ImageResizerTool from "@/components/tools/ImageResizerTool";
+import PdfPageEditorTool from "@/components/tools/PdfPageEditorTool";
+import XmlSuiteTool from "@/components/tools/XmlSuiteTool";
+
+const CUSTOM_TOOL_SLUGS = new Set([
+  "image-resizer",
+  "pdf-page-editor",
+  "xml-suite",
+]);
 
 function CopyBtn({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
@@ -69,8 +77,10 @@ type ToolState = {
 };
 
 export default function ToolPage() {
-  const { slug } = useParams<{ slug: string }>();
+  const { slug: slugParam } = useParams<{ slug: string }>();
+  const slug = slugParam ?? "";
   const tool = getToolBySlug(slug);
+  const isCustomTool = Boolean(tool && CUSTOM_TOOL_SLUGS.has(slug));
 
   const [state, setState] = useState<ToolState>({
     input: "",
@@ -86,6 +96,7 @@ export default function ToolPage() {
     setState((s) => ({ ...s, options: { ...s.options, [key]: value } }));
 
   const process = useCallback(async () => {
+    if (CUSTOM_TOOL_SLUGS.has(slug)) return;
     if (!state.input.trim() && !needsNoInput(slug)) {
       setState((s) => ({ ...s, output: "", error: "" }));
       return;
@@ -108,9 +119,10 @@ export default function ToolPage() {
   }, [slug, state.input, state.input2, state.options]);
 
   useEffect(() => {
+    if (CUSTOM_TOOL_SLUGS.has(slug)) return;
     const timer = setTimeout(process, 150);
     return () => clearTimeout(timer);
-  }, [process]);
+  }, [process, slug]);
 
   if (!tool) {
     return (
@@ -130,6 +142,24 @@ export default function ToolPage() {
             </Link>
           </div>
         </main>
+        <Footer />
+      </>
+    );
+  }
+
+  if (isCustomTool) {
+    const workspace =
+      slug === "image-resizer" ? (
+        <ImageResizerTool tool={tool} />
+      ) : slug === "pdf-page-editor" ? (
+        <PdfPageEditorTool tool={tool} />
+      ) : (
+        <XmlSuiteTool tool={tool} />
+      );
+    return (
+      <>
+        <Header />
+        {workspace}
         <Footer />
       </>
     );
@@ -479,6 +509,20 @@ function renderOptions(
             <option value="js">JavaScript</option>
             <option value="sql">SQL</option>
             <option value="regex">Regex</option>
+          </select>
+        </div>
+      );
+    case "curl-formatter":
+      return (
+        <div className="mb-4">
+          <label className="text-sm font-medium mr-2">Output:</label>
+          <select
+            value={(options.layout as string) || "multiline"}
+            onChange={(e) => setOption("layout", e.target.value)}
+            className={selectClass}
+          >
+            <option value="multiline">Multi-line (POSIX / bash)</option>
+            <option value="oneline">Single line</option>
           </select>
         </div>
       );
@@ -868,6 +912,11 @@ async function runTool(
       return engines.formatSql(input);
     case "curl-to-fetch":
       return engines.curlToFetch(input);
+    case "curl-formatter":
+      return engines.formatCurl(
+        input,
+        (options.layout as string) === "oneline" ? "oneline" : "multiline"
+      );
     case "string-escape":
       return engines.escapeString(
         input,
