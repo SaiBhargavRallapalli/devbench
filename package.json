@@ -19,6 +19,7 @@
     "@imgly/background-removal": "^1.7.0",
     "@types/diff": "^7.0.2",
     "@types/js-yaml": "^4.0.9",
+    "@vercel/analytics": "^2.0.1",
     "ajv": "^8.20.0",
     "csv-parse": "^6.2.1",
     "csv-stringify": "^6.7.0",
