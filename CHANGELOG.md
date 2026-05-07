@@ -5,7 +5,8 @@
 ## 2026-05-07
 
 ### Added
-- implement dynamic import for CommandPalette to optimize initial bundle size and update styling for improved accessibility (`a006c6f`)
+- enhance theme management in Header component and update layout styles for improved dark mode support (`aff29e0`)
+- implement dynamic import for CommandPalette to optimize initial bundle size and update styling for improved accessibility (`66a62a2`)
 - update package.json with browserslist configuration, enhance layout preconnect hints for optimized loading, and refine styling in various components for improved accessibility and user experience (`8c02893`)
 - add blog routes to sitemap, update navigation links in Header and Footer, and refine JSON Formatter links for improved user access (`8d5dc2e`)
 - update affiliate links in Footer and HomePage, enhance tool metadata with dynamic content, and improve tool descriptions for better user engagement (`e64b693`)

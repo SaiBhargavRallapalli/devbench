@@ -26,9 +26,19 @@ export default function Header() {
   useEffect(() => {
     const root = document.documentElement;
     const stored = localStorage.getItem("theme");
-    if (stored === "dark" || (!stored && root.classList.contains("dark"))) {
+    if (stored === "dark") {
       setDark(true);
       root.classList.add("dark");
+      root.classList.remove("light");
+    } else if (stored === "light") {
+      setDark(false);
+      root.classList.remove("dark");
+      root.classList.add("light");
+    } else {
+      // No saved preference — follow OS setting
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      setDark(prefersDark);
+      if (prefersDark) root.classList.add("dark");
     }
   }, []);
 
@@ -36,7 +46,13 @@ export default function Header() {
     const root = document.documentElement;
     const next = !dark;
     setDark(next);
-    root.classList.toggle("dark", next);
+    if (next) {
+      root.classList.add("dark");
+      root.classList.remove("light");
+    } else {
+      root.classList.remove("dark");
+      root.classList.add("light"); // blocks OS dark-mode media query
+    }
     localStorage.setItem("theme", next ? "dark" : "light");
   }
 
