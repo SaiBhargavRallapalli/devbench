@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getToolBySlug, getToolsByCategory, CATEGORIES } from "@/lib/tools-registry";
 import { TOOL_FAQS } from "@/lib/tool-faqs";
+import { TOOL_PAGE_CONTENT } from "@/lib/tool-page-content";
 import ToolSeoContent from "@/components/tools/ToolSeoContent";
 import ToolFaqSection from "@/components/tools/ToolFaqSection";
 import TrackToolVisit from "@/components/TrackToolVisit";
@@ -17,10 +18,10 @@ export async function generateMetadata({
   if (!tool) {
     return { title: "Tool | DevBench" };
   }
-  const title = `${tool.name} — Free Online Tool | DevBench`;
-  const description =
-    tool.description +
-    " Runs entirely in your browser — no signup, no uploads, client-side only.";
+  const extra = TOOL_PAGE_CONTENT[slug];
+  const title = extra?.title ?? `${tool.name} — Free Online Tool | DevBench`;
+  const description = extra?.metaDescription ??
+    `${tool.description} Runs entirely in your browser — no signup, no uploads, client-side only.`;
   return {
     title,
     description,

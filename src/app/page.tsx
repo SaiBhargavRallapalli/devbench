@@ -67,7 +67,7 @@ export default function HomePage() {
           <div className="max-w-6xl mx-auto px-4 py-2.5 flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 text-xs text-muted-foreground">
             <span className="opacity-60 uppercase tracking-wide font-medium text-[10px]">Sponsored</span>
             <a
-              href="https://namecheap.pxf.io/c/7275861/3884366/5618"
+              href="https://namecheap.pxf.io/c/7275861/3884366/5618?partnerpropertyid=8365175"
               target="_blank"
               rel="nofollow noopener noreferrer sponsored"
               className="hover:text-foreground transition-colors"
@@ -76,12 +76,21 @@ export default function HomePage() {
             </a>
             <span className="opacity-30 hidden sm:inline">·</span>
             <a
-              href="https://namecheap.pxf.io/c/7275861/3884368/5618"
+              href="https://namecheap.pxf.io/c/7275861/3884368/5618?partnerpropertyid=8365175"
               target="_blank"
               rel="nofollow noopener noreferrer sponsored"
               className="hover:text-foreground transition-colors"
             >
               VPS Hosting from $6.88/mo ↗
+            </a>
+            <span className="opacity-30 hidden sm:inline">·</span>
+            <a
+              href="https://namecheap.pxf.io/c/7275861/3884352/5618?partnerpropertyid=8365175"
+              target="_blank"
+              rel="nofollow noopener noreferrer sponsored"
+              className="hover:text-foreground transition-colors"
+            >
+              Domains, SSLs & Premium DNS — Discounts Sitewide ↗
             </a>
           </div>
         </div>

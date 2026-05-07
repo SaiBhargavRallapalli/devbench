@@ -2,9 +2,11 @@ import Link from "next/link";
 import { ArrowLeft, Shield } from "lucide-react";
 import type { Tool } from "@/lib/tools-registry";
 import { CATEGORIES } from "@/lib/tools-registry";
+import { TOOL_PAGE_CONTENT } from "@/lib/tool-page-content";
 
 export default function ToolPageHero({ tool }: { tool: Tool }) {
   const category = CATEGORIES[tool.category];
+  const extraContent = TOOL_PAGE_CONTENT[tool.slug];
   return (
     <div className="mb-6 animate-fade-in">
       <Link
@@ -20,7 +22,7 @@ export default function ToolPageHero({ tool }: { tool: Tool }) {
         >
           {tool.icon}
         </div>
-        <div>
+        <div className="flex-1">
           <h1 className="text-2xl font-bold">{tool.name}</h1>
           <div className="mt-2 flex flex-wrap items-center gap-2">
             <span
@@ -33,9 +35,15 @@ export default function ToolPageHero({ tool }: { tool: Tool }) {
               Runs in browser
             </span>
           </div>
-          <p className="mt-3 text-sm text-muted-foreground max-w-prose">
-            {tool.description}
-          </p>
+          {extraContent ? (
+            <p className="mt-3 text-sm text-muted-foreground leading-relaxed max-w-2xl">
+              {extraContent.openingParagraph}
+            </p>
+          ) : (
+            <p className="mt-3 text-sm text-muted-foreground max-w-prose">
+              {tool.description}
+            </p>
+          )}
         </div>
       </div>
     </div>

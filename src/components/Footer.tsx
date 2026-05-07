@@ -1,17 +1,23 @@
 import Link from "next/link";
 import { Shield, ExternalLink } from "lucide-react";
 import DevBenchMark from "@/components/DevBenchMark";
+import NamecheapLogo from "@/components/NamecheapLogo";
 
 const AFFILIATE_LINKS = [
   {
     label: "Shared Hosting",
-    href: "https://namecheap.pxf.io/c/7275861/3884366/5618",
+    href: "https://namecheap.pxf.io/c/7275861/3884366/5618?partnerpropertyid=8365175",
     desc: "from $1.58/mo",
   },
   {
     label: "VPS Hosting",
-    href: "https://namecheap.pxf.io/c/7275861/3884368/5618",
+    href: "https://namecheap.pxf.io/c/7275861/3884368/5618?partnerpropertyid=8365175",
     desc: "from $6.88/mo",
+  },
+  {
+    label: "Domains, SSLs & DNS",
+    href: "https://namecheap.pxf.io/c/7275861/3884352/5618?partnerpropertyid=8365175",
+    desc: "discounts sitewide",
   },
 ];
 
@@ -39,9 +45,15 @@ export default function Footer() {
                 <ExternalLink className="h-3 w-3 opacity-40" />
               </a>
             ))}
-            <span className="inline-flex items-center text-[11px] text-muted-foreground/50 self-center">
-              Powered by Namecheap
-            </span>
+            <a
+              href="https://namecheap.pxf.io/c/7275861/3884366/5618?partnerpropertyid=8365175"
+              target="_blank"
+              rel="nofollow noopener noreferrer sponsored"
+              className="inline-flex items-center self-center opacity-50 hover:opacity-80 transition-opacity"
+              aria-label="Namecheap"
+            >
+              <NamecheapLogo className="h-5 w-auto text-foreground" />
+            </a>
           </div>
         </div>
 

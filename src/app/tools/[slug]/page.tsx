@@ -13,6 +13,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { getToolBySlug, CATEGORIES } from "@/lib/tools-registry";
+import { TOOL_PAGE_CONTENT } from "@/lib/tool-page-content";
 import Header from "@/components/Header";
 import * as engines from "@/lib/tool-engines";
 import CustomToolOutlet from "@/components/tools/CustomToolOutlet";
@@ -198,8 +199,8 @@ export default function ToolPage() {
                   Runs in browser
                 </span>
               </div>
-              <p className="mt-3 text-sm text-muted-foreground max-w-prose">
-                {tool.description}
+              <p className="mt-3 text-sm text-muted-foreground leading-relaxed max-w-2xl">
+                {TOOL_PAGE_CONTENT[slug]?.openingParagraph ?? tool.description}
               </p>
             </div>
           </div>

@@ -15,9 +15,19 @@ function Section({ children }: { children: React.ReactNode }) {
   );
 }
 
+const ol = "list-decimal list-inside space-y-1.5 text-sm text-muted-foreground";
+
 function JsonFormatterContent() {
   return (
     <Section>
+      <h2 className={h2}>How to use the JSON Formatter</h2>
+      <ol className={ol}>
+        <li>Paste your JSON into the left panel, or click <strong>Upload</strong> to load a file from disk.</li>
+        <li>Syntax errors are highlighted instantly — the error banner shows the exact line and column.</li>
+        <li>Click the <strong>Tree</strong> icon to switch to the interactive tree view and explore nested objects by collapsing and expanding nodes.</li>
+        <li>Use the toolbar to <strong>Minify</strong>, convert to <strong>YAML / CSV / TypeScript</strong>, or <strong>Diff</strong> two documents.</li>
+        <li>Click <strong>Copy</strong> to copy the formatted JSON, or <strong>Download</strong> to save it as a <code className="font-mono text-xs">.json</code> file.</li>
+      </ol>
       <h2 className={h2}>What is a JSON Formatter?</h2>
       <p className={prose}>
         A <strong>JSON formatter</strong> (also called a JSON beautifier or JSON
@@ -26,15 +36,6 @@ function JsonFormatterContent() {
         and validator checks your JSON for syntax errors at the same time —
         unclosed brackets, trailing commas, unquoted keys, and other common
         mistakes are highlighted instantly.
-      </p>
-
-      <h2 className={h2}>How to use this JSON formatter</h2>
-      <p className={prose}>
-        Paste your JSON into the left panel. The formatter detects and reports
-        any syntax errors in real time. Switch to the tree view to explore nested
-        objects and arrays without scrolling through raw text. Use the minify
-        button to compact JSON for production payloads, or export to YAML, CSV,
-        or TypeScript interfaces using the toolbar.
       </p>
 
       <h2 className={h2}>Common JSON errors this tool catches</h2>
@@ -93,6 +94,13 @@ function JsonFormatterContent() {
 function Base64EncodeContent() {
   return (
     <Section>
+      <h2 className={h2}>How to use the Base64 Encoder</h2>
+      <ol className={ol}>
+        <li>Type or paste text into the input field — the Base64 output appears in real time on the right.</li>
+        <li>Toggle <strong>URL-safe (Base64URL)</strong> to replace <code className="font-mono text-xs">+</code> with <code className="font-mono text-xs">-</code> and <code className="font-mono text-xs">/</code> with <code className="font-mono text-xs">_</code> — required for JWTs and URLs.</li>
+        <li>Switch to the <strong>Decode</strong> tab and paste a Base64 string to reverse-decode it back to text.</li>
+        <li>Click <strong>Copy</strong> to copy the encoded output to your clipboard.</li>
+      </ol>
       <h2 className={h2}>What is Base64 encoding?</h2>
       <p className={prose}>
         <strong>Base64</strong> is an encoding scheme that converts binary data
@@ -213,6 +221,14 @@ function Base64DecodeContent() {
 function RegexTesterContent() {
   return (
     <Section>
+      <h2 className={h2}>How to use the Regex Tester</h2>
+      <ol className={ol}>
+        <li>Type your regular expression into the <strong>Pattern</strong> field — matches in the test string are highlighted immediately.</li>
+        <li>Toggle flags as needed: <code className="font-mono text-xs">g</code> (global), <code className="font-mono text-xs">i</code> (case-insensitive), <code className="font-mono text-xs">m</code> (multiline), <code className="font-mono text-xs">s</code> (dotAll).</li>
+        <li>Check the <strong>Match Details</strong> panel to see each match, its index, and every capturing group value.</li>
+        <li>Switch to the <strong>Substitution</strong> tab, type a replacement string, and preview the result of <code className="font-mono text-xs">String.replace()</code> in real time.</li>
+        <li>Use the <strong>Pattern Library</strong> to load one of 30 built-in example patterns, or the <strong>Code</strong> tab to copy the equivalent JavaScript, Python, Go, or PHP snippet.</li>
+      </ol>
       <h2 className={h2}>What is a regular expression?</h2>
       <p className={prose}>
         A <strong>regular expression</strong> (regex) is a sequence of
@@ -299,6 +315,13 @@ function RegexTesterContent() {
 function UuidGeneratorContent() {
   return (
     <Section>
+      <h2 className={h2}>How to use the UUID Generator</h2>
+      <ol className={ol}>
+        <li>Select the ID type: <strong>UUID v4</strong> (random, widely compatible), <strong>ULID</strong> (time-sortable), or <strong>Nano ID</strong> (compact, URL-safe).</li>
+        <li>Click <strong>Generate</strong> to produce a single identifier — or enter a number in the <strong>Bulk</strong> field to generate up to 1 000 at once.</li>
+        <li>Toggle <strong>Uppercase</strong> or <strong>No hyphens</strong> to change the output format for your use case.</li>
+        <li>Click <strong>Copy All</strong> to copy all generated IDs to the clipboard, one per line.</li>
+      </ol>
       <h2 className={h2}>What is a UUID?</h2>
       <p className={prose}>
         A <strong>UUID</strong> (Universally Unique Identifier) is a 128-bit
@@ -349,6 +372,14 @@ function UuidGeneratorContent() {
 function HashGeneratorContent() {
   return (
     <Section>
+      <h2 className={h2}>How to use the Hash Generator</h2>
+      <ol className={ol}>
+        <li>Type or paste text into the input field — the hash is computed in real time as you type.</li>
+        <li>Select the algorithm: <strong>MD5</strong>, <strong>SHA-1</strong>, <strong>SHA-256</strong>, <strong>SHA-384</strong>, or <strong>SHA-512</strong>.</li>
+        <li>Toggle <strong>Uppercase</strong> to switch the output between lowercase and uppercase hex.</li>
+        <li>Paste an expected hash in the <strong>Compare</strong> field to verify whether the input matches — a green checkmark confirms a match.</li>
+        <li>Click <strong>Upload file</strong> to hash a file directly — useful for verifying download integrity.</li>
+      </ol>
       <h2 className={h2}>What is a cryptographic hash?</h2>
       <p className={prose}>
         A <strong>cryptographic hash function</strong> takes any input and
@@ -395,6 +426,14 @@ function HashGeneratorContent() {
 function PasswordGeneratorContent() {
   return (
     <Section>
+      <h2 className={h2}>How to use the Password Generator</h2>
+      <ol className={ol}>
+        <li>Set the <strong>length</strong> using the slider (8–128 characters) — 16+ is recommended for most accounts.</li>
+        <li>Toggle character sets: uppercase letters, lowercase letters, digits, and symbols. Disable any that your target system doesn&apos;t allow.</li>
+        <li>Enable <strong>Exclude ambiguous</strong> to remove visually similar characters like <code className="font-mono text-xs">0 O l I 1</code> — useful for passwords you&apos;ll type manually.</li>
+        <li>Click <strong>Generate</strong> — a new password is produced using <code className="font-mono text-xs">crypto.getRandomValues()</code> for cryptographic strength.</li>
+        <li>Click <strong>Copy</strong> to copy to clipboard. Use the entropy bar to gauge crack-resistance before accepting.</li>
+      </ol>
       <h2 className={h2}>What makes a strong password?</h2>
       <p className={prose}>
         Password strength is primarily determined by length and character
@@ -444,6 +483,13 @@ function PasswordGeneratorContent() {
 function UrlEncodeContent() {
   return (
     <Section>
+      <h2 className={h2}>How to use the URL Encoder</h2>
+      <ol className={ol}>
+        <li>Paste the text you want to encode — a full URL, a query parameter value, or a path segment.</li>
+        <li>Choose the encoding mode: <strong>Component</strong> (encodes everything except <code className="font-mono text-xs">A–Z a–z 0–9 - _ . ! ~ * &apos; ( )</code>) or <strong>Full URL</strong> (preserves <code className="font-mono text-xs">:/?#[]@</code> structural characters).</li>
+        <li>The percent-encoded output appears instantly on the right.</li>
+        <li>Click <strong>Copy</strong> to copy the result, or click <strong>Decode</strong> to reverse-decode any percent-encoded string.</li>
+      </ol>
       <h2 className={h2}>What is URL encoding?</h2>
       <p className={prose}>
         <strong>URL encoding</strong> (also called percent-encoding) converts
@@ -488,6 +534,13 @@ function UrlEncodeContent() {
 function UrlDecodeContent() {
   return (
     <Section>
+      <h2 className={h2}>How to use the URL Decoder</h2>
+      <ol className={ol}>
+        <li>Paste a percent-encoded URL or query string into the input field.</li>
+        <li>The decoded output appears instantly — <code className="font-mono text-xs">%20</code> becomes a space, <code className="font-mono text-xs">%3A</code> becomes <code className="font-mono text-xs">:</code>, and so on.</li>
+        <li>Toggle <strong>Decode <code className="font-mono text-xs">+</code> as space</strong> if your input is from a form POST (<code className="font-mono text-xs">application/x-www-form-urlencoded</code>) where <code className="font-mono text-xs">+</code> represents a space.</li>
+        <li>Click <strong>Copy</strong> to copy the decoded result to your clipboard.</li>
+      </ol>
       <h2 className={h2}>What is URL decoding?</h2>
       <p className={prose}>
         <strong>URL decoding</strong> reverses percent-encoding — it converts
@@ -535,6 +588,14 @@ function UrlDecodeContent() {
 function TextDiffContent() {
   return (
     <Section>
+      <h2 className={h2}>How to use the Text Diff tool</h2>
+      <ol className={ol}>
+        <li>Paste the original text into the <strong>left panel</strong> and the updated text into the <strong>right panel</strong>.</li>
+        <li>Added lines are highlighted in green, deleted lines in red — changed lines show both versions.</li>
+        <li>Toggle <strong>Ignore whitespace</strong> to hide formatting-only changes and focus on content differences.</li>
+        <li>Toggle <strong>Side-by-side / Unified</strong> to switch between a split view and a single-column diff.</li>
+        <li>Click <strong>Copy diff</strong> to copy the unified diff output for use in a patch file or bug report.</li>
+      </ol>
       <h2 className={h2}>What is a text diff?</h2>
       <p className={prose}>
         A <strong>text diff</strong> shows exactly what changed between two
@@ -830,6 +891,13 @@ function CronParserContent() {
 function HtmlToJsxContent() {
   return (
     <Section>
+      <h2 className={h2}>How to use the HTML to JSX converter</h2>
+      <ol className={ol}>
+        <li>Paste raw HTML (from a web page, design tool export, or email template) into the input field.</li>
+        <li>The converted JSX appears on the right — <code className="font-mono text-xs">class</code> becomes <code className="font-mono text-xs">className</code>, <code className="font-mono text-xs">for</code> becomes <code className="font-mono text-xs">htmlFor</code>, and inline styles are converted to objects.</li>
+        <li>Review the output for any <code className="font-mono text-xs">style</code> attributes — camelCased property names are used automatically.</li>
+        <li>Click <strong>Copy</strong> and paste directly into your React component.</li>
+      </ol>
       <h2 className={h2}>HTML to JSX conversion — what changes?</h2>
       <p className={prose}>
         React JSX is almost identical to HTML but has several important
@@ -1327,6 +1395,13 @@ function MorseCodeContent() {
 function StringInspectorContent() {
   return (
     <Section>
+      <h2 className={h2}>How to use the String Inspector</h2>
+      <ol className={ol}>
+        <li>Paste or type any string into the input — metrics update in real time.</li>
+        <li>Check <strong>Character length</strong> vs <strong>Byte length</strong> — they differ for emoji and non-ASCII characters.</li>
+        <li>Scroll the <strong>Codepoints</strong> table to see every Unicode character with its U+ code and name — invisible characters are revealed here.</li>
+        <li>Check the <strong>Shannon entropy</strong> value — values above 3.9 suggest random or compressed data; low values indicate repetitive patterns.</li>
+      </ol>
       <h2 className={h2}>Deep string inspection and analysis</h2>
       <p className={prose}>
         The <strong>String Inspector</strong> analyses any input string and
@@ -1359,6 +1434,14 @@ function StringInspectorContent() {
 function AesEncryptContent() {
   return (
     <Section>
+      <h2 className={h2}>How to use the AES Encrypt / Decrypt tool</h2>
+      <ol className={ol}>
+        <li>Select <strong>Encrypt</strong>, type or paste the plaintext you want to protect.</li>
+        <li>Enter a strong password — the longer and more random, the better. The tool derives a 256-bit key using PBKDF2.</li>
+        <li>Click <strong>Encrypt</strong> — copy the Base64 ciphertext output and store or transmit it safely.</li>
+        <li>To decrypt, select the <strong>Decrypt</strong> tab, paste the ciphertext, enter the same password, and click <strong>Decrypt</strong>.</li>
+        <li>Keep your password separate from the ciphertext — anyone with both can decrypt your data.</li>
+      </ol>
       <h2 className={h2}>AES-256-GCM encryption — how it works</h2>
       <p className={prose}>
         This tool encrypts and decrypts text using{" "}
@@ -1401,6 +1484,13 @@ function AesEncryptContent() {
 function QrCodeContent() {
   return (
     <Section>
+      <h2 className={h2}>How to use the QR Code Generator</h2>
+      <ol className={ol}>
+        <li>Type or paste any text or URL into the input field — the QR code renders instantly.</li>
+        <li>Adjust <strong>Error correction level</strong>: use <strong>H (30%)</strong> if you plan to add a logo over the code; use <strong>L (7%)</strong> for maximum data density.</li>
+        <li>Set the <strong>size</strong> to match your use case — 200 px for web, 500+ px for print.</li>
+        <li>Click <strong>Download PNG</strong> for raster output, or <strong>Download SVG</strong> for a scalable vector version suitable for print at any size.</li>
+      </ol>
       <h2 className={h2}>QR code generator</h2>
       <p className={prose}>
         Generates a <strong>QR code</strong> from any text or URL. QR (Quick
@@ -1429,6 +1519,13 @@ function QrCodeContent() {
 function UrlParserContent() {
   return (
     <Section>
+      <h2 className={h2}>How to use the URL Parser</h2>
+      <ol className={ol}>
+        <li>Paste any URL — including complex ones with query strings, ports, and fragments — into the input field.</li>
+        <li>The tool breaks it into labelled parts: scheme, host, port, path, query parameters, and fragment.</li>
+        <li>Query parameters are listed as individual key-value pairs, percent-decoded for readability.</li>
+        <li>Click any value in the table to copy it directly to the clipboard.</li>
+      </ol>
       <h2 className={h2}>URL components explained</h2>
       <p className={prose}>
         Breaks a URL into its constituent parts and displays them in a structured
@@ -1466,6 +1563,13 @@ function UrlParserContent() {
 function BaseConverterContent() {
   return (
     <Section>
+      <h2 className={h2}>How to use the Number Base Converter</h2>
+      <ol className={ol}>
+        <li>Type a number into any field — decimal, hex, binary, or octal — and all other bases update instantly.</li>
+        <li>For hexadecimal input, use standard digits <code className="font-mono text-xs">0–9</code> and letters <code className="font-mono text-xs">A–F</code> (case-insensitive).</li>
+        <li>For binary input, use only <code className="font-mono text-xs">0</code> and <code className="font-mono text-xs">1</code>. Spaces between groups of 4 bits are ignored.</li>
+        <li>Click <strong>Copy</strong> next to any field to copy that representation to the clipboard.</li>
+      </ol>
       <h2 className={h2}>Number base conversion</h2>
       <p className={prose}>
         Converts integers between <strong>decimal</strong> (base 10),{" "}
@@ -1551,6 +1655,13 @@ function SqlFormatterContent() {
 function CurlToFetchContent() {
   return (
     <Section>
+      <h2 className={h2}>How to use the cURL to Fetch converter</h2>
+      <ol className={ol}>
+        <li>In Chrome or Firefox DevTools → Network tab, right-click any request and choose <strong>Copy → Copy as cURL</strong>.</li>
+        <li>Paste the copied command into the input field.</li>
+        <li>The equivalent <code className="font-mono text-xs">fetch()</code> call is generated — headers, method, body, and auth all converted.</li>
+        <li>Click <strong>Copy</strong> and paste it into your JavaScript or TypeScript file.</li>
+      </ol>
       <h2 className={h2}>Convert cURL commands to JavaScript fetch</h2>
       <p className={prose}>
         Pastes a <code className="font-mono text-xs">curl</code> command (e.g.
@@ -1646,6 +1757,13 @@ function MimeLookupContent() {
 function HtmlPreviewContent() {
   return (
     <Section>
+      <h2 className={h2}>How to use the HTML Preview tool</h2>
+      <ol className={ol}>
+        <li>Type or paste HTML into the editor on the left — the rendered result appears in the preview pane on the right instantly.</li>
+        <li>Include <code className="font-mono text-xs">&lt;style&gt;</code> tags to test CSS, or a full <code className="font-mono text-xs">&lt;!DOCTYPE html&gt;</code> document for a complete page preview.</li>
+        <li>Toggle <strong>JS off</strong> to disable script execution for safe previewing of untrusted HTML snippets.</li>
+        <li>Resize the preview pane to check responsive layouts at different widths.</li>
+      </ol>
       <h2 className={h2}>Live HTML preview — sandboxed browser</h2>
       <p className={prose}>
         Renders HTML in a sandboxed iframe so you can preview markup, CSS, and
@@ -1665,6 +1783,13 @@ function HtmlPreviewContent() {
 function MarkdownPreviewContent() {
   return (
     <Section>
+      <h2 className={h2}>How to use the Markdown Preview editor</h2>
+      <ol className={ol}>
+        <li>Type Markdown syntax in the left editor pane — the rendered output updates in the right pane in real time.</li>
+        <li>Use the toolbar shortcuts for common formatting: bold, italic, links, code blocks, and lists.</li>
+        <li>Click <strong>Copy HTML</strong> to copy the rendered HTML output — useful for pasting into a CMS or email builder.</li>
+        <li>Click <strong>Download</strong> to save the Markdown source as a <code className="font-mono text-xs">.md</code> file.</li>
+      </ol>
       <h2 className={h2}>Live Markdown preview editor</h2>
       <p className={prose}>
         A split-pane editor that renders your Markdown in real time alongside
