@@ -19,6 +19,33 @@ export default function Footer() {
   return (
     <footer className="border-t border-border bg-background">
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+
+        {/* Affiliate / Recommended — shown first */}
+        <div className="mb-6 pb-6 border-b border-border">
+          <p className="text-[11px] font-medium text-muted-foreground/60 uppercase tracking-wider mb-2.5 text-center sm:text-left">
+            Recommended Hosting
+          </p>
+          <div className="flex flex-wrap gap-3 justify-center sm:justify-start">
+            {AFFILIATE_LINKS.map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                target="_blank"
+                rel="nofollow noopener noreferrer sponsored"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-card text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+              >
+                <span className="font-medium">{link.label}</span>
+                <span className="opacity-60">{link.desc}</span>
+                <ExternalLink className="h-3 w-3 opacity-40" />
+              </a>
+            ))}
+            <span className="inline-flex items-center text-[11px] text-muted-foreground/50 self-center">
+              Powered by Namecheap
+            </span>
+          </div>
+        </div>
+
+        {/* Logo + nav */}
         <div className="flex flex-col items-center gap-6 sm:flex-row sm:justify-between">
           <div className="flex flex-col items-center gap-2 sm:items-start">
             <Link href="/" className="flex items-center gap-2 text-foreground">
@@ -53,32 +80,7 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Affiliate / Recommended */}
-        <div className="mt-6 border-t border-border pt-5">
-          <p className="text-[11px] font-medium text-muted-foreground/60 uppercase tracking-wider mb-2.5 text-center sm:text-left">
-            Recommended Hosting &nbsp;·&nbsp; <span className="normal-case font-normal">affiliate links</span>
-          </p>
-          <div className="flex flex-wrap gap-3 justify-center sm:justify-start">
-            {AFFILIATE_LINKS.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                target="_blank"
-                rel="nofollow noopener noreferrer sponsored"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-card text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-              >
-                <span className="font-medium">{link.label}</span>
-                <span className="opacity-60">{link.desc}</span>
-                <ExternalLink className="h-3 w-3 opacity-40" />
-              </a>
-            ))}
-            <span className="inline-flex items-center text-[11px] text-muted-foreground/50 self-center">
-              Powered by Namecheap
-            </span>
-          </div>
-        </div>
-
-        <div className="mt-5 border-t border-border pt-5 text-center">
+        <div className="mt-6 border-t border-border pt-5 text-center">
           <p className="text-xs text-muted-foreground">
             &copy; {new Date().getFullYear()} DevBench. All rights reserved.
           </p>
