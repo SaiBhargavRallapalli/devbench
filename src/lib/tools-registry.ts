@@ -193,6 +193,46 @@ export const TOOLS: Tool[] = [
     inputLabel: "XML document",
     outputLabel: "Result",
   },
+  {
+    slug: "image-format-converter",
+    name: "Image Format Converter",
+    shortName: "Img Convert",
+    description: "Convert images between PNG, JPEG, and WebP — quality slider, size comparison, download. 100% client-side.",
+    category: "image",
+    icon: "🔄",
+  },
+  {
+    slug: "svg-optimizer",
+    name: "SVG Optimizer",
+    shortName: "SVG Opt",
+    description: "Paste or upload an SVG — strip Inkscape/Illustrator bloat, comments, and whitespace. Shows size savings.",
+    category: "image",
+    icon: "✦",
+  },
+  {
+    slug: "exif-viewer",
+    name: "EXIF Viewer",
+    shortName: "EXIF",
+    description: "Upload a JPEG or TIFF photo to read camera model, lens, exposure, GPS coordinates, and all embedded EXIF data.",
+    category: "image",
+    icon: "📷",
+  },
+  {
+    slug: "http-status-reference",
+    name: "HTTP Status Reference",
+    shortName: "HTTP Codes",
+    description: "Searchable reference for all HTTP status codes — 1xx to 5xx — with descriptions and when to use each.",
+    category: "dev",
+    icon: "🌐",
+  },
+  {
+    slug: "css-box-shadow",
+    name: "CSS Box Shadow Builder",
+    shortName: "Box Shadow",
+    description: "Build layered box-shadow CSS visually — adjust x/y/blur/spread/color with sliders and copy the CSS.",
+    category: "dev",
+    icon: "🎨",
+  },
 ];
 
 export function getToolBySlug(slug: string): Tool | undefined {

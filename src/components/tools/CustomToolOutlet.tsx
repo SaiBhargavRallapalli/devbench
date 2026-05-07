@@ -22,6 +22,11 @@ import StringInspectorTool from "@/components/tools/StringInspectorTool";
 import MarkdownPreviewTool from "@/components/tools/MarkdownPreviewTool";
 import RegexTesterTool from "@/components/tools/RegexTesterTool";
 import UuidGeneratorTool from "@/components/tools/UuidGeneratorTool";
+import HttpStatusReferenceTool from "@/components/tools/HttpStatusReferenceTool";
+import CssBoxShadowTool from "@/components/tools/CssBoxShadowTool";
+import ImageFormatConverterTool from "@/components/tools/ImageFormatConverterTool";
+import SvgOptimizerTool from "@/components/tools/SvgOptimizerTool";
+import ExifViewerTool from "@/components/tools/ExifViewerTool";
 
 const FINANCE_SLUGS = new Set([
   "simple-interest", "gst-calculator", "discount-calculator",
@@ -69,8 +74,13 @@ export default function CustomToolOutlet({
     case "base64-image":        return <Base64ImageTool tool={tool} />;
     case "string-inspector":    return <StringInspectorTool tool={tool} />;
     case "markdown-preview":    return <MarkdownPreviewTool tool={tool} />;
-    case "regex-tester":        return <RegexTesterTool tool={tool} />;
-    case "uuid-generator":      return <UuidGeneratorTool tool={tool} />;
-    default:                    return null;
+    case "regex-tester":            return <RegexTesterTool tool={tool} />;
+    case "uuid-generator":          return <UuidGeneratorTool tool={tool} />;
+    case "http-status-reference":   return <HttpStatusReferenceTool tool={tool} />;
+    case "css-box-shadow":          return <CssBoxShadowTool tool={tool} />;
+    case "image-format-converter":  return <ImageFormatConverterTool tool={tool} />;
+    case "svg-optimizer":           return <SvgOptimizerTool tool={tool} />;
+    case "exif-viewer":             return <ExifViewerTool tool={tool} />;
+    default:                        return null;
   }
 }

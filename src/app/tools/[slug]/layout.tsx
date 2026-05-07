@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getToolBySlug, getToolsByCategory, CATEGORIES } from "@/lib/tools-registry";
 import ToolSeoContent from "@/components/tools/ToolSeoContent";
+import TrackToolVisit from "@/components/TrackToolVisit";
 
 export async function generateMetadata({
   params,
@@ -97,6 +98,7 @@ export default async function ToolSlugLayout({
 
   return (
     <>
+      <TrackToolVisit slug={slug} />
       {jsonLd && (
         <script
           type="application/ld+json"

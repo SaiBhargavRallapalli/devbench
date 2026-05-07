@@ -27,6 +27,8 @@ const CUSTOM_TOOL_SLUGS = new Set([
   // dev tools with rich UI
   "html-preview", "base64-image", "string-inspector", "markdown-preview",
   "regex-tester", "uuid-generator",
+  "http-status-reference", "css-box-shadow",
+  "image-format-converter", "svg-optimizer", "exif-viewer",
   // finance form tools
   "simple-interest", "gst-calculator", "discount-calculator",
   "tip-calculator", "roi-calculator", "profit-loss-calculator",

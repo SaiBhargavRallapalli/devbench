@@ -1,20 +1,8 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
-import {
-  Search,
-  Braces,
-  Code2,
-  Type,
-  Wrench,
-  ArrowRightLeft,
-  Sparkles,
-  DollarSign,
-  Heart,
-  Sigma,
-  CalendarDays,
-} from "lucide-react";
+import { Star, Search, Braces, Code2, Type, Wrench, ArrowRightLeft, Sparkles, DollarSign, Heart, Sigma, CalendarDays, Clock, Pin } from "lucide-react";
 import { CATEGORIES, type Tool, type ToolCategory } from "@/lib/tools-registry";
 
 const CATEGORY_ICONS: Record<ToolCategory, React.ElementType> = {
@@ -38,32 +26,132 @@ function toolHref(slug: string): string {
   return WORKSPACE_ROUTES[slug] ?? `/tools/${slug}`;
 }
 
-function ToolCard({ tool }: { tool: Tool }) {
+const RECENT_KEY = "devbench:recent";
+const FAV_KEY    = "devbench:favourites";
+
+function useLocalList(key: string) {
+  const [list, setList] = useState<string[] | null>(null);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(key);
+      setList(raw ? JSON.parse(raw) : []);
+    } catch {
+      setList([]);
+    }
+  }, [key]);
+
+  const toggle = useCallback(
+    (slug: string) => {
+      setList((prev) => {
+        const current = prev ?? [];
+        const next = current.includes(slug)
+          ? current.filter((s) => s !== slug)
+          : [...current, slug];
+        localStorage.setItem(key, JSON.stringify(next));
+        return next;
+      });
+    },
+    [key],
+  );
+
+  return { list, toggle };
+}
+
+function ToolCard({
+  tool,
+  isFavourite,
+  onToggleFavourite,
+}: {
+  tool: Tool;
+  isFavourite: boolean;
+  onToggleFavourite: (slug: string) => void;
+}) {
   return (
-    <Link
-      href={toolHref(tool.slug)}
-      className="group flex items-center gap-3 p-4 rounded-xl border border-border bg-card hover:border-accent/40 hover:shadow-md transition-all"
-    >
-      <div
-        className={`shrink-0 w-9 h-9 rounded-lg flex items-center justify-center text-xs font-bold font-mono ${CATEGORIES[tool.category].color}`}
+    <div className="relative group">
+      <Link
+        href={toolHref(tool.slug)}
+        className="flex items-center gap-3 p-4 pr-10 rounded-xl border border-border bg-card hover:border-accent/40 hover:shadow-md transition-all"
       >
-        {tool.icon}
+        <div
+          className={`shrink-0 w-9 h-9 rounded-lg flex items-center justify-center text-xs font-bold font-mono ${CATEGORIES[tool.category].color}`}
+        >
+          {tool.icon}
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-semibold truncate group-hover:text-accent transition-colors">
+            {tool.name}
+          </p>
+          <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">
+            {tool.description}
+          </p>
+        </div>
+      </Link>
+      <button
+        onClick={() => onToggleFavourite(tool.slug)}
+        aria-label={isFavourite ? "Unpin tool" : "Pin tool"}
+        className={`absolute top-2.5 right-2.5 p-1 rounded-md transition-all ${
+          isFavourite
+            ? "text-amber-400 opacity-100"
+            : "text-muted-foreground opacity-0 group-hover:opacity-60 hover:!opacity-100 hover:text-amber-400"
+        }`}
+      >
+        <Star className={`w-3.5 h-3.5 ${isFavourite ? "fill-amber-400" : ""}`} />
+      </button>
+    </div>
+  );
+}
+
+function MiniSection({ title, icon: Icon, tools, favourites, onToggleFavourite }: {
+  title: string;
+  icon: React.ElementType;
+  tools: Tool[];
+  favourites: string[];
+  onToggleFavourite: (slug: string) => void;
+}) {
+  if (tools.length === 0) return null;
+  return (
+    <div className="mb-8">
+      <div className="flex items-center gap-2 mb-3">
+        <Icon className="w-4 h-4 text-muted-foreground" />
+        <span className="text-sm font-semibold">{title}</span>
       </div>
-      <div className="min-w-0 flex-1">
-        <p className="text-sm font-semibold truncate group-hover:text-accent transition-colors">
-          {tool.name}
-        </p>
-        <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">
-          {tool.description}
-        </p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        {tools.map((tool) => (
+          <ToolCard
+            key={tool.slug}
+            tool={tool}
+            isFavourite={favourites.includes(tool.slug)}
+            onToggleFavourite={onToggleFavourite}
+          />
+        ))}
       </div>
-    </Link>
+    </div>
   );
 }
 
 export default function ToolSearch({ tools }: { tools: Tool[] }) {
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState<ToolCategory | "all">("all");
+
+  const { list: recent }         = useLocalList(RECENT_KEY);
+  const { list: favourites, toggle: toggleFavourite } = useLocalList(FAV_KEY);
+
+  const recentTools = useMemo(
+    () =>
+      (recent ?? [])
+        .map((slug) => tools.find((t) => t.slug === slug))
+        .filter((t): t is Tool => !!t),
+    [recent, tools],
+  );
+
+  const pinnedTools = useMemo(
+    () =>
+      (favourites ?? [])
+        .map((slug) => tools.find((t) => t.slug === slug))
+        .filter((t): t is Tool => !!t),
+    [favourites, tools],
+  );
 
   const filtered = useMemo(() => {
     let result = tools;
@@ -90,6 +178,8 @@ export default function ToolSearch({ tools }: { tools: Tool[] }) {
     }
     return map;
   }, [filtered, activeCategory, search]);
+
+  const showPersonalised = activeCategory === "all" && !search.trim() && (pinnedTools.length > 0 || recentTools.length > 0);
 
   return (
     <section className="max-w-6xl mx-auto px-4 py-12 pb-20">
@@ -137,6 +227,27 @@ export default function ToolSearch({ tools }: { tools: Tool[] }) {
         })}
       </div>
 
+      {/* Personalised sections — only on unfiltered "All" view */}
+      {showPersonalised && (
+        <div className="mb-4">
+          <MiniSection
+            title="Pinned"
+            icon={Pin}
+            tools={pinnedTools}
+            favourites={favourites ?? []}
+            onToggleFavourite={toggleFavourite}
+          />
+          <MiniSection
+            title="Recently Used"
+            icon={Clock}
+            tools={recentTools}
+            favourites={favourites ?? []}
+            onToggleFavourite={toggleFavourite}
+          />
+          <hr className="border-border mb-8" />
+        </div>
+      )}
+
       {/* Tool grid */}
       {filtered.length === 0 ? (
         <div className="text-center py-20 text-muted-foreground">
@@ -148,8 +259,8 @@ export default function ToolSearch({ tools }: { tools: Tool[] }) {
           {(Object.keys(CATEGORIES) as ToolCategory[])
             .filter((cat) => grouped.has(cat))
             .map((cat) => {
-              const tools = grouped.get(cat)!;
-              const Icon  = CATEGORY_ICONS[cat];
+              const catTools = grouped.get(cat)!;
+              const Icon     = CATEGORY_ICONS[cat];
               return (
                 <div key={cat}>
                   <div className="flex items-center gap-2 mb-4">
@@ -157,11 +268,16 @@ export default function ToolSearch({ tools }: { tools: Tool[] }) {
                       <Icon className="h-3.5 w-3.5" />
                     </div>
                     <h2 className="text-base font-semibold">{CATEGORIES[cat].label}</h2>
-                    <span className="text-xs text-muted-foreground">({tools.length})</span>
+                    <span className="text-xs text-muted-foreground">({catTools.length})</span>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {tools.map((tool) => (
-                      <ToolCard key={tool.slug} tool={tool} />
+                    {catTools.map((tool) => (
+                      <ToolCard
+                        key={tool.slug}
+                        tool={tool}
+                        isFavourite={(favourites ?? []).includes(tool.slug)}
+                        onToggleFavourite={toggleFavourite}
+                      />
                     ))}
                   </div>
                 </div>
@@ -171,7 +287,12 @@ export default function ToolSearch({ tools }: { tools: Tool[] }) {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {filtered.map((tool) => (
-            <ToolCard key={tool.slug} tool={tool} />
+            <ToolCard
+              key={tool.slug}
+              tool={tool}
+              isFavourite={(favourites ?? []).includes(tool.slug)}
+              onToggleFavourite={toggleFavourite}
+            />
           ))}
         </div>
       )}

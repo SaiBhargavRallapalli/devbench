@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
+import { TOOLS } from "@/lib/tools-registry";
+import CommandPalette from "@/components/CommandPalette";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -132,6 +134,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           />
         </noscript>
         {children}
+        <CommandPalette tools={TOOLS} />
       </body>
       <Script
         async

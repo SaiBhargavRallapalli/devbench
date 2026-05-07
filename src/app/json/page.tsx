@@ -50,6 +50,7 @@ import {
   PlusCircle,
   GripVertical,
   ChevronLeft,
+  Columns2,
 } from "lucide-react";
 
 // ── Types ────────────────────────────────────────────────────────────────
@@ -858,6 +859,7 @@ function InteractiveTreeNode({
   expandAllSignal,
   collapseAllSignal,
   onContextMenu,
+  onSelect,
 }: {
   nodeKey: string;
   value: unknown;
@@ -869,6 +871,7 @@ function InteractiveTreeNode({
   expandAllSignal: number;
   collapseAllSignal: number;
   onContextMenu: (e: React.MouseEvent, ctx: ContextMenuState) => void;
+  onSelect?: (path: (string | number)[]) => void;
 }) {
   const [expanded, setExpanded] = useState(defaultExpanded);
 
@@ -931,12 +934,24 @@ function InteractiveTreeNode({
     });
   };
 
+  const [nodeCopied, setNodeCopied] = useState(false);
+  function copyNodePath(e: React.MouseEvent) {
+    e.stopPropagation();
+    const jsonpath = path.length === 0 ? "$" : "$" + path.map((p) =>
+      typeof p === "number" ? `[${p}]` : /^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(String(p)) ? `.${p}` : `["${p}"]`
+    ).join("");
+    navigator.clipboard.writeText(jsonpath).then(() => {
+      setNodeCopied(true);
+      setTimeout(() => setNodeCopied(false), 1500);
+    });
+  }
+
   return (
     <div>
       <div
-        className="flex items-center gap-1 py-0.5 px-2 hover:bg-muted/60 rounded cursor-pointer select-none group"
+        className="flex items-center gap-1 py-0.5 px-2 hover:bg-accent/5 rounded cursor-pointer select-none group"
         style={{ paddingLeft: `${depth * 20 + 8}px` }}
-        onClick={() => isExpandable && setExpanded(!expanded)}
+        onClick={() => { if (isExpandable) setExpanded(!expanded); onSelect?.(path); }}
         onContextMenu={handleRightClick}
       >
         {isExpandable ? (
@@ -949,8 +964,20 @@ function InteractiveTreeNode({
         <span className="font-mono text-sm text-accent font-medium">{nodeKey}</span>
         <span className="text-muted-foreground text-xs ml-1">{typeLabel}</span>
         {preview && (
-          <span className={`font-mono text-sm ml-2 truncate ${typeColor}`}>{preview}</span>
+          <span className={`font-mono text-sm ml-2 truncate flex-1 ${typeColor}`}>{preview}</span>
         )}
+        <button
+          onClick={copyNodePath}
+          aria-label="Copy JSONPath"
+          title="Copy JSONPath"
+          className={`ml-auto shrink-0 flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-mono border transition-all ${
+            nodeCopied
+              ? "border-success/40 bg-success/10 text-success"
+              : "border-transparent text-muted-foreground/40 group-hover:border-border group-hover:bg-card group-hover:text-muted-foreground hover:!text-accent hover:!border-accent/40"
+          }`}
+        >
+          {nodeCopied ? "✓ copied" : "⎘ path"}
+        </button>
       </div>
       {expanded && isExpandable && (
         <div>
@@ -967,6 +994,7 @@ function InteractiveTreeNode({
                   expandAllSignal={expandAllSignal}
                   collapseAllSignal={collapseAllSignal}
                   onContextMenu={onContextMenu}
+                  onSelect={onSelect}
                 />
               ))
             : Object.entries(value as Record<string, unknown>).map(([k, v]) => (
@@ -981,6 +1009,7 @@ function InteractiveTreeNode({
                   expandAllSignal={expandAllSignal}
                   collapseAllSignal={collapseAllSignal}
                   onContextMenu={onContextMenu}
+                  onSelect={onSelect}
                 />
               ))}
         </div>
@@ -1082,7 +1111,8 @@ function TreeContextMenu({
   const items: { label: string; action: string; icon: React.ReactNode; separator?: boolean }[] = [
     { label: "Edit Value", action: "editValue", icon: <Pencil size={13} /> },
     { label: "Edit Key", action: "editKey", icon: <Pencil size={13} /> },
-    { label: "Copy", action: "copy", icon: <ClipboardCopy size={13} />, separator: true },
+    { label: "Copy Value", action: "copy", icon: <ClipboardCopy size={13} /> },
+    { label: "Copy JSONPath", action: "copyPath", icon: <ClipboardCopy size={13} />, separator: true },
     { label: "Paste as Child", action: "paste", icon: <ClipboardPasteIcon size={13} /> },
     { label: "Duplicate", action: "duplicate", icon: <CopyPlus size={13} /> },
     { label: "Extract", action: "extract", icon: <Scissors size={13} />, separator: true },
@@ -1288,6 +1318,31 @@ export default function JsonToolkitPage() {
   const [tableFilter, setTableFilter] = useState("");
   const [editingCell, setEditingCell] = useState<{ row: number; col: string } | null>(null);
   const [editingCellValue, setEditingCellValue] = useState("");
+
+  const [selectedTreePath, setSelectedTreePath] = useState<(string | number)[] | null>(null);
+  const [pathCopied, setPathCopied] = useState<"jsonpath" | "pointer" | "bracket" | null>(null);
+  const [splitView, setSplitView] = useState(false);
+
+  function copyTreePath(format: "jsonpath" | "pointer" | "bracket") {
+    if (!selectedTreePath) return;
+    let text = "";
+    if (format === "jsonpath") {
+      text = "$" + selectedTreePath.map((p) =>
+        typeof p === "number" ? `[${p}]` : /^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(String(p)) ? `.${p}` : `["${p}"]`
+      ).join("");
+    } else if (format === "pointer") {
+      text = "/" + selectedTreePath.map((p) => String(p).replace(/~/g, "~0").replace(/\//g, "~1")).join("/");
+    } else {
+      text = "$" + selectedTreePath.map((p) =>
+        typeof p === "number" ? `[${p}]` : `['${String(p).replace(/'/g, "\\'")}']`
+      ).join("");
+    }
+    if (!text || text === "$" || text === "/") text = format === "pointer" ? "/" : "$";
+    navigator.clipboard.writeText(text).then(() => {
+      setPathCopied(format);
+      setTimeout(() => setPathCopied(null), 2000);
+    });
+  }
 
   const stats = useMemo(() => (input ? getJsonStats(input) : null), [input]);
 
@@ -1662,6 +1717,13 @@ export default function JsonToolkitPage() {
         navigator.clipboard.writeText(JSON.stringify(val, null, 2));
         return;
       }
+      case "copyPath": {
+        const jsonpath = ctx.path.length === 0 ? "$" : "$" + ctx.path.map((p) =>
+          typeof p === "number" ? `[${p}]` : /^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(String(p)) ? `.${p}` : `["${p}"]`
+        ).join("");
+        navigator.clipboard.writeText(jsonpath);
+        return;
+      }
       case "paste": {
         navigator.clipboard.readText().then((text) => {
           try {
@@ -1981,6 +2043,15 @@ export default function JsonToolkitPage() {
         <ToolButton onClick={() => fileInputRef.current?.click()} icon={<Upload size={15} />} label="File" />
         <ToolButton onClick={handleClear} icon={<Trash2 size={15} />} label="Clear" variant="danger" />
         <input ref={fileInputRef} type="file" accept=".json,.txt" className="hidden" onChange={handleFileUpload} />
+        <div className="w-px h-5 bg-border mx-0.5" />
+        <button
+          onClick={() => setSplitView((v) => !v)}
+          title="Toggle split view (JSON + Tree side by side)"
+          className={`flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${splitView ? "bg-accent text-accent-foreground" : "bg-muted hover:bg-accent-light text-foreground"}`}
+        >
+          <Columns2 size={15} />
+          Split
+        </button>
       </div>
 
       {/* Search & Replace bar */}
@@ -2154,7 +2225,106 @@ export default function JsonToolkitPage() {
 
       {/* Main content */}
       <div className="flex-1 min-h-0 overflow-hidden">
-        {activeTab === "format" && (
+
+        {/* ── Split view (JSON editor + Tree side by side) ───────────────── */}
+        {splitView && (
+          <div className="flex h-full">
+            {/* Left: JSON editor */}
+            <div className="flex-1 flex flex-col min-h-0 border-r border-border">
+              <div className="px-3 py-1.5 text-xs text-muted-foreground font-medium bg-muted/50 border-b border-border shrink-0">
+                JSON INPUT
+              </div>
+              <textarea
+                ref={inputRef}
+                value={input}
+                onChange={(e) => { setInputWithHistory(e.target.value); clearError(); setFixResult(null); }}
+                onPaste={(e) => {
+                  if (!autoFormat) return;
+                  const raw = e.clipboardData.getData("text");
+                  e.preventDefault();
+                  try {
+                    const pretty = JSON.stringify(JSON.parse(raw), null, 2);
+                    setInputWithHistory(pretty);
+                    clearError();
+                  } catch { setInputWithHistory(raw); }
+                }}
+                spellCheck={false}
+                placeholder='Paste or type JSON here…\n\n{\n  "key": "value"\n}'
+                className="flex-1 min-h-0 w-full resize-none bg-background text-foreground font-mono text-sm p-4 outline-none placeholder:text-muted-foreground/30 scrollbar-thin"
+              />
+            </div>
+
+            {/* Right: Tree view */}
+            <div className="flex-1 flex flex-col min-h-0 min-w-0">
+              <div className="px-3 py-1.5 text-xs font-medium bg-muted/50 border-b border-border shrink-0 flex items-center gap-2">
+                <span className="font-semibold text-foreground/80">TREE VIEW</span>
+                {parsedForTree !== undefined && (
+                  <span className="text-accent text-xs">
+                    {Array.isArray(parsedForTree) ? `Array[${parsedForTree.length}]` : `Object{${Object.keys(parsedForTree).length}}`}
+                  </span>
+                )}
+              </div>
+
+              {/* Path bar */}
+              <div className="shrink-0 border-b border-border bg-card px-3 py-2 flex flex-wrap items-center gap-2 min-h-[38px]">
+                {selectedTreePath === null ? (
+                  <span className="text-xs text-muted-foreground/50 italic">Click any node → copy its JSONPath</span>
+                ) : (
+                  <>
+                    <span className="font-mono text-xs text-accent truncate flex-1 min-w-0 select-all cursor-text">
+                      {selectedTreePath.length === 0 ? "$" : "$" + selectedTreePath.map((p) =>
+                        typeof p === "number" ? `[${p}]` : /^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(String(p)) ? `.${p}` : `["${p}"]`
+                      ).join("")}
+                    </span>
+                    <div className="flex items-center gap-1 shrink-0">
+                      <button onClick={() => copyTreePath("jsonpath")} className={`px-2 py-1 text-[10px] rounded-md border font-mono transition-colors ${pathCopied === "jsonpath" ? "border-success/40 bg-success/10 text-success" : "border-border bg-muted hover:bg-accent/10 hover:text-accent"}`}>
+                        {pathCopied === "jsonpath" ? "✓" : "JSONPath"}
+                      </button>
+                      <button onClick={() => copyTreePath("pointer")} className={`px-2 py-1 text-[10px] rounded-md border font-mono transition-colors ${pathCopied === "pointer" ? "border-success/40 bg-success/10 text-success" : "border-border bg-muted hover:bg-accent/10 hover:text-accent"}`}>
+                        {pathCopied === "pointer" ? "✓" : "Pointer"}
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              <div className="flex-1 overflow-auto p-2 scrollbar-thin">
+                {!input.trim() ? (
+                  <div className="flex flex-col items-center justify-center h-full text-muted-foreground/50 text-sm gap-2">
+                    <span className="text-3xl">{ }</span>
+                    <span>Paste JSON on the left to explore the tree</span>
+                  </div>
+                ) : parsedForTree === undefined ? (
+                  <div className="px-4 py-3 rounded-lg bg-destructive/10 text-destructive text-xs font-mono m-2">
+                    Invalid JSON — check for syntax errors
+                  </div>
+                ) : (
+                  (() => {
+                    nodeCounter.current = { current: 0 };
+                    return (
+                      <InteractiveTreeNode
+                        nodeKey="root"
+                        value={parsedForTree}
+                        depth={0}
+                        defaultExpanded
+                        nodeCount={nodeCounter.current}
+                        path={[]}
+                        onUpdate={handleTreeUpdate}
+                        expandAllSignal={expandAllSignal}
+                        collapseAllSignal={collapseAllSignal}
+                        onContextMenu={handleTreeContextMenu}
+                        onSelect={setSelectedTreePath}
+                      />
+                    );
+                  })()
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── Tab-based view (hidden when split view is active) ──────────── */}
+        {!splitView && activeTab === "format" && (
           <div className="flex flex-col md:flex-row h-full">
             <div className="flex-1 flex flex-col min-h-0 border-b md:border-b-0 md:border-r border-border">
               <div className="px-3 py-1.5 text-xs text-muted-foreground font-medium bg-muted/50 border-b border-border shrink-0">
@@ -2221,17 +2391,60 @@ export default function JsonToolkitPage() {
           </div>
         )}
 
-        {activeTab === "tree" && (
+        {!splitView && activeTab === "tree" && (
           <div className="h-full flex flex-col">
-            <div className="px-3 py-1.5 text-xs text-muted-foreground font-medium bg-muted/50 border-b border-border shrink-0">
-              TREE EXPLORER
+            <div className="px-3 py-1.5 text-xs text-muted-foreground font-medium bg-muted/50 border-b border-border shrink-0 flex items-center gap-2">
+              <span className="font-semibold text-foreground/80">TREE EXPLORER</span>
               {parsedForTree !== undefined && (
-                <span className="ml-2 text-accent">
+                <span className="text-accent">
                   ({Array.isArray(parsedForTree) ? `Array[${parsedForTree.length}]` : `Object{${Object.keys(parsedForTree).length}}`})
                 </span>
               )}
-              <span className="ml-2 text-muted-foreground/60">Right-click nodes for actions</span>
             </div>
+
+            {/* JSONPath display bar — always visible */}
+            <div className="shrink-0 border-b border-border bg-card px-3 py-2 flex flex-wrap items-center gap-2 min-h-[38px]">
+              {selectedTreePath === null ? (
+                <span className="text-xs text-muted-foreground/50 italic flex items-center gap-1.5">
+                  <span>⎘</span>
+                  Hover a node and click <kbd className="px-1 py-0.5 rounded border border-border bg-muted font-mono text-[10px]">⎘ path</kbd> — or click any row to see its JSONPath here
+                </span>
+              ) : (
+                <>
+                  <span className="font-mono text-xs text-accent truncate flex-1 min-w-0 select-all cursor-text" title="Click to select all">
+                    {selectedTreePath.length === 0
+                      ? "$"
+                      : "$" + selectedTreePath.map((p) =>
+                          typeof p === "number" ? `[${p}]` : /^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(String(p)) ? `.${p}` : `["${p}"]`
+                        ).join("")}
+                  </span>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <button
+                      onClick={() => copyTreePath("jsonpath")}
+                      className={`px-2 py-1 text-[10px] rounded-md border font-mono transition-colors ${pathCopied === "jsonpath" ? "border-success/40 bg-success/10 text-success" : "border-border bg-muted hover:bg-accent/10 hover:border-accent/40 hover:text-accent"}`}
+                      title="Copy as JSONPath ($.a.b[0])"
+                    >
+                      {pathCopied === "jsonpath" ? "✓ copied" : "JSONPath"}
+                    </button>
+                    <button
+                      onClick={() => copyTreePath("pointer")}
+                      className={`px-2 py-1 text-[10px] rounded-md border font-mono transition-colors ${pathCopied === "pointer" ? "border-success/40 bg-success/10 text-success" : "border-border bg-muted hover:bg-accent/10 hover:border-accent/40 hover:text-accent"}`}
+                      title="Copy as JSON Pointer (/a/b/0)"
+                    >
+                      {pathCopied === "pointer" ? "✓ copied" : "Pointer"}
+                    </button>
+                    <button
+                      onClick={() => copyTreePath("bracket")}
+                      className={`px-2 py-1 text-[10px] rounded-md border font-mono transition-colors ${pathCopied === "bracket" ? "border-success/40 bg-success/10 text-success" : "border-border bg-muted hover:bg-accent/10 hover:border-accent/40 hover:text-accent"}`}
+                      title="Copy as bracket notation ($['a']['b'][0])"
+                    >
+                      {pathCopied === "bracket" ? "✓ copied" : "Bracket"}
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+
             <div className="flex-1 overflow-auto p-2 scrollbar-thin">
               {!input.trim() ? (
                 <EmptyState message="Paste JSON in the Format tab, then explore it here." />
@@ -2252,6 +2465,7 @@ export default function JsonToolkitPage() {
                       expandAllSignal={expandAllSignal}
                       collapseAllSignal={collapseAllSignal}
                       onContextMenu={handleTreeContextMenu}
+                      onSelect={setSelectedTreePath}
                     />
                   );
                 })()
@@ -2260,7 +2474,7 @@ export default function JsonToolkitPage() {
           </div>
         )}
 
-        {activeTab === "diff" && (
+        {!splitView && activeTab === "diff" && (
           <div className="h-full flex flex-col">
             <div className="flex flex-col md:flex-row flex-1 min-h-0">
               <div className="flex-1 flex flex-col min-h-0 border-b md:border-b-0 md:border-r border-border">
@@ -2323,7 +2537,7 @@ export default function JsonToolkitPage() {
           </div>
         )}
 
-        {(activeTab === "convert" || activeTab === "generate") && (
+        {!splitView && (activeTab === "convert" || activeTab === "generate") && (
           <div className="flex flex-col md:flex-row h-full">
             <div className="flex-1 flex flex-col min-h-0 border-b md:border-b-0 md:border-r border-border">
               <div className="px-3 py-1.5 text-xs text-muted-foreground font-medium bg-muted/50 border-b border-border shrink-0">
@@ -2374,7 +2588,7 @@ export default function JsonToolkitPage() {
         )}
 
         {/* Transform Tab */}
-        {activeTab === "transform" && (
+        {!splitView && activeTab === "transform" && (
           <div className="h-full flex flex-col">
             <div className="flex flex-col lg:flex-row flex-1 min-h-0">
               {/* Wizard + Query */}
@@ -2541,7 +2755,7 @@ export default function JsonToolkitPage() {
         )}
 
         {/* Table Tab */}
-        {activeTab === "table" && (
+        {!splitView && activeTab === "table" && (
           <div className="h-full flex flex-col">
             {!Array.isArray(parsedForTree) ? (
               <EmptyState message="Table view requires an array of objects. Paste a JSON array in the Format tab." />

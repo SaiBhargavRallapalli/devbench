@@ -64,6 +64,16 @@ export default function Header() {
 
         <div className="flex items-center gap-2">
           <button
+            onClick={() => window.dispatchEvent(new Event("devbench:open-palette"))}
+            className="hidden sm:inline-flex items-center gap-2 h-9 px-3 rounded-lg border border-border text-muted-foreground text-sm transition-colors hover:bg-muted hover:text-foreground"
+            aria-label="Open command palette"
+          >
+            <span>Search</span>
+            <kbd className="flex items-center gap-0.5 text-[10px] font-mono opacity-60">
+              <span>⌘</span><span>K</span>
+            </kbd>
+          </button>
+          <button
             onClick={toggleTheme}
             className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
             aria-label="Toggle theme"
