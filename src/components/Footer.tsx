@@ -1,6 +1,19 @@
 import Link from "next/link";
-import { Shield } from "lucide-react";
+import { Shield, ExternalLink } from "lucide-react";
 import DevBenchMark from "@/components/DevBenchMark";
+
+const AFFILIATE_LINKS = [
+  {
+    label: "Shared Hosting",
+    href: "https://namecheap.pxf.io/c/7275861/3884366/5618",
+    desc: "from $1.58/mo",
+  },
+  {
+    label: "VPS Hosting",
+    href: "https://namecheap.pxf.io/c/7275861/3884368/5618",
+    desc: "from $6.88/mo",
+  },
+];
 
 export default function Footer() {
   return (
@@ -40,7 +53,32 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-6 border-t border-border pt-6 text-center">
+        {/* Affiliate / Recommended */}
+        <div className="mt-6 border-t border-border pt-5">
+          <p className="text-[11px] font-medium text-muted-foreground/60 uppercase tracking-wider mb-2.5 text-center sm:text-left">
+            Recommended Hosting &nbsp;·&nbsp; <span className="normal-case font-normal">affiliate links</span>
+          </p>
+          <div className="flex flex-wrap gap-3 justify-center sm:justify-start">
+            {AFFILIATE_LINKS.map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                target="_blank"
+                rel="nofollow noopener noreferrer sponsored"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-card text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+              >
+                <span className="font-medium">{link.label}</span>
+                <span className="opacity-60">{link.desc}</span>
+                <ExternalLink className="h-3 w-3 opacity-40" />
+              </a>
+            ))}
+            <span className="inline-flex items-center text-[11px] text-muted-foreground/50 self-center">
+              Powered by Namecheap
+            </span>
+          </div>
+        </div>
+
+        <div className="mt-5 border-t border-border pt-5 text-center">
           <p className="text-xs text-muted-foreground">
             &copy; {new Date().getFullYear()} DevBench. All rights reserved.
           </p>

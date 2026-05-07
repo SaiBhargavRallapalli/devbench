@@ -5,7 +5,8 @@
 ## 2026-05-07
 
 ### Added
-- enhance proxy route to block private addresses and improve request validation; update API Tester and Code Beautify metadata with additional keywords (`e7af0ab`)
+- add sponsor bar and affiliate links to the HomePage and Footer components for enhanced monetization (`602ded7`)
+- enhance proxy route to block private addresses and improve request validation; update API Tester and Code Beautify metadata with additional keywords (`0716677`)
 - update next.config.ts for production optimizations, add Footer component to tool layout, and implement dynamic imports for tool components to improve performance (`9fb2148`)
 - add YAML tools to the workspace routes and update tool registry with new YAML converters and formatter (`5d32583`)
 - update tools registry and enhance Image Format Converter to support SVG; add Vercel analytics and speed insights (`355d74a`)
