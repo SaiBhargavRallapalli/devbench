@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { TOOLS } from "@/lib/tools-registry";
+import { BLOG_POSTS } from "@/lib/blog";
 
 const BASE = "https://devbench.co.in";
 
@@ -13,6 +14,7 @@ const WORKSPACE_ROUTES = [
   { path: "/epoch",            priority: 0.8, freq: "monthly" },
   { path: "/code-beautify",    priority: 0.8, freq: "monthly" },
   { path: "/graph-calculator", priority: 0.8, freq: "monthly" },
+  { path: "/blog",             priority: 0.8, freq: "weekly"  },
   { path: "/about",            priority: 0.5, freq: "yearly"  },
   { path: "/contact",          priority: 0.5, freq: "yearly"  },
   { path: "/privacy",          priority: 0.4, freq: "yearly"  },
@@ -43,5 +45,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }));
 
-  return [...staticRoutes, ...toolRoutes];
+  const blogRoutes: MetadataRoute.Sitemap = BLOG_POSTS.map((post) => ({
+    url: `${BASE}/blog/${post.slug}`,
+    lastModified: new Date(post.date),
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
+  }));
+
+  return [...staticRoutes, ...toolRoutes, ...blogRoutes];
 }

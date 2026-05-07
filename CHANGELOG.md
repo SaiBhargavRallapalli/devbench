@@ -5,7 +5,8 @@
 ## 2026-05-07
 
 ### Added
-- update affiliate links in Footer and HomePage, enhance tool metadata with dynamic content, and improve tool descriptions for better user engagement (`b5e4910`)
+- add blog routes to sitemap, update navigation links in Header and Footer, and refine JSON Formatter links for improved user access (`d5cae19`)
+- update affiliate links in Footer and HomePage, enhance tool metadata with dynamic content, and improve tool descriptions for better user engagement (`e64b693`)
 - integrate FAQ sections into JWT Debugger and Tool Slug layouts, enhancing user experience with structured data and improved SEO (`fdb61fb`)
 - add sponsor bar and affiliate links to the HomePage and Footer components for enhanced monetization (`84a7529`)
 - enhance proxy route to block private addresses and improve request validation; update API Tester and Code Beautify metadata with additional keywords (`0716677`)

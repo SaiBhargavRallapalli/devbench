@@ -15,6 +15,7 @@ const NAV_LINKS = [
   { href: "/epoch",           label: "Epoch"     },
   { href: "/cron-editor",     label: "Cron"      },
   { href: "/graph-calculator",label: "Math"      },
+  { href: "/blog",            label: "Blog"      },
   { href: "/contact",         label: "Contact"   },
 ];
 

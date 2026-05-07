@@ -72,6 +72,12 @@ export default function Footer() {
 
           <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 sm:justify-end">
             <Link
+              href="/blog"
+              className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+            >
+              Blog
+            </Link>
+            <Link
               href="/about"
               className="text-sm text-muted-foreground transition-colors hover:text-foreground"
             >

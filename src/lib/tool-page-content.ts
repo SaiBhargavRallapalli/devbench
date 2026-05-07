@@ -71,4 +71,84 @@ export const TOOL_PAGE_CONTENT: Record<string, ToolPageContent> = {
     openingParagraph:
       "String Inspector analyses any text and reports character count, byte length (UTF-8 / UTF-16), word count, line count, unique character count, and Shannon entropy. It lists every Unicode code point with its name, category, and script — making it easy to spot invisible characters, zero-width spaces, or mixed-script homoglyphs that could cause subtle bugs in password or URL handling.",
   },
+
+  "json-formatter": {
+    title: "JSON Formatter & Validator — Free Online Tool | DevBench",
+    metaDescription:
+      "Format, validate, and minify JSON online instantly. Syntax errors highlighted with line/column. Tree view, YAML/CSV conversion. No signup, 100% in your browser.",
+    openingParagraph:
+      "JSON Formatter validates and pretty-prints any JSON in real time — paste minified JSON and get a readable, indented structure with syntax errors highlighted at the exact line and column. Switch to the interactive tree view to expand and collapse nested objects and arrays, or use the toolbar to minify, convert to YAML, convert to CSV, generate TypeScript interfaces, or diff two JSON documents side by side. Nothing leaves your browser.",
+  },
+
+  "url-decode": {
+    title: "URL Decoder — Percent-Decode Online | DevBench",
+    metaDescription:
+      "Decode percent-encoded URLs and query strings online instantly. Handles %20, %26, UTF-8 multi-byte sequences, and form-encoded + signs. No signup, 100% in your browser.",
+    openingParagraph:
+      "URL Decode converts percent-encoded strings back to readable text instantly — %20 becomes a space, %2F becomes a slash, multi-byte UTF-8 sequences decode to their correct Unicode characters. Paste any encoded URL, query parameter, or API response value and get the human-readable version in one click. Optionally decode + as space for HTML form data. Runs entirely in your browser with no server calls.",
+  },
+
+  "text-diff": {
+    title: "Text Diff Checker — Compare Text Online | DevBench",
+    metaDescription:
+      "Compare two text blocks side by side online. Added and deleted lines highlighted instantly using the Myers diff algorithm. No signup, 100% in your browser.",
+    openingParagraph:
+      "Text Diff compares two blocks of text and highlights every addition and deletion using the Myers diff algorithm — the same algorithm Git uses. Paste the original text on the left and the updated text on the right, and changes appear instantly with added lines in green and deleted lines in red. Toggle whitespace-only changes, switch between side-by-side and unified views, and copy the diff output as a standard patch.",
+  },
+
+  "html-to-jsx": {
+    title: "HTML to JSX Converter — Free Online Tool | DevBench",
+    metaDescription:
+      "Convert HTML to JSX online instantly. Handles class→className, for→htmlFor, inline styles, self-closing tags, and event attributes. No signup, 100% in your browser.",
+    openingParagraph:
+      "HTML to JSX converts raw HTML to React-compatible JSX automatically — renaming class to className, for to htmlFor, converting inline style strings to objects, self-closing void elements, camelCasing event attributes, and wrapping HTML comments in JSX syntax. Paste HTML from a Figma export, email template, or any web page and copy the ready-to-use JSX output directly into your React component.",
+  },
+
+  "aes-encrypt": {
+    title: "AES-256 Encrypt & Decrypt — Free Online Tool | DevBench",
+    metaDescription:
+      "Encrypt and decrypt text with AES-256-GCM in your browser. PBKDF2 key derivation, authenticated encryption. No signup, no server — 100% client-side.",
+    openingParagraph:
+      "AES Encrypt encrypts and decrypts text using AES-256-GCM — the same algorithm used by TLS 1.3 and Signal — entirely in your browser via the Web Crypto API. Enter your plaintext and a password, and the tool derives a 256-bit key using PBKDF2 with 310,000 iterations and a random salt. GCM mode provides authenticated encryption, so any tampering with the ciphertext is detected on decryption. Nothing is ever sent to a server.",
+  },
+
+  "qr-code-generator": {
+    title: "QR Code Generator — Free Online Tool | DevBench",
+    metaDescription:
+      "Generate QR codes from any text or URL online. Choose error correction level, size, and download as PNG or SVG. No signup, 100% in your browser.",
+    openingParagraph:
+      "QR Code Generator creates a scannable QR code from any text, URL, vCard, or Wi-Fi credentials instantly in your browser. Adjust the error correction level (L to H), output size, and foreground and background colours. Download the result as a high-resolution PNG for web use or a scalable SVG for print at any size. All processing is client-side — no data leaves your browser.",
+  },
+
+  "curl-to-fetch": {
+    title: "cURL to JavaScript Fetch Converter | DevBench",
+    metaDescription:
+      "Convert cURL commands to JavaScript fetch() calls online. Handles headers, body, auth, and common flags. No signup, 100% in your browser.",
+    openingParagraph:
+      "cURL to Fetch converts any cURL command — including those copied from browser DevTools — into the equivalent JavaScript fetch() call with all headers, HTTP method, request body, and authentication translated automatically. Handles -H, -d, -X, -u, and --json flags. The output works in both browser JavaScript and Node.js 18+ without any extra dependencies.",
+  },
+
+  "url-parser": {
+    title: "URL Parser — Break Down URL Components Online | DevBench",
+    metaDescription:
+      "Parse any URL into scheme, host, port, path, query parameters, and fragment. Decoded key-value table for query strings. No signup, 100% in your browser.",
+    openingParagraph:
+      "URL Parser breaks any URL into its labelled components — scheme, host, port, path, query string, and fragment — and displays each part in a structured table. Query parameters are listed as individual decoded key-value pairs. Useful for debugging OAuth redirect URLs, webhook endpoints, API base paths, and complex query strings that are hard to read as a single URL string.",
+  },
+
+  "base-converter": {
+    title: "Number Base Converter — Decimal, Hex, Binary, Octal | DevBench",
+    metaDescription:
+      "Convert numbers between decimal, hexadecimal, binary, and octal instantly. Two-way conversion, copy to clipboard. No signup, 100% in your browser.",
+    openingParagraph:
+      "Base Converter translates integers between decimal (base 10), hexadecimal (base 16), binary (base 2), and octal (base 8) with all representations updating simultaneously as you type in any field. Essential for working with memory addresses, Unix file permissions, bitwise operations, colour codes, and low-level hardware registers. Input accepts standard prefixes (0x for hex, 0b for binary) and ignores spaces between digit groups.",
+  },
+
+  "markdown-preview": {
+    title: "Markdown Preview Editor — Live GFM Renderer | DevBench",
+    metaDescription:
+      "Live side-by-side Markdown editor with GitHub Flavored Markdown rendering. Tables, task lists, code blocks, strikethrough. Copy HTML output. No signup.",
+    openingParagraph:
+      "Markdown Preview is a split-pane editor that renders GitHub Flavored Markdown (GFM) in real time alongside the source. Write on the left, see the rendered result on the right as you type. Supports all GFM extensions — tables, task lists, strikethrough, fenced code blocks with language tags, and auto-linked URLs. Copy the rendered HTML output for pasting into a CMS, or download the Markdown source as a .md file.",
+  },
 };

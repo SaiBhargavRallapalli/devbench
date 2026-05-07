@@ -96,6 +96,136 @@ export const TOOL_FAQS: Record<string, Faq[]> = {
     },
   ],
 
+  "hash-generator": [
+    {
+      q: "What is the difference between MD5, SHA-1, and SHA-256?",
+      a: "MD5 produces a 128-bit (32 hex character) digest and is cryptographically broken — do not use it for security. SHA-1 produces 160 bits (40 hex chars) and is also deprecated for digital signatures. SHA-256 is part of SHA-2 and remains secure — it is the standard for file integrity checks, TLS certificates, and HMAC signing in JWTs.",
+    },
+    {
+      q: "Can I use this to hash passwords?",
+      a: "No. MD5, SHA-1, SHA-256, and SHA-512 are fast by design, which makes them easy to brute-force as password hashes. For password storage, use a slow key-derivation function designed for the purpose: bcrypt, Argon2, or scrypt. These add configurable computational cost and a built-in salt.",
+    },
+    {
+      q: "What is a hash used for in practice?",
+      a: "Common uses: verifying file download integrity (comparing the SHA-256 hash of a downloaded file against the publisher's stated checksum), Subresource Integrity (SRI) hashes in HTML script/link tags, cache-busting by hashing file content, generating unique fingerprints for objects, and signing API requests with HMAC-SHA256.",
+    },
+    {
+      q: "How do I verify a file checksum?",
+      a: "Click 'Upload file' in the Hash Generator, select your file, and copy the resulting hash. Compare it character-by-character (or paste it into the Compare field) against the hash the software publisher provides on their download page. If they match, the file is intact and unmodified.",
+    },
+    {
+      q: "Is my data safe to paste here?",
+      a: "Yes. All hashing is computed using the browser's Web Crypto API (SubtleCrypto) — your text or file never leaves your device and is not sent to any server. You can confirm this by checking the Network tab in browser DevTools — no requests are made when you hash.",
+    },
+  ],
+
+  "password-generator": [
+    {
+      q: "How strong is a randomly generated password?",
+      a: "Strength depends on length and character variety. A 16-character password drawn from uppercase, lowercase, digits, and symbols has ~98 bits of entropy — at one trillion guesses per second it would take billions of years to brute-force. The entropy bar in the generator shows this estimate live as you adjust settings.",
+    },
+    {
+      q: "Is it safe to use passwords generated here?",
+      a: "Yes. This generator uses crypto.getRandomValues() — the browser's cryptographically secure random number generator (CSPRNG). Passwords are generated entirely in your browser and are never sent to, stored on, or logged by any server. You can verify by checking the Network tab in DevTools.",
+    },
+    {
+      q: "What is the minimum recommended password length?",
+      a: "NIST SP 800-63B recommends at least 8 characters, but modern security guidance suggests 16+ characters for accounts that matter, and 24+ for high-value accounts. Length is the single biggest factor in password strength — a 20-character all-lowercase password is stronger than a 10-character mixed-case password.",
+    },
+    {
+      q: "Should I include symbols in my password?",
+      a: "Yes, if the target system allows them. Adding symbols increases the character pool from 62 (alphanumeric) to 72–94 characters, adding about 0.5–0.9 extra bits of entropy per character. However, many legacy systems restrict symbols — use the character set toggles to match what the target site accepts.",
+    },
+    {
+      q: "What should I do with the generated password?",
+      a: "Store it in a password manager (1Password, Bitwarden, Dashlane). Never store passwords in plaintext files, spreadsheets, or browser autofill beyond the password manager. Enable two-factor authentication on the account as an additional layer.",
+    },
+  ],
+
+  "url-encode": [
+    {
+      q: "What is URL encoding (percent-encoding)?",
+      a: "URL encoding converts characters that are not allowed or have special meaning in a URL into a %XX format, where XX is the UTF-8 byte value in hexadecimal. For example, a space becomes %20, & becomes %26, and the euro sign becomes %E2%82%AC. This ensures the URL is valid and unambiguous for any HTTP parser.",
+    },
+    {
+      q: "When do I need to URL-encode a string?",
+      a: "Any time you're building a URL dynamically and embedding untrusted or user-supplied values. Examples: constructing a search query string (?q=user+input), embedding a redirect URL as a parameter (?next=/some/path?key=val), or passing OAuth state parameters. Forgetting to encode can break the URL or introduce security issues.",
+    },
+    {
+      q: "What is the difference between encodeURIComponent and encodeURI?",
+      a: "encodeURIComponent encodes everything except A-Z a-z 0-9 and - _ . ! ~ * ' ( ). Use it for individual query parameter values. encodeURI encodes everything except those characters plus the structural URL characters : / ? # [ ] @ ! $ & ' ( ) * + , ; =. Use it for a complete URL that may contain spaces but whose structure should be preserved.",
+    },
+    {
+      q: "Does the + sign mean a space?",
+      a: "In application/x-www-form-urlencoded encoding (HTML form data), + represents a space. In standard percent-encoding (RFC 3986), a space is %20 and + is a literal plus sign. This tool uses standard percent-encoding (%20 for space) unless you choose the form-encoded mode.",
+    },
+    {
+      q: "How do I decode a percent-encoded string?",
+      a: "Use the URL Decode tool (linked in the toolbar). In JavaScript, use decodeURIComponent() for component values or decodeURI() for a full URL. These are the exact inverses of their encode counterparts.",
+    },
+  ],
+
+  "url-decode": [
+    {
+      q: "What does URL decoding do?",
+      a: "URL decoding reverses percent-encoding — it converts %20 back to a space, %26 back to &, %2F back to /, and so on. It also optionally converts + signs back to spaces, which is needed for application/x-www-form-urlencoded data submitted by HTML forms.",
+    },
+    {
+      q: "Why are URLs percent-encoded in the first place?",
+      a: "URLs can only legally contain a limited ASCII subset. Characters outside that set — spaces, non-Latin letters, and some punctuation — must be encoded to avoid ambiguity. The browser encodes URLs automatically when you type them, but when you copy a URL from a database column or API response, you often get the raw encoded string.",
+    },
+    {
+      q: "What is double-encoding and how do I fix it?",
+      a: "Double-encoding happens when a URL is encoded twice — %20 becomes %2520 (the % is itself encoded to %25). To fix it, decode twice: first pass through decodes %2520 to %20, second pass decodes %20 to a space. The URL Decoder handles this automatically if you enable the 'Double-decode' option.",
+    },
+    {
+      q: "Is there a difference between decodeURI and decodeURIComponent in JavaScript?",
+      a: "Yes. decodeURI leaves structural characters (:, /, ?, #, etc.) encoded because they form the URL structure. decodeURIComponent decodes everything — use it for individual query parameter values. Calling decodeURIComponent on a full URL will decode structural separators and likely break the URL.",
+    },
+  ],
+
+  "aes-encrypt": [
+    {
+      q: "What encryption algorithm is used?",
+      a: "AES-256-GCM — the same algorithm used by TLS 1.3, Signal, and most modern secure systems. The 256 means a 256-bit key; GCM (Galois/Counter Mode) provides authenticated encryption, meaning any tampering with the ciphertext is detected on decryption. A 256-bit key derived from your password via PBKDF2 with 310,000 iterations is used.",
+    },
+    {
+      q: "Is my data safe to encrypt here?",
+      a: "Yes. All encryption and decryption runs in your browser using the Web Crypto API — your plaintext, password, and ciphertext never leave your device. You can verify this by checking the browser Network tab while encrypting.",
+    },
+    {
+      q: "What should I use as a password?",
+      a: "Use a long, random password (20+ characters). The tool uses PBKDF2 with 310,000 iterations to derive the encryption key — this slows down dictionary attacks on the password. But a weak password (common words, short strings) can still be brute-forced. Generate a strong password with the Password Generator tool.",
+    },
+    {
+      q: "Can I decrypt a ciphertext from another AES tool?",
+      a: "Only if the other tool uses the same algorithm (AES-256-GCM), key derivation method (PBKDF2-SHA-256 with the same iteration count), and the same output format for the salt and IV. The ciphertext format is not standardised across tools, so cross-tool decryption is generally not possible without knowing the exact implementation.",
+    },
+    {
+      q: "What is GCM mode and why does it matter?",
+      a: "GCM (Galois/Counter Mode) provides authenticated encryption — it produces a ciphertext plus an authentication tag. When decrypting, the tag is verified first. If even one byte of the ciphertext has been tampered with, decryption fails before any data is returned. This protects against ciphertext manipulation attacks that affect unauthenticated modes like AES-CBC.",
+    },
+  ],
+
+  "curl-to-fetch": [
+    {
+      q: "How do I copy a cURL command from the browser?",
+      a: "In Chrome, Firefox, or Edge: open DevTools → Network tab, click any request, right-click it, and choose 'Copy → Copy as cURL' (Chrome) or 'Copy as cURL (bash)' (Firefox). Paste that directly into this converter.",
+    },
+    {
+      q: "What cURL flags are supported?",
+      a: "The converter handles the most common flags: -X (method), -H (headers), -d / --data / --data-raw (body), -u (basic auth), --json (sets Content-Type and Accept to application/json), and --compressed. Uncommon flags like --limit-rate, --retry, or --cacert are noted as unsupported comments in the output.",
+    },
+    {
+      q: "Does it handle JSON request bodies correctly?",
+      a: "Yes. If the body is valid JSON, it is formatted as JSON.stringify(data) in the fetch call. If the Content-Type is application/x-www-form-urlencoded, the body is converted to a URLSearchParams object.",
+    },
+    {
+      q: "Can I convert to Node.js fetch or just browser fetch?",
+      a: "The output uses the standard Fetch API which works identically in modern browsers and in Node.js 18+ (which ships with the native fetch API). For older Node.js versions, you can swap fetch() for node-fetch with no other changes.",
+    },
+  ],
+
   "uuid-generator": [
     {
       q: "What is a UUID?",

@@ -1072,7 +1072,7 @@ function YamlToJsonContent() {
         Also useful:{" "}
         <Link href="/tools/json-to-yaml" className="text-accent hover:underline">JSON → YAML</Link>
         {", "}
-        <Link href="/tools/json-formatter" className="text-accent hover:underline">JSON Formatter</Link>.
+        <Link href="/json" className="text-accent hover:underline">JSON Formatter</Link>.
       </p>
     </Section>
   );
@@ -1116,7 +1116,7 @@ function CsvToJsonContent() {
         Also useful:{" "}
         <Link href="/tools/json-to-csv" className="text-accent hover:underline">JSON → CSV</Link>
         {", "}
-        <Link href="/tools/json-formatter" className="text-accent hover:underline">JSON Formatter</Link>.
+        <Link href="/json" className="text-accent hover:underline">JSON Formatter</Link>.
       </p>
     </Section>
   );

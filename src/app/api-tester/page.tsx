@@ -1903,7 +1903,7 @@ export default function ApiTesterPage() {
             URL Parser
           </a>
           {", "}
-          <a href="/tools/json-formatter" className="text-accent hover:underline">
+          <a href="/json" className="text-accent hover:underline">
             JSON Formatter
           </a>
           .
