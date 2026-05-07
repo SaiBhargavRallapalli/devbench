@@ -5,6 +5,7 @@
 ## 2026-05-07
 
 ### Added
+- integrate FAQ sections into JWT Debugger and Tool Slug layouts, enhancing user experience with structured data and improved SEO (`6fec8bf`)
 - add sponsor bar and affiliate links to the HomePage and Footer components for enhanced monetization (`84a7529`)
 - enhance proxy route to block private addresses and improve request validation; update API Tester and Code Beautify metadata with additional keywords (`0716677`)
 - update next.config.ts for production optimizations, add Footer component to tool layout, and implement dynamic imports for tool components to improve performance (`9fb2148`)
@@ -15,7 +16,7 @@
 - refactor ToolSearch component to accept tools as a prop, improving modularity and reducing client bundle size (`5d9183d`)
 
 ### Changed
-- reorganize affiliate links section in Footer component for improved layout and clarity (`37cf383`)
+- reorganize affiliate links section in Footer component for improved layout and clarity (`dc2007e`)
 
 ## 2026-05-06
 

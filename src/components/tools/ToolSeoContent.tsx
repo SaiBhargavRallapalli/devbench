@@ -2549,6 +2549,39 @@ const CONTENT_MAP: Record<string, React.FC> = {
   "contrast-checker": ContrastCheckerContent,
   "gradient-generator": GradientGeneratorContent,
   "currency-converter": CurrencyConverterContent,
+  // Text analysis
+  "unicode-checker": (() => (
+    <Section>
+      <h2 className={h2}>Unicode Checker — inspect every character</h2>
+      <p className={prose}>
+        The Unicode Checker analyses text character by character, showing the
+        Unicode code point (U+XXXX), UTF-8 byte sequence, Unicode category
+        (letter, digit, punctuation, symbol, etc.), script (Latin, Cyrillic,
+        Arabic, etc.), and HTML entity for each character. It also flags
+        invisible and potentially dangerous characters such as zero-width joiners,
+        right-to-left overrides, bidirectional control characters, and the BOM
+        (byte order mark).
+      </p>
+      <h2 className={h2}>Why check for invisible Unicode characters?</h2>
+      <p className={prose}>
+        Invisible Unicode characters — zero-width spaces (U+200B), zero-width
+        non-joiners (U+200C), soft hyphens (U+00AD), right-to-left overrides
+        (U+202E) — are often copy-pasted from untrusted sources and can cause
+        subtle bugs: password mismatches, URL spoofing, broken string comparisons,
+        and hidden Trojan-source attacks in code. The checker highlights all
+        suspicious code points in red.
+      </p>
+      <h2 className={h2}>UTF-8 byte sequences</h2>
+      <p className={prose}>
+        UTF-8 is a variable-length encoding: ASCII characters (U+0000–U+007F)
+        use one byte, characters up to U+07FF use two bytes, up to U+FFFF use
+        three bytes, and characters above U+FFFF (emoji, rare CJK extensions)
+        use four bytes. Knowing the byte length is important when allocating
+        storage (e.g. MySQL&apos;s utf8mb4 charset is required for four-byte
+        characters) and when calculating byte offsets in binary protocols.
+      </p>
+    </Section>
+  )) as React.FC,
 };
 
 export default function ToolSeoContent({ slug }: { slug: string }) {
