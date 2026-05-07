@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect, useCallback } from "react";
+import { useState, useMemo, useEffect, useCallback, memo } from "react";
 import Link from "next/link";
 import { Star, Search, Braces, Code2, Type, Wrench, ArrowRightLeft, Sparkles, DollarSign, Heart, Sigma, CalendarDays, Clock, Pin } from "lucide-react";
 import { CATEGORIES, type Tool, type ToolCategory } from "@/lib/tools-registry";
@@ -19,7 +19,10 @@ const CATEGORY_ICONS: Record<ToolCategory, React.ElementType> = {
 };
 
 const WORKSPACE_ROUTES: Partial<Record<string, string>> = {
-  "json-formatter": "/json",
+  "json-formatter":  "/json",
+  "yaml-to-json":    "/yaml",
+  "json-to-yaml":    "/yaml",
+  "yaml-formatter":  "/yaml",
 };
 
 function toolHref(slug: string): string {
@@ -58,7 +61,8 @@ function useLocalList(key: string) {
   return { list, toggle };
 }
 
-function ToolCard({
+// Memoised card — only re-renders when isFavourite or the tool itself changes
+const ToolCard = memo(function ToolCard({
   tool,
   isFavourite,
   onToggleFavourite,
@@ -71,7 +75,7 @@ function ToolCard({
     <div className="relative group">
       <Link
         href={toolHref(tool.slug)}
-        className="flex items-center gap-3 p-4 pr-10 rounded-xl border border-border bg-card hover:border-accent/40 hover:shadow-md transition-all"
+        className="flex items-center gap-3 p-4 pr-10 rounded-xl border border-border bg-card hover:border-accent/40 hover:bg-muted/30 transition-colors"
       >
         <div
           className={`shrink-0 w-9 h-9 rounded-lg flex items-center justify-center text-xs font-bold font-mono ${CATEGORIES[tool.category].color}`}
@@ -90,7 +94,7 @@ function ToolCard({
       <button
         onClick={() => onToggleFavourite(tool.slug)}
         aria-label={isFavourite ? "Unpin tool" : "Pin tool"}
-        className={`absolute top-2.5 right-2.5 p-1 rounded-md transition-all ${
+        className={`absolute top-2.5 right-2.5 p-1 rounded-md transition-colors ${
           isFavourite
             ? "text-amber-400 opacity-100"
             : "text-muted-foreground opacity-0 group-hover:opacity-60 hover:!opacity-100 hover:text-amber-400"
@@ -100,13 +104,13 @@ function ToolCard({
       </button>
     </div>
   );
-}
+});
 
-function MiniSection({ title, icon: Icon, tools, favourites, onToggleFavourite }: {
+function MiniSection({ title, icon: Icon, tools, favouriteSet, onToggleFavourite }: {
   title: string;
   icon: React.ElementType;
   tools: Tool[];
-  favourites: string[];
+  favouriteSet: Set<string>;
   onToggleFavourite: (slug: string) => void;
 }) {
   if (tools.length === 0) return null;
@@ -121,7 +125,7 @@ function MiniSection({ title, icon: Icon, tools, favourites, onToggleFavourite }
           <ToolCard
             key={tool.slug}
             tool={tool}
-            isFavourite={favourites.includes(tool.slug)}
+            isFavourite={favouriteSet.has(tool.slug)}
             onToggleFavourite={onToggleFavourite}
           />
         ))}
@@ -134,8 +138,11 @@ export default function ToolSearch({ tools }: { tools: Tool[] }) {
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState<ToolCategory | "all">("all");
 
-  const { list: recent }         = useLocalList(RECENT_KEY);
+  const { list: recent }                          = useLocalList(RECENT_KEY);
   const { list: favourites, toggle: toggleFavourite } = useLocalList(FAV_KEY);
+
+  // O(1) lookup set — avoids .includes() on every card render
+  const favouriteSet = useMemo(() => new Set(favourites ?? []), [favourites]);
 
   const recentTools = useMemo(
     () =>
@@ -147,10 +154,10 @@ export default function ToolSearch({ tools }: { tools: Tool[] }) {
 
   const pinnedTools = useMemo(
     () =>
-      (favourites ?? [])
+      [...favouriteSet]
         .map((slug) => tools.find((t) => t.slug === slug))
         .filter((t): t is Tool => !!t),
-    [favourites, tools],
+    [favouriteSet, tools],
   );
 
   const filtered = useMemo(() => {
@@ -191,7 +198,7 @@ export default function ToolSearch({ tools }: { tools: Tool[] }) {
           placeholder="Search tools… (e.g. base64, json, color)"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full pl-12 pr-4 py-3.5 rounded-xl border border-border bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/40 text-base shadow-sm transition-shadow"
+          className="w-full pl-12 pr-4 py-3.5 rounded-xl border border-border bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/40 text-base shadow-sm"
         />
       </div>
 
@@ -234,14 +241,14 @@ export default function ToolSearch({ tools }: { tools: Tool[] }) {
             title="Pinned"
             icon={Pin}
             tools={pinnedTools}
-            favourites={favourites ?? []}
+            favouriteSet={favouriteSet}
             onToggleFavourite={toggleFavourite}
           />
           <MiniSection
             title="Recently Used"
             icon={Clock}
             tools={recentTools}
-            favourites={favourites ?? []}
+            favouriteSet={favouriteSet}
             onToggleFavourite={toggleFavourite}
           />
           <hr className="border-border mb-8" />
@@ -275,7 +282,7 @@ export default function ToolSearch({ tools }: { tools: Tool[] }) {
                       <ToolCard
                         key={tool.slug}
                         tool={tool}
-                        isFavourite={(favourites ?? []).includes(tool.slug)}
+                        isFavourite={favouriteSet.has(tool.slug)}
                         onToggleFavourite={toggleFavourite}
                       />
                     ))}
@@ -290,7 +297,7 @@ export default function ToolSearch({ tools }: { tools: Tool[] }) {
             <ToolCard
               key={tool.slug}
               tool={tool}
-              isFavourite={(favourites ?? []).includes(tool.slug)}
+              isFavourite={favouriteSet.has(tool.slug)}
               onToggleFavourite={toggleFavourite}
             />
           ))}

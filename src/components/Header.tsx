@@ -29,6 +29,7 @@ export default function Header() {
   const navLinks = [
     { href: "/", label: "Home" },
     { href: "/json", label: "JSON Tools" },
+    { href: "/yaml", label: "YAML Tools" },
     { href: "/epoch", label: "Epoch Converter" },
     { href: "/api-tester", label: "API Tester" },
     { href: "/cron-editor", label: "Cron Editor" },

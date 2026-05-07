@@ -41,8 +41,9 @@ export const TOOLS: Tool[] = [
   // JSON Tools
   { slug: "json-formatter", name: "JSON Formatter & Validator", shortName: "Format JSON", description: "Format, validate, and minify JSON with error highlighting and tree view", category: "json", icon: "{ }", inputLabel: "Paste JSON", outputLabel: "Formatted" },
   { slug: "json-diff", name: "JSON Diff", shortName: "JSON Diff", description: "Compare two JSON objects with color-coded diff visualization", category: "json", icon: "⇄", inputLabel: "JSON A", outputLabel: "JSON B" },
-  { slug: "json-to-yaml", name: "JSON → YAML", shortName: "JSON → YAML", description: "Convert JSON to YAML format instantly", category: "json", icon: "→Y" },
-  { slug: "yaml-to-json", name: "YAML → JSON", shortName: "YAML → JSON", description: "Convert YAML to JSON format instantly", category: "json", icon: "Y→" },
+  { slug: "json-to-yaml", name: "JSON to YAML Converter", shortName: "JSON → YAML", description: "Convert JSON to YAML format — paste JSON, get clean YAML instantly", category: "json", icon: "→Y" },
+  { slug: "yaml-to-json", name: "YAML to JSON Converter", shortName: "YAML → JSON", description: "Convert YAML to JSON — supports anchors, aliases, multi-document streams", category: "json", icon: "Y→" },
+  { slug: "yaml-formatter", name: "YAML Formatter, Validator & Auto-Fix", shortName: "YAML", description: "Format, validate and auto-fix YAML — detects tabs, bad indentation, syntax errors with line numbers", category: "json", icon: "YML" },
   { slug: "json-to-csv", name: "JSON → CSV", shortName: "JSON → CSV", description: "Convert JSON arrays to CSV with automatic header extraction", category: "json", icon: "→C" },
   { slug: "csv-to-json", name: "CSV → JSON", shortName: "CSV → JSON", description: "Convert CSV to JSON with type inference", category: "json", icon: "C→" },
   { slug: "json-to-typescript", name: "JSON → TypeScript", shortName: "JSON → TS", description: "Generate TypeScript interfaces from JSON data", category: "json", icon: "→T" },
