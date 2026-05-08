@@ -4,6 +4,7 @@ import ToolFaqSection from "@/components/tools/ToolFaqSection";
 import JsonLd from "@/components/JsonLd";
 import { TOOL_FAQS } from "@/lib/tool-faqs";
 import { socialMetadata, SITE_URL } from "@/lib/social-metadata";
+import { webApplicationEnrichment } from "@/lib/web-application-schema";
 
 const JSON_TITLE = "JSON Formatter, Validator & Toolkit";
 const JSON_DESC =
@@ -48,6 +49,15 @@ const webAppSchema = {
     name: "DevBench",
     url: SITE_URL,
   },
+  ...webApplicationEnrichment({
+    screenshotUrl: `${SITE_URL}/json/opengraph-image`,
+    featureList: [
+      "Format, validate, minify, and diff JSON with live error highlighting",
+      "Tree view, JSON Schema validation, export to YAML, CSV, TOML, and TypeScript",
+      "Runs entirely in your browser — no server uploads",
+      "Free — no account required",
+    ],
+  }),
 };
 
 const jsonFaqs = TOOL_FAQS["json"];

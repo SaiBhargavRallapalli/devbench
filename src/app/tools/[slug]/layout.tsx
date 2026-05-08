@@ -9,6 +9,7 @@ import TrackToolVisit from "@/components/TrackToolVisit";
 import Footer from "@/components/Footer";
 import JsonLd from "@/components/JsonLd";
 import { socialMetadata, SITE_URL } from "@/lib/social-metadata";
+import { webApplicationEnrichment, toolScreenshotUrl } from "@/lib/web-application-schema";
 
 export async function generateMetadata({
   params,
@@ -79,6 +80,15 @@ export default async function ToolSlugLayout({
           name: "DevBench",
           url: SITE_URL,
         },
+        ...webApplicationEnrichment({
+          screenshotUrl: toolScreenshotUrl(slug),
+          featureList: [
+            tool.description,
+            "Runs entirely in your browser — no uploads to a server",
+            "Free to use — no account required",
+            `${CATEGORIES[tool.category].label} tool on DevBench`,
+          ],
+        }),
       },
       {
         "@type": "BreadcrumbList",

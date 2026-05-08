@@ -5,7 +5,8 @@
 ## 2026-05-08
 
 ### Added
-- enhance tool metadata across various layouts with dynamic content, integrate structured data for SEO improvements, and update FAQ sections for better user engagement (`453e9b5`)
+- update layouts to include web application enrichment for enhanced metadata, improve tool descriptions, and streamline theme management in the RootLayout (`fd95fd4`)
+- enhance tool metadata across various layouts with dynamic content, integrate structured data for SEO improvements, and update FAQ sections for better user engagement (`f5fb665`)
 
 ## 2026-05-07
 

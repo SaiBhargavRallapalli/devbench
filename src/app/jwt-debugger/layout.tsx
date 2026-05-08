@@ -3,6 +3,7 @@ import { TOOL_FAQS } from "@/lib/tool-faqs";
 import ToolFaqSection from "@/components/tools/ToolFaqSection";
 import JsonLd from "@/components/JsonLd";
 import { socialMetadata, SITE_URL } from "@/lib/social-metadata";
+import { webApplicationEnrichment } from "@/lib/web-application-schema";
 
 const JWT_TITLE = "JWT Debugger — Decode, Encode & Verify Tokens";
 const JWT_DESC =
@@ -48,6 +49,15 @@ const webAppSchema = {
     name: "DevBench",
     url: SITE_URL,
   },
+  ...webApplicationEnrichment({
+    screenshotUrl: `${SITE_URL}/jwt-debugger/opengraph-image`,
+    featureList: [
+      "Decode JWT headers and payloads; inspect standard and custom claims",
+      "Verify HMAC signatures (HS256, HS384, HS512) locally with Web Crypto",
+      "Runs entirely in your browser — tokens are never sent to a server",
+      "Free — no account required",
+    ],
+  }),
 };
 
 const jwtFaqs = TOOL_FAQS["jwt-debugger"] ?? [];
