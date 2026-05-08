@@ -5,7 +5,8 @@
 ## 2026-05-08
 
 ### Added
-- add SemVer Comparator tool for comparing npm semantic versions, including validation and major/minor/patch difference; update package dependencies and enhance tool metadata for improved user experience (`c71c097`)
+- add new blog posts on Base64 encoding and JWT security best practices, including detailed explanations and common pitfalls; update tag colors for improved categorization (`937fd77`)
+- add SemVer Comparator tool for comparing npm semantic versions, including validation and major/minor/patch difference; update package dependencies and enhance tool metadata for improved user experience (`78db02f`)
 - add Salary Hike Calculator tool with detailed functionality for comparing old and new salaries, including percentage change and monthly difference; update package dependencies and enhance sitemap with new routes (`d28b1b8`)
 - add new blog posts for JSON validation and JWT decoding, including detailed guides and best practices for safe usage (`36f6284`)
 - update layouts to include web application enrichment for enhanced metadata, improve tool descriptions, and streamline theme management in the RootLayout (`2d2c1fa`)

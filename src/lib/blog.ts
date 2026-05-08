@@ -12,6 +12,42 @@ export interface BlogPost {
 
 export const BLOG_POSTS: BlogPost[] = [
   {
+    slug: "how-base64-encoding-works-and-when-not-to-use-it",
+    title: "How Base64 encoding works — and when NOT to use it",
+    date: "2026-05-08",
+    excerpt:
+      "Base64 turns binary into printable ASCII — useful for email, JSON, and data URIs. Here is how the encoding actually works, why it inflates size by ~33%, and the dangerous cases where people mistake it for encryption.",
+    tags: ["encoding", "security", "web"],
+    readMinutes: 9,
+    relatedToolSlug: "base64-encode",
+    relatedToolLabel: "Base64 Encode",
+    relatedToolHref: "/tools/base64-encode",
+  },
+  {
+    slug: "jwt-security-best-practices-10-things-developers-get-wrong",
+    title: "JWT security best practices — 10 things developers get wrong",
+    date: "2026-05-08",
+    excerpt:
+      "JWTs are convenient, but misuse is everywhere: treating payloads as secret, skipping audience checks, weak HMAC keys, and storing tokens where XSS can read them. Here are ten concrete mistakes and what to do instead.",
+    tags: ["jwt", "security", "auth"],
+    readMinutes: 10,
+    relatedToolSlug: "jwt-debugger",
+    relatedToolLabel: "JWT Debugger",
+    relatedToolHref: "/jwt-debugger",
+  },
+  {
+    slug: "yaml-vs-json-key-differences-with-real-examples",
+    title: "YAML vs JSON — key differences with real examples",
+    date: "2026-05-08",
+    excerpt:
+      "JSON is strict and universal; YAML is human-friendly and dangerously powerful. Compare syntax, types, anchors, comments, and multi-document streams — with copy-paste examples you can run through a formatter.",
+    tags: ["yaml", "json", "config"],
+    readMinutes: 8,
+    relatedToolSlug: "yaml-formatter",
+    relatedToolLabel: "YAML Formatter & Validator",
+    relatedToolHref: "/tools/yaml-formatter",
+  },
+  {
     slug: "how-to-validate-json-online",
     title: "How to Validate JSON Online (Safely)",
     date: "2026-05-08",

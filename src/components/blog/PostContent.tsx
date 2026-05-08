@@ -551,7 +551,221 @@ function JwtDecoderWithoutUploading() {
   );
 }
 
+function Base64EncodingExplained() {
+  return (
+    <div className="space-y-4">
+      <p className={prose}>
+        Base64 is <strong>encoding</strong>, not encryption. It maps arbitrary bytes to a limited alphabet of 64 printable ASCII characters so binary data can survive channels that only tolerate text — email bodies (MIME), JSON fields, XML, URLs (often Base64URL), and HTML{" "}
+        <code className={code}>data:</code> URIs. Understanding the mechanics explains the ~33% size overhead — and why Base64 is the wrong tool whenever you need secrecy or optimal bandwidth.
+      </p>
+
+      <h2 className={h2}>How Base64 works</h2>
+      <p className={prose}>
+        Input bytes are treated as a continuous stream of bits. Those bits are sliced into groups of <strong>six</strong> bits (64 possible values per group). Each sextet indexes a symbol from the alphabet{" "}
+        <code className={code}>A–Z</code>, <code className={code}>a–z</code>, <code className={code}>0–9</code>, then typically <code className={code}>+</code> and <code className={code}>/</code> for the standard alphabet (MIME / PEM). Three bytes (24 bits) become four Base64 characters with no waste.
+      </p>
+      <p className={prose}>
+        When the bit length is not divisible by 24, the final quantum is padded so the encoder always outputs full groups of four characters. Padding uses <code className={code}>=</code> (one or two equals signs) so decoders know how many trailing bits were insignificant. That padding is why you sometimes see <code className={code}>==</code> at the end of a string.
+      </p>
+
+      <h2 className={h2}>Base64 vs Base64URL</h2>
+      <p className={prose}>
+        In URLs, <code className={code}>+</code> and <code className={code}>/</code> are awkward without escaping. Base64URL replaces <code className={code}>+</code> → <code className={code}>-</code>, <code className={code}>/</code> → <code className={code}>_</code>, and usually omits padding. JWTs use Base64URL for header and payload segments — same math, URL-safe alphabet.
+      </p>
+
+      <h2 className={h2}>When Base64 is the right tool</h2>
+      <ul className={ul}>
+        <li><strong>Embedding small binaries in text formats</strong> — icons or thumbnails as <code className={code}>data:image/png;base64,...</code> in HTML or CSS.</li>
+        <li><strong>Carrying binary inside JSON or XML</strong> — certificate PEM bodies, protobuf in JSON, attachment blobs.</li>
+        <li><strong>SMTP and MIME</strong> — historical email attachments before binary transports were universal.</li>
+        <li><strong>Checksums and fingerprints as text</strong> — hex is fine too; Base64 is shorter than hex for the same bytes but not human-sortable.</li>
+      </ul>
+
+      <h2 className={h2}>When NOT to use Base64</h2>
+      <ul className={ul}>
+        <li>
+          <strong>Never call it “encryption.”</strong> Anyone can decode Base64 instantly — there is no key. If you need confidentiality, use real cryptography (for example TLS for transport, AES-256-GCM for payload protection at rest). Confusing encoding with encryption leads to leaked passwords and compliance failures.
+        </li>
+        <li>
+          <strong>Large payloads without compression first.</strong> Base64 expands size by roughly one third. Encoding gigabytes of raw binary into JSON is slow, cache-unfriendly, and expensive at the edge. Compress or use dedicated blob storage with signed URLs instead.
+        </li>
+        <li>
+          <strong>Secrets you hope to “hide” in URLs or logs.</strong> Obfuscation is not protection. Tokens in query strings end up in referrer headers, analytics, and server logs — Base64 does not change that risk profile.
+        </li>
+        <li>
+          <strong>When hex or plain UTF-8 would work.</strong> If you already have text, encoding again wastes bytes and CPU.
+        </li>
+      </ul>
+
+      <h2 className={h2}>Quick mental model</h2>
+      <p className={prose}>
+        Treat Base64 like turning binary into a fax-friendly alphabet: reversible, universal, and visible to everyone. Use it where the transport demands text; use cryptography where the data demands privacy.
+      </p>
+    </div>
+  );
+}
+
+function JwtSecurityBestPractices() {
+  return (
+    <div className="space-y-4">
+      <p className={prose}>
+        JWTs solve real problems — horizontal scaling without sticky sessions, OAuth/OIDC interop, and signed assertions between services — but they are easy to misuse. Below are ten mistakes teams make repeatedly, with practical fixes. For structure of the token itself, see{" "}
+        <Link href="/blog/jwt-explained" className="text-accent hover:underline">
+          JWT Explained
+        </Link>
+        .
+      </p>
+
+      <h3 className={h3}>1. Treating the payload as confidential</h3>
+      <p className={prose}>
+        The middle segment is Base64URL-encoded JSON. Anyone with the JWT can decode it. Never put passwords, API keys, card numbers, or detailed PII in claims unless you also encrypt (JWE) — and most stacks stick to signed JWT (JWS) only.
+      </p>
+
+      <h3 className={h3}>2. Skipping signature verification</h3>
+      <p className={prose}>
+        Decoding is not verifying. Your API must validate the signature with the correct key (HMAC secret or asymmetric public key), check <code className={code}>alg</code> against an allowlist, and reject tokens signed with unexpected algorithms — algorithm confusion between HS256 and RS256 has caused real breaches.
+      </p>
+
+      <h3 className={h3}>3. Ignoring expiry and clock skew</h3>
+      <p className={prose}>
+        Always enforce <code className={code}>exp</code> (and usually <code className={code}>nbf</code>). Allow a small clock skew window (for example ±60 seconds) between issuers and validators so legitimate tokens are not rejected on boundary seconds.
+      </p>
+
+      <h3 className={h3}>4. Not constraining audience and issuer</h3>
+      <p className={prose}>
+        Validate <code className={code}>aud</code> against your API’s identifier and <code className={code}>iss</code> against your identity provider’s issuer URL. A token minted for Service A must not authorize requests to Service B.
+      </p>
+
+      <h3 className={h3}>5. Weak secrets for HS256</h3>
+      <p className={prose}>
+        Symmetric signing puts the entire security on one shared string. Use long, random secrets (≥256 bits of entropy), rotate them with a plan, and never embed secrets in client-side code — browsers cannot hold signing secrets safely for HS256-issued tokens consumed by the same browser.
+      </p>
+
+      <h3 className={h3}>6. Storing access tokens in localStorage</h3>
+      <p className={prose}>
+        Any XSS payload can read <code className={code}>localStorage</code>. Prefer <code className={code}>httpOnly</code>, <code className={code}>Secure</code>, <code className={code}>SameSite</code> cookies for refresh/session flows where your threat model includes XSS — paired with tight CSP and short-lived access tokens.
+      </p>
+
+      <h3 className={h3}>7. Long-lived access tokens without rotation</h3>
+      <p className={prose}>
+        Long expiry reduces traffic but increases blast radius when a token leaks. Prefer short access tokens plus refresh token rotation (one-time use refresh tokens stored server-side or in HttpOnly cookies).
+      </p>
+
+      <h3 className={h3}>8. No revocation story</h3>
+      <p className={prose}>
+        Stateless JWT means validators do not ask a database — until you need instant revoke after compromise. Plan for blocklists, session versions, or rotating signing keys (kid headers). Pure “JWT means no DB” breaks down the moment you must invalidate tokens early.
+      </p>
+
+      <h3 className={h3}>9. Logging tokens verbatim</h3>
+      <p className={prose}>
+        Request logs, APM traces, and error reports often capture Authorization headers. Log that a bearer token was present — never the full string — and scrub proxies accordingly.
+      </p>
+
+      <h3 className={h3}>10. Using JWT for everything by default</h3>
+      <p className={prose}>
+        Server-side sessions with opaque IDs and Redis often simplify revocation, device binding, and logout. JWT shines for federation and cross-service claims; it is not mandatory for every SPA. Pick the model from threat model and ops constraints, not hype.
+      </p>
+
+      <h2 className={h2}>Bottom line</h2>
+      <p className={prose}>
+        Secure JWT usage is mostly boring hygiene: verify signatures, narrow claims, short lifetimes, thoughtful storage, and explicit revocation. Decode in the browser for debugging — authorize only after cryptographic verification on the server.
+      </p>
+    </div>
+  );
+}
+
+function YamlVsJsonExplained() {
+  return (
+    <div className="space-y-4">
+      <p className={prose}>
+        JSON is the lingua franca of APIs and browsers: strict, easy to parse, and ubiquitous. YAML optimizes for humans writing config: fewer quotes, readable structure, comments — plus features JSON does not have (anchors, aliases, tags). Both serialize structured data; they differ in ergonomics and foot-guns.
+      </p>
+
+      <h2 className={h2}>Syntax: noise vs intent</h2>
+      <p className={prose}>
+        JSON requires double quotes around keys and strings, commas between properties, and no trailing commas — see{" "}
+        <Link href="/blog/common-json-errors" className="text-accent hover:underline">
+          common JSON mistakes
+        </Link>
+        . YAML often lets you drop quotes when strings look unambiguous and uses indentation instead of braces for nesting.
+      </p>
+      <pre className="bg-muted rounded-lg px-4 py-3 text-xs font-mono overflow-x-auto my-3">
+{`// JSON — explicit punctuation
+{
+  "service": "payments",
+  "timeout_ms": 3000,
+  "regions": ["iad", "pdx"]
+}`}
+      </pre>
+      <pre className="bg-muted rounded-lg px-4 py-3 text-xs font-mono overflow-x-auto my-3">
+{`# YAML — indentation defines scope (use spaces; tabs are messy)
+service: payments
+timeout_ms: 3000
+regions:
+  - iad
+  - pdx`}
+      </pre>
+
+      <h2 className={h2}>Comments</h2>
+      <p className={prose}>
+        Standard JSON has no comments. YAML supports <code className={code}>#</code> line comments — invaluable for explaining flags in Kubernetes manifests and CI configs. Tools that claim “JSON with comments” are extensions (JSONC), not RFC 8259 JSON.
+      </p>
+
+      <h2 className={h2}>Types and surprises</h2>
+      <p className={prose}>
+        YAML 1.1 treats unquoted <code className={code}>yes</code>/<code className={code}>no</code>/<code className={code}>on</code>/<code className={code}>off</code> as booleans in some parsers — a notorious source of Kubernetes bugs when a country code like NO disappeared into a boolean. JSON only has explicit <code className={code}>true</code>/<code className={code}>false</code>.
+      </p>
+      <p className={prose}>
+        YAML also exposes multiple numeric forms (sexagesimal in older specs, plain integers vs floats). JSON numbers are decimal only. For interoperable configs, quote ambiguous scalars in YAML and validate with a schema (JSON Schema / OpenAPI).
+      </p>
+
+      <h2 className={h2}>Anchors and aliases — YAML-only power</h2>
+      <p className={prose}>
+        YAML can deduplicate structures with anchors (<code className={code}>&amp;</code>) and aliases (<code className={code}>*</code>), reducing repetition in large documents. JSON has no equivalent — you duplicate or generate JSON programmatically.
+      </p>
+      <pre className="bg-muted rounded-lg px-4 py-3 text-xs font-mono overflow-x-auto my-3">
+{`defaults: &defaults
+  timeout_ms: 3000
+  retries: 2
+
+payments:
+  <<: *defaults
+  path: /pay
+
+refunds:
+  <<: *defaults
+  path: /refund`}
+      </pre>
+
+      <h2 className={h2}>Streams and documents</h2>
+      <p className={prose}>
+        YAML can concatenate multiple documents in one file separated by <code className={code}>---</code>. JSON is typically one value per file — joining objects requires JSON Lines or wrapping arrays (unless you use extensions).
+      </p>
+
+      <h2 className={h2}>JSON inside YAML</h2>
+      <p className={prose}>
+        Many pipelines embed JSON strings inside YAML for opaque blobs — Kubernetes annotations, CI matrices — because downstream APIs expect JSON. You still validate twice: YAML structure plus inner JSON text.
+      </p>
+
+      <h2 className={h2}>When to choose which</h2>
+      <ul className={ul}>
+        <li><strong>Prefer JSON</strong> for HTTP APIs, browser <code className={code}>fetch</code>, WebSockets, and anywhere unknown parsers must interoperate without ambiguity.</li>
+        <li><strong>Prefer YAML</strong> for hand-written infra and app config where humans iterate daily — after linting and schema validation.</li>
+        <li><strong>Machine-generated config</strong> often stays JSON end-to-end to avoid YAML’s implicit typing edge cases.</li>
+      </ul>
+
+      <h2 className={h2}>Validate before you ship</h2>
+      <p className={prose}>
+        Paste YAML into a formatter that rejects tabs and fixes indentation, and keep JSON on the narrow path from editor to CI so trailing commas never reach production parsers.
+      </p>
+    </div>
+  );
+}
+
 export const POST_CONTENT: Record<string, React.ReactNode> = {
+  "how-base64-encoding-works-and-when-not-to-use-it": <Base64EncodingExplained />,
+  "jwt-security-best-practices-10-things-developers-get-wrong": <JwtSecurityBestPractices />,
+  "yaml-vs-json-key-differences-with-real-examples": <YamlVsJsonExplained />,
   "how-to-validate-json-online": <HowToValidateJsonOnline />,
   "jwt-decoder-without-uploading-to-server": <JwtDecoderWithoutUploading />,
   "uuid-vs-ulid-vs-nanoid": <UuidVsUlidVsNanoid />,
