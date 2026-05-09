@@ -1,8 +1,9 @@
 import Link from "next/link";
-import { ArrowLeft, Shield } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import type { Tool } from "@/lib/tools-registry";
 import { CATEGORIES } from "@/lib/tools-registry";
 import { TOOL_PAGE_CONTENT } from "@/lib/tool-page-content";
+import ToolConnectivityBadge from "@/components/ToolConnectivityBadge";
 
 export default function ToolPageHero({ tool }: { tool: Tool }) {
   const category = CATEGORIES[tool.category];
@@ -30,10 +31,7 @@ export default function ToolPageHero({ tool }: { tool: Tool }) {
             >
               {category.label}
             </span>
-            <span className="flex items-center gap-1 text-xs text-muted-foreground">
-              <Shield className="h-3 w-3" />
-              Runs in browser
-            </span>
+            <ToolConnectivityBadge slug={tool.slug} />
           </div>
           {extraContent ? (
             <p className="mt-3 text-sm text-muted-foreground leading-relaxed max-w-2xl">

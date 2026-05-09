@@ -48,6 +48,8 @@ export const TOOLS: Tool[] = [
   { slug: "yaml-formatter", name: "YAML Formatter, Validator & Auto-Fix", shortName: "YAML", description: "Format, validate and auto-fix YAML — detects tabs, bad indentation, syntax errors with line numbers", category: "json", icon: "YML" },
   { slug: "json-to-csv", name: "JSON → CSV", shortName: "JSON → CSV", description: "Convert JSON arrays to CSV with automatic header extraction", category: "json", icon: "→C" },
   { slug: "csv-to-json", name: "CSV → JSON", shortName: "CSV → JSON", description: "Convert CSV to JSON with type inference", category: "json", icon: "C→" },
+  { slug: "json-to-tsv", name: "JSON → TSV", shortName: "JSON → TSV", description: "Convert JSON arrays to tab-separated values for Excel & Sheets", category: "json", icon: "⇥" },
+  { slug: "tsv-to-json", name: "TSV → JSON", shortName: "TSV → JSON", description: "Parse tab-separated values into JSON arrays", category: "json", icon: "⇤" },
   { slug: "json-to-typescript", name: "JSON → TypeScript", shortName: "JSON → TS", description: "Generate TypeScript interfaces from JSON data", category: "json", icon: "→T" },
   { slug: "json-to-xml", name: "JSON → XML", shortName: "JSON → XML", description: "Convert JSON to XML format", category: "json", icon: "→X" },
   { slug: "xml-to-json", name: "XML → JSON", shortName: "XML → JSON", description: "Convert XML to JSON format", category: "json", icon: "X→" },
@@ -110,6 +112,7 @@ export const TOOLS: Tool[] = [
   { slug: "semver-compare", name: "SemVer Comparator", shortName: "SemVer", description: "Compare npm-style semantic versions, validate, and see major/minor/patch diff", category: "dev", icon: "ⓥ", inputLabel: "Version A", outputLabel: "Version B" },
   { slug: "chmod-calculator", name: "chmod Calculator", shortName: "chmod", description: "Convert Unix permission octals (755) ↔ symbolic (rwxr-xr-x), including setuid bits", category: "dev", icon: "rwx", inputLabel: "Octal or symbolic (e.g. 755 or rwxr-xr-x)", outputLabel: "Converted" },
   { slug: "dotenv-parser", name: ".env Parser", shortName: ".env", description: "Parse .env files to JSON and flag duplicate keys — Docker & CI friendly", category: "dev", icon: "⚙", inputLabel: ".env contents", outputLabel: "Parsed output" },
+  { slug: "log-parser", name: "Log Line Parser", shortName: "Log parser", description: "Turn plain-text logs into structured JSON — timestamps, levels, messages", category: "dev", icon: "⌁", inputLabel: "Log lines", outputLabel: "Structured JSON" },
 
   // Conversion Tools
   { slug: "temperature-converter", name: "Temperature Converter", shortName: "Temp", description: "Convert Celsius, Fahrenheit, and Kelvin", category: "conversion", icon: "°" },

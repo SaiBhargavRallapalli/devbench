@@ -5,7 +5,8 @@
 ## 2026-05-09
 
 ### Added
-- add PDF tools including merging, splitting, and converting images to PDF; update package dependencies and enhance sitemap with new routes (`31d82e1`)
+- add new tools for JSON to TSV and TSV to JSON conversions, along with a log line parser; enhance sitemap with new routes and update tool metadata for improved user experience (`464e190`)
+- add PDF tools including merging, splitting, and converting images to PDF; update package dependencies and enhance sitemap with new routes (`eeeaeed`)
 - update Footer component to include Product Hunt review and follow buttons, improving user engagement and visibility (`b6df59e`)
 - add Product Hunt review and follow buttons in Footer component to enhance user engagement and visibility (`ef29d0a`)
 

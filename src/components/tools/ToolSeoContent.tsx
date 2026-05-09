@@ -1192,6 +1192,54 @@ function CsvToJsonContent() {
   );
 }
 
+function JsonToTsvContent() {
+  return (
+    <Section>
+      <h2 className={h2}>JSON to TSV conversion</h2>
+      <p className={prose}>
+        Converts a JSON array of objects to tab-separated values. Tabs rarely appear inside spreadsheet cells, so TSV often avoids the heavy quoting CSV needs when your data contains commas.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/tsv-to-json" className="text-accent hover:underline">TSV → JSON</Link>
+        {", "}
+        <Link href="/compare/csv-vs-tsv" className="text-accent hover:underline">CSV vs TSV</Link>.
+      </p>
+    </Section>
+  );
+}
+
+function TsvToJsonContent() {
+  return (
+    <Section>
+      <h2 className={h2}>TSV to JSON conversion</h2>
+      <p className={prose}>
+        Parses a header row and body rows split by tabs into a JSON array of objects. Cells may be quoted if they contain tabs or newlines.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/json-to-tsv" className="text-accent hover:underline">JSON → TSV</Link>
+        {", "}
+        <Link href="/tools/csv-to-json" className="text-accent hover:underline">CSV → JSON</Link>.
+      </p>
+    </Section>
+  );
+}
+
+function LogParserContent() {
+  return (
+    <Section>
+      <h2 className={h2}>Structured log parsing in the browser</h2>
+      <p className={prose}>
+        Paste unstructured application or container logs; each non-empty line becomes a JSON object with optional timestamp, log level, and remaining message text. ISO timestamps and bracketed timestamps are recognised; common levels include ERROR, WARN, INFO, and DEBUG.
+      </p>
+      <p className={prose}>
+        Output is JSON you can pipe into other DevBench tools or download for ticketing systems — processing stays local.
+      </p>
+    </Section>
+  );
+}
+
 function JsonToTypescriptContent() {
   return (
     <Section>
@@ -2682,6 +2730,8 @@ const CONTENT_MAP: Record<string, React.FC> = {
   "yaml-to-json": YamlToJsonContent,
   "json-to-csv": JsonToCsvContent,
   "csv-to-json": CsvToJsonContent,
+  "json-to-tsv": JsonToTsvContent,
+  "tsv-to-json": TsvToJsonContent,
   "json-to-typescript": JsonToTypescriptContent,
   "json-to-xml": JsonToXmlContent,
   "xml-to-json": XmlToJsonContent,
@@ -2712,6 +2762,7 @@ const CONTENT_MAP: Record<string, React.FC> = {
   "semver-compare": SemverCompareContent,
   "chmod-calculator": ChmodCalculatorContent,
   "dotenv-parser": DotenvParserContent,
+  "log-parser": LogParserContent,
   "html-preview": HtmlPreviewContent,
   "markdown-preview": MarkdownPreviewContent,
   // Text

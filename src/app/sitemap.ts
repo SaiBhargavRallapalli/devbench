@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { TOOLS } from "@/lib/tools-registry";
 import { BLOG_POSTS } from "@/lib/blog";
+import { TOOL_COMPARISONS } from "@/lib/tool-comparisons";
 
 const BASE = "https://devbench.co.in";
 
@@ -22,6 +23,8 @@ const WORKSPACE_ROUTES = [
   { path: "/about",            priority: 0.5, freq: "yearly"  },
   { path: "/contact",          priority: 0.5, freq: "yearly"  },
   { path: "/privacy",          priority: 0.4, freq: "yearly"  },
+  { path: "/compare",          priority: 0.65, freq: "monthly" },
+  { path: "/compare",          priority: 0.65, freq: "monthly" },
 ] as const;
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -56,5 +59,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }));
 
-  return [...staticRoutes, ...toolRoutes, ...blogRoutes];
+  const compareRoutes: MetadataRoute.Sitemap = TOOL_COMPARISONS.map((c) => ({
+    url: `${BASE}/compare/${c.slug}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.65,
+  }));
+
+  return [...staticRoutes, ...compareRoutes, ...toolRoutes, ...blogRoutes];
 }

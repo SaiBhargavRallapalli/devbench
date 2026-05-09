@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import {
@@ -9,14 +9,20 @@ import {
   Check,
   Trash2,
   Download,
-  Shield,
   Sparkles,
+  Share2,
 } from "lucide-react";
 import { getToolBySlug, CATEGORIES } from "@/lib/tools-registry";
 import { TOOL_PAGE_CONTENT } from "@/lib/tool-page-content";
 import Header from "@/components/Header";
 import * as engines from "@/lib/tool-engines";
 import CustomToolOutlet from "@/components/tools/CustomToolOutlet";
+import ToolConnectivityBadge from "@/components/ToolConnectivityBadge";
+import {
+  encodeSharedToolState,
+  decodeSharedToolState,
+  sharePayloadTooLong,
+} from "@/lib/shareable-tool-state";
 
 const CUSTOM_TOOL_SLUGS = new Set([
   // rich UI workspaces
@@ -111,6 +117,40 @@ export default function ToolPage() {
     options: {},
   });
 
+  const [shareCopied, setShareCopied] = useState(false);
+  const shareHydrated = useRef(false);
+
+  useEffect(() => {
+    if (shareHydrated.current) return;
+    if (typeof window === "undefined") return;
+    const shared = decodeSharedToolState(window.location.hash);
+    if (!shared) return;
+    shareHydrated.current = true;
+    setState((s) => ({
+      ...s,
+      input: shared.i,
+      input2: shared.i2 ?? "",
+    }));
+  }, []);
+
+  const copyShareLink = useCallback(() => {
+    const fragment = encodeSharedToolState(
+      state.input,
+      needsDualInput(slug) ? state.input2 : undefined,
+    );
+    if (sharePayloadTooLong(fragment)) {
+      window.alert(
+        "This input is too large to pack into a URL. Copy the text manually or shorten it.",
+      );
+      return;
+    }
+    const url = `${window.location.origin}${window.location.pathname}${fragment}`;
+    void navigator.clipboard.writeText(url).then(() => {
+      setShareCopied(true);
+      setTimeout(() => setShareCopied(false), 2000);
+    });
+  }, [slug, state.input, state.input2]);
+
   const setInput = (input: string) => setState((s) => ({ ...s, input }));
   const setInput2 = (input2: string) => setState((s) => ({ ...s, input2 }));
   const setOption = (key: string, value: string | number | boolean) =>
@@ -194,16 +234,25 @@ export default function ToolPage() {
             </div>
             <div>
               <h1 className="text-2xl font-bold">{tool.name}</h1>
-              <div className="flex items-center gap-2 mt-2">
+              <div className="flex flex-wrap items-center gap-2 mt-2">
                 <span
                   className={`text-xs px-2 py-0.5 rounded-full font-medium ${category.color}`}
                 >
                   {category.label}
                 </span>
-                <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                  <Shield className="w-3 h-3" />
-                  Runs in browser
-                </span>
+                <ToolConnectivityBadge slug={slug} />
+                <button
+                  type="button"
+                  onClick={copyShareLink}
+                  className="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                >
+                  {shareCopied ? (
+                    <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                  ) : (
+                    <Share2 className="w-3.5 h-3.5" />
+                  )}
+                  {shareCopied ? "Link copied" : "Copy share link"}
+                </button>
               </div>
               <p className="mt-3 text-sm text-muted-foreground leading-relaxed max-w-2xl">
                 {TOOL_PAGE_CONTENT[slug]?.openingParagraph ?? tool.description}
@@ -1076,6 +1125,12 @@ async function runTool(
       return engines.jsonToCsv(input);
     case "csv-to-json":
       return engines.csvToJson(input);
+    case "json-to-tsv":
+      return engines.jsonToTsv(input);
+    case "tsv-to-json":
+      return engines.tsvToJson(input);
+    case "log-parser":
+      return engines.parseApplicationLogs(input);
     case "json-to-typescript":
       return engines.jsonToTypescript(input);
     case "json-to-xml":

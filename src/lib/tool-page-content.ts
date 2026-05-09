@@ -184,6 +184,30 @@ export const TOOL_PAGE_CONTENT: Record<string, ToolPageContent> = {
       ".env Parser reads dotenv-style configuration from your clipboard: it skips comments and blank lines, strips quotes, flags duplicate keys (last wins), and emits compact JSON for all variables. Use it to validate env blocks before committing .env.example files, compare environments, or document required variables — all locally in the browser.",
   },
 
+  "json-to-tsv": {
+    title: "JSON to TSV — Tab-Separated Spreadsheet Export",
+    metaDescription:
+      "Convert JSON arrays to TSV online for Excel and Sheets — tabs instead of commas. Runs in your browser with no upload.",
+    openingParagraph:
+      "JSON → TSV turns an array of flat JSON objects into tab-separated rows with a header line. Tabs reduce quoting friction when your cells often contain commas. Values with tabs or line breaks are quoted. Pair with TSV → JSON for round trips.",
+  },
+
+  "tsv-to-json": {
+    title: "TSV to JSON — Parse Tab-Separated Values",
+    metaDescription:
+      "Parse TSV with header row into JSON arrays in your browser. Supports quoted cells. Free, no signup.",
+    openingParagraph:
+      "TSV → JSON reads a tab-separated table from your clipboard or paste buffer and emits a JSON array of objects using the first row as keys. Ideal for analytics exports and Unix-style dumps — processing stays on-device.",
+  },
+
+  "log-parser": {
+    title: "Log Line Parser — Plain Text to Structured JSON",
+    metaDescription:
+      "Parse application logs into JSON rows with timestamps and severity levels detected — ISO dates, bracket timestamps, ERROR/WARN/INFO. Browser-only.",
+    openingParagraph:
+      "Paste unstructured logs one line at a time; each row becomes JSON with line number, optional timestamp, optional level (ERROR, WARN, INFO, DEBUG, TRACE), and the remaining message. Useful for triage before attaching logs to tickets — nothing leaves your browser.",
+  },
+
   "image-to-pdf": {
     title: "Image to PDF — JPG, PNG, WebP to One PDF (Free, Browser-Only)",
     metaDescription:

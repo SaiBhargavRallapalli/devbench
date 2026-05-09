@@ -2216,6 +2216,88 @@ export function csvToJson(input: string): Result {
   }
 }
 
+/** Tab-separated for spreadsheets; escapes tabs/newlines in cells. */
+export function jsonToTsv(input: string): Result {
+  try {
+    const data = JSON.parse(input);
+    if (!Array.isArray(data)) return { output: "", error: "JSON must be an array of objects" };
+    if (!data.length) return "";
+    const headers = [...new Set(data.flatMap((item: Record<string, unknown>) => Object.keys(item)))];
+    const esc = (val: string) => {
+      if (/[\t\n\r"]/.test(val)) return `"${val.replace(/"/g, '""')}"`;
+      return val;
+    };
+    const lines = [
+      headers.map((h) => esc(String(h))).join("\t"),
+      ...data.map((item: Record<string, unknown>) =>
+        headers
+          .map((h) => {
+            const val = item[h];
+            if (val === null || val === undefined) return "";
+            const str = typeof val === "object" ? JSON.stringify(val) : String(val);
+            return esc(str);
+          })
+          .join("\t"),
+      ),
+    ];
+    return lines.join("\n");
+  } catch (e) {
+    return { output: "", error: `Invalid JSON: ${(e as Error).message}` };
+  }
+}
+
+/** Simple TSV: one header row, tab-split rows (quoted cells optional). */
+export function tsvToJson(input: string): Result {
+  try {
+    const lines = input.trim().split(/\r?\n/).filter((l) => l.length > 0);
+    if (lines.length < 2) {
+      return { output: "", error: "TSV must have a header row and at least one data row" };
+    }
+    const headers = parseTsvLine(lines[0]);
+    const data = lines.slice(1).map((line) => {
+      const values = parseTsvLine(line);
+      const obj: Record<string, string> = {};
+      headers.forEach((h, i) => {
+        obj[h] = values[i] ?? "";
+      });
+      return obj;
+    });
+    return JSON.stringify(data, null, 2);
+  } catch (e) {
+    return { output: "", error: `TSV parse error: ${(e as Error).message}` };
+  }
+}
+
+function parseTsvLine(line: string): string[] {
+  const result: string[] = [];
+  let current = "";
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (inQuotes) {
+      if (c === '"') {
+        if (line[i + 1] === '"') {
+          current += '"';
+          i++;
+        } else {
+          inQuotes = false;
+        }
+      } else {
+        current += c;
+      }
+    } else if (c === '"') {
+      inQuotes = true;
+    } else if (c === "\t") {
+      result.push(current);
+      current = "";
+    } else {
+      current += c;
+    }
+  }
+  result.push(current);
+  return result;
+}
+
 function parseCsvLine(line: string): string[] {
   const result: string[] = [];
   let current = "";
@@ -2237,6 +2319,47 @@ function parseCsvLine(line: string): string[] {
   }
   result.push(current);
   return result;
+}
+
+/** Split unstructured text logs into rows with optional ISO/bracket timestamps and levels. */
+export function parseApplicationLogs(input: string): Result {
+  const lines = input.split(/\r?\n/);
+  const rows: Record<string, unknown>[] = [];
+  for (let n = 0; n < lines.length; n++) {
+    const line = lines[n];
+    if (!line.trim()) continue;
+    rows.push(parseOneLogLine(line, n + 1));
+  }
+  if (!rows.length) return { output: "", error: "Paste one or more non-empty log lines" };
+  return JSON.stringify(rows, null, 2);
+}
+
+function parseOneLogLine(line: string, lineNo: number): Record<string, unknown> {
+  const out: Record<string, unknown> = { line: lineNo, raw: line };
+  let rest = line;
+
+  const iso = /^(\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}(?:\.\d{1,9})?(?:Z|[+-]\d{2}:?\d{2})?)/u.exec(rest);
+  if (iso) {
+    out.timestamp = iso[1];
+    rest = rest.slice(iso[0].length).replace(/^\s+/u, "");
+  } else {
+    const bracket = /^\[([^\]]+)\]\s*/u.exec(rest);
+    if (bracket) {
+      out.timestamp = bracket[1];
+      rest = rest.slice(bracket[0].length);
+    }
+  }
+
+  const lev =
+    /^(?:\[)?(ERROR|ERR|WARN|WARNING|INFO|DEBUG|TRACE|FATAL)\]?\s*:?\s*/iu.exec(rest);
+  if (lev) {
+    const rawLev = lev[1].toUpperCase();
+    out.level = rawLev === "ERR" ? "ERROR" : rawLev === "WARNING" ? "WARN" : rawLev;
+    rest = rest.slice(lev[0].length);
+  }
+
+  out.message = rest.trim();
+  return out;
 }
 
 export function jsonToTypescript(input: string): Result {
