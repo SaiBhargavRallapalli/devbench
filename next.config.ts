@@ -21,9 +21,11 @@ const CSP = [
   "upgrade-insecure-requests",
 ].join("; ");
 
+// Note: Strict-Transport-Security lives in vercel.json — it must be applied at
+// the edge so that Vercel's apex→www 308 redirect carries the header
+// (required for HSTS preload list eligibility).
 const SECURITY_HEADERS = [
   { key: "Content-Security-Policy", value: CSP },
-  { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "X-Frame-Options", value: "DENY" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },

@@ -5,7 +5,10 @@
 ## 2026-05-10
 
 ### Added
-- implement comprehensive security headers and update site URLs to use the 'www' subdomain for improved SEO and security; enhance accessibility features in layout and header components (`dd46418`)
+- implement comprehensive security headers and update site URLs to use the 'www' subdomain for improved SEO and security; enhance accessibility features in layout and header components (`7a4df05`)
+
+### Chore
+- update security headers in next.config.ts; remove Strict-Transport-Security header and add note regarding its configuration in vercel.json for HSTS compliance (`66ce98f`)
 
 ## 2026-05-09
 
