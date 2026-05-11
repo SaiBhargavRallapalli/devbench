@@ -1,19 +1,19 @@
 "use client";
 
-import { useCallback, useState } from "react";
-import { PDFDocument, StandardFonts, rgb, PDFFont, PDFPage } from "pdf-lib";
-import { Download, Loader2, Upload, FileText } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  Upload,
+  FileText,
+  Copy,
+  Printer,
+  RotateCcw,
+  Eye,
+  Code2,
+  Check,
+  Sparkles,
+} from "lucide-react";
 import type { Tool } from "@/lib/tools-registry";
 import ToolPageHero from "@/components/tools/ToolPageHero";
-import { downloadUint8 } from "@/lib/pdf-download";
-
-const A4_W = 595.28;
-const A4_H = 841.89;
-const MARGIN = 50;
-const PROSE_SIZE = 11;
-const PROSE_LH = PROSE_SIZE * 1.4;
-const CODE_SIZE = 9;
-const CODE_LH = CODE_SIZE * 1.4;
 
 // ─── Notebook types ────────────────────────────────────────────────────
 
@@ -39,7 +39,7 @@ interface Notebook {
   metadata?: { kernelspec?: { display_name?: string; name?: string } };
 }
 
-// ─── Helpers ───────────────────────────────────────────────────────────
+// ─── Utilities ─────────────────────────────────────────────────────────
 
 const ANSI_ESCAPE_RE = /\x1b\[[0-9;]*m/g;
 
@@ -51,722 +51,834 @@ function stripAnsi(s: string): string {
   return s.replace(ANSI_ESCAPE_RE, "");
 }
 
-function wrap(text: string, measure: (s: string) => number, maxW: number): string[] {
-  const lines: string[] = [];
-  for (const para of text.split("\n")) {
-    if (!para.length) {
-      lines.push("");
-      continue;
-    }
-    const words = para.split(/(\s+)/);
-    let current = "";
-    for (const word of words) {
-      const trial = current + word;
-      if (measure(trial) <= maxW) {
-        current = trial;
-        continue;
-      }
-      if (current.trim()) {
-        lines.push(current.trimEnd());
-      }
-      // Word itself wider than line: break by character
-      if (measure(word) > maxW) {
-        let acc = "";
-        for (const ch of word) {
-          if (measure(acc + ch) <= maxW) acc += ch;
-          else {
-            if (acc) lines.push(acc);
-            acc = ch;
-          }
-        }
-        current = acc;
-      } else {
-        current = word.trimStart();
-      }
-    }
-    if (current.trim()) lines.push(current.trimEnd());
-  }
-  return lines;
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
-// Decode base64 string (utf8-safe is not needed here — outputs are binary)
-function base64ToBytes(b64: string): Uint8Array {
-  const clean = b64.replace(/\s+/g, "");
-  const bin = atob(clean);
-  const bytes = new Uint8Array(bin.length);
-  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-  return bytes;
+// ─── Lightweight markdown → HTML ───────────────────────────────────────
+
+function inlineMarkdown(s: string): string {
+  let html = escapeHtml(s);
+  // Inline code (must come before bold/italic so we don't process inside)
+  html = html.replace(/`([^`]+)`/g, "<code>$1</code>");
+  // Bold (**text** or __text__)
+  html = html.replace(/\*\*([^*\n]+?)\*\*/g, "<strong>$1</strong>");
+  html = html.replace(/\b__([^_\n]+?)__\b/g, "<strong>$1</strong>");
+  // Italic (*text* or _text_)
+  html = html.replace(/(^|[\s(])\*([^*\n]+?)\*(?=[\s).,!?]|$)/g, "$1<em>$2</em>");
+  html = html.replace(/(^|[\s(])_([^_\n]+?)_(?=[\s).,!?]|$)/g, "$1<em>$2</em>");
+  // Images ![alt](url) — must come before links
+  html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img alt="$1" src="$2">');
+  // Links [text](url)
+  html = html.replace(
+    /\[([^\]]+)\]\(([^)]+)\)/g,
+    '<a href="$2" target="_blank" rel="noopener">$1</a>'
+  );
+  return html;
 }
 
-// ─── PDF builder ───────────────────────────────────────────────────────
-
-interface BuildContext {
-  doc: PDFDocument;
-  page: PDFPage;
-  y: number;
-  prose: PDFFont;
-  proseBold: PDFFont;
-  mono: PDFFont;
-  maxW: number;
-}
-
-function newPage(ctx: BuildContext): void {
-  ctx.page = ctx.doc.addPage([A4_W, A4_H]);
-  ctx.y = A4_H - MARGIN;
-}
-
-function ensureSpace(ctx: BuildContext, needed: number): void {
-  if (ctx.y - needed < MARGIN) newPage(ctx);
-}
-
-function drawProseLine(ctx: BuildContext, line: string, opts: { font?: PDFFont; size?: number; color?: ReturnType<typeof rgb> } = {}): void {
-  const font = opts.font ?? ctx.prose;
-  const size = opts.size ?? PROSE_SIZE;
-  const color = opts.color ?? rgb(0.1, 0.1, 0.1);
-  ensureSpace(ctx, size * 1.4);
-  ctx.page.drawText(line, { x: MARGIN, y: ctx.y - size, size, font, color });
-  ctx.y -= size * 1.4;
-}
-
-// Render a markdown source as a sequence of "blocks": heading / paragraph / code-fence
-function renderMarkdown(ctx: BuildContext, source: string): void {
-  const lines = source.split("\n");
+function markdownToHtml(md: string): string {
+  const lines = md.split("\n");
+  const out: string[] = [];
   let i = 0;
+
+  const flushParagraph = (buf: string[]) => {
+    if (!buf.length) return;
+    const text = buf.join(" ").trim();
+    if (text) out.push(`<p>${inlineMarkdown(text)}</p>`);
+    buf.length = 0;
+  };
+
   while (i < lines.length) {
     const line = lines[i];
-    // Fenced code block ```lang ... ```
-    if (/^```/.test(line.trim())) {
-      const fenceLines: string[] = [];
+
+    // Fenced code blocks
+    const fence = /^```(\w*)\s*$/.exec(line);
+    if (fence) {
+      const lang = fence[1] || "";
+      const codeLines: string[] = [];
       i++;
-      while (i < lines.length && !/^```/.test(lines[i].trim())) {
-        fenceLines.push(lines[i]);
+      while (i < lines.length && !/^```\s*$/.test(lines[i])) {
+        codeLines.push(lines[i]);
         i++;
       }
-      i++; // skip closing fence
-      drawCodeBlock(ctx, fenceLines.join("\n"));
+      i++;
+      out.push(
+        `<pre class="md-code${lang ? ` lang-${escapeHtml(lang)}` : ""}"><code>${escapeHtml(
+          codeLines.join("\n")
+        )}</code></pre>`
+      );
       continue;
     }
+
     // Heading
-    const head = /^(#{1,6})\s+(.*)$/.exec(line);
+    const head = /^(#{1,6})\s+(.+?)\s*#*\s*$/.exec(line);
     if (head) {
-      const level = head[1].length;
-      const text = head[2];
-      const size = Math.max(13, 22 - level * 2);
-      ctx.y -= size * 0.4;
-      drawProseLine(ctx, text, { font: ctx.proseBold, size });
-      ctx.y -= size * 0.2;
+      const lvl = head[1].length;
+      out.push(`<h${lvl}>${inlineMarkdown(head[2])}</h${lvl}>`);
       i++;
       continue;
     }
-    // Blank line
+
+    // Horizontal rule
+    if (/^(-{3,}|_{3,}|\*{3,})\s*$/.test(line)) {
+      out.push("<hr>");
+      i++;
+      continue;
+    }
+
+    // Bullet list
+    if (/^\s*[-*+]\s+/.test(line)) {
+      const items: string[] = [];
+      while (i < lines.length && /^\s*[-*+]\s+/.test(lines[i])) {
+        const item = lines[i].replace(/^\s*[-*+]\s+/, "");
+        items.push(`<li>${inlineMarkdown(item)}</li>`);
+        i++;
+      }
+      out.push(`<ul>${items.join("")}</ul>`);
+      continue;
+    }
+
+    // Numbered list
+    if (/^\s*\d+\.\s+/.test(line)) {
+      const items: string[] = [];
+      while (i < lines.length && /^\s*\d+\.\s+/.test(lines[i])) {
+        const item = lines[i].replace(/^\s*\d+\.\s+/, "");
+        items.push(`<li>${inlineMarkdown(item)}</li>`);
+        i++;
+      }
+      out.push(`<ol>${items.join("")}</ol>`);
+      continue;
+    }
+
+    // Blockquote
+    if (/^>\s?/.test(line)) {
+      const qLines: string[] = [];
+      while (i < lines.length && /^>\s?/.test(lines[i])) {
+        qLines.push(lines[i].replace(/^>\s?/, ""));
+        i++;
+      }
+      out.push(`<blockquote>${inlineMarkdown(qLines.join(" "))}</blockquote>`);
+      continue;
+    }
+
+    // Blank line → paragraph break
     if (!line.trim()) {
-      ctx.y -= PROSE_LH * 0.5;
       i++;
       continue;
     }
-    // Bullet
-    const bullet = /^\s*[-*]\s+(.*)$/.exec(line);
-    if (bullet) {
-      const wrapped = wrap("• " + bullet[1], (s) => ctx.prose.widthOfTextAtSize(s, PROSE_SIZE), ctx.maxW - 8);
-      for (const w of wrapped) drawProseLine(ctx, w);
-      i++;
-      continue;
-    }
-    // Plain paragraph — collect until blank line
+
+    // Plain paragraph — collect contiguous lines until blank or block element
     const paraLines: string[] = [line];
     i++;
-    while (i < lines.length && lines[i].trim() && !/^```|^#{1,6}\s|^\s*[-*]\s/.test(lines[i])) {
+    while (
+      i < lines.length &&
+      lines[i].trim() &&
+      !/^(#{1,6})\s+|^```|^\s*[-*+]\s+|^\s*\d+\.\s+|^>\s?/.test(lines[i])
+    ) {
       paraLines.push(lines[i]);
       i++;
     }
-    const para = paraLines.join(" ").replace(/\s+/g, " ");
-    const wrapped = wrap(para, (s) => ctx.prose.widthOfTextAtSize(s, PROSE_SIZE), ctx.maxW);
-    for (const w of wrapped) drawProseLine(ctx, w);
-    ctx.y -= PROSE_LH * 0.2;
+    flushParagraph(paraLines);
   }
+
+  return out.join("\n");
 }
 
-function drawCodeBlock(ctx: BuildContext, code: string, opts: { tint?: ReturnType<typeof rgb>; border?: ReturnType<typeof rgb> } = {}): void {
-  const tint = opts.tint ?? rgb(0.96, 0.97, 0.99);
-  const border = opts.border ?? rgb(0.85, 0.87, 0.92);
-  const lines = code.split("\n");
-  const wrapped: string[] = [];
-  for (const ln of lines) {
-    const w = wrap(ln || " ", (s) => ctx.mono.widthOfTextAtSize(s, CODE_SIZE), ctx.maxW - 16);
-    for (const x of w) wrapped.push(x);
-  }
-  const blockH = wrapped.length * CODE_LH + 12;
-  ensureSpace(ctx, blockH);
-  // Background
-  ctx.page.drawRectangle({
-    x: MARGIN - 4,
-    y: ctx.y - blockH + 2,
-    width: ctx.maxW + 8,
-    height: blockH,
-    color: tint,
-    borderColor: border,
-    borderWidth: 0.5,
-  });
-  ctx.y -= 6;
-  for (const ln of wrapped) {
-    ensureSpace(ctx, CODE_LH);
-    ctx.page.drawText(ln, {
-      x: MARGIN + 4,
-      y: ctx.y - CODE_SIZE,
-      size: CODE_SIZE,
-      font: ctx.mono,
-      color: rgb(0.1, 0.1, 0.15),
-    });
-    ctx.y -= CODE_LH;
-  }
-  ctx.y -= 6;
-}
+// ─── Sanitise raw HTML outputs from the notebook ───────────────────────
 
-async function renderImage(ctx: BuildContext, b64: string): Promise<void> {
-  try {
-    const bytes = base64ToBytes(b64);
-    const img = await ctx.doc.embedPng(bytes);
-    const scale = Math.min(ctx.maxW / img.width, 1);
-    const w = img.width * scale;
-    const h = img.height * scale;
-    ensureSpace(ctx, h + 8);
-    ctx.page.drawImage(img, {
-      x: MARGIN,
-      y: ctx.y - h,
-      width: w,
-      height: h,
-    });
-    ctx.y -= h + 8;
-  } catch {
-    // Ignore: not a PNG, or corrupted base64.
-    drawProseLine(ctx, "[image output omitted — unsupported format]", {
-      color: rgb(0.55, 0.55, 0.6),
-    });
-  }
-}
-
-// ─── HTML output rendering ─────────────────────────────────────────────
-
-interface TableData {
-  headers: string[];
-  rows: string[][];
-}
-
-// Strip Colab/Jupyter UI scaffolding before parsing — these elements add raw
-// markup noise when their HTML output is rendered as text.
-function stripJupyterNoise(html: string): string {
+function sanitizeNotebookHtml(html: string): string {
+  // Remove scripts and Colab-specific UI scaffolding before we trust the rest.
+  // <style scoped> blocks are kept — they style pandas tables nicely.
   return html
-    // Colab DataFrame interactive buttons
+    .replace(/<script[\s\S]*?<\/script>/gi, "")
     .replace(/<div class="colab-df-buttons"[\s\S]*?<\/div>/g, "")
     .replace(/<button class="colab-df-[\s\S]*?<\/button>/g, "")
-    .replace(/<style[\s\S]*?<\/style>/g, "")
-    .replace(/<script[\s\S]*?<\/script>/g, "");
+    .replace(/<div class="colab-df-[^"]*"[\s\S]*?<\/div>/g, "")
+    .replace(/\son[a-z]+="[^"]*"/gi, ""); // inline event handlers
 }
 
-function parseHtmlTables(html: string): TableData[] {
-  try {
-    const doc = new DOMParser().parseFromString(stripJupyterNoise(html), "text/html");
-    const tables = Array.from(doc.querySelectorAll("table"));
-    return tables.map((tbl) => {
-      const headers: string[] = [];
-      const thead = tbl.querySelector("thead");
-      if (thead) {
-        thead.querySelectorAll("tr").forEach((tr) => {
-          if (headers.length === 0) {
-            tr.querySelectorAll("th, td").forEach((cell) => {
-              headers.push(cell.textContent?.trim() ?? "");
-            });
-          }
-        });
-      }
-      const rows: string[][] = [];
-      const bodyTr = tbl.querySelector("tbody")
-        ? Array.from(tbl.querySelectorAll("tbody tr"))
-        : Array.from(tbl.querySelectorAll("tr")).slice(thead ? 1 : 0);
-      bodyTr.forEach((tr) => {
-        const row: string[] = [];
-        tr.querySelectorAll("th, td").forEach((cell) => {
-          row.push(cell.textContent?.trim() ?? "");
-        });
-        if (row.length > 0) rows.push(row);
-      });
-      return { headers, rows };
-    });
-  } catch {
-    return [];
-  }
+// ─── Cell → HTML ────────────────────────────────────────────────────────
+
+interface RenderOptions {
+  includeCodeCells: boolean;
+  includeOutputs: boolean;
 }
 
-function htmlToPlainText(html: string): string {
-  try {
-    const doc = new DOMParser().parseFromString(stripJupyterNoise(html), "text/html");
-    // Remove all tables (rendered separately)
-    doc.querySelectorAll("table").forEach((t) => t.remove());
-    return (doc.body.textContent ?? "").replace(/\n\s*\n/g, "\n").trim();
-  } catch {
-    return html.replace(/<[^>]+>/g, "").trim();
+function renderOutputHtml(out: NbOutput): string {
+  if (out.output_type === "stream") {
+    const text = stripAnsi(joinSource(out.text ?? ""));
+    const cls = out.name === "stderr" ? "out-stream out-stderr" : "out-stream";
+    return `<pre class="${cls}">${escapeHtml(text)}</pre>`;
   }
+  if (out.output_type === "execute_result" || out.output_type === "display_data") {
+    const data = out.data ?? {};
+    // Priority: HTML (best fidelity) → PNG → plain text
+    if (data["text/html"]) {
+      const html = joinSource(data["text/html"]);
+      return `<div class="out-html">${sanitizeNotebookHtml(html)}</div>`;
+    }
+    if (data["image/png"]) {
+      const b64 = joinSource(data["image/png"]).replace(/\s+/g, "");
+      return `<div class="out-image"><img alt="Cell output" src="data:image/png;base64,${b64}" /></div>`;
+    }
+    if (data["image/jpeg"]) {
+      const b64 = joinSource(data["image/jpeg"]).replace(/\s+/g, "");
+      return `<div class="out-image"><img alt="Cell output" src="data:image/jpeg;base64,${b64}" /></div>`;
+    }
+    if (data["image/svg+xml"]) {
+      const svg = joinSource(data["image/svg+xml"]);
+      return `<div class="out-image">${sanitizeNotebookHtml(svg)}</div>`;
+    }
+    if (data["text/plain"]) {
+      return `<pre class="out-text">${escapeHtml(stripAnsi(joinSource(data["text/plain"])))}</pre>`;
+    }
+  }
+  if (out.output_type === "error") {
+    const tb = (out.traceback ?? []).map(stripAnsi).join("\n");
+    const fallback = `${out.ename ?? "Error"}: ${out.evalue ?? ""}`.trim();
+    return `<pre class="out-error">${escapeHtml(tb || fallback)}</pre>`;
+  }
+  return "";
 }
 
-function drawTable(ctx: BuildContext, table: TableData): void {
-  const numCols = Math.max(table.headers.length, ...table.rows.map((r) => r.length), 0);
-  if (numCols === 0) return;
+function renderCellHtml(cell: NbCell, opts: RenderOptions): string {
+  const src = joinSource(cell.source);
 
-  const fontSize = 8.5;
-  const lineH = fontSize * 1.35;
-  const cellPadX = 6;
-  const cellPadY = 4;
-
-  // Equalise short rows by padding with empty cells
-  const headerRow = [...table.headers];
-  while (headerRow.length < numCols) headerRow.push("");
-  const dataRows = table.rows.map((r) => {
-    const padded = [...r];
-    while (padded.length < numCols) padded.push("");
-    return padded;
-  });
-
-  // Measure column widths from content
-  const measure = (s: string) => ctx.mono.widthOfTextAtSize(s, fontSize);
-  const measureBold = (s: string) => ctx.proseBold.widthOfTextAtSize(s, fontSize);
-  const colW: number[] = new Array(numCols).fill(0);
-  for (let i = 0; i < numCols; i++) {
-    colW[i] = Math.max(colW[i], measureBold(headerRow[i]));
-    for (const row of dataRows) {
-      colW[i] = Math.max(colW[i], measure(row[i]));
-    }
-    colW[i] += cellPadX * 2;
-  }
-  // Cap to available width — scale down proportionally if overflowing
-  const totalW = colW.reduce((a, b) => a + b, 0);
-  const finalW = totalW > ctx.maxW ? colW.map((w) => (w * ctx.maxW) / totalW) : colW;
-  const tableW = finalW.reduce((a, b) => a + b, 0);
-
-  const rowH = lineH + cellPadY * 2;
-  const hasHeader = table.headers.length > 0;
-  const drawHeader = (yTop: number) => {
-    if (!hasHeader) return;
-    // Header background
-    ctx.page.drawRectangle({
-      x: MARGIN,
-      y: yTop - rowH,
-      width: tableW,
-      height: rowH,
-      color: rgb(0.94, 0.96, 0.99),
-    });
-    let x = MARGIN;
-    for (let i = 0; i < numCols; i++) {
-      const txt = headerRow[i];
-      ctx.page.drawText(txt, {
-        x: x + cellPadX,
-        y: yTop - cellPadY - fontSize,
-        size: fontSize,
-        font: ctx.proseBold,
-        color: rgb(0.12, 0.15, 0.22),
-      });
-      x += finalW[i];
-    }
-  };
-
-  // Repeating-header pagination
-  let yTop = ctx.y;
-  if (hasHeader) {
-    ensureSpace(ctx, rowH * 2);
-    yTop = ctx.y;
-    drawHeader(yTop);
-    yTop -= rowH;
+  if (cell.cell_type === "markdown") {
+    return `<div class="cell markdown-cell">${markdownToHtml(src)}</div>`;
   }
 
-  for (let r = 0; r < dataRows.length; r++) {
-    if (yTop - rowH < MARGIN) {
-      // Close current page table border
-      ctx.page.drawLine({
-        start: { x: MARGIN, y: yTop },
-        end: { x: MARGIN + tableW, y: yTop },
-        thickness: 0.4,
-        color: rgb(0.85, 0.88, 0.93),
-      });
-      newPage(ctx);
-      yTop = ctx.y;
-      if (hasHeader) {
-        drawHeader(yTop);
-        yTop -= rowH;
-      }
-    }
-    // Alternating row tint
-    if (r % 2 === 1) {
-      ctx.page.drawRectangle({
-        x: MARGIN,
-        y: yTop - rowH,
-        width: tableW,
-        height: rowH,
-        color: rgb(0.985, 0.985, 0.99),
-      });
-    }
-    let x = MARGIN;
-    for (let i = 0; i < numCols; i++) {
-      // Truncate text that would overflow its column with an ellipsis
-      let txt = dataRows[r][i];
-      const maxTxtW = finalW[i] - cellPadX * 2;
-      if (measure(txt) > maxTxtW) {
-        // binary-search-ish truncation
-        let lo = 0;
-        let hi = txt.length;
-        while (lo < hi) {
-          const mid = Math.ceil((lo + hi) / 2);
-          if (measure(txt.slice(0, mid) + "…") <= maxTxtW) lo = mid;
-          else hi = mid - 1;
-        }
-        txt = txt.slice(0, lo) + "…";
-      }
-      ctx.page.drawText(txt, {
-        x: x + cellPadX,
-        y: yTop - cellPadY - fontSize,
-        size: fontSize,
-        font: ctx.mono,
-        color: rgb(0.15, 0.18, 0.25),
-      });
-      x += finalW[i];
-    }
-    yTop -= rowH;
+  if (cell.cell_type === "raw") {
+    return `<div class="cell raw-cell"><pre>${escapeHtml(src)}</pre></div>`;
   }
 
-  // Final border around whole table on this page section
-  const tableBottom = yTop;
-  ctx.page.drawRectangle({
-    x: MARGIN,
-    y: tableBottom,
-    width: tableW,
-    height: ctx.y - tableBottom,
-    borderColor: rgb(0.78, 0.82, 0.9),
-    borderWidth: 0.5,
-  });
-  // Inner vertical lines
-  let x = MARGIN;
-  for (let i = 0; i < numCols - 1; i++) {
-    x += finalW[i];
-    ctx.page.drawLine({
-      start: { x, y: tableBottom },
-      end: { x, y: ctx.y },
-      thickness: 0.3,
-      color: rgb(0.88, 0.9, 0.94),
-    });
-  }
-  // Horizontal line under header
-  if (hasHeader) {
-    ctx.page.drawLine({
-      start: { x: MARGIN, y: ctx.y - rowH },
-      end: { x: MARGIN + tableW, y: ctx.y - rowH },
-      thickness: 0.5,
-      color: rgb(0.78, 0.82, 0.9),
-    });
+  // code cell
+  if (!opts.includeCodeCells) return "";
+
+  const execLabel = cell.execution_count != null ? `In&nbsp;[${cell.execution_count}]:` : "In&nbsp;[&nbsp;]:";
+  const sourceHtml = `<pre class="code-source"><code>${escapeHtml(src)}</code></pre>`;
+
+  let outputsHtml = "";
+  if (opts.includeOutputs && cell.outputs && cell.outputs.length > 0) {
+    outputsHtml = cell.outputs.map(renderOutputHtml).join("\n");
   }
 
-  ctx.y = tableBottom - 6;
+  return `<div class="cell code-cell">
+    <div class="cell-body">
+      <div class="cell-label cell-label-in">${execLabel}</div>
+      <div class="cell-content">${sourceHtml}</div>
+    </div>
+    ${outputsHtml ? `<div class="cell-outputs"><div class="cell-body"><div class="cell-label cell-label-out"></div><div class="cell-content">${outputsHtml}</div></div></div>` : ""}
+  </div>`;
 }
 
-async function renderHtmlOutput(ctx: BuildContext, html: string): Promise<void> {
-  const tables = parseHtmlTables(html);
-  for (const table of tables) {
-    drawTable(ctx, table);
+// ─── Full HTML document ────────────────────────────────────────────────
+
+const STYLES = `
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #ffffff;
+    color: #1a1a1a;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
   }
-  const leftover = htmlToPlainText(html);
-  if (leftover) {
-    drawCodeBlock(ctx, stripAnsi(leftover), {
-      tint: rgb(0.98, 0.98, 0.98),
-      border: rgb(0.88, 0.88, 0.9),
-    });
+  .nb-root {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 32px 40px;
   }
+  .nb-title {
+    font-size: 26px;
+    font-weight: 700;
+    margin: 0 0 4px;
+    color: #111;
+  }
+  .nb-kernel {
+    font-size: 12px;
+    color: #6b7280;
+    margin: 0 0 28px;
+  }
+  /* Cells */
+  .cell { margin-bottom: 16px; }
+  .cell-body {
+    display: grid;
+    grid-template-columns: 76px 1fr;
+    gap: 8px;
+    align-items: start;
+  }
+  .cell-label {
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 12px;
+    color: #c53030;
+    padding-top: 8px;
+    text-align: right;
+    user-select: none;
+    white-space: nowrap;
+  }
+  .cell-label-out { color: transparent; }
+  .cell-content { min-width: 0; }
+  /* Code source */
+  .code-source {
+    background: #f5f7fb;
+    border: 1px solid #e5e9f2;
+    border-radius: 4px;
+    padding: 8px 12px;
+    margin: 0;
+    overflow-x: auto;
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #1f2937;
+    white-space: pre;
+  }
+  .code-source code {
+    font: inherit;
+    background: none;
+    padding: 0;
+  }
+  /* Outputs */
+  .cell-outputs { margin-top: 6px; }
+  .out-stream, .out-text {
+    background: #fafbfc;
+    border: 1px solid #eceef2;
+    border-radius: 4px;
+    padding: 6px 12px;
+    margin: 0 0 6px;
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 12px;
+    line-height: 1.55;
+    color: #2d3748;
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow-x: auto;
+  }
+  .out-stderr {
+    background: #fff5f5;
+    border-color: #fed7d7;
+    color: #c53030;
+  }
+  .out-error {
+    background: #fff5f5;
+    border: 1px solid #feb2b2;
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 12px;
+    color: #9b2c2c;
+    white-space: pre-wrap;
+    margin: 0 0 6px;
+  }
+  .out-image {
+    margin: 4px 0 10px;
+    text-align: left;
+  }
+  .out-image img, .out-image svg {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+  .out-html {
+    margin: 4px 0 10px;
+    overflow-x: auto;
+  }
+  /* Tables (pandas DataFrames bring their own scoped <style>, but provide a baseline) */
+  .out-html table, .markdown-cell table {
+    border-collapse: collapse;
+    margin: 6px 0;
+    font-size: 12px;
+  }
+  .out-html th, .out-html td,
+  .markdown-cell th, .markdown-cell td {
+    border: 1px solid #dfe3eb;
+    padding: 4px 10px;
+    text-align: left;
+  }
+  .out-html thead th {
+    background: #f4f6fa;
+    font-weight: 600;
+  }
+  /* Markdown */
+  .markdown-cell h1, .markdown-cell h2, .markdown-cell h3,
+  .markdown-cell h4, .markdown-cell h5, .markdown-cell h6 {
+    color: #111;
+    margin: 18px 0 8px;
+    line-height: 1.3;
+    font-weight: 600;
+  }
+  .markdown-cell h1 { font-size: 22px; }
+  .markdown-cell h2 { font-size: 19px; }
+  .markdown-cell h3 { font-size: 16px; }
+  .markdown-cell h4 { font-size: 14px; }
+  .markdown-cell p { margin: 6px 0; }
+  .markdown-cell ul, .markdown-cell ol { padding-left: 22px; margin: 6px 0; }
+  .markdown-cell li { margin: 2px 0; }
+  .markdown-cell code {
+    background: #f5f7fb;
+    border: 1px solid #e5e9f2;
+    border-radius: 3px;
+    padding: 1px 5px;
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.9em;
+  }
+  .markdown-cell pre.md-code {
+    background: #f5f7fb;
+    border: 1px solid #e5e9f2;
+    border-radius: 4px;
+    padding: 10px 14px;
+    overflow-x: auto;
+    margin: 8px 0;
+    font-size: 13px;
+  }
+  .markdown-cell pre.md-code code {
+    background: none;
+    border: 0;
+    padding: 0;
+  }
+  .markdown-cell a { color: #4f46e5; text-decoration: underline; }
+  .markdown-cell blockquote {
+    border-left: 3px solid #e5e9f2;
+    padding-left: 12px;
+    color: #4b5563;
+    margin: 8px 0;
+  }
+  .markdown-cell img { max-width: 100%; height: auto; }
+  /* Footer */
+  .nb-footer {
+    margin-top: 32px;
+    padding-top: 12px;
+    border-top: 1px solid #e5e9f2;
+    font-size: 11px;
+    color: #9ca3af;
+    text-align: center;
+  }
+  /* Print rules — clean output for Save-as-PDF */
+  @media print {
+    body { font-size: 11px; }
+    .nb-root { max-width: 100%; padding: 0; }
+    .cell { break-inside: avoid; }
+    .out-image, .out-html { break-inside: avoid; }
+    .nb-footer { break-before: avoid; }
+    @page { margin: 14mm 12mm; }
+  }
+`;
+
+function notebookToHtml(nb: Notebook, title: string, opts: RenderOptions): string {
+  const kernel = nb.metadata?.kernelspec?.display_name ?? nb.metadata?.kernelspec?.name;
+  const cellsHtml = nb.cells.map((cell) => renderCellHtml(cell, opts)).join("\n");
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>${escapeHtml(title)}</title>
+  <style>${STYLES}</style>
+</head>
+<body>
+  <div class="nb-root">
+    <h1 class="nb-title">${escapeHtml(title)}</h1>
+    ${kernel ? `<p class="nb-kernel">Kernel: ${escapeHtml(kernel)}</p>` : ""}
+    ${cellsHtml}
+    <div class="nb-footer">Rendered by DevBench · devbench.co.in/tools/ipynb-to-pdf</div>
+  </div>
+</body>
+</html>`;
 }
 
-async function renderOutputs(ctx: BuildContext, outputs: NbOutput[]): Promise<void> {
-  for (const out of outputs) {
-    if (out.output_type === "stream") {
-      drawCodeBlock(ctx, stripAnsi(joinSource(out.text ?? "")), {
-        tint: rgb(0.98, 0.98, 0.98),
-        border: rgb(0.88, 0.88, 0.9),
-      });
-    } else if (out.output_type === "execute_result" || out.output_type === "display_data") {
-      const data = out.data ?? {};
-      // Priority: PNG image > HTML (tables) > plain text fallback
-      if (data["image/png"]) {
-        await renderImage(ctx, joinSource(data["image/png"]));
-      } else if (data["text/html"]) {
-        await renderHtmlOutput(ctx, joinSource(data["text/html"]));
-      } else if (data["text/plain"]) {
-        drawCodeBlock(ctx, stripAnsi(joinSource(data["text/plain"])), {
-          tint: rgb(0.98, 0.98, 0.98),
-          border: rgb(0.88, 0.88, 0.9),
-        });
-      }
-    } else if (out.output_type === "error") {
-      const tb = (out.traceback ?? []).map(stripAnsi).join("\n");
-      drawCodeBlock(ctx, tb || `${out.ename}: ${out.evalue}`, {
-        tint: rgb(0.99, 0.94, 0.94),
-        border: rgb(0.95, 0.6, 0.6),
-      });
-    }
-  }
-}
+// ─── Sample notebook (Try Sample button) ───────────────────────────────
+
+const SAMPLE_NOTEBOOK: Notebook = {
+  metadata: { kernelspec: { display_name: "Python 3", name: "python3" } },
+  cells: [
+    {
+      cell_type: "markdown",
+      source:
+        "# Sample notebook\n\nThis demonstrates how DevBench renders Jupyter notebooks. It shows **bold**, *italic*, `inline code`, lists, and code cells with output.",
+    },
+    {
+      cell_type: "markdown",
+      source:
+        "## Loading data\n\nA quick pandas example. The DataFrame's HTML representation will render as a styled table in the PDF.",
+    },
+    {
+      cell_type: "code",
+      execution_count: 1,
+      source: "import pandas as pd\n\ndf = pd.DataFrame({\n    'fruit': ['apple', 'banana', 'cherry', 'date'],\n    'weight_g': [180, 120, 8, 7],\n    'colour': ['red', 'yellow', 'red', 'brown'],\n})\ndf",
+      outputs: [
+        {
+          output_type: "execute_result",
+          data: {
+            "text/html":
+              '<div>\n<table border="1" class="dataframe">\n  <thead>\n    <tr style="text-align: right;">\n      <th></th>\n      <th>fruit</th>\n      <th>weight_g</th>\n      <th>colour</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr><th>0</th><td>apple</td><td>180</td><td>red</td></tr>\n    <tr><th>1</th><td>banana</td><td>120</td><td>yellow</td></tr>\n    <tr><th>2</th><td>cherry</td><td>8</td><td>red</td></tr>\n    <tr><th>3</th><td>date</td><td>7</td><td>brown</td></tr>\n  </tbody>\n</table>\n</div>',
+            "text/plain":
+              "    fruit  weight_g  colour\n0   apple       180     red\n1  banana       120  yellow\n2  cherry         8     red\n3    date         7   brown",
+          },
+        },
+      ],
+    },
+    {
+      cell_type: "code",
+      execution_count: 2,
+      source: "print(f'Total weight: {df.weight_g.sum()} g')\nprint(f'Heaviest: {df.loc[df.weight_g.idxmax(), \"fruit\"]}')",
+      outputs: [
+        {
+          output_type: "stream",
+          name: "stdout",
+          text: "Total weight: 315 g\nHeaviest: apple\n",
+        },
+      ],
+    },
+    {
+      cell_type: "markdown",
+      source:
+        "### What gets preserved\n\n- Markdown formatting (headings, lists, bold/italic)\n- Code cells with execution counts\n- Stream output (stdout/stderr)\n- HTML tables (pandas DataFrames)\n- PNG/JPEG/SVG images (matplotlib, seaborn)\n- Error tracebacks (with ANSI codes stripped)\n\n> Click **Generate PDF** and pick *Save as PDF* in the print dialog.",
+    },
+  ],
+};
 
 // ─── Component ─────────────────────────────────────────────────────────
 
 export default function IpynbToPdfTool({ tool }: { tool: Tool }) {
   const [file, setFile] = useState<File | null>(null);
-  const [busy, setBusy] = useState(false);
+  const [notebook, setNotebook] = useState<Notebook | null>(null);
+  const [docTitle, setDocTitle] = useState("");
   const [error, setError] = useState("");
+  const [tab, setTab] = useState<"preview" | "html">("preview");
+  const [copied, setCopied] = useState(false);
   const [includeOutputs, setIncludeOutputs] = useState(true);
   const [includeCodeCells, setIncludeCodeCells] = useState(true);
+  const [dragOver, setDragOver] = useState(false);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const onFile = useCallback((f: File | null) => {
+  const html = useMemo(() => {
+    if (!notebook) return "";
+    return notebookToHtml(notebook, docTitle || "Notebook", {
+      includeCodeCells,
+      includeOutputs,
+    });
+  }, [notebook, docTitle, includeCodeCells, includeOutputs]);
+
+  const acceptFile = useCallback(async (f: File | null) => {
     setError("");
-    setFile(f);
-    if (f && !f.name.toLowerCase().endsWith(".ipynb")) {
-      setError("Please pick a .ipynb (Jupyter notebook) file.");
+    if (!f) {
+      setFile(null);
+      setNotebook(null);
+      setDocTitle("");
+      return;
+    }
+    if (!f.name.toLowerCase().endsWith(".ipynb")) {
+      setError("That doesn't look like a .ipynb file.");
+      return;
+    }
+    try {
+      const text = await f.text();
+      const nb = JSON.parse(text) as Notebook;
+      if (!Array.isArray(nb.cells)) {
+        throw new Error("Notebook has no cells array.");
+      }
+      setFile(f);
+      setNotebook(nb);
+      setDocTitle(f.name.replace(/\.ipynb$/i, ""));
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not parse notebook.");
     }
   }, []);
 
-  const build = useCallback(async () => {
-    if (!file) return;
+  const trySample = useCallback(() => {
     setError("");
-    setBusy(true);
-    try {
-      const text = await file.text();
-      let nb: Notebook;
-      try {
-        nb = JSON.parse(text) as Notebook;
-      } catch {
-        throw new Error("That file is not valid JSON — was it actually a .ipynb?");
-      }
-      if (!Array.isArray(nb.cells)) {
-        throw new Error("Notebook has no `cells` array.");
-      }
+    setNotebook(SAMPLE_NOTEBOOK);
+    setDocTitle("Sample Notebook");
+    setFile(null);
+  }, []);
 
-      const doc = await PDFDocument.create();
-      const prose = await doc.embedFont(StandardFonts.Helvetica);
-      const proseBold = await doc.embedFont(StandardFonts.HelveticaBold);
-      const mono = await doc.embedFont(StandardFonts.Courier);
-      const page = doc.addPage([A4_W, A4_H]);
-      const ctx: BuildContext = {
-        doc,
-        page,
-        y: A4_H - MARGIN,
-        prose,
-        proseBold,
-        mono,
-        maxW: A4_W - 2 * MARGIN,
-      };
+  const reset = useCallback(() => {
+    setFile(null);
+    setNotebook(null);
+    setDocTitle("");
+    setError("");
+    setCopied(false);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  }, []);
 
-      // Title
-      const title = file.name.replace(/\.ipynb$/i, "");
-      drawProseLine(ctx, title, { font: proseBold, size: 18 });
-      const kernel = nb.metadata?.kernelspec?.display_name;
-      if (kernel) {
-        drawProseLine(ctx, `Kernel: ${kernel}`, { size: 9, color: rgb(0.5, 0.5, 0.55) });
-      }
-      ctx.y -= 12;
+  const generatePdf = useCallback(() => {
+    const win = iframeRef.current?.contentWindow;
+    if (!win) return;
+    win.focus();
+    win.print();
+  }, []);
 
-      let cellIdx = 0;
-      for (const cell of nb.cells) {
-        cellIdx++;
-        const src = joinSource(cell.source);
+  const copyHtml = useCallback(() => {
+    if (!html) return;
+    navigator.clipboard.writeText(html).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    });
+  }, [html]);
 
-        if (cell.cell_type === "markdown") {
-          renderMarkdown(ctx, src);
-        } else if (cell.cell_type === "code") {
-          if (!includeCodeCells) continue;
-          // "In [n]:" label
-          const inLabel = cell.execution_count != null ? `In [${cell.execution_count}]:` : `In [ ]:`;
-          drawProseLine(ctx, inLabel, {
-            size: 9,
-            color: rgb(0.4, 0.45, 0.6),
-          });
-          drawCodeBlock(ctx, src);
-          if (includeOutputs && cell.outputs && cell.outputs.length > 0) {
-            await renderOutputs(ctx, cell.outputs);
-          }
-        } else if (cell.cell_type === "raw") {
-          drawCodeBlock(ctx, src, { tint: rgb(0.99, 0.99, 0.96), border: rgb(0.92, 0.9, 0.8) });
-        }
-        ctx.y -= 6;
-      }
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOver(false);
+    const f = e.dataTransfer.files?.[0];
+    if (f) void acceptFile(f);
+  };
 
-      // Footer note
-      drawProseLine(ctx, `${cellIdx} cells · rendered by DevBench`, {
-        size: 8,
-        color: rgb(0.55, 0.55, 0.6),
-      });
-
-      const bytes = await doc.save();
-      downloadUint8(bytes, `${title}.pdf`);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Could not build PDF.");
-    } finally {
-      setBusy(false);
-    }
-  }, [file, includeOutputs, includeCodeCells]);
+  // Reload iframe content when html changes (some browsers don't fully refresh srcDoc)
+  useEffect(() => {
+    const iframe = iframeRef.current;
+    if (!iframe || !html) return;
+    iframe.srcdoc = html;
+  }, [html]);
 
   return (
-    <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-8">
+    <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">
       <ToolPageHero tool={tool} />
 
-      <div className="animate-slide-up space-y-5 rounded-2xl border border-border bg-card p-6">
-        <p className="text-sm text-muted-foreground">
-          Upload a Jupyter <code className="font-mono text-xs">.ipynb</code> notebook and download a printable PDF.
-          Markdown cells, code cells, text output, and PNG image outputs are preserved. Runs entirely in
-          your browser — your notebook is never uploaded.
-        </p>
+      {/* Upload + Features row */}
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        {/* Upload */}
+        <section className="rounded-2xl border border-border bg-card p-5">
+          <div className="mb-1 flex items-center gap-2 text-sm font-semibold">
+            <FileText aria-hidden="true" className="h-4 w-4 text-accent" />
+            Upload IPYNB File
+          </div>
+          <p className="mb-4 text-xs text-muted-foreground">
+            Drag and drop or click to upload your .ipynb file
+          </p>
 
-        {/* File picker */}
-        <label
-          htmlFor="ipynb-file"
-          className="flex cursor-pointer items-center justify-center gap-3 rounded-xl border-2 border-dashed border-border bg-background px-4 py-8 text-sm text-muted-foreground transition-colors hover:border-accent/40 hover:bg-muted"
-        >
-          {file ? (
-            <>
-              <FileText aria-hidden="true" className="h-5 w-5 text-accent" />
-              <span className="font-medium text-foreground">{file.name}</span>
-              <span className="text-xs">{(file.size / 1024).toFixed(1)} KB</span>
-            </>
-          ) : (
-            <>
-              <Upload aria-hidden="true" className="h-5 w-5" />
-              <span>Click to select a .ipynb file</span>
-            </>
-          )}
-        </label>
-        <input
-          id="ipynb-file"
-          type="file"
-          accept=".ipynb,application/json"
-          onChange={(e) => onFile(e.target.files?.[0] ?? null)}
-          className="sr-only"
-        />
-
-        {/* Options */}
-        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-          <label className="flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 text-sm">
-            <input
-              type="checkbox"
-              checked={includeCodeCells}
-              onChange={(e) => setIncludeCodeCells(e.target.checked)}
-              className="h-4 w-4"
-            />
-            Include code cells
+          <label
+            htmlFor="ipynb-file"
+            onDragOver={(e) => {
+              e.preventDefault();
+              setDragOver(true);
+            }}
+            onDragLeave={() => setDragOver(false)}
+            onDrop={handleDrop}
+            className={`flex min-h-[140px] cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed px-4 py-6 text-center text-sm transition-colors ${
+              dragOver
+                ? "border-accent bg-accent/5"
+                : "border-border bg-background hover:border-accent/40 hover:bg-muted/40"
+            }`}
+          >
+            <Upload aria-hidden="true" className="h-6 w-6 text-muted-foreground" />
+            {file ? (
+              <>
+                <span className="text-xs text-muted-foreground">Drop your .ipynb file here or click to browse</span>
+                <span className="text-sm font-medium text-foreground">
+                  Selected: {file.name}
+                </span>
+              </>
+            ) : notebook ? (
+              <>
+                <span className="text-xs text-muted-foreground">Drop your .ipynb file here or click to browse</span>
+                <span className="inline-flex items-center gap-1 text-sm font-medium text-accent">
+                  <Sparkles aria-hidden="true" className="h-3.5 w-3.5" /> Using sample notebook
+                </span>
+              </>
+            ) : (
+              <span className="text-muted-foreground">
+                Drop your .ipynb file here or click to browse
+              </span>
+            )}
           </label>
-          <label className="flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 text-sm">
-            <input
-              type="checkbox"
-              checked={includeOutputs}
-              onChange={(e) => setIncludeOutputs(e.target.checked)}
-              className="h-4 w-4"
-            />
-            Include cell outputs
-          </label>
-        </div>
+          <input
+            ref={fileInputRef}
+            id="ipynb-file"
+            type="file"
+            accept=".ipynb,application/json"
+            onChange={(e) => acceptFile(e.target.files?.[0] ?? null)}
+            className="sr-only"
+          />
 
-        <div className="flex flex-wrap items-center gap-3">
           <button
             type="button"
-            onClick={() => void build()}
-            disabled={busy || !file}
-            className="inline-flex items-center gap-2 rounded-xl bg-accent px-6 py-3 text-sm font-semibold text-accent-foreground hover:opacity-90 disabled:opacity-40"
+            onClick={trySample}
+            className="mt-4 w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm font-medium text-foreground/80 hover:bg-muted hover:text-foreground"
           >
-            {busy ? (
-              <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin" />
-            ) : (
-              <Download aria-hidden="true" className="h-4 w-4" />
-            )}
-            {busy ? "Building PDF…" : "Download PDF"}
+            Try Sample Notebook
           </button>
-          {file && (
+
+          {error && (
+            <p className="mt-3 rounded-lg border border-destructive/40 bg-destructive/5 px-3 py-2 text-sm text-destructive" role="alert">
+              {error}
+            </p>
+          )}
+        </section>
+
+        {/* Options + features */}
+        <section className="rounded-2xl border border-border bg-card p-5">
+          <h3 className="mb-3 text-sm font-semibold">Options</h3>
+          <div className="space-y-2 mb-5">
+            <label className="flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 text-sm">
+              <input
+                type="checkbox"
+                checked={includeCodeCells}
+                onChange={(e) => setIncludeCodeCells(e.target.checked)}
+                className="h-4 w-4 accent-accent"
+              />
+              Include code cells
+            </label>
+            <label className="flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 text-sm">
+              <input
+                type="checkbox"
+                checked={includeOutputs}
+                onChange={(e) => setIncludeOutputs(e.target.checked)}
+                className="h-4 w-4 accent-accent"
+              />
+              Include cell outputs
+            </label>
+          </div>
+
+          <h3 className="mb-2 text-sm font-semibold">What gets rendered</h3>
+          <ul className="space-y-1 text-xs text-muted-foreground">
+            <li>✓ Markdown (headings, lists, bold/italic, links, code)</li>
+            <li>✓ Code cells with In&nbsp;[n] labels</li>
+            <li>✓ HTML tables (pandas DataFrames) with proper borders</li>
+            <li>✓ PNG / JPEG / SVG images (matplotlib, seaborn, plotly static)</li>
+            <li>✓ Stream output (stdout/stderr, ANSI stripped)</li>
+            <li>✓ Error tracebacks</li>
+            <li>✗ LaTeX / MathJax (use <code className="font-mono">nbconvert</code> — see below)</li>
+            <li>✗ Interactive widgets (ipywidgets, Plotly interactive)</li>
+          </ul>
+        </section>
+      </div>
+
+      {/* Preview section */}
+      {notebook && (
+        <section className="mt-6 rounded-2xl border border-border bg-card">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border px-5 py-3">
+            <div>
+              <h2 className="text-sm font-semibold">PDF Preview</h2>
+              <p className="text-xs text-muted-foreground">Your notebook is ready for PDF export</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={copyHtml}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground/80 hover:bg-muted hover:text-foreground"
+              >
+                {copied ? (
+                  <>
+                    <Check aria-hidden="true" className="h-3.5 w-3.5 text-emerald-500" /> Copied
+                  </>
+                ) : (
+                  <>
+                    <Copy aria-hidden="true" className="h-3.5 w-3.5" /> Copy HTML
+                  </>
+                )}
+              </button>
+              <button
+                type="button"
+                onClick={generatePdf}
+                className="inline-flex items-center gap-1.5 rounded-lg bg-foreground px-3 py-1.5 text-xs font-semibold text-background hover:opacity-90"
+              >
+                <Printer aria-hidden="true" className="h-3.5 w-3.5" /> Generate PDF
+              </button>
+              <button
+                type="button"
+                onClick={reset}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
+              >
+                <RotateCcw aria-hidden="true" className="h-3.5 w-3.5" /> Reset
+              </button>
+            </div>
+          </div>
+
+          {/* Tab bar */}
+          <div className="grid grid-cols-2 gap-1 border-b border-border bg-muted/30 p-1">
             <button
               type="button"
-              onClick={() => onFile(null)}
-              className="text-xs text-muted-foreground hover:text-foreground"
+              onClick={() => setTab("preview")}
+              className={`inline-flex items-center justify-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+                tab === "preview"
+                  ? "bg-card text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
             >
-              Clear
+              <Eye aria-hidden="true" className="h-3.5 w-3.5" /> Preview
             </button>
-          )}
-        </div>
-
-        {error && (
-          <p className="rounded-lg border border-destructive/40 bg-destructive/5 px-3 py-2 text-sm text-destructive" role="alert">
-            {error}
-          </p>
-        )}
-
-        <details className="rounded-lg border border-border bg-background px-4 py-3 text-xs text-muted-foreground">
-          <summary className="cursor-pointer font-medium text-foreground/80">What gets rendered?</summary>
-          <ul className="mt-2 space-y-1">
-            <li>✓ <strong>Markdown cells</strong>: headings (H1–H6), paragraphs, bullet lists, fenced code blocks</li>
-            <li>✓ <strong>Code cells</strong>: source with execution count, monospaced with light background</li>
-            <li>✓ <strong>Stream output</strong> (stdout/stderr) with ANSI escape codes stripped</li>
-            <li>✓ <strong>execute_result / display_data</strong>: PNG images, plain text representations</li>
-            <li>✓ <strong>Errors</strong>: full traceback with red background</li>
-            <li>✗ Inline LaTeX / MathJax (no math rendering — appears as raw source)</li>
-            <li>✗ HTML/SVG outputs (kept as plain text where present)</li>
-            <li>✗ Interactive widgets (ipywidgets)</li>
-          </ul>
-        </details>
-
-        {/* CLI alternative — for users who want full LaTeX + widget support */}
-        <details className="rounded-lg border border-border bg-background px-4 py-3 text-xs text-muted-foreground">
-          <summary className="cursor-pointer font-medium text-foreground/80">
-            Need LaTeX math, widgets, or matching Jupyter&apos;s native output? Use <code className="font-mono text-[11px]">nbconvert</code>
-          </summary>
-          <div className="mt-3 space-y-3">
-            <p>
-              For full-fidelity PDFs with rendered LaTeX equations, matplotlib plots, and exact Jupyter styling, run the official <code className="font-mono">nbconvert</code> tool locally. This browser converter trades some output fidelity for zero install and zero upload.
-            </p>
-
-            <div>
-              <p className="font-semibold text-foreground/80 mb-1">Install (one-time)</p>
-              <pre className="overflow-x-auto rounded-md bg-muted/50 px-3 py-2 font-mono text-[11px] text-foreground">{`pip install nbconvert
-# PDF export needs a TeX distribution + Pandoc:
-# macOS:    brew install --cask mactex pandoc
-# Ubuntu:   sudo apt install texlive-xetex pandoc
-# Windows:  install MiKTeX + Pandoc from their sites`}</pre>
-            </div>
-
-            <div>
-              <p className="font-semibold text-foreground/80 mb-1">Basic PDF conversion</p>
-              <pre className="overflow-x-auto rounded-md bg-muted/50 px-3 py-2 font-mono text-[11px] text-foreground">{`jupyter nbconvert --to pdf your_notebook.ipynb`}</pre>
-            </div>
-
-            <div>
-              <p className="font-semibold text-foreground/80 mb-1">Skip the LaTeX dependency — go via HTML instead</p>
-              <pre className="overflow-x-auto rounded-md bg-muted/50 px-3 py-2 font-mono text-[11px] text-foreground">{`jupyter nbconvert --to webpdf --allow-chromium-download your_notebook.ipynb`}</pre>
-              <p className="mt-1 text-[11px]">
-                Uses Playwright/Chromium under the hood — no TeX needed. Output looks closer to your Jupyter Lab rendering.
-              </p>
-            </div>
-
-            <div>
-              <p className="font-semibold text-foreground/80 mb-1">Other useful flags</p>
-              <ul className="space-y-1 ml-3">
-                <li><code className="font-mono">--no-input</code> — hide code cells (great for sharing reports)</li>
-                <li><code className="font-mono">--TagRemovePreprocessor.remove_cell_tags=&apos;{"{"}hide{"}"}&apos;</code> — drop tagged cells</li>
-                <li><code className="font-mono">--execute</code> — re-run all cells before converting (fresh outputs)</li>
-                <li><code className="font-mono">--output-dir=./pdfs/</code> — choose where the PDF lands</li>
-              </ul>
-            </div>
-
-            <p className="text-[11px]">
-              <strong>Kaggle notebooks:</strong> download the <code className="font-mono">.ipynb</code> via File → Download Notebook, then convert locally with the commands above. (
-              <a
-                href="https://www.kaggle.com/discussions/getting-started/529313"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-accent hover:underline"
-              >
-                Kaggle community thread
-              </a>
-              )
-            </p>
+            <button
+              type="button"
+              onClick={() => setTab("html")}
+              className={`inline-flex items-center justify-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+                tab === "html"
+                  ? "bg-card text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Code2 aria-hidden="true" className="h-3.5 w-3.5" /> HTML Source
+            </button>
           </div>
-        </details>
-      </div>
+
+          {/* Tab content */}
+          <div className="p-4">
+            {tab === "preview" ? (
+              <iframe
+                ref={iframeRef}
+                title="Notebook preview"
+                className="h-[640px] w-full rounded-lg border border-border bg-white"
+                sandbox="allow-same-origin allow-modals allow-popups"
+              />
+            ) : (
+              <pre className="max-h-[640px] overflow-auto rounded-lg border border-border bg-background p-3 font-mono text-[11px] leading-relaxed text-foreground/90">
+                <code>{html}</code>
+              </pre>
+            )}
+          </div>
+
+          {/* Info note */}
+          <div className="border-t border-border bg-accent/5 px-5 py-3 text-xs text-foreground/80">
+            <strong>Note:</strong> Click &quot;Generate PDF&quot; to open your browser&apos;s print dialog. Choose &quot;Save as PDF&quot; as your destination to create the PDF file.
+          </div>
+        </section>
+      )}
+
+      {/* nbconvert CLI fallback */}
+      <details className="mt-6 rounded-lg border border-border bg-card px-4 py-3 text-xs text-muted-foreground">
+        <summary className="cursor-pointer font-medium text-foreground/80">
+          Need LaTeX math or interactive widgets? Use <code className="font-mono text-[11px]">nbconvert</code>
+        </summary>
+        <div className="mt-3 space-y-3">
+          <p>
+            For full-fidelity PDFs with rendered LaTeX equations and matching Jupyter styling, run the
+            official <code className="font-mono">nbconvert</code> tool locally.
+          </p>
+          <div>
+            <p className="font-semibold text-foreground/80 mb-1">Install</p>
+            <pre className="overflow-x-auto rounded-md bg-muted/50 px-3 py-2 font-mono text-[11px] text-foreground">{`pip install nbconvert
+# macOS:    brew install --cask mactex pandoc
+# Ubuntu:   sudo apt install texlive-xetex pandoc`}</pre>
+          </div>
+          <div>
+            <p className="font-semibold text-foreground/80 mb-1">Convert</p>
+            <pre className="overflow-x-auto rounded-md bg-muted/50 px-3 py-2 font-mono text-[11px] text-foreground">{`jupyter nbconvert --to pdf your_notebook.ipynb
+
+# Or skip the LaTeX dependency — uses Chromium under the hood:
+jupyter nbconvert --to webpdf --allow-chromium-download your_notebook.ipynb`}</pre>
+          </div>
+          <p className="text-[11px]">
+            <strong>Kaggle:</strong> download the notebook via File → Download Notebook, then convert locally. (
+            <a
+              href="https://www.kaggle.com/discussions/getting-started/529313"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-accent hover:underline"
+            >
+              community thread
+            </a>
+            )
+          </p>
+        </div>
+      </details>
     </main>
   );
 }
