@@ -1004,7 +1004,7 @@ function UnifiedView({
               <div key={gi} className="flex border-b border-border/50">
                 <LineNum num={l.leftNum} />
                 <LineNum num={l.rightNum} />
-                <span className="w-5 shrink-0 text-center text-xs text-muted-foreground/50 py-0.5">&nbsp;</span>
+                <span className="w-5 shrink-0 text-center text-xs text-muted-foreground py-0.5">&nbsp;</span>
                 <pre className="flex-1 px-3 py-0.5 text-sm font-mono text-foreground/70 whitespace-pre-wrap break-all">
                   {l.leftText}
                 </pre>
@@ -1162,7 +1162,7 @@ function InlineView({
 
 function LineNum({ num }: { num: number | null }) {
   return (
-    <span className="w-12 shrink-0 text-right pr-2 py-0.5 text-xs font-mono text-muted-foreground/50 select-none bg-muted/20 border-r border-border/50">
+    <span className="w-12 shrink-0 text-right pr-2 py-0.5 text-xs font-mono text-muted-foreground select-none bg-muted/20 border-r border-border/50">
       {num ?? ""}
     </span>
   );

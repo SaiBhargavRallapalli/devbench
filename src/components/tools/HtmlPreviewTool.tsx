@@ -122,7 +122,7 @@ export default function HtmlPreviewTool({ tool }: { tool: Tool }) {
                 <Monitor className="w-3.5 h-3.5" />
                 Preview
                 {!allowJs && (
-                  <span className="ml-auto text-muted-foreground/70">sandbox — no scripts</span>
+                  <span className="ml-auto text-muted-foreground">sandbox — no scripts</span>
                 )}
               </div>
               <iframe

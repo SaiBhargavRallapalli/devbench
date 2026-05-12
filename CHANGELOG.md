@@ -5,7 +5,10 @@
 ## 2026-05-12
 
 ### Added
-- enhance analytics tracking across various tools (`f75e207`)
+- enhance analytics tracking across various tools (`9940c46`)
+
+### Changed
+- standardize text color usage across components (`9f3a203`)
 
 ## 2026-05-11
 

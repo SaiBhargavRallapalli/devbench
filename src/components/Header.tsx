@@ -101,7 +101,7 @@ export default function Header() {
             className="hidden sm:inline-flex items-center gap-1.5 h-8 px-3 rounded-lg border border-border text-muted-foreground text-sm transition-colors hover:bg-muted hover:text-foreground"
           >
             <span>Search</span>
-            <kbd aria-label="keyboard shortcut Command K" className="text-[10px] font-mono text-muted-foreground/80">⌘K</kbd>
+            <kbd aria-label="keyboard shortcut Command K" className="text-[10px] font-mono text-muted-foreground">⌘K</kbd>
           </button>
 
           <button

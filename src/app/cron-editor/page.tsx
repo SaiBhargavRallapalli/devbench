@@ -346,7 +346,7 @@ export default function CronEditorPage() {
                     {parts[i] || "*"}
                   </div>
                   <div className="text-muted-foreground mt-0.5 font-medium">{meta.label}</div>
-                  <div className="text-muted-foreground/60 mt-0.5">{meta.min}-{meta.max}</div>
+                  <div className="text-muted-foreground mt-0.5">{meta.min}-{meta.max}</div>
                 </button>
               );
             })}

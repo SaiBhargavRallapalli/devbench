@@ -183,7 +183,7 @@ export default function UuidGeneratorTool({ tool }: { tool: Tool }) {
               >
                 <p className="text-sm font-semibold">{info.label}</p>
                 <p className="text-xs text-muted-foreground mt-1">{info.desc}</p>
-                <p className="text-xs font-mono text-muted-foreground/70 mt-2 truncate">
+                <p className="text-xs font-mono text-muted-foreground mt-2 truncate">
                   e.g. {info.example}
                 </p>
               </button>

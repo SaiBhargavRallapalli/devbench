@@ -2281,7 +2281,7 @@ export default function JsonToolkitPage() {
               {/* Path bar */}
               <div className="shrink-0 border-b border-border bg-card px-3 py-2 flex flex-wrap items-center gap-2 min-h-[38px]">
                 {selectedTreePath === null ? (
-                  <span className="text-xs text-muted-foreground/50 italic">Click any node → copy its JSONPath</span>
+                  <span className="text-xs text-muted-foreground italic">Click any node → copy its JSONPath</span>
                 ) : (
                   <>
                     <span className="font-mono text-xs text-accent truncate flex-1 min-w-0 select-all cursor-text">
@@ -2303,7 +2303,7 @@ export default function JsonToolkitPage() {
 
               <div className="flex-1 overflow-auto p-2 scrollbar-thin">
                 {!input.trim() ? (
-                  <div className="flex flex-col items-center justify-center h-full text-muted-foreground/50 text-sm gap-2">
+                  <div className="flex flex-col items-center justify-center h-full text-muted-foreground text-sm gap-2">
                     <span className="text-3xl">{ }</span>
                     <span>Paste JSON on the left to explore the tree</span>
                   </div>
@@ -2418,7 +2418,7 @@ export default function JsonToolkitPage() {
             {/* JSONPath display bar — always visible */}
             <div className="shrink-0 border-b border-border bg-card px-3 py-2 flex flex-wrap items-center gap-2 min-h-[38px]">
               {selectedTreePath === null ? (
-                <span className="text-xs text-muted-foreground/50 italic flex items-center gap-1.5">
+                <span className="text-xs text-muted-foreground italic flex items-center gap-1.5">
                   <span>⎘</span>
                   Hover a node and click <kbd className="px-1 py-0.5 rounded border border-border bg-muted font-mono text-[10px]">⎘ path</kbd> — or click any row to see its JSONPath here
                 </span>
@@ -2720,7 +2720,7 @@ export default function JsonToolkitPage() {
                       className="w-full px-2 py-1.5 text-xs rounded border border-border bg-background font-mono resize-none focus:outline-none focus:ring-1 focus:ring-ring/40 scrollbar-thin"
                     />
                   </div>
-                  <p className="text-xs text-muted-foreground/60">
+                  <p className="text-xs text-muted-foreground">
                     Examples: <code className="bg-muted px-1 rounded">data.filter(i =&gt; i.age &gt; 25)</code>{" "}
                     <code className="bg-muted px-1 rounded">data.map(i =&gt; i.name)</code>
                   </p>
@@ -2914,7 +2914,7 @@ export default function JsonToolkitPage() {
           <span>Ready</span>
         )}
         {undoStack.length > 0 && (
-          <span className="text-muted-foreground/60">Undo: {undoStack.length}</span>
+          <span className="text-muted-foreground">Undo: {undoStack.length}</span>
         )}
         {error && (
           <button

@@ -1194,7 +1194,7 @@ export default function GraphCalculatorPage() {
           </div>
           <div className="grid md:grid-cols-2 gap-8">
             <div className="min-w-0 overflow-x-auto">
-              <h3 className="text-sm font-medium mb-2 text-foreground">Matrix A</h3>
+              <h2 className="text-sm font-medium mb-2 text-foreground">Matrix A</h2>
               <div
                 className="inline-grid gap-1"
                 style={{
@@ -1224,7 +1224,7 @@ export default function GraphCalculatorPage() {
               </div>
             </div>
             <div className="min-w-0 overflow-x-auto">
-              <h3 className="text-sm font-medium mb-2 text-foreground">Matrix B</h3>
+              <h2 className="text-sm font-medium mb-2 text-foreground">Matrix B</h2>
               <div
                 className="inline-grid gap-1"
                 style={{
@@ -1255,7 +1255,7 @@ export default function GraphCalculatorPage() {
             </div>
           </div>
           <div className="rounded-xl border border-border bg-card p-4 overflow-x-auto">
-            <h3 className="text-sm font-medium text-muted-foreground mb-2">Output</h3>
+            <h2 className="text-sm font-medium text-muted-foreground mb-2">Output</h2>
             {matrixComputation.kind === "error" && (
               <p className="text-destructive text-sm">{matrixComputation.message}</p>
             )}
