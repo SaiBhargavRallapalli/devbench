@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { socialMetadata, SITE_URL } from "@/lib/social-metadata";
+import JsonLd from "@/components/JsonLd";
+import { breadcrumbSchema } from "@/lib/breadcrumb-schema";
 
 const title = "Code Beautify — Formatters, Validators, Converters";
 const description =
@@ -28,5 +30,10 @@ export default function CodeBeautifyLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return children;
+  return (
+    <>
+      <JsonLd data={breadcrumbSchema([{ name: "Code Beautify", path: "/code-beautify" }])} />
+      {children}
+    </>
+  );
 }

@@ -4,6 +4,7 @@ import { TOOL_FAQS } from "@/lib/tool-faqs";
 import ToolFaqSection from "@/components/tools/ToolFaqSection";
 import JsonLd from "@/components/JsonLd";
 import { socialMetadata, SITE_URL } from "@/lib/social-metadata";
+import { breadcrumbSchema } from "@/lib/breadcrumb-schema";
 import { webApplicationEnrichment } from "@/lib/web-application-schema";
 
 const JWT_TITLE = "JWT Debugger — Decode, Encode & Verify Tokens";
@@ -80,6 +81,7 @@ export default function JwtDebuggerLayout({
   return (
     <>
       <JsonLd data={webAppSchema} />
+      <JsonLd data={breadcrumbSchema([{ name: "JWT Debugger", path: "/jwt-debugger" }])} />
       <JsonLd data={faqSchema} />
       {children}
       <ToolFaqSection slug="jwt-debugger" />

@@ -5,10 +5,11 @@
 ## 2026-05-12
 
 ### Added
+- add JSON-LD structured data for improved SEO across multiple layouts (`1a4ed26`)
 - enhance analytics tracking across various tools (`9940c46`)
 
 ### Changed
-- standardize text color usage across components (`9f3a203`)
+- standardize text color usage across components (`2cfe5cd`)
 
 ## 2026-05-11
 

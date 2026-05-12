@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { socialMetadata, SITE_URL } from "@/lib/social-metadata";
+import JsonLd from "@/components/JsonLd";
+import { breadcrumbSchema } from "@/lib/breadcrumb-schema";
 
 const title = "API Tester — HTTP Client Online";
 const description =
@@ -18,5 +20,10 @@ export default function ApiTesterLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return children;
+  return (
+    <>
+      <JsonLd data={breadcrumbSchema([{ name: "API Tester", path: "/api-tester" }])} />
+      {children}
+    </>
+  );
 }

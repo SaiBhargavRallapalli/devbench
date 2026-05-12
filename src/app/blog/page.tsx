@@ -3,8 +3,10 @@ import Link from "next/link";
 import { ArrowRight, Clock, Tag } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import JsonLd from "@/components/JsonLd";
 import { BLOG_POSTS } from "@/lib/blog";
 import { socialMetadata, SITE_URL } from "@/lib/social-metadata";
+import { breadcrumbSchema } from "@/lib/breadcrumb-schema";
 
 const BLOG_TITLE = "DevBench Blog — Developer Guides & Tutorials";
 const BLOG_DESC =
@@ -151,6 +153,8 @@ export default function BlogPage() {
           )}
         </div>
       </main>
+
+      <JsonLd data={breadcrumbSchema([{ name: "Blog", path: "/blog" }])} />
 
       {/* JSON-LD */}
       <script

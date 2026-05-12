@@ -4,8 +4,10 @@ import Link from "next/link";
 import { ArrowLeft, Clock, Tag, ArrowRight, Wrench } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import JsonLd from "@/components/JsonLd";
 import { BLOG_POSTS, getBlogPost } from "@/lib/blog";
 import { POST_CONTENT } from "@/components/blog/PostContent";
+import { breadcrumbSchema } from "@/lib/breadcrumb-schema";
 
 export async function generateStaticParams() {
   return BLOG_POSTS.map((p) => ({ slug: p.slug }));
@@ -86,6 +88,10 @@ export default async function BlogPostPage({
   return (
     <>
       <Header />
+      <JsonLd data={breadcrumbSchema([
+        { name: "Blog", path: "/blog" },
+        { name: post.title, path: `/blog/${slug}` },
+      ])} />
       <main className="flex-1">
         <article className="max-w-3xl mx-auto px-4 py-10 sm:py-16">
           {/* Back link */}

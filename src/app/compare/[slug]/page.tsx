@@ -3,8 +3,10 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import JsonLd from "@/components/JsonLd";
 import { TOOL_COMPARISONS } from "@/lib/tool-comparisons";
 import { SITE_URL } from "@/lib/social-metadata";
+import { breadcrumbSchema } from "@/lib/breadcrumb-schema";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -31,6 +33,10 @@ export default async function CompareArticlePage({ params }: Props) {
   return (
     <>
       <Header />
+      <JsonLd data={breadcrumbSchema([
+        { name: "Compare tools", path: "/compare" },
+        { name: comp.title, path: `/compare/${comp.slug}` },
+      ])} />
       <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-10 sm:px-6">
         <nav className="mb-6 text-sm text-muted-foreground">
           <Link href="/compare" className="hover:text-accent">

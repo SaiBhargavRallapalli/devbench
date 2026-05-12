@@ -2,8 +2,10 @@ import type { Metadata } from "next";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PdfToolsHub from "@/components/pdf/PdfToolsHub";
+import JsonLd from "@/components/JsonLd";
 import { SITE_URL } from "@/lib/social-metadata";
 import { socialMetadata } from "@/lib/social-metadata";
+import { breadcrumbSchema } from "@/lib/breadcrumb-schema";
 
 const TITLE = "PDF Tools — Image to PDF, Page Editor";
 const DESC =
@@ -25,6 +27,7 @@ export default function PdfWorkspacePage() {
   return (
     <>
       <Header />
+      <JsonLd data={breadcrumbSchema([{ name: "PDF Tools", path: "/pdf" }])} />
       <main className="flex-1">
         <PdfToolsHub />
       </main>

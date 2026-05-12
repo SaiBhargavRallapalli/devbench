@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { socialMetadata, SITE_URL } from "@/lib/social-metadata";
+import JsonLd from "@/components/JsonLd";
+import { breadcrumbSchema } from "@/lib/breadcrumb-schema";
 
 const title = "Contact";
 const description =
@@ -17,5 +19,10 @@ export default function ContactLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return children;
+  return (
+    <>
+      <JsonLd data={breadcrumbSchema([{ name: "Contact", path: "/contact" }])} />
+      {children}
+    </>
+  );
 }

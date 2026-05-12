@@ -2,8 +2,10 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import JsonLd from "@/components/JsonLd";
 import { TOOL_COMPARISONS } from "@/lib/tool-comparisons";
 import { SITE_URL } from "@/lib/social-metadata";
+import { breadcrumbSchema } from "@/lib/breadcrumb-schema";
 
 export const metadata: Metadata = {
   title: "Compare tools",
@@ -16,6 +18,7 @@ export default function CompareIndexPage() {
   return (
     <>
       <Header />
+      <JsonLd data={breadcrumbSchema([{ name: "Compare tools", path: "/compare" }])} />
       <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-10 sm:px-6">
         <h1 className="text-3xl font-bold tracking-tight">Compare tools</h1>
         <p className="mt-3 text-muted-foreground leading-relaxed">

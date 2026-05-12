@@ -4,6 +4,7 @@ import ToolFaqSection from "@/components/tools/ToolFaqSection";
 import JsonLd from "@/components/JsonLd";
 import { TOOL_FAQS } from "@/lib/tool-faqs";
 import { socialMetadata, SITE_URL } from "@/lib/social-metadata";
+import { breadcrumbSchema } from "@/lib/breadcrumb-schema";
 import { webApplicationEnrichment } from "@/lib/web-application-schema";
 
 const JSON_TITLE = "JSON Formatter, Validator & Toolkit";
@@ -85,6 +86,7 @@ export default function JsonToolkitLayout({
   return (
     <>
       <JsonLd data={webAppSchema} />
+      <JsonLd data={breadcrumbSchema([{ name: "JSON Toolkit", path: "/json" }])} />
       {faqSchema && <JsonLd data={faqSchema} />}
       {children}
       <section className="max-w-5xl mx-auto px-4 pb-10 w-full border-t border-border pt-8 mt-2 space-y-3">

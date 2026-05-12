@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { socialMetadata, SITE_URL } from "@/lib/social-metadata";
+import JsonLd from "@/components/JsonLd";
+import { breadcrumbSchema } from "@/lib/breadcrumb-schema";
 
 const title = "Epoch Converter — Unix Timestamp & Date";
 const description =
@@ -14,5 +16,10 @@ export const metadata: Metadata = {
 };
 
 export default function EpochLayout({ children }: { children: React.ReactNode }) {
-  return children;
+  return (
+    <>
+      <JsonLd data={breadcrumbSchema([{ name: "Epoch / Unix Time", path: "/epoch" }])} />
+      {children}
+    </>
+  );
 }

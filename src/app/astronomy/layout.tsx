@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Footer from "@/components/Footer";
 import { socialMetadata, SITE_URL } from "@/lib/social-metadata";
+import JsonLd from "@/components/JsonLd";
+import { breadcrumbSchema } from "@/lib/breadcrumb-schema";
 
 const title = "Sun & Moon — Sunrise, Sunset, Moon Phase";
 const description =
@@ -23,6 +25,7 @@ export const metadata: Metadata = {
 export default function AstronomyLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
+      <JsonLd data={breadcrumbSchema([{ name: "Astronomy", path: "/astronomy" }])} />
       {children}
       <section className="max-w-5xl mx-auto px-4 pb-10 w-full border-t border-border pt-8 mt-2 space-y-3">
         <h2 className="text-base font-semibold text-foreground mt-2 mb-2">Accuracy note</h2>

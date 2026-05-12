@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Footer from "@/components/Footer";
+import JsonLd from "@/components/JsonLd";
 import { socialMetadata, SITE_URL } from "@/lib/social-metadata";
+import { breadcrumbSchema } from "@/lib/breadcrumb-schema";
 
 const title = "YAML Formatter, Validator & Converter";
 const description =
@@ -17,6 +19,7 @@ export const metadata: Metadata = {
 export default function YamlLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
+      <JsonLd data={breadcrumbSchema([{ name: "YAML Toolkit", path: "/yaml" }])} />
       {children}
       <section className="max-w-5xl mx-auto px-4 pb-10 w-full border-t border-border pt-8 mt-2 space-y-3">
         <h2 className="text-base font-semibold text-foreground mt-6 mb-2">
