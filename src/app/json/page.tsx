@@ -51,8 +51,22 @@ import {
   GripVertical,
   ChevronLeft,
   Columns2,
+  Share2,
+  BookmarkPlus,
+  Library,
 } from "lucide-react";
 import Header from "@/components/Header";
+import {
+  decodeJsonWorkspaceState,
+  encodeJsonWorkspaceState,
+  jsonWorkspaceShareTooLong,
+} from "@/lib/json-workspace-share";
+import {
+  deleteJsonPreset,
+  loadJsonPresets,
+  upsertJsonPreset,
+  type JsonWorkspacePreset,
+} from "@/lib/json-workspace-presets";
 import {
   trackToolSuccess,
   trackToolError,
@@ -63,7 +77,7 @@ const TOOL_SLUG = "json";
 
 // ── Types ────────────────────────────────────────────────────────────────
 
-type Tab = "format" | "tree" | "diff" | "convert" | "generate" | "transform" | "table";
+import type { JsonWorkspaceTab as Tab } from "@/lib/json-workspace-types";
 type ConvertTarget = "yaml" | "csv" | "typescript" | "env" | "base64" | "xml" | "toml" | "urlencoded" | "schema" | "htmlform" | "tableview" | "mockdata";
 
 interface FixResult {
@@ -1336,6 +1350,11 @@ export default function JsonToolkitPage() {
   const [schemaText, setSchemaText] = useState("");
   const [schemaErrors, setSchemaErrors] = useState<SchemaValidationError[] | null>(null);
   const [schemaValid, setSchemaValid] = useState(false);
+  const [schemaValidatedAt, setSchemaValidatedAt] = useState<number | null>(null);
+  const [shareCopied, setShareCopied] = useState(false);
+  const [jsonPresets, setJsonPresets] = useState<JsonWorkspacePreset[]>([]);
+  const [presetsRevision, setPresetsRevision] = useState(0);
+  const jwHydrated = useRef(false);
 
   const handleSchemaValidate = useCallback(() => {
     let data: unknown;
@@ -1352,6 +1371,7 @@ export default function JsonToolkitPage() {
       setShowErrorPanel(true);
       const err = parseJsonError(input);
       if (err) setError(err);
+      setSchemaValidatedAt(Date.now());
       return;
     }
 
@@ -1365,6 +1385,7 @@ export default function JsonToolkitPage() {
         },
       ]);
       setSchemaValid(false);
+      setSchemaValidatedAt(Date.now());
       return;
     }
 
@@ -1376,6 +1397,7 @@ export default function JsonToolkitPage() {
         { path: "/", message: `Invalid JSON Schema (could not parse): ${(e as Error).message}` },
       ]);
       setSchemaValid(false);
+      setSchemaValidatedAt(Date.now());
       return;
     }
 
@@ -1387,7 +1409,72 @@ export default function JsonToolkitPage() {
       setSchemaErrors([{ path: "/", message: (e as Error).message }]);
       setSchemaValid(false);
     }
+    setSchemaValidatedAt(Date.now());
   }, [input, schemaText]);
+
+  useEffect(() => {
+    setJsonPresets(loadJsonPresets());
+  }, []);
+
+  useEffect(() => {
+    if (jwHydrated.current) return;
+    if (typeof window === "undefined") return;
+    const d = decodeJsonWorkspaceState(window.location.hash);
+    if (!d) return;
+    jwHydrated.current = true;
+    skipHistoryRef.current = true;
+    setInput(d.input);
+    setSchemaText(d.schemaText);
+    setActiveTab(d.activeTab);
+    setDiffLeft(d.diffLeft);
+    setDiffRight(d.diffRight);
+    if (d.schemaText.trim()) setShowSchemaPanel(true);
+  }, []);
+
+  useEffect(() => {
+    if (!showSchemaPanel) return;
+    const schemaRaw = schemaText.trim();
+    if (!schemaRaw) return;
+    let cancelled = false;
+    const t = window.setTimeout(() => {
+      let data: unknown;
+      try {
+        data = JSON.parse(input);
+      } catch (e) {
+        if (cancelled) return;
+        setSchemaErrors([
+          {
+            path: "/",
+            message: `Cannot auto-check: main JSON is invalid (${(e as Error).message}).`,
+          },
+        ]);
+        setSchemaValid(false);
+        setSchemaValidatedAt(Date.now());
+        return;
+      }
+      let schema: unknown;
+      try {
+        schema = JSON.parse(schemaRaw);
+      } catch (e) {
+        if (cancelled) return;
+        setSchemaErrors([
+          { path: "/", message: `Schema JSON is invalid (${(e as Error).message}).` },
+        ]);
+        setSchemaValid(false);
+        setSchemaValidatedAt(Date.now());
+        return;
+      }
+      if (cancelled) return;
+      const errs = validateJsonSchema(data, schema);
+      setSchemaErrors(errs);
+      setSchemaValid(errs.length === 0);
+      setSchemaValidatedAt(Date.now());
+    }, 500);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(t);
+    };
+  }, [showSchemaPanel, input, schemaText]);
 
   // Tree expand/collapse signals
   const [expandAllSignal, setExpandAllSignal] = useState(0);
@@ -1572,6 +1659,61 @@ export default function JsonToolkitPage() {
     trackToolCopy(TOOL_SLUG, activeTab);
   }, [output, input, activeTab]);
 
+  const copyJsonWorkspaceShareLink = useCallback(async () => {
+    const fragment = encodeJsonWorkspaceState({
+      v: 2,
+      input,
+      schemaText,
+      activeTab,
+      diffLeft,
+      diffRight,
+    });
+    if (jsonWorkspaceShareTooLong(fragment)) {
+      window.alert(
+        "This workspace is too large to pack into a URL. Shorten the JSON or copy sections manually.",
+      );
+      return;
+    }
+    const url = `${window.location.origin}${window.location.pathname}${fragment}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      setShareCopied(true);
+      window.setTimeout(() => setShareCopied(false), 2000);
+    } catch {
+      window.alert("Could not copy to clipboard. Your browser may block clipboard access.");
+    }
+  }, [input, schemaText, activeTab, diffLeft, diffRight]);
+
+  const saveCurrentJsonPreset = useCallback(() => {
+    const name = window.prompt("Name for this workspace preset", "My JSON workspace");
+    if (name === null) return;
+    upsertJsonPreset({
+      name: name.trim() || "Untitled",
+      input,
+      schemaText,
+      activeTab,
+      diffLeft,
+      diffRight,
+    });
+    setJsonPresets(loadJsonPresets());
+    setPresetsRevision((n) => n + 1);
+  }, [input, schemaText, activeTab, diffLeft, diffRight]);
+
+  const loadPresetById = useCallback(
+    (id: string) => {
+      const p = jsonPresets.find((x) => x.id === id);
+      if (!p) return;
+      skipHistoryRef.current = true;
+      setInput(p.input);
+      setSchemaText(p.schemaText);
+      setActiveTab(p.activeTab);
+      setDiffLeft(p.diffLeft);
+      setDiffRight(p.diffRight);
+      if (p.schemaText.trim()) setShowSchemaPanel(true);
+    },
+    [jsonPresets],
+  );
+
   const handleClear = useCallback(() => {
     setInputWithHistory("");
     setOutput("");
@@ -1581,6 +1723,7 @@ export default function JsonToolkitPage() {
     setDiffRight("");
     setSchemaErrors(null);
     setSchemaValid(false);
+    setSchemaValidatedAt(null);
   }, [clearError, setInputWithHistory]);
 
   const handleSortKeys = useCallback(() => {
@@ -2147,6 +2290,61 @@ export default function JsonToolkitPage() {
         <ToolButton onClick={() => setShowSearch(!showSearch)} icon={<Search size={15} />} label="Find" />
         <ToolButton onClick={() => setShowSchemaPanel(!showSchemaPanel)} icon={<ShieldCheck size={15} />} label="Validate Schema" />
         <ToolButton
+          onClick={() => void copyJsonWorkspaceShareLink()}
+          icon={shareCopied ? <Check size={15} /> : <Share2 size={15} />}
+          label={shareCopied ? "Link copied" : "Share link"}
+          variant={shareCopied ? "success" : "default"}
+        />
+        <div
+          className="flex items-center gap-1 shrink-0 max-sm:flex-wrap"
+          title="Presets are stored only in this browser (not sent to a server)."
+        >
+          <Library size={14} className="text-muted-foreground shrink-0" aria-hidden />
+          <select
+            value=""
+            onChange={(e) => {
+              const id = e.target.value;
+              e.target.value = "";
+              if (id) loadPresetById(id);
+            }}
+            className="max-w-[10rem] truncate text-xs bg-muted text-foreground border border-border rounded-lg px-2 py-1.5 outline-none focus:ring-2 focus:ring-ring"
+            aria-label="Load saved JSON workspace preset"
+          >
+            <option value="">Presets</option>
+            {jsonPresets.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.name}
+              </option>
+            ))}
+          </select>
+          <ToolButton onClick={saveCurrentJsonPreset} icon={<BookmarkPlus size={15} />} label="Save preset" />
+          {jsonPresets.length > 0 ? (
+            <select
+              key={`rm-${presetsRevision}`}
+              defaultValue=""
+              aria-label="Delete saved preset"
+              onChange={(e) => {
+                const id = e.target.value;
+                if (!id) return;
+                if (window.confirm("Remove this preset from this browser?")) {
+                  deleteJsonPreset(id);
+                  setJsonPresets(loadJsonPresets());
+                  setPresetsRevision((n) => n + 1);
+                }
+                e.currentTarget.selectedIndex = 0;
+              }}
+              className="max-w-[8rem] truncate text-xs bg-muted text-foreground border border-border rounded-lg px-2 py-1.5 outline-none focus:ring-2 focus:ring-ring text-destructive"
+            >
+              <option value="">Remove…</option>
+              {jsonPresets.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name}
+                </option>
+              ))}
+            </select>
+          ) : null}
+        </div>
+        <ToolButton
           onClick={handleCopy}
           icon={copied ? <Check size={15} /> : <Copy size={15} />}
           label={copied ? "Copied!" : "Copy"}
@@ -2254,7 +2452,21 @@ export default function JsonToolkitPage() {
           <p className="text-xs text-muted-foreground leading-relaxed">
             The <strong className="text-foreground">main editor above</strong> is the JSON instance. Paste only your{" "}
             <strong className="text-foreground">JSON Schema</strong> here, then Validate — you do not re-paste the document.
+            {showSchemaPanel && schemaText.trim() ? (
+              <span className="block mt-1 text-[11px]">
+                With this panel open, validation runs automatically after you stop typing (about half a second).
+              </span>
+            ) : null}
           </p>
+          {schemaValidatedAt !== null ? (
+            <p className="text-[11px] text-muted-foreground">
+              Last checked{" "}
+              {new Date(schemaValidatedAt).toLocaleString(undefined, {
+                dateStyle: "short",
+                timeStyle: "medium",
+              })}
+            </p>
+          ) : null}
           <textarea
             value={schemaText}
             onChange={(e) => setSchemaText(e.target.value)}

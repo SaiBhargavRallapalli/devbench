@@ -596,7 +596,7 @@ export default function RegexTesterTool({ tool }: { tool: Tool }) {
         const match = matches[i];
         highlighted += escHtml(testStr.slice(last, match.index));
         const color = MATCH_COLORS[i % MATCH_COLORS.length];
-        highlighted += `<mark class="${color} rounded px-0.5 cursor-default font-medium" title="Match ${i + 1} · index ${match.index}–${match.end}">${escHtml(match.full)}</mark>`;
+        highlighted += `<mark class="${color} rounded px-0.5 cursor-default font-medium select-none" title="Match ${i + 1} · index ${match.index}–${match.end}">${escHtml(match.full)}</mark>`;
         last = match.end;
       }
       highlighted += escHtml(testStr.slice(last));
@@ -726,7 +726,7 @@ export default function RegexTesterTool({ tool }: { tool: Tool }) {
                   Match Highlights
                 </div>
                 <div
-                  className="p-4 font-mono text-sm whitespace-pre-wrap leading-relaxed"
+                  className="p-4 font-mono text-sm whitespace-pre-wrap leading-relaxed select-none"
                   dangerouslySetInnerHTML={{ __html: result.highlighted }}
                 />
               </div>

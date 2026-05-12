@@ -4,6 +4,7 @@ import { useState, useMemo, useEffect, useCallback, memo } from "react";
 import Link from "next/link";
 import { Star, Search, Braces, Code2, Type, Wrench, ArrowRightLeft, Sparkles, DollarSign, Heart, Sigma, CalendarDays, Clock, Pin, FileStack } from "lucide-react";
 import { CATEGORIES, type Tool, type ToolCategory } from "@/lib/tools-registry";
+import { workspaceHrefForToolSlug } from "@/lib/devbench-workspaces";
 
 const CATEGORY_ICONS: Record<ToolCategory, React.ElementType> = {
   json:       Braces,
@@ -19,15 +20,8 @@ const CATEGORY_ICONS: Record<ToolCategory, React.ElementType> = {
   datetime:   CalendarDays,
 };
 
-const WORKSPACE_ROUTES: Partial<Record<string, string>> = {
-  "json-formatter":  "/json",
-  "yaml-to-json":    "/yaml",
-  "json-to-yaml":    "/yaml",
-  "yaml-formatter":  "/yaml",
-};
-
 function toolHref(slug: string): string {
-  return WORKSPACE_ROUTES[slug] ?? `/tools/${slug}`;
+  return workspaceHrefForToolSlug(slug) ?? `/tools/${slug}`;
 }
 
 const RECENT_KEY = "devbench:recent";

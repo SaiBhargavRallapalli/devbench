@@ -2,16 +2,17 @@
 
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Search } from "lucide-react";
+import { Search, LayoutGrid } from "lucide-react";
 import { CATEGORIES, type Tool } from "@/lib/tools-registry";
-
-const WORKSPACE_ROUTES: Record<string, string> = {
-  "json-formatter": "/json",
-};
+import { filterWorkspaces, workspaceHrefForToolSlug, type WorkspaceShortcut } from "@/lib/devbench-workspaces";
 
 function toolHref(slug: string) {
-  return WORKSPACE_ROUTES[slug] ?? `/tools/${slug}`;
+  return workspaceHrefForToolSlug(slug) ?? `/tools/${slug}`;
 }
+
+type PaletteRow =
+  | { kind: "workspace"; workspace: WorkspaceShortcut }
+  | { kind: "tool"; tool: Tool };
 
 export default function CommandPalette({ tools }: { tools: Tool[] }) {
   const [open, setOpen] = useState(false);
@@ -56,23 +57,38 @@ export default function CommandPalette({ tools }: { tools: Tool[] }) {
     item?.scrollIntoView({ block: "nearest" });
   }, [activeIdx]);
 
-  const results = useMemo(() => {
+  const rows = useMemo((): PaletteRow[] => {
     const q = query.toLowerCase().trim();
-    if (!q) return tools.slice(0, 10);
-    return tools
-      .filter(
-        (t) =>
-          t.name.toLowerCase().includes(q) ||
-          t.shortName.toLowerCase().includes(q) ||
-          t.description.toLowerCase().includes(q) ||
-          t.category.includes(q),
-      )
-      .slice(0, 12);
+    const workspaces = filterWorkspaces(query);
+    const toolMatches = !q
+      ? tools.slice(0, 10)
+      : tools
+          .filter(
+            (t) =>
+              t.name.toLowerCase().includes(q) ||
+              t.shortName.toLowerCase().includes(q) ||
+              t.description.toLowerCase().includes(q) ||
+              t.category.includes(q),
+          )
+          .slice(0, 12);
+
+    const out: PaletteRow[] = [];
+    for (const w of workspaces) out.push({ kind: "workspace", workspace: w });
+    for (const t of toolMatches) out.push({ kind: "tool", tool: t });
+    return out;
   }, [tools, query]);
 
-  const navigate = useCallback(
-    (tool: Tool) => {
-      router.push(toolHref(tool.slug));
+  useEffect(() => {
+    if (activeIdx >= rows.length) setActiveIdx(Math.max(0, rows.length - 1));
+  }, [rows.length, activeIdx]);
+
+  const goToRow = useCallback(
+    (row: PaletteRow) => {
+      if (row.kind === "workspace") {
+        router.push(row.workspace.href);
+      } else {
+        router.push(toolHref(row.tool.slug));
+      }
       setOpen(false);
     },
     [router],
@@ -81,12 +97,14 @@ export default function CommandPalette({ tools }: { tools: Tool[] }) {
   function handleKeyDown(e: React.KeyboardEvent) {
     if (e.key === "ArrowDown") {
       e.preventDefault();
-      setActiveIdx((i) => Math.min(i + 1, results.length - 1));
+      if (!rows.length) return;
+      setActiveIdx((i) => Math.min(i + 1, rows.length - 1));
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
+      if (!rows.length) return;
       setActiveIdx((i) => Math.max(i - 1, 0));
-    } else if (e.key === "Enter" && results[activeIdx]) {
-      navigate(results[activeIdx]);
+    } else if (e.key === "Enter" && rows[activeIdx]) {
+      goToRow(rows[activeIdx]);
     }
   }
 
@@ -114,7 +132,7 @@ export default function CommandPalette({ tools }: { tools: Tool[] }) {
               setActiveIdx(0);
             }}
             onKeyDown={handleKeyDown}
-            placeholder={`Search ${tools.length} tools…`}
+            placeholder="Search workspaces & tools…"
             className="flex-1 bg-transparent text-foreground placeholder:text-muted-foreground text-sm outline-none"
             autoComplete="off"
           />
@@ -132,38 +150,63 @@ export default function CommandPalette({ tools }: { tools: Tool[] }) {
         <ul ref={listRef} className="max-h-[55vh] overflow-y-auto py-1.5">
           {!query.trim() && (
             <li className="px-4 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground select-none">
-              All tools
+              Workspaces & tools
             </li>
           )}
-          {results.length === 0 ? (
+          {rows.length === 0 ? (
             <li className="px-4 py-10 text-center text-sm text-muted-foreground">
               No results for &ldquo;{query}&rdquo;
             </li>
           ) : (
-            results.map((tool, i) => (
-              <li key={tool.slug}>
-                <button
-                  onClick={() => navigate(tool)}
-                  onMouseEnter={() => setActiveIdx(i)}
-                  className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors ${
-                    activeIdx === i ? "bg-muted" : "hover:bg-muted/50"
-                  }`}
-                >
-                  <span
-                    className={`shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold font-mono ${CATEGORIES[tool.category].color}`}
+            rows.map((row, i) =>
+              row.kind === "workspace" ? (
+                <li key={`w:${row.workspace.id}`}>
+                  <button
+                    type="button"
+                    onClick={() => goToRow(row)}
+                    onMouseEnter={() => setActiveIdx(i)}
+                    className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors ${
+                      activeIdx === i ? "bg-muted" : "hover:bg-muted/50"
+                    }`}
                   >
-                    {tool.icon}
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium truncate">{tool.name}</p>
-                    <p className="text-xs text-muted-foreground truncate">{tool.description}</p>
-                  </div>
-                  <span className="shrink-0 text-[10px] text-muted-foreground border border-border rounded px-1.5 py-0.5">
-                    {CATEGORIES[tool.category].label}
-                  </span>
-                </button>
-              </li>
-            ))
+                    <span className="shrink-0 w-8 h-8 rounded-lg flex items-center justify-center bg-accent/15 text-accent">
+                      <LayoutGrid className="w-4 h-4" aria-hidden />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium truncate">{row.workspace.label}</p>
+                      <p className="text-xs text-muted-foreground truncate">{row.workspace.description}</p>
+                    </div>
+                    <span className="shrink-0 text-[10px] text-muted-foreground border border-border rounded px-1.5 py-0.5">
+                      Workspace
+                    </span>
+                  </button>
+                </li>
+              ) : (
+                <li key={`t:${row.tool.slug}`}>
+                  <button
+                    type="button"
+                    onClick={() => goToRow(row)}
+                    onMouseEnter={() => setActiveIdx(i)}
+                    className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors ${
+                      activeIdx === i ? "bg-muted" : "hover:bg-muted/50"
+                    }`}
+                  >
+                    <span
+                      className={`shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold font-mono ${CATEGORIES[row.tool.category].color}`}
+                    >
+                      {row.tool.icon}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium truncate">{row.tool.name}</p>
+                      <p className="text-xs text-muted-foreground truncate">{row.tool.description}</p>
+                    </div>
+                    <span className="shrink-0 text-[10px] text-muted-foreground border border-border rounded px-1.5 py-0.5">
+                      {CATEGORIES[row.tool.category].label}
+                    </span>
+                  </button>
+                </li>
+              ),
+            )
           )}
         </ul>
 

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PdfToolsHub from "@/components/pdf/PdfToolsHub";
@@ -29,7 +30,9 @@ export default function PdfWorkspacePage() {
       <Header />
       <JsonLd data={breadcrumbSchema([{ name: "PDF Tools", path: "/pdf" }])} />
       <main className="flex-1">
-        <PdfToolsHub />
+        <Suspense fallback={<div className="mx-auto max-w-6xl px-4 py-24 text-center text-sm text-muted-foreground" aria-busy>Loading PDF tools…</div>}>
+          <PdfToolsHub />
+        </Suspense>
       </main>
       <Footer />
     </>

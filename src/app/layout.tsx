@@ -4,6 +4,7 @@ import Script from "next/script";
 import "./globals.css";
 import { TOOLS } from "@/lib/tools-registry";
 import LazyCommandPalette from "@/components/LazyCommandPalette";
+import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
@@ -154,6 +155,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         </noscript>
         {children}
         <LazyCommandPalette tools={TOOLS} />
+        <ServiceWorkerRegister />
         <Analytics />
         <SpeedInsights />
       </body>

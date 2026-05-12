@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { ArrowRight, FileStack } from "lucide-react";
 import {
   getPdfHubTools,
@@ -36,8 +37,16 @@ function hubBadgeLabel(cat: NonNullable<
 }
 
 export default function PdfToolsHub() {
+  const searchParams = useSearchParams();
   const tools = useMemo(() => getPdfHubTools(), []);
   const [filter, setFilter] = useState<PdfHubFilter>("all");
+
+  useEffect(() => {
+    const raw = searchParams.get("filter");
+    if (!raw) return;
+    const ok = FILTERS.some((f) => f.id === raw);
+    if (ok) setFilter(raw as PdfHubFilter);
+  }, [searchParams]);
 
   const visible = useMemo(() => {
     if (filter === "all") return tools;
