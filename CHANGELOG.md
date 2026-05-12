@@ -2,10 +2,15 @@
 
 > Auto-generated from git log. Run `npm run changelog` to refresh.
 
+## 2026-05-13
+
+### Added
+- integrate Playwright for end-to-end testing and update dependencies (`023b46c`)
+
 ## 2026-05-12
 
 ### Added
-- enhance user experience in GraphCalculator and JsonToolkit (`8952589`)
+- enhance user experience in GraphCalculator and JsonToolkit (`4dd5290`)
 - improve zoom functionality and event handling in GraphCalculator (`b286e49`)
 - add JSON comment stripping and enhanced error correction in JsonToolkit (`2f31cde`)
 - enhance JSON handling and validation in JsonToolkit (`eb3be38`)

@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "changelog": "node scripts/changelog.mjs"
+    "changelog": "node scripts/changelog.mjs",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@codemirror/basic-setup": "^0.20.0",
@@ -61,6 +62,7 @@
     "@types/suncalc": "^1.9.2",
     "eslint": "^9",
     "eslint-config-next": "16.2.4",
+    "@playwright/test": "^1.52.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

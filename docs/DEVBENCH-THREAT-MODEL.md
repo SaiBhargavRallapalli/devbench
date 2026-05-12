@@ -139,5 +139,10 @@ Implemented in `next.config.ts` (global `/(.*)`):
 
 ## Cross-references
 
-- `docs/ARCHITECTURE.md` — routing and workspace layout.
-- `docs/RUNBOOK.md` — build, deploy, rollback.
+- `docs/CTO-DELIVERABLES.md` — index of all eight CTO artifacts.
+- `docs/ARCHITECTURE.md` — routing, layout contracts, shared boundaries.
+- `docs/SECURITY-DATA-FLOW-MATRIX.md` — tool × network × storage matrix.
+- `docs/PERFORMANCE-BUDGET.md` — Web Vitals / Lighthouse targets.
+- `docs/TECH-DEBT.md` — triage priorities.
+- `docs/RUNBOOK.md` — build, deploy, E2E, rollback.
+- `CONTRIBUTING.md` — onboarding and PR expectations.

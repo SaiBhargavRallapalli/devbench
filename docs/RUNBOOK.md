@@ -29,6 +29,35 @@ npm run lint
 npm test
 ```
 
+## E2E smoke tests (Playwright)
+
+**First-time setup** (install browsers once per machine):
+
+```bash
+npm install
+npx playwright install chromium
+```
+
+**Run** (app must be reachable — pick one):
+
+1. **Local:** terminal A `npm run dev`, terminal B:
+
+   ```bash
+   npm run test:e2e
+   ```
+
+2. **Preview / staging:** point Playwright at a deployed URL:
+
+   ```bash
+   PLAYWRIGHT_BASE_URL=https://your-preview.vercel.app npm run test:e2e
+   ```
+
+Tests live in `e2e/`; config in `playwright.config.ts`. Extend smoke coverage when adding flagship workspaces.
+
+## Dependabot
+
+`.github/dependabot.yml` opens weekly npm update PRs. Merge or supersede intentionally; run `npm run build` after dependency bumps.
+
 ## Environment variables
 
 - Document **required** and **optional** vars in this section as they are introduced (Vercel dashboard + `.env.local` for local).
@@ -37,8 +66,9 @@ npm test
 ## Deploy (Vercel)
 
 1. **Branch → PR** — CI / preview deployment per team practice.
-2. **Production** — merge to default branch; Vercel promotes per project settings.
-3. **Verify after deploy**
+2. **Preview ≈ prod** — keep env vars aligned where possible so API tester / analytics behave like production.
+3. **Production** — merge to default branch; Vercel promotes per project settings.
+4. **Verify after deploy**
    - Open `/`, `/json`, `/graph-calculator`, `/pdf` — smoke navigation and one primary action each.
    - Confirm GTM/ads load only if expected (ad blockers may hide them).
 
@@ -66,6 +96,9 @@ When editing `next.config.ts` CSP or headers:
 
 ## Useful paths
 
+- CTO artifact index: `docs/CTO-DELIVERABLES.md`
 - CSP & headers: `next.config.ts`
+- Edge HSTS duplicate: `vercel.json`
 - API proxy: `src/app/api/proxy/route.ts`
 - Threat model: `docs/DEVBENCH-THREAT-MODEL.md`
+- Data-flow matrix: `docs/SECURITY-DATA-FLOW-MATRIX.md`

@@ -1,3 +1,9 @@
+# DevBench (all-in-one)
+
+Browser-based developer tools (Next.js App Router). **Contributing & engineering docs:** see [`CONTRIBUTING.md`](CONTRIBUTING.md) and the **[CTO deliverable index](docs/CTO-DELIVERABLES.md)** (architecture, threat model, runbook, E2E smoke, performance budget, PR checklist).
+
+---
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started

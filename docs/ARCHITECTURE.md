@@ -55,3 +55,19 @@ Full-height tool pages use **`flex flex-col`** with:
 - **`flex-1 min-h-0 overflow-hidden`** on scrollable main regions so flex children do not overlap headers or trap pointer events.
 
 When adding a new workspace, copy this pattern from `json` or `graph-calculator` pages after layout review.
+
+## Shared engineering boundaries (do not fork casually)
+
+| Concern | Source of truth | Rule |
+|---------|-----------------|------|
+| Workspace routes for palette / deep links | `src/lib/devbench-workspaces.ts` | Add new multi-tool pages here first; wire `TOOL_SLUG_TO_WORKSPACE` when a slug moves under a workspace URL. |
+| Tool list & categories | `src/lib/tools-registry.ts` | New `/tools/*` page must register here. |
+| Analytics events | `src/lib/analytics-events.ts` (and callers) | New tools should emit success/error/copy consistently when meaningful. |
+| CSP / redirects / HSTS | `next.config.ts`, `vercel.json` | One coordinated change; update threat model §6–§7. |
+| Security narrative | `docs/DEVBENCH-THREAT-MODEL.md`, `docs/SECURITY-DATA-FLOW-MATRIX.md` | Any new `fetch`, WebSocket, or `app/api` route updates the matrix. |
+
+## Related docs
+
+- `docs/CTO-DELIVERABLES.md` — index of all CTO artifacts.
+- `docs/PERFORMANCE-BUDGET.md` — lab/RUM targets.
+- `docs/TECH-DEBT.md` — debt triage rules.
