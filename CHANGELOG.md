@@ -10,7 +10,8 @@
 - integrate Playwright for end-to-end testing and update dependencies (`a583068`)
 
 ### Changed
-- Update CHANGELOG with recent CI enhancements and dependency updates (`6fba47d`)
+- Merge branch 'main' of https://github.com/SaiBhargavRallapalli/all-in-one (`b676782`)
+- Update CHANGELOG with recent CI enhancements and dependency updates (`8c89eae`)
 - Update CHANGELOG with recent CI enhancements and dependency updates (`c475574`)
 - Update CI workflow to continue on lint errors (`6710977`)
 - Refactor CI workflow to consolidate jobs (`b8cb2eb`)
