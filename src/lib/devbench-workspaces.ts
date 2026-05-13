@@ -77,6 +77,14 @@ export const DEVBENCH_WORKSPACES: readonly WorkspaceShortcut[] = [
     description: "Build and explain crontab expressions",
     keywords: ["scheduler", "crontab"],
   },
+  {
+    id: "lambda-sandbox",
+    href: "/lambda-sandbox",
+    label: "AWS Lambda sandbox",
+    shortLabel: "Lambda",
+    description: "Run Node.js handlers against API Gateway, SQS, S3, EventBridge events — sandboxed",
+    keywords: ["aws", "serverless", "function", "invoke", "api gateway", "sqs", "s3", "eventbridge"],
+  },
 ] as const;
 
 /** Map legacy tool slugs that live on a workspace URL (palette + deep links). */
@@ -85,6 +93,7 @@ export const TOOL_SLUG_TO_WORKSPACE: Readonly<Record<string, string>> = {
   "yaml-to-json": "/yaml",
   "json-to-yaml": "/yaml",
   "yaml-formatter": "/yaml",
+  "lambda-sandbox": "/lambda-sandbox",
 };
 
 export function workspaceHrefForToolSlug(slug: string): string | undefined {

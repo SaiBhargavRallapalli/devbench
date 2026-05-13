@@ -10,6 +10,7 @@ const NAV_LINKS = [
   { href: "/yaml",             label: "YAML"      },
   { href: "/pdf",              label: "PDF"       },
   { href: "/api-tester",       label: "API"       },
+  { href: "/lambda-sandbox",   label: "Lambda"    },
   { href: "/jwt-debugger",     label: "JWT"       },
   { href: "/diff-checker",     label: "Diff"      },
   { href: "/code-beautify",    label: "Beautify"  },

@@ -5,10 +5,13 @@ import type { NextConfig } from "next";
 //   - 'unsafe-inline' on script-src is required for GTM's bootstrap snippet and
 //     our inline JSON-LD <script>. Mitigated by the explicit allowlist below.
 //   - 'wasm-unsafe-eval' lets @imgly/background-removal load its ONNX runtime.
+//   - worker-src 'self' blob: is needed by the Lambda sandbox, which builds its
+//     Web Worker source at runtime via URL.createObjectURL(new Blob([...])).
 //   - frame-ancestors 'none' blocks clickjacking site-wide.
 const CSP = [
   "default-src 'self'",
   "script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' https://www.googletagmanager.com https://*.googletagmanager.com https://pagead2.googlesyndication.com https://*.googlesyndication.com https://*.google.com https://*.google https://*.gstatic.com https://*.doubleclick.net https://va.vercel-scripts.com https://*.vercel-insights.com https://fundingchoicesmessages.google.com",
+  "worker-src 'self' blob:",
   "style-src 'self' 'unsafe-inline' https://*.gstatic.com",
   "img-src 'self' data: blob: https:",
   "font-src 'self' data: https://*.gstatic.com",
