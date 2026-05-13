@@ -1,6 +1,9 @@
 # DevBench
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![CI](https://github.com/SaiBhargavRallapalli/all-in-one/actions/workflows/ci.yml/badge.svg)](https://github.com/SaiBhargavRallapalli/all-in-one/actions)
+[![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
 **DevBench** is an open-source collection of **browser-based developer tools** — formatters, encoders, PDF utilities, calculators, and more — built so as much work as possible runs **on your device** (no account required for the public app).
 
