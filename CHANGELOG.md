@@ -5,7 +5,10 @@
 ## 2026-05-13
 
 ### Added
-- integrate Playwright for end-to-end testing and update dependencies (`023b46c`)
+- integrate Playwright for end-to-end testing and update dependencies (`a583068`)
+
+### Docs
+- update contributing guidelines and project documentation (`90f1d4e`)
 
 ## 2026-05-12
 
@@ -21,6 +24,18 @@
 ### Changed
 - - Updated JSON toolkit with new features for sharing and managing JSON workspace presets. - Refactored tool search and command palette to streamline workspace and tool access. - Added WebSocket Tester and Jupyter Notebook to PDF tools for enhanced functionality. - Enhanced IpynbToPdfTool with HTML output rendering capabilities. - Updated height calculation in GraphCalculator and JsonToolkit pages. - Enhanced IpynbToPdfTool with detailed CLI instructions for PDF conversion. (`51fecc7`)
 - standardize text color usage across components (`2cfe5cd`)
+
+### Chore
+- bump @codemirror/view from 6.41.1 to 6.42.1 (`df3ba6c`)
+- bump sql-formatter from 15.7.3 to 15.7.4 (`b31da4f`)
+- bump @types/diff from 7.0.2 to 8.0.0 (`d9d6e42`)
+- bump react from 19.2.4 to 19.2.6 (`7556559`)
+- bump semver from 7.7.4 to 7.8.0 (`4b3516d`)
+- bump react-dom from 19.2.4 to 19.2.6 (`f0a572b`)
+- bump tailwindcss from 4.2.4 to 4.3.0 (`cbf2e5d`)
+- bump next from 16.2.4 to 16.2.6 (`41aa6f9`)
+- bump @tailwindcss/postcss from 4.2.4 to 4.3.0 (`fae8ca8`)
+- bump @types/jszip from 3.4.0 to 3.4.1 (`4e78bd1`)
 
 ## 2026-05-11
 

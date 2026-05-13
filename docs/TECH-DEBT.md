@@ -1,6 +1,6 @@
 # Technical debt — triage framework
 
-**Purpose:** Decide what to fix now vs later without thrashing. Aligns with CTO pillar #7.
+**Purpose:** Decide what to fix now vs later without thrashing.
 
 ## Priority order (default)
 

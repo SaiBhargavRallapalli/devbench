@@ -114,7 +114,7 @@ Implemented in `next.config.ts` (global `/(.*)`):
 - **HSTS** — `max-age=63072000; includeSubDomains; preload` (see comments re apex → www and Vercel dashboard pairing).
 - **X-Content-Type-Options: nosniff**, **X-Frame-Options: DENY**, **Referrer-Policy**, **Permissions-Policy** (camera/mic/geo off).
 
-**CTO action:** When changing CSP, run **smoke tests** on graph, JSON, PDF tools, and GTM/ads in staging.
+**Maintainers:** When changing CSP, run **smoke tests** on graph, JSON, PDF tools, and GTM/ads in staging.
 
 ---
 
@@ -139,7 +139,7 @@ Implemented in `next.config.ts` (global `/(.*)`):
 
 ## Cross-references
 
-- `docs/CTO-DELIVERABLES.md` — index of all eight CTO artifacts.
+- `docs/DOCUMENTATION.md` — index of engineering guides.
 - `docs/ARCHITECTURE.md` — routing, layout contracts, shared boundaries.
 - `docs/SECURITY-DATA-FLOW-MATRIX.md` — tool × network × storage matrix.
 - `docs/PERFORMANCE-BUDGET.md` — Web Vitals / Lighthouse targets.

@@ -96,7 +96,7 @@ When editing `next.config.ts` CSP or headers:
 
 ## Useful paths
 
-- CTO artifact index: `docs/CTO-DELIVERABLES.md`
+- Documentation index: `docs/DOCUMENTATION.md`
 - CSP & headers: `next.config.ts`
 - Edge HSTS duplicate: `vercel.json`
 - API proxy: `src/app/api/proxy/route.ts`

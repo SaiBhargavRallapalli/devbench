@@ -68,6 +68,6 @@ When adding a new workspace, copy this pattern from `json` or `graph-calculator`
 
 ## Related docs
 
-- `docs/CTO-DELIVERABLES.md` — index of all CTO artifacts.
+- `docs/DOCUMENTATION.md` — index of engineering guides.
 - `docs/PERFORMANCE-BUDGET.md` — lab/RUM targets.
 - `docs/TECH-DEBT.md` — debt triage rules.

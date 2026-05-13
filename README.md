@@ -1,42 +1,95 @@
-# DevBench (all-in-one)
+# DevBench
 
-Browser-based developer tools (Next.js App Router). **Contributing & engineering docs:** see [`CONTRIBUTING.md`](CONTRIBUTING.md) and the **[CTO deliverable index](docs/CTO-DELIVERABLES.md)** (architecture, threat model, runbook, E2E smoke, performance budget, PR checklist).
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+**DevBench** is an open-source collection of **browser-based developer tools** — formatters, encoders, PDF utilities, calculators, and more — built so as much work as possible runs **on your device** (no account required for the public app).
+
+Live site: **[devbench.co.in](https://www.devbench.co.in)**
 
 ---
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## Why this repo exists
 
-## Getting Started
+- **Privacy-first by design** — most tools never send your pasted data to our servers.
+- **One codebase** — Next.js App Router, shared UI, and a single tool registry.
+- **Open to contributions** — fixes, docs, translations, and new tools are welcome under the [MIT License](LICENSE).
 
-First, run the development server:
+---
+
+## Tech stack
+
+| Layer | Choice |
+|-------|--------|
+| Framework | [Next.js](https://nextjs.org/) 16 (App Router) |
+| UI | React 19, Tailwind CSS v4 |
+| Hosting (official deployment) | [Vercel](https://vercel.com/) |
+
+This repo follows project-specific Next.js guidance in [`AGENTS.md`](AGENTS.md).
+
+---
+
+## Quick start
+
+**Requirements:** Node.js **20+** (LTS recommended), npm.
 
 ```bash
+git clone <your-fork-or-upstream-url>
+cd all-in-one
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+**Useful commands:**
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Command | Purpose |
+|---------|---------|
+| `npm run dev` | Local development server |
+| `npm run build` | Production build + TypeScript check |
+| `npm run start` | Serve the production build locally |
+| `npm run lint` | ESLint |
+| `npm run test:e2e` | Playwright smoke tests (see [`docs/RUNBOOK.md`](docs/RUNBOOK.md)) |
+| `npm run changelog` | Regenerate `CHANGELOG.md` from git (see script) |
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## Repository layout (short)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Path | Role |
+|------|------|
+| `src/app/` | Routes, layouts, metadata |
+| `src/components/` | Shared UI, tool components |
+| `src/lib/` | Tool registry, analytics helpers, workspace utilities |
+| `docs/` | Architecture, security, runbook, performance notes |
+| `e2e/` | Playwright smoke tests |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## Contributing
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+We’re glad you’re here.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Read **[`CONTRIBUTING.md`](CONTRIBUTING.md)** and **[`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md)**.
+2. Skim **[`docs/DOCUMENTATION.md`](docs/DOCUMENTATION.md)** for the full list of engineering guides.
+3. Open a PR against the default branch; use the [pull request template](.github/PULL_REQUEST_TEMPLATE.md) when applicable.
+
+**Ideas for first contributions:** documentation, a11y, tests, bug fixes in a single tool, or small UX improvements. Large features are easier to review when discussed first (issue or draft PR).
+
+---
+
+## Security
+
+Please read **[`SECURITY.md`](SECURITY.md)** before reporting vulnerabilities. Operational security notes live in [`docs/DEVBENCH-THREAT-MODEL.md`](docs/DEVBENCH-THREAT-MODEL.md) and [`docs/SECURITY-DATA-FLOW-MATRIX.md`](docs/SECURITY-DATA-FLOW-MATRIX.md).
+
+---
+
+## License
+
+This project is licensed under the **MIT License** — see [`LICENSE`](LICENSE).
+
+---
+
+## Acknowledgments
+
+Built with [Next.js](https://nextjs.org/), [React](https://react.dev/), [Tailwind CSS](https://tailwindcss.com/), [Lucide](https://lucide.dev/), and many excellent open-source libraries listed in `package.json`. Thank you to everyone who reports issues, suggests improvements, and sends pull requests.
