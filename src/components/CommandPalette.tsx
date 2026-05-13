@@ -4,12 +4,12 @@ import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Search, LayoutGrid } from "lucide-react";
 import { CATEGORIES, type Tool } from "@/lib/tools-registry";
-import { filterWorkspaces, workspaceHrefForToolSlug, type WorkspaceShortcut } from "@/lib/devbench-workspaces";
+import { filterWorkspaces, publicHrefForToolSlug, type WorkspaceShortcut } from "@/lib/devbench-workspaces";
 import { useExternalNavOrigin } from "@/hooks/use-external-nav-origin";
 import { resolveToolHref } from "@/lib/site-config";
 
 function toolHref(slug: string) {
-  return workspaceHrefForToolSlug(slug) ?? `/tools/${slug}`;
+  return publicHrefForToolSlug(slug);
 }
 
 type PaletteRow =

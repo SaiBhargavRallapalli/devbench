@@ -23,7 +23,7 @@ function newId(): string {
 }
 
 const NB_STDIN_HINT =
-  "Stdin tab: lines feed sys.stdin in order (shared for Run and Run all, like OneCompiler's I/O tab).";
+  "Stdin tab: lines feed sys.stdin in order (shared for Run and Run all).";
 
 const STARTER_TEMPLATE: Omit<NotebookCell, "id">[] = [
   {

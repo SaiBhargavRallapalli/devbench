@@ -10,7 +10,8 @@
 - integrate Playwright for end-to-end testing and update dependencies (`a583068`)
 
 ### Changed
-- Enhance playground functionality with Go support and improved user experience (`56db7f8`)
+- Implement code playground enhancements and routing updates (`328b77b`)
+- Enhance playground functionality with Go support and improved user experience (`233a684`)
 - Update CSP in next.config.ts and enhance package dependencies (`177a14c`)
 - Merge branch 'main' of https://github.com/SaiBhargavRallapalli/all-in-one (`6434b40`)
 - Update CHANGELOG with recent CI enhancements and dependency updates (`8c89eae`)

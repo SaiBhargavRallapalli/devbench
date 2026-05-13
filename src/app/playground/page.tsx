@@ -1,126 +1,121 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Braces, FileCode2, FlaskConical, NotebookPen, Server, Terminal } from "lucide-react";
-import Header from "@/components/Header";
-import { useExternalNavOrigin } from "@/hooks/use-external-nav-origin";
-import JsTsSandboxPanel from "@/components/playground/JsTsSandboxPanel";
-import PythonSandboxPanel from "@/components/playground/PythonSandboxPanel";
-import NotebookSandboxPanel from "@/components/playground/NotebookSandboxPanel";
-import GoSandboxPanel from "@/components/playground/GoSandboxPanel";
-import { resolveToolHref } from "@/lib/site-config";
+import PlaygroundClient from "@/app/playground/playground-client";
+import Footer from "@/components/Footer";
+import JsonLd from "@/components/JsonLd";
+import ToolSeoContent from "@/components/tools/ToolSeoContent";
+import ToolFaqSection from "@/components/tools/ToolFaqSection";
+import TrackToolVisit from "@/components/TrackToolVisit";
+import { getToolBySlug, getToolsByCategory, CATEGORIES } from "@/lib/tools-registry";
+import { TOOL_PAGE_CONTENT } from "@/lib/tool-page-content";
+import { TOOL_FAQS } from "@/lib/tool-faqs";
+import { SITE_URL } from "@/lib/social-metadata";
+import { publicHrefForToolSlug } from "@/lib/devbench-workspaces";
+import { webApplicationEnrichment } from "@/lib/web-application-schema";
 
-type PlaygroundTab = "javascript" | "typescript" | "nodejs" | "python" | "go" | "notebook";
-
-const TABS: { id: PlaygroundTab; label: string; short: string; icon: typeof Braces }[] = [
-  { id: "javascript", label: "JavaScript", short: "JS", icon: Braces },
-  { id: "typescript", label: "TypeScript", short: "TS", icon: FileCode2 },
-  { id: "nodejs", label: "Node.js", short: "Node", icon: Server },
-  { id: "python", label: "Python", short: "Py", icon: FlaskConical },
-  { id: "go", label: "Go", short: "Go", icon: Terminal },
-  { id: "notebook", label: "Notebook", short: "nb", icon: NotebookPen },
-];
+const PLAYGROUND_SLUG = "code-playground";
 
 export default function PlaygroundPage() {
-  const [tab, setTab] = useState<PlaygroundTab>("javascript");
-  const [dark, setDark] = useState(false);
-  const navOrigin = useExternalNavOrigin();
+  const tool = getToolBySlug(PLAYGROUND_SLUG);
+  const extra = TOOL_PAGE_CONTENT[PLAYGROUND_SLUG];
+  const faqs = TOOL_FAQS[PLAYGROUND_SLUG] ?? [];
+  const appDescription =
+    extra?.metaDescription ??
+    `${tool?.description ?? "Code playground"} Runs in your browser with optional Go compile via the official Go Playground API.`;
 
-  useEffect(() => {
-    const sync = () => setDark(document.documentElement.classList.contains("dark"));
-    requestAnimationFrame(sync);
-    const obs = new MutationObserver(sync);
-    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
-    return () => obs.disconnect();
-  }, []);
+  const graph: object[] = [];
+
+  if (tool) {
+    graph.push(
+      {
+        "@type": "WebApplication",
+        "@id": `${SITE_URL}/playground#webapp`,
+        name: tool.name,
+        url: `${SITE_URL}/playground`,
+        description: appDescription,
+        applicationCategory: "DeveloperApplication",
+        operatingSystem: "Web",
+        browserRequirements: "Requires JavaScript",
+        offers: {
+          "@type": "Offer",
+          price: "0",
+          priceCurrency: "USD",
+        },
+        provider: {
+          "@type": "Organization",
+          name: "DevBench",
+          url: SITE_URL,
+        },
+        ...webApplicationEnrichment({
+          screenshotUrl: `${SITE_URL}/opengraph-image`,
+          featureList: [
+            tool.description,
+            "Editor with Output and Stdin tabs for supported languages",
+            "Free to use — no account required",
+            `${CATEGORIES[tool.category].label} workspace on DevBench`,
+          ],
+        }),
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
+          { "@type": "ListItem", position: 2, name: tool.name, item: `${SITE_URL}/playground` },
+        ],
+      }
+    );
+  }
+
+  if (faqs.length > 0) {
+    graph.push({
+      "@type": "FAQPage",
+      mainEntity: faqs.map((faq) => ({
+        "@type": "Question",
+        name: faq.q,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: faq.a,
+        },
+      })),
+    });
+  }
+
+  const jsonLd = graph.length > 0 ? { "@context": "https://schema.org", "@graph": graph } : null;
+
+  const relatedTools = tool
+    ? getToolsByCategory(tool.category)
+        .filter((t) => t.slug !== PLAYGROUND_SLUG)
+        .slice(0, 6)
+    : [];
+  const categoryMeta = tool ? CATEGORIES[tool.category] : null;
 
   return (
-    <div className="flex min-h-screen flex-col bg-background text-foreground">
-      <Header />
-      <main className="mx-auto flex w-full max-w-screen-2xl flex-1 flex-col min-h-0 gap-4 px-4 py-6">
-        <div className="flex flex-wrap items-start justify-between gap-3 shrink-0">
-          <div>
-            <Link
-              href={resolveToolHref("/", navOrigin)}
-              className="mb-2 inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
-            >
-              <ArrowLeft className="h-4 w-4" aria-hidden />
-              Home
-            </Link>
-            <h1 className="text-2xl font-bold tracking-tight">Code playground</h1>
-            <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-              Editor with Output and Stdin tabs (similar to{" "}
-              <a
-                className="text-accent underline-offset-2 hover:underline"
-                href="https://onecompiler.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                OneCompiler
-              </a>
-              ). JavaScript, TypeScript, and Node-style samples run in a sandboxed{" "}
-              <code className="rounded bg-muted px-1">iframe</code> (no real npm install). Python and notebooks use{" "}
-              <a
-                className="text-accent underline-offset-2 hover:underline"
-                href="https://pyodide.org/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Pyodide
-              </a>
-              . Go runs through the official{" "}
-              <a
-                className="text-accent underline-offset-2 hover:underline"
-                href="https://go.dev/play/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Go Playground
-              </a>{" "}
-              API. Use <kbd className="rounded border border-border px-1 font-mono text-[11px]">Ctrl</kbd>+
-              <kbd className="rounded border border-border px-1 font-mono text-[11px]">Enter</kbd> to run ({" "}
-              <kbd className="rounded border border-border px-1 font-mono text-[11px]">Cmd</kbd> on Mac).
-            </p>
-          </div>
-        </div>
-
-        <div
-          role="tablist"
-          aria-label="Playground mode"
-          className="flex flex-wrap gap-1 rounded-xl border border-border bg-muted/25 p-1 shrink-0"
-        >
-          {TABS.map((t) => {
-            const Icon = t.icon;
-            const active = tab === t.id;
-            return (
-              <button
-                key={t.id}
-                type="button"
-                role="tab"
-                aria-selected={active}
-                onClick={() => setTab(t.id)}
-                className={`inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-                  active ? "bg-background text-foreground shadow-sm ring-1 ring-border" : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                <Icon className="h-4 w-4 shrink-0" aria-hidden />
-                <span className="hidden sm:inline">{t.label}</span>
-                <span className="sm:hidden">{t.short}</span>
-              </button>
-            );
-          })}
-        </div>
-
-        <section className="flex flex-1 flex-col min-h-0" aria-live="polite">
-          {tab === "javascript" ? <JsTsSandboxPanel mode="javascript" dark={dark} /> : null}
-          {tab === "typescript" ? <JsTsSandboxPanel mode="typescript" dark={dark} /> : null}
-          {tab === "nodejs" ? <JsTsSandboxPanel mode="nodejs" dark={dark} /> : null}
-          {tab === "python" ? <PythonSandboxPanel dark={dark} /> : null}
-          {tab === "go" ? <GoSandboxPanel dark={dark} /> : null}
-          {tab === "notebook" ? <NotebookSandboxPanel /> : null}
-        </section>
-      </main>
-    </div>
+    <>
+      <TrackToolVisit slug={PLAYGROUND_SLUG} />
+      {jsonLd && <JsonLd data={jsonLd} />}
+      <PlaygroundClient />
+      <ToolSeoContent slug={PLAYGROUND_SLUG} />
+      <ToolFaqSection slug={PLAYGROUND_SLUG} />
+      {relatedTools.length > 0 && categoryMeta && (
+        <aside className="max-w-6xl mx-auto px-4 pb-10 w-full">
+          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">
+            More {categoryMeta.label} tools
+          </h2>
+          <ul className="flex flex-wrap gap-2">
+            {relatedTools.map((t) => (
+              <li key={t.slug}>
+                <Link
+                  href={publicHrefForToolSlug(t.slug)}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-card text-sm hover:bg-muted transition-colors"
+                >
+                  <span className="font-mono text-xs opacity-70">{t.icon}</span>
+                  {t.shortName}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </aside>
+      )}
+      <Footer />
+    </>
   );
 }

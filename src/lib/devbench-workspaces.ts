@@ -93,10 +93,16 @@ export const TOOL_SLUG_TO_WORKSPACE: Readonly<Record<string, string>> = {
   "yaml-to-json": "/yaml",
   "json-to-yaml": "/yaml",
   "yaml-formatter": "/yaml",
+  "code-playground": "/playground",
 };
 
 export function workspaceHrefForToolSlug(slug: string): string | undefined {
   return TOOL_SLUG_TO_WORKSPACE[slug];
+}
+
+/** Public URL for a tool card or sitemap — workspace routes override `/tools/[slug]`. */
+export function publicHrefForToolSlug(slug: string): string {
+  return workspaceHrefForToolSlug(slug) ?? `/tools/${slug}`;
 }
 
 export function filterWorkspaces(query: string): WorkspaceShortcut[] {

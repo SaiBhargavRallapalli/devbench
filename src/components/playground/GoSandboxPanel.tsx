@@ -105,11 +105,7 @@ export default function GoSandboxPanel({ dark }: { dark: boolean }) {
             <ExternalLink className="h-3 w-3" aria-hidden />
           </a>
           <span className="text-xs text-muted-foreground max-w-[min(100%,320px)]">
-            Same engine family as{" "}
-            <a className="underline underline-offset-2" href="https://onecompiler.com/go" target="_blank" rel="noopener noreferrer">
-              OneCompiler Go
-            </a>{" "}
-            (remote compile).
+            Compile and run use the official Go Playground service (remote, no local toolchain).
           </span>
         </>
       }

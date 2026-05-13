@@ -12,6 +12,18 @@ export interface BlogPost {
 
 export const BLOG_POSTS: BlogPost[] = [
   {
+    slug: "browser-code-playground-privacy",
+    title: "Browser code playgrounds: what runs where (and what never leaves your tab)",
+    date: "2026-05-08",
+    excerpt:
+      "Online playgrounds mix iframes, WebAssembly, and remote compilers. Here is a practical map of which pieces stay local, which hit a third-party API, and how to choose a flow for secrets and stdin-heavy programs.",
+    tags: ["devtools", "python", "javascript", "security"],
+    readMinutes: 6,
+    relatedToolSlug: "code-playground",
+    relatedToolLabel: "Code playground",
+    relatedToolHref: "/playground",
+  },
+  {
     slug: "how-base64-encoding-works-and-when-not-to-use-it",
     title: "How Base64 encoding works — and when NOT to use it",
     date: "2026-05-08",

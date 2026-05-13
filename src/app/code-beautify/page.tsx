@@ -20,9 +20,10 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FormatWorkspace from "@/components/FormatWorkspace";
 import { TOOLS, CATEGORIES } from "@/lib/tools-registry";
+import { publicHrefForToolSlug } from "@/lib/devbench-workspaces";
 
 function toolHref(slug: string) {
-  return slug === "json-formatter" ? "/json" : `/tools/${slug}`;
+  return publicHrefForToolSlug(slug);
 }
 
 type HubLink = {

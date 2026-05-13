@@ -41,7 +41,7 @@ rl.on("line", function (line) {
 `;
 
 const STDIN_HINT_JS =
-  "Stdin tab: one line per readStdinLine() call. Node tab also supports require(\"readline\") like OneCompiler.";
+  "Stdin tab: one line per readStdinLine() call. Node tab also supports require(\"readline\") with a small in-browser shim.";
 
 const STDIN_PLACEHOLDER = "Ada\nBob\n";
 

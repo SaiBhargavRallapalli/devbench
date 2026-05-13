@@ -74,6 +74,11 @@ const nextConfig: NextConfig = {
         destination: "/json",
         permanent: true,
       },
+      {
+        source: "/tools/code-playground",
+        destination: "/playground",
+        permanent: true,
+      },
     ];
   },
 };

@@ -10,6 +10,7 @@ import {
   type PdfHubFilter,
 } from "@/lib/pdf-hub";
 import { CATEGORIES } from "@/lib/tools-registry";
+import { publicHrefForToolSlug } from "@/lib/devbench-workspaces";
 
 const FILTERS: { id: PdfHubFilter; label: string }[] = [
   { id: "all", label: "All" },
@@ -108,7 +109,7 @@ export default function PdfToolsHub() {
             return (
               <Link
                 key={tool.slug}
-                href={`/tools/${tool.slug}`}
+                href={publicHrefForToolSlug(tool.slug)}
                 className="group flex flex-col rounded-2xl border border-border bg-card p-5 transition-all hover:border-accent/40 hover:bg-muted/40"
               >
                 <div className="mb-3 flex items-start justify-between gap-3">

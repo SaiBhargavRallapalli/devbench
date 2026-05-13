@@ -21,7 +21,7 @@ print("Hello " + name)
 `;
 
 const STDIN_HINT_PY =
-  "Stdin tab: lines are fed to sys.stdin (like OneCompiler). Try Ada then Bob on separate lines.";
+  "Stdin tab: each line is fed to sys.stdin in order. Try Ada then Bob on separate lines.";
 
 export default function PythonSandboxPanel({ dark }: { dark: boolean }) {
   const [code, setCode] = useState(DEFAULT_PY);

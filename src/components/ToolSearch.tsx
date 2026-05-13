@@ -4,7 +4,7 @@ import { useState, useMemo, useEffect, useCallback, memo } from "react";
 import Link from "next/link";
 import { Star, Search, Braces, Code2, Type, Wrench, ArrowRightLeft, Sparkles, DollarSign, Heart, Sigma, CalendarDays, Clock, Pin, FileStack } from "lucide-react";
 import { CATEGORIES, type Tool, type ToolCategory } from "@/lib/tools-registry";
-import { workspaceHrefForToolSlug } from "@/lib/devbench-workspaces";
+import { publicHrefForToolSlug } from "@/lib/devbench-workspaces";
 
 const CATEGORY_ICONS: Record<ToolCategory, React.ElementType> = {
   json:       Braces,
@@ -21,7 +21,7 @@ const CATEGORY_ICONS: Record<ToolCategory, React.ElementType> = {
 };
 
 function toolHref(slug: string): string {
-  return workspaceHrefForToolSlug(slug) ?? `/tools/${slug}`;
+  return publicHrefForToolSlug(slug);
 }
 
 const RECENT_KEY = "devbench:recent";
