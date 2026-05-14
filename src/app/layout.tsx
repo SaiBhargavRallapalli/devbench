@@ -7,6 +7,7 @@ import LazyCommandPalette from "@/components/LazyCommandPalette";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import JsonLd from "@/components/JsonLd";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -89,6 +90,24 @@ export const metadata: Metadata = {
   },
 };
 
+const websiteSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "DevBench",
+  url: "https://www.devbench.co.in",
+  description: "100+ free browser-based developer tools for developers.",
+};
+
+const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "DevBench",
+  url: "https://www.devbench.co.in",
+  logo: "https://www.devbench.co.in/icon.svg",
+  description:
+    "100+ free browser-based developer tools — JSON, Base64, JWT, Regex, Diff, UUID, YAML, and more.",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -134,6 +153,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         />
       </head>
       <body className="min-h-full flex flex-col bg-background text-foreground">
+        <JsonLd data={websiteSchema} />
+        <JsonLd data={organizationSchema} />
         {/* Skip to content — visible only when focused; first-tab-stop for keyboard users */}
         <a
           href="#main"

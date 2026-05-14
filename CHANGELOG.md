@@ -13,7 +13,8 @@
 - stop render loop blocking nav clicks on /graph-calculator (`3ef7c5b`)
 
 ### Changed
-- Enhance tool metadata and FAQs for API Tester, Cron Editor, and Epoch Converter (`4089f69`)
+- Enhance tool layouts with structured data and FAQ integration (`ef16d54`)
+- Enhance tool metadata and FAQs for API Tester, Cron Editor, and Epoch Converter (`ae9adbf`)
 - Update CHANGELOG with recent additions, fixes, and changes (`778cb94`)
 - Merge branch 'SaiBhargavRallapalli:main' into main (`cf17603`)
 - Update issue templates (`f7eb120`)

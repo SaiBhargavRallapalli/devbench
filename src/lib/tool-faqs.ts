@@ -1364,4 +1364,79 @@ export const TOOL_FAQS: Record<string, Faq[]> = {
       a: "image/svg+xml. This is the correct Content-Type for SVG files. Using image/svg without the +xml is incorrect and may cause browsers to not render the SVG correctly. Also set the charset: Content-Type: image/svg+xml; charset=utf-8.",
     },
   ],
+
+  // ── Workspace pages ──────────────────────────────────────────────────────────
+  "yaml": [
+    { q: "What is YAML and what is it used for?", a: "YAML (YAML Ain't Markup Language) is a human-readable data serialisation format used primarily for configuration files. It is common in Kubernetes manifests, Docker Compose, GitHub Actions workflows, Ansible playbooks, and CI/CD pipelines. Unlike JSON, YAML supports comments, multi-line strings, and anchors for reuse." },
+    { q: "Why is my YAML invalid?", a: "The most common YAML errors are: using tabs instead of spaces for indentation (YAML requires spaces only), inconsistent indentation depth, missing quotes around strings containing special characters (: { } [ ] , & * # ? | - < > = ! % @ `), and duplicate keys. The YAML validator reports the exact line and column of the error." },
+    { q: "What is the difference between YAML and JSON?", a: "YAML is a superset of JSON — valid JSON is also valid YAML 1.2. Key differences: YAML supports comments (# comment) while JSON does not; YAML uses indentation for structure while JSON uses braces; YAML anchors (&) and aliases (*) allow value reuse; YAML has more data types including timestamps and binary. JSON is safer for machine-to-machine communication; YAML excels in human-edited config files." },
+    { q: "How do I convert YAML to JSON?", a: "Paste your YAML into the workspace and switch to the YAML to JSON tab. The converter handles multi-document YAML streams (separated by ---), anchors and aliases, and all standard YAML types. The result is formatted JSON you can copy with one click." },
+    { q: "What are YAML anchors and aliases?", a: "Anchors (&name) mark a value so it can be reused; aliases (*name) reference the anchored value. This avoids repetition in config files — define shared defaults once under an anchor and merge them into multiple sections with <<: *anchorName. The YAML formatter preserves anchors and aliases." },
+  ],
+
+  "diff-checker": [
+    { q: "What is a diff and how do I read it?", a: "A diff (difference) highlights what changed between two texts. Lines marked with + exist only in the right/new text (additions); lines marked with - exist only in the left/old text (deletions); unmarked lines are unchanged context. The diff checker shows changes at line level with optional character-level highlighting for precise edit location." },
+    { q: "Can I compare code files, not just plain text?", a: "Yes. Paste any text including source code, JSON, YAML, HTML, SQL, or configuration files. The diff is purely text-based — it compares line by line regardless of content type. For structured JSON comparison, the JSON workspace at /json has a dedicated JSON diff mode that understands JSON structure." },
+    { q: "What does 'ignore whitespace' do?", a: "When enabled, whitespace-only differences (extra spaces, tab vs space, trailing spaces) are ignored and do not appear as changes. This is useful when comparing code that has been reformatted or when whitespace normalisation differences should not count as meaningful changes." },
+    { q: "Is my text private?", a: "Yes. Comparison runs entirely in your browser using JavaScript. Neither the left nor the right text is sent to any server. You can use the diff checker with sensitive content such as config files, credentials, or proprietary code." },
+  ],
+
+  "code-beautify": [
+    { q: "Which languages does the formatter support?", a: "The Code Beautify workspace formats: HTML, CSS, JavaScript, TypeScript, TSX/JSX, JSON, Markdown, YAML, GraphQL, XML, and SQL (using sql-formatter). Python indentation cleanup is also supported. Most formatters use Prettier under the hood, so results match what you would get from running Prettier in your project." },
+    { q: "Does this use the same rules as Prettier?", a: "Yes for most languages — JavaScript, TypeScript, HTML, CSS, JSON, YAML, GraphQL, and Markdown are formatted with Prettier running in a Web Worker in your browser. The default options (2-space indent, single quotes, 80-char line width) match Prettier defaults. SQL uses sql-formatter with a separate rule set." },
+    { q: "Will formatting change how my code behaves?", a: "No. Code formatters only change whitespace, indentation, and line breaks — they never alter the semantics or logic of your code. The formatted output is functionally identical to the input." },
+    { q: "Is my code kept private?", a: "Yes. All formatting runs in your browser using Web Workers. Your code is never uploaded to a server. This means you can safely format proprietary source code, internal configuration files, or sensitive data." },
+  ],
+
+  "date-calculator": [
+    { q: "How does adding months work when the result month has fewer days?", a: "When you add months and the resulting month is shorter than the start month, the date is clamped to the last day of that month. For example, 31 January + 1 month = 28 February (or 29 in a leap year). This is standard calendar-safe month arithmetic — the same behaviour as most date libraries." },
+    { q: "Can I add negative values to subtract time?", a: "Yes. Enter a negative number in any field to subtract that unit. For example, -7 days subtracts a week, -1 year subtracts a year. The result is the same as if you had subtracted that duration." },
+    { q: "How are years and months different from weeks and days?", a: "Years and months are calendar units — their exact length varies (months have 28–31 days, years have 365 or 366). Weeks and days are fixed durations (7 days, 86400 seconds). The calculator applies year/month arithmetic on the calendar first, then adds the day/week count as an exact offset." },
+    { q: "What day of the week will a date fall on?", a: "The result date shows the weekday name (Monday, Tuesday, etc.) so you can instantly see whether a deadline falls on a weekend or a business day." },
+  ],
+
+  "astronomy": [
+    { q: "How accurate are the sunrise and sunset times?", a: "Times are computed using standard astronomical algorithms (the SunCalc library). Accuracy is typically within 1–2 minutes for locations at normal latitudes. The calculation assumes a flat horizon at sea level — actual times vary with terrain elevation, atmospheric refraction, and obstructions on the horizon." },
+    { q: "What is golden hour?", a: "Golden hour is the period shortly after sunrise and before sunset when sunlight is soft, warm, and directional — ideal for photography. It typically lasts 20–60 minutes depending on your latitude and season. The closer you are to the equator, the shorter and more abrupt the golden hour." },
+    { q: "What does moon illumination percentage mean?", a: "Moon illumination is the percentage of the Moon's visible disc that is lit by the Sun from Earth's perspective. 0% is a new moon (invisible), 50% is a quarter moon (half-lit disc), 100% is a full moon. The illumination grows (waxing) from new to full and shrinks (waning) back to new over approximately 29.5 days." },
+    { q: "Why does the tool show 'always up' for the moon?", a: "Near the Arctic and Antarctic circles, the Moon can remain above or below the horizon for multiple days depending on the season and the Moon's orbital position. The calculator correctly shows this as 'always up' or 'always down' rather than fabricating a rise/set time." },
+    { q: "Does the tool need my location?", a: "You can grant location access for automatic coordinates, or type any city name or latitude/longitude manually. All calculations run in your browser — your location is not sent to any server." },
+  ],
+
+  "webhook-simulator": [
+    { q: "What is a webhook signature and why does it matter?", a: "A webhook signature is an HMAC hash of the request body, included in a request header (e.g. X-Hub-Signature-256 for GitHub, Stripe-Signature for Stripe). The receiver recomputes the HMAC using its shared secret and compares it to the header value. If they match, the payload is authentic and unmodified. This prevents attackers from sending forged webhook payloads to your endpoint." },
+    { q: "Which platforms does this simulator support?", a: "GitHub (X-Hub-Signature-256, HMAC-SHA256), Stripe (Stripe-Signature with timestamp replay protection), Slack (X-Slack-Signature, HMAC-SHA256), Shopify (X-Shopify-Hmac-SHA256), and a generic HMAC-SHA256 option for any custom webhook system." },
+    { q: "Is my webhook secret safe?", a: "Yes. HMAC signing runs entirely in your browser using the Web Crypto API. Your secret key is never sent to any server. You can safely test with real webhook secrets." },
+    { q: "How do I verify a webhook signature in Node.js?", a: "Compute HMAC-SHA256 of the raw request body using your secret key, then compare to the signature header in constant time (to prevent timing attacks): const sig = crypto.createHmac('sha256', secret).update(rawBody).digest('hex'); then use crypto.timingSafeEqual() to compare. The exact header name and format differ by platform." },
+  ],
+
+  "linux-cheatsheet": [
+    { q: "How do I find a file by name on Linux?", a: "Use find: find /path -name 'filename.txt' searches by exact name; find /path -name '*.log' uses a wildcard. Add -type f to match only files, -type d for directories. For faster searches on an indexed system, use locate filename (requires the locate database to be updated with sudo updatedb)." },
+    { q: "How do I check disk usage?", a: "df -h shows free and used space on all mounted filesystems in human-readable units. du -sh /path shows the total size of a directory. du -sh * lists sizes of all items in the current directory. To find the largest directories: du -h /path | sort -rh | head -20." },
+    { q: "How do I check what is running on a port?", a: "Use ss -tlnp | grep :PORT or lsof -i :PORT. For example, ss -tlnp | grep :8080 shows what process is listening on port 8080. On older systems, netstat -tlnp | grep :PORT serves the same purpose." },
+    { q: "What is journalctl and how do I use it?", a: "journalctl reads logs from the systemd journal. Common uses: journalctl -u nginx (logs for the nginx service), journalctl -f (follow live logs, like tail -f), journalctl --since '1 hour ago' (recent logs), journalctl -p err (errors only). Add -n 100 to limit output to the last 100 lines." },
+    { q: "How do I give a file executable permissions?", a: "chmod +x filename makes a file executable for all users. chmod 755 filename sets owner read/write/execute and group/other read/execute. To make a script executable and run it: chmod +x script.sh && ./script.sh." },
+  ],
+
+  "lambda-sandbox": [
+    { q: "What Node.js version does the sandbox use?", a: "The sandbox emulates a Node.js Lambda runtime environment in a Web Worker. It supports modern JavaScript/TypeScript syntax. AWS Lambda supports Node.js 18.x and 20.x in production — test against the version matching your deployed runtime." },
+    { q: "What event payloads are available?", a: "Pre-built event templates include: API Gateway (REST and HTTP), ALB, SQS, SNS, S3, DynamoDB Streams, EventBridge, Cognito, CloudFront, and a generic custom event. Each template contains a realistic sample payload structure matching the AWS documentation." },
+    { q: "Can I import npm packages in the sandbox?", a: "The sandbox runs in a Web Worker and does not have access to a node_modules directory. Standard AWS SDK methods and built-in Node.js modules are available. For testing logic that depends on npm packages, mock the dependencies in your handler or test the package locally." },
+    { q: "Is my Lambda code sent to a server?", a: "No. The sandbox executes your handler code in a browser Web Worker using a sandboxed JavaScript runtime. Your code and the event payload never leave your browser." },
+    { q: "What is the difference between API Gateway REST and HTTP event formats?", a: "API Gateway REST API (v1) events use requestContext.resourceId and multiValueQueryStringParameters. API Gateway HTTP API (v2) events use requestContext.http.method and rawQueryString. Lambda functions deployed behind HTTP APIs receive the v2 format by default. Select the correct template for your actual API Gateway type." },
+  ],
+
+  "graph-calculator": [
+    { q: "How do I plot a function?", a: "Type the function expression using x as the variable — for example, sin(x), x^2 - 3*x + 2, or sqrt(x). Add multiple functions to plot them simultaneously. Use pi for π and e for Euler's number. Scroll to zoom, drag to pan, and hover over the graph to read values at any x." },
+    { q: "What functions are supported in the expression evaluator?", a: "Trigonometry: sin, cos, tan, asin, acos, atan, atan2. Hyperbolic: sinh, cosh, tanh. Exponential and logarithm: exp, log (natural), log2, log10. Roots: sqrt, cbrt. Rounding: floor, ceil, round, abs, sign. Constants: pi, e, phi (golden ratio). Power: pow(base, exp) or use the ^ operator." },
+    { q: "How do I calculate a matrix determinant or inverse?", a: "Switch to the Matrix tab. Enter the size (N×N) and fill in the values. The calculator computes the determinant, inverse (if it exists), transpose, and matrix multiplication instantly. Non-square matrices cannot be inverted — the inverse button is disabled for those." },
+    { q: "How do I find where two functions intersect?", a: "Plot both functions on the graph. The calculator automatically detects intersections and marks them on the graph. Hover over an intersection marker to see the exact (x, y) coordinates." },
+  ],
+
+  "pdf": [
+    { q: "What PDF tools are available?", a: "The PDF workspace includes: merge PDFs (combine multiple files), split PDF (extract a range of pages), rotate pages, compress PDF to reduce file size, add page numbers, add a watermark, remove pages, reorder pages, convert images to PDF, convert HTML to PDF, convert PDF pages to JPG images, and compare two PDFs." },
+    { q: "Are my PDFs uploaded to a server?", a: "No. All PDF operations run in your browser using pdf-lib and PDF.js. Your files are never sent to DevBench servers. This makes the tools safe to use with confidential documents, contracts, or personal files." },
+    { q: "What is the maximum file size?", a: "There is no hard server-side limit since processing is client-side. Practical limits depend on your device's available memory. Very large PDFs (over 100 MB) may be slow on devices with limited RAM. For most documents under 20 MB, processing is near-instant." },
+    { q: "Can I combine more than two PDFs?", a: "Yes. The merge tool accepts multiple files — add as many PDFs as you need, reorder them by dragging, and merge them into a single file." },
+  ],
 };

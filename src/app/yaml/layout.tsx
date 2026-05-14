@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import Footer from "@/components/Footer";
 import JsonLd from "@/components/JsonLd";
+import ToolFaqSection from "@/components/tools/ToolFaqSection";
+import { TOOL_FAQS } from "@/lib/tool-faqs";
 import { socialMetadata, SITE_URL } from "@/lib/social-metadata";
 import { breadcrumbSchema } from "@/lib/breadcrumb-schema";
+import { webApplicationEnrichment } from "@/lib/web-application-schema";
 
 const title = "YAML Formatter, Validator & Converter";
 const description =
@@ -16,10 +19,49 @@ export const metadata: Metadata = {
   ...socialMetadata({ title, description, canonicalPath: "/yaml" }),
 };
 
+const webAppSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: "YAML Formatter & Validator",
+  url: `${SITE_URL}/yaml`,
+  description,
+  applicationCategory: "DeveloperApplication",
+  operatingSystem: "Web",
+  browserRequirements: "Requires JavaScript",
+  offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  provider: { "@type": "Organization", name: "DevBench", url: SITE_URL },
+  ...webApplicationEnrichment({
+    screenshotUrl: `${SITE_URL}/opengraph-image`,
+    featureList: [
+      "Format and pretty-print YAML with consistent 2-space indentation",
+      "Validate YAML with line/column error reporting",
+      "Lint: detect tabs, trailing whitespace, long lines, duplicate keys",
+      "Convert YAML to JSON and JSON to YAML",
+      "Multi-document YAML stream support (--- separator)",
+      "Runs entirely in your browser — no data sent to a server",
+    ],
+  }),
+};
+
+const yamlFaqs = TOOL_FAQS["yaml"] ?? [];
+const faqSchema = yamlFaqs.length > 0
+  ? {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: yamlFaqs.map((faq) => ({
+        "@type": "Question",
+        name: faq.q,
+        acceptedAnswer: { "@type": "Answer", text: faq.a },
+      })),
+    }
+  : null;
+
 export default function YamlLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
+      <JsonLd data={webAppSchema} />
       <JsonLd data={breadcrumbSchema([{ name: "YAML Toolkit", path: "/yaml" }])} />
+      {faqSchema && <JsonLd data={faqSchema} />}
       {children}
       <section className="max-w-5xl mx-auto px-4 pb-10 w-full border-t border-border pt-8 mt-2 space-y-3">
         <h2 className="text-base font-semibold text-foreground mt-6 mb-2">
@@ -66,6 +108,7 @@ export default function YamlLayout({ children }: { children: React.ReactNode }) 
           <li>JSON is generally safer for machine-to-machine communication; YAML excels in human-edited config files</li>
         </ul>
       </section>
+      <ToolFaqSection slug="yaml" />
       <Footer />
     </>
   );

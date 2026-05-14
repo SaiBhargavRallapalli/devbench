@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import Footer from "@/components/Footer";
 import { socialMetadata, SITE_URL } from "@/lib/social-metadata";
 import JsonLd from "@/components/JsonLd";
+import ToolFaqSection from "@/components/tools/ToolFaqSection";
+import { TOOL_FAQS } from "@/lib/tool-faqs";
 import { breadcrumbSchema } from "@/lib/breadcrumb-schema";
+import { webApplicationEnrichment } from "@/lib/web-application-schema";
 
 const title = "Math Suite — Graph, Scientific & Matrix Calculator";
 const description =
@@ -22,6 +25,42 @@ export const metadata: Metadata = {
   ...socialMetadata({ title, description, canonicalPath: "/graph-calculator" }),
 };
 
+const webAppSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: "Math Suite — Graphing, Scientific & Matrix Calculator",
+  url: `${SITE_URL}/graph-calculator`,
+  description,
+  applicationCategory: "DeveloperApplication",
+  operatingSystem: "Web",
+  browserRequirements: "Requires JavaScript",
+  offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  provider: { "@type": "Organization", name: "DevBench", url: SITE_URL },
+  ...webApplicationEnrichment({
+    screenshotUrl: `${SITE_URL}/opengraph-image`,
+    featureList: [
+      "Plot multiple 2D functions with zoom, pan, and intersection detection",
+      "Scientific expression evaluator: trig, log, sqrt, constants",
+      "N×N matrix calculator: determinant, inverse, transpose, multiply",
+      "Value tables for any plotted function",
+      "Runs entirely in your browser — no data sent to a server",
+    ],
+  }),
+};
+
+const graphFaqs = TOOL_FAQS["graph-calculator"] ?? [];
+const faqSchema = graphFaqs.length > 0
+  ? {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: graphFaqs.map((faq) => ({
+        "@type": "Question",
+        name: faq.q,
+        acceptedAnswer: { "@type": "Answer", text: faq.a },
+      })),
+    }
+  : null;
+
 export default function GraphCalculatorLayout({
   children,
 }: {
@@ -29,7 +68,9 @@ export default function GraphCalculatorLayout({
 }) {
   return (
     <>
+      <JsonLd data={webAppSchema} />
       <JsonLd data={breadcrumbSchema([{ name: "Math Suite", path: "/graph-calculator" }])} />
+      {faqSchema && <JsonLd data={faqSchema} />}
       {children}
       <section className="max-w-5xl mx-auto px-4 pb-10 w-full border-t border-border pt-8 mt-2 space-y-3">
         <h2 className="text-base font-semibold text-foreground mt-6 mb-2">
@@ -65,6 +106,7 @@ export default function GraphCalculatorLayout({
           <li>Toggle a function&apos;s visibility without deleting it</li>
         </ul>
       </section>
+      <ToolFaqSection slug="graph-calculator" />
       <Footer />
     </>
   );
