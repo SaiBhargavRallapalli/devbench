@@ -24,6 +24,18 @@ import {
   trackToolError,
   trackToolCopy,
 } from "@/lib/analytics-events";
+import {
+  ECDSA_ALGS,
+  HMAC_ALGS,
+  RSA_ALGS,
+  detectPemKind,
+  familyOf,
+  generateHmacSecretB64Url,
+  generateKeypairPem,
+  signJws,
+  verifyJws,
+  type JwtAlgorithm,
+} from "@/lib/jwt-crypto";
 
 const TOOL_SLUG = "jwt-debugger";
 
@@ -58,13 +70,6 @@ function textToUint8Array(str: string): Uint8Array {
   return new TextEncoder().encode(str);
 }
 
-/** 32 random bytes as base64url (use with “Base64URL encoded” checked for correct HMAC key bytes). */
-function generateHsSecretKeyB64Url(): string {
-  const bytes = new Uint8Array(32);
-  crypto.getRandomValues(bytes);
-  return base64urlEncode(bytes);
-}
-
 // ─── JWT parsing ────────────────────────────────────────────────────────
 
 interface DecodedJWT {
@@ -96,56 +101,6 @@ function decodeJWT(token: string): DecodedJWT | null {
   } catch {
     return null;
   }
-}
-
-// ─── HMAC signing via Web Crypto ────────────────────────────────────────
-
-type HmacAlg = "HS256" | "HS384" | "HS512";
-
-const ALG_MAP: Record<HmacAlg, string> = {
-  HS256: "SHA-256",
-  HS384: "SHA-384",
-  HS512: "SHA-512",
-};
-
-async function hmacSign(
-  alg: HmacAlg,
-  secret: Uint8Array,
-  data: string
-): Promise<string> {
-  const key = await crypto.subtle.importKey(
-    "raw",
-    secret.buffer as ArrayBuffer,
-    { name: "HMAC", hash: ALG_MAP[alg] },
-    false,
-    ["sign"]
-  );
-  const dataBytes = textToUint8Array(data);
-  const sig = await crypto.subtle.sign("HMAC", key, dataBytes.buffer as ArrayBuffer);
-  return base64urlEncode(new Uint8Array(sig));
-}
-
-async function hmacVerify(
-  alg: HmacAlg,
-  secret: Uint8Array,
-  data: string,
-  signature: string
-): Promise<boolean> {
-  const key = await crypto.subtle.importKey(
-    "raw",
-    secret.buffer as ArrayBuffer,
-    { name: "HMAC", hash: ALG_MAP[alg] },
-    false,
-    ["verify"]
-  );
-  const sigBytes = base64urlToUint8Array(signature);
-  const dataBytes = textToUint8Array(data);
-  return crypto.subtle.verify(
-    "HMAC",
-    key,
-    sigBytes.buffer as ArrayBuffer,
-    dataBytes.buffer as ArrayBuffer
-  );
 }
 
 // ─── registered claims ──────────────────────────────────────────────────
@@ -329,17 +284,24 @@ export default function JWTDebuggerPage() {
   const [secret, setSecret] = useState("your-256-bit-secret");
   const [secretIsBase64, setSecretIsBase64] = useState(false);
   const [showSecret, setShowSecret] = useState(false);
+  const [decodePubPem, setDecodePubPem] = useState("");
   const [verifyResult, setVerifyResult] = useState<boolean | null>(null);
+  const [verifyError, setVerifyError] = useState<string | null>(null);
   const [isVerifying, setIsVerifying] = useState(false);
 
   // Encoder state
-  const [encAlg, setEncAlg] = useState<HmacAlg>("HS256");
+  const [encAlg, setEncAlg] = useState<JwtAlgorithm>("HS256");
   const [encHeader, setEncHeader] = useState(SAMPLE_HEADER);
   const [encPayload, setEncPayload] = useState(SAMPLE_PAYLOAD);
   const [encSecret, setEncSecret] = useState("your-256-bit-secret");
   const [encSecretIsBase64, setEncSecretIsBase64] = useState(false);
+  const [encPrivatePem, setEncPrivatePem] = useState("");
+  const [encGeneratedPublicPem, setEncGeneratedPublicPem] = useState("");
+  const [encKeypairBusy, setEncKeypairBusy] = useState(false);
   const [encodedToken, setEncodedToken] = useState("");
   const [encodeError, setEncodeError] = useState("");
+
+  const encFamily = familyOf(encAlg);
 
   const decoded = useMemo(() => decodeJWT(token), [token]);
 
@@ -386,42 +348,52 @@ export default function JWTDebuggerPage() {
     };
   }, [decoded]);
 
+  const decodedAlg: JwtAlgorithm | null = useMemo(() => {
+    const raw = decoded?.header?.alg;
+    if (typeof raw !== "string") return null;
+    return ([...HMAC_ALGS, ...RSA_ALGS, ...ECDSA_ALGS, "EdDSA"] as JwtAlgorithm[]).find((a) => a === raw) ?? null;
+  }, [decoded]);
+
+  const decodedFamily = decodedAlg ? familyOf(decodedAlg) : null;
+
   // Verify signature
   useEffect(() => {
-    if (!decoded || !secret) {
+    if (!decoded || !decodedAlg) {
       setVerifyResult(null);
+      setVerifyError(null);
       return;
     }
 
-    const alg = decoded.header.alg as string;
-    if (!["HS256", "HS384", "HS512"].includes(alg)) {
+    const isHmac = decodedFamily === "hmac";
+    const keyValue = isHmac ? secret : decodePubPem;
+    if (!keyValue || !keyValue.trim()) {
       setVerifyResult(null);
+      setVerifyError(null);
       return;
     }
 
     let cancelled = false;
     setIsVerifying(true);
+    setVerifyError(null);
 
-    const secretBytes = secretIsBase64
-      ? base64urlToUint8Array(secret)
-      : textToUint8Array(secret);
-
-    hmacVerify(
-      alg as HmacAlg,
-      secretBytes,
-      `${decoded.headerRaw}.${decoded.payloadRaw}`,
-      decoded.signatureRaw
-    )
+    verifyJws({
+      alg: decodedAlg,
+      signingInput: `${decoded.headerRaw}.${decoded.payloadRaw}`,
+      signatureB64Url: decoded.signatureRaw,
+      key: keyValue,
+      keyIsBase64Url: isHmac ? secretIsBase64 : undefined,
+    })
       .then((result) => {
         if (!cancelled) {
           setVerifyResult(result);
           setIsVerifying(false);
-          trackToolSuccess(TOOL_SLUG, "verify", { valid: result, alg });
+          trackToolSuccess(TOOL_SLUG, "verify", { valid: result, alg: decodedAlg });
         }
       })
-      .catch(() => {
+      .catch((e) => {
         if (!cancelled) {
           setVerifyResult(false);
+          setVerifyError(e instanceof Error ? e.message : "Verification failed");
           setIsVerifying(false);
         }
       });
@@ -429,7 +401,7 @@ export default function JWTDebuggerPage() {
     return () => {
       cancelled = true;
     };
-  }, [decoded, secret, secretIsBase64]);
+  }, [decoded, decodedAlg, decodedFamily, secret, secretIsBase64, decodePubPem]);
 
   // Encode JWT
   useEffect(() => {
@@ -446,11 +418,15 @@ export default function JWTDebuggerPage() {
         const headerB64 = base64urlEncode(textToUint8Array(JSON.stringify(headerObj)));
         const payloadB64 = base64urlEncode(textToUint8Array(JSON.stringify(payloadObj)));
 
-        const secretBytes = encSecretIsBase64
-          ? base64urlToUint8Array(encSecret)
-          : textToUint8Array(encSecret);
+        const isHmac = encFamily === "hmac";
+        const keyValue = isHmac ? encSecret : encPrivatePem;
 
-        const signature = await hmacSign(encAlg, secretBytes, `${headerB64}.${payloadB64}`);
+        const signature = await signJws({
+          alg: encAlg,
+          signingInput: `${headerB64}.${payloadB64}`,
+          key: keyValue,
+          keyIsBase64Url: isHmac ? encSecretIsBase64 : undefined,
+        });
 
         if (!cancelled) {
           setEncodedToken(`${headerB64}.${payloadB64}.${signature}`);
@@ -467,7 +443,8 @@ export default function JWTDebuggerPage() {
       }
     }
 
-    if (encHeader.trim() && encPayload.trim() && encSecret) {
+    const haveKey = encFamily === "hmac" ? !!encSecret : !!encPrivatePem.trim();
+    if (encHeader.trim() && encPayload.trim() && haveKey) {
       encode();
     } else {
       setEncodedToken("");
@@ -477,7 +454,28 @@ export default function JWTDebuggerPage() {
     return () => {
       cancelled = true;
     };
-  }, [encAlg, encHeader, encPayload, encSecret, encSecretIsBase64]);
+  }, [encAlg, encFamily, encHeader, encPayload, encSecret, encSecretIsBase64, encPrivatePem]);
+
+  const onGenerateEncoderKey = useCallback(async () => {
+    setEncodeError("");
+    if (encFamily === "hmac") {
+      setEncSecret(generateHmacSecretB64Url());
+      setEncSecretIsBase64(true);
+      setShowSecret(true);
+      setEncGeneratedPublicPem("");
+      return;
+    }
+    setEncKeypairBusy(true);
+    try {
+      const { privatePem, publicPem } = await generateKeypairPem(encAlg);
+      setEncPrivatePem(privatePem);
+      setEncGeneratedPublicPem(publicPem);
+    } catch (e) {
+      setEncodeError(e instanceof Error ? e.message : "Keypair generation failed");
+    } finally {
+      setEncKeypairBusy(false);
+    }
+  }, [encAlg, encFamily]);
 
   const inputClass =
     "px-3 py-2 rounded-lg border border-border bg-background text-foreground font-mono text-sm focus:outline-none focus:ring-2 focus:ring-ring/40 placeholder:text-muted-foreground/50 transition-shadow";
@@ -619,7 +617,12 @@ export default function JWTDebuggerPage() {
                     <h2 className="text-sm font-semibold">Signature Verification</h2>
                   </div>
 
-                  {["HS256", "HS384", "HS512"].includes(String(decoded.header.alg)) ? (
+                  {!decodedAlg ? (
+                    <p className="text-xs text-muted-foreground">
+                      This token uses <strong>{String(decoded.header.alg)}</strong>, which isn&apos;t a
+                      supported JWS algorithm. Supported: HS256/384/512, RS256/384/512, ES256/384/512, EdDSA.
+                    </p>
+                  ) : decodedFamily === "hmac" ? (
                     <>
                       <JwtSecretInstructions />
 
@@ -645,7 +648,7 @@ export default function JWTDebuggerPage() {
                           <button
                             type="button"
                             onClick={() => {
-                              setSecret(generateHsSecretKeyB64Url());
+                              setSecret(generateHmacSecretB64Url());
                               setSecretIsBase64(true);
                               setShowSecret(true);
                             }}
@@ -670,28 +673,49 @@ export default function JWTDebuggerPage() {
                         32-byte random key and checks Base64URL so the key bytes match standard
                         signing libraries. Uncheck only if your secret is a plain string (UTF-8).
                       </p>
-
-                      <div>
-                        {isVerifying ? (
-                          <span className="text-xs text-muted-foreground">Verifying…</span>
-                        ) : verifyResult === true ? (
-                          <div className="flex items-center gap-2 px-4 py-3 rounded-lg bg-success/10 border border-success/20">
-                            <ShieldCheck className="w-5 h-5 text-success" />
-                            <span className="text-sm font-medium text-success">Signature Verified</span>
-                          </div>
-                        ) : verifyResult === false ? (
-                          <div className="flex items-center gap-2 px-4 py-3 rounded-lg bg-destructive/10 border border-destructive/20">
-                            <ShieldX className="w-5 h-5 text-destructive" />
-                            <span className="text-sm font-medium text-destructive">Signature Invalid</span>
-                          </div>
-                        ) : null}
-                      </div>
                     </>
                   ) : (
-                    <p className="text-xs text-muted-foreground">
-                      Signature verification is only supported for HMAC algorithms (HS256, HS384, HS512) in the browser.
-                      This token uses <strong>{String(decoded.header.alg)}</strong>.
-                    </p>
+                    <>
+                      <p className="text-xs text-muted-foreground">
+                        Paste the <strong>SPKI public key</strong> matching the signer&apos;s private key.
+                        Token uses <strong>{decodedAlg}</strong>.
+                      </p>
+                      <textarea
+                        value={decodePubPem}
+                        onChange={(e) => setDecodePubPem(e.target.value)}
+                        placeholder={"-----BEGIN PUBLIC KEY-----\n…\n-----END PUBLIC KEY-----"}
+                        rows={5}
+                        className={`${inputClass} w-full resize-y`}
+                        spellCheck={false}
+                      />
+                      <p className="text-[11px] text-muted-foreground">
+                        Need to convert a PKCS#1 RSA public key?{" "}
+                        <code className="font-mono">openssl rsa -RSAPublicKey_in -in pub.pem -pubout</code>
+                      </p>
+                    </>
+                  )}
+
+                  {decodedAlg && (
+                    <div>
+                      {isVerifying ? (
+                        <span className="text-xs text-muted-foreground">Verifying…</span>
+                      ) : verifyError ? (
+                        <div className="flex items-start gap-2 px-4 py-3 rounded-lg bg-destructive/10 border border-destructive/20">
+                          <ShieldX className="w-5 h-5 text-destructive shrink-0" />
+                          <span className="text-sm font-medium text-destructive break-words">{verifyError}</span>
+                        </div>
+                      ) : verifyResult === true ? (
+                        <div className="flex items-center gap-2 px-4 py-3 rounded-lg bg-success/10 border border-success/20">
+                          <ShieldCheck className="w-5 h-5 text-success" />
+                          <span className="text-sm font-medium text-success">Signature Verified</span>
+                        </div>
+                      ) : verifyResult === false ? (
+                        <div className="flex items-center gap-2 px-4 py-3 rounded-lg bg-destructive/10 border border-destructive/20">
+                          <ShieldX className="w-5 h-5 text-destructive" />
+                          <span className="text-sm font-medium text-destructive">Signature Invalid</span>
+                        </div>
+                      ) : null}
+                    </div>
                   )}
                 </div>
 
@@ -835,26 +859,43 @@ export default function JWTDebuggerPage() {
         {activeTab === "encode" && (
           <div className="space-y-6 animate-fade-in">
             {/* Algorithm selector */}
-            <div className="rounded-xl border border-border bg-card p-5 space-y-4">
+            <div className="rounded-xl border border-border bg-card p-5 space-y-3">
               <div className="flex items-center gap-2">
                 <Lock className="w-4 h-4 text-accent" />
                 <h2 className="text-sm font-semibold">Algorithm</h2>
               </div>
-              <div className="flex gap-2">
-                {(["HS256", "HS384", "HS512"] as const).map((alg) => (
-                  <button
-                    key={alg}
-                    onClick={() => setEncAlg(alg)}
-                    className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-                      encAlg === alg
-                        ? "bg-accent text-accent-foreground"
-                        : "bg-muted text-muted-foreground hover:text-foreground hover:bg-muted/80"
-                    }`}
-                  >
-                    {alg}
-                  </button>
+              <div className="space-y-2">
+                {[
+                  { label: "HMAC (shared secret)", algs: HMAC_ALGS },
+                  { label: "RSA",                  algs: RSA_ALGS  },
+                  { label: "ECDSA",                algs: ECDSA_ALGS },
+                  { label: "EdDSA",                algs: ["EdDSA"] as JwtAlgorithm[] },
+                ].map((g) => (
+                  <div key={g.label} className="flex flex-wrap items-center gap-2">
+                    <span className="text-xs text-muted-foreground w-44 shrink-0">{g.label}</span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {g.algs.map((alg) => (
+                        <button
+                          key={alg}
+                          onClick={() => setEncAlg(alg)}
+                          className={`px-3 py-1.5 text-xs font-mono rounded-lg border transition-colors ${
+                            encAlg === alg
+                              ? "bg-accent text-accent-foreground border-accent"
+                              : "bg-background text-muted-foreground border-border hover:text-foreground hover:bg-muted"
+                          }`}
+                        >
+                          {alg}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 ))}
               </div>
+              {encFamily === "eddsa" && (
+                <p className="text-[11px] text-muted-foreground">
+                  EdDSA (Ed25519) requires a current browser. Older Firefox/Safari may not expose it via WebCrypto.
+                </p>
+              )}
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -889,59 +930,102 @@ export default function JWTDebuggerPage() {
               </div>
             </div>
 
-            {/* Secret */}
+            {/* Signing key */}
             <div className="rounded-xl border border-border bg-card p-5 space-y-3">
-              <div className="flex items-center gap-2">
-                <Lock className="w-4 h-4 text-accent" />
-                <h2 className="text-sm font-semibold">Secret</h2>
-              </div>
-              <JwtSecretInstructions />
-              <div className="flex flex-col sm:flex-row gap-3">
-                <div className="flex-1 relative">
-                  <input
-                    type={showSecret ? "text" : "password"}
-                    value={encSecret}
-                    onChange={(e) => setEncSecret(e.target.value)}
-                    placeholder="Enter secret key..."
-                    autoComplete="off"
-                    className={`${inputClass} w-full pr-10`}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowSecret(!showSecret)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    {showSecret ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
+              <div className="flex items-center justify-between flex-wrap gap-2">
+                <div className="flex items-center gap-2">
+                  <Lock className="w-4 h-4 text-accent" />
+                  <h2 className="text-sm font-semibold">
+                    {encFamily === "hmac" ? "Secret" : "Private key (PKCS#8 PEM)"}
+                  </h2>
                 </div>
-                <div className="flex flex-wrap items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setEncSecret(generateHsSecretKeyB64Url());
-                      setEncSecretIsBase64(true);
-                      setShowSecret(true);
+                <button
+                  type="button"
+                  onClick={onGenerateEncoderKey}
+                  disabled={encKeypairBusy}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-accent/10 text-accent hover:bg-accent/20 transition-colors disabled:opacity-60"
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  {encKeypairBusy
+                    ? "Generating…"
+                    : encFamily === "hmac"
+                      ? "Generate secret"
+                      : "Generate keypair"}
+                </button>
+              </div>
+
+              {encFamily === "hmac" ? (
+                <>
+                  <JwtSecretInstructions />
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <div className="flex-1 relative">
+                      <input
+                        type={showSecret ? "text" : "password"}
+                        value={encSecret}
+                        onChange={(e) => setEncSecret(e.target.value)}
+                        placeholder="Enter secret key..."
+                        autoComplete="off"
+                        className={`${inputClass} w-full pr-10`}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowSecret(!showSecret)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        {showSecret ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
+                    <label className="flex items-center gap-2 text-xs text-muted-foreground whitespace-nowrap cursor-pointer select-none">
+                      <input
+                        type="checkbox"
+                        checked={encSecretIsBase64}
+                        onChange={(e) => setEncSecretIsBase64(e.target.checked)}
+                        className="rounded border-border accent-accent"
+                      />
+                      Base64URL encoded
+                    </label>
+                  </div>
+                  <p className="text-[11px] text-muted-foreground">
+                    Use the same encoding your runtime expects: Base64URL + checked when the key is raw
+                    bytes; unchecked when the secret is a literal string in env.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <textarea
+                    value={encPrivatePem}
+                    onChange={(e) => {
+                      setEncPrivatePem(e.target.value);
+                      // If the user pastes their own key, clear any previously-generated public key
+                      // to avoid showing a mismatched pair.
+                      if (encGeneratedPublicPem && detectPemKind(e.target.value) === "pkcs8") {
+                        setEncGeneratedPublicPem("");
+                      }
                     }}
-                    className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg bg-accent/10 text-accent hover:bg-accent/20 transition-colors whitespace-nowrap"
-                  >
-                    <Sparkles className="w-3.5 h-3.5" />
-                    Generate secret
-                  </button>
-                  <label className="flex items-center gap-2 text-xs text-muted-foreground whitespace-nowrap cursor-pointer select-none">
-                    <input
-                      type="checkbox"
-                      checked={encSecretIsBase64}
-                      onChange={(e) => setEncSecretIsBase64(e.target.checked)}
-                      className="rounded border-border accent-accent"
-                    />
-                    Base64URL encoded
-                  </label>
-                </div>
-              </div>
-              <p className="text-[11px] text-muted-foreground">
-                Use the same encoding your runtime expects: Base64URL + checked when the key is raw
-                bytes; unchecked when the secret is a literal string in env.
-              </p>
+                    placeholder={"-----BEGIN PRIVATE KEY-----\n…\n-----END PRIVATE KEY-----"}
+                    rows={6}
+                    className={`${inputClass} w-full resize-y`}
+                    spellCheck={false}
+                  />
+                  <p className="text-[11px] text-muted-foreground">
+                    PKCS#8 only. Convert PKCS#1 / SEC1 keys first:{" "}
+                    <code className="font-mono">openssl pkcs8 -topk8 -inform PEM -outform PEM -nocrypt -in key.pem -out key-pkcs8.pem</code>
+                  </p>
+                  {encGeneratedPublicPem && (
+                    <div className="rounded-lg border border-border bg-muted/30 p-3 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-semibold text-muted-foreground">
+                          Matching public key (use this on the Decoder tab to verify)
+                        </span>
+                        <CopyBtn text={encGeneratedPublicPem} label="Copy" />
+                      </div>
+                      <pre className="text-[11px] font-mono text-foreground/80 whitespace-pre-wrap break-all max-h-40 overflow-auto scrollbar-thin">
+                        {encGeneratedPublicPem}
+                      </pre>
+                    </div>
+                  )}
+                </>
+              )}
             </div>
 
             {/* Generated token */}
