@@ -762,7 +762,51 @@ refunds:
   );
 }
 
+function BrowserCodePlaygroundPrivacy() {
+  return (
+    <div className="space-y-4">
+      <p className={prose}>
+        Not every &quot;Run&quot; button means the same thing. Some playgrounds execute entirely in your browser tab; others forward source to a remote compiler farm. The difference matters the moment you paste an API key, a JWT from production, or proprietary business logic.
+      </p>
+
+      <h2 className={h2}>Three execution patterns you should recognise</h2>
+      <ol className={ol}>
+        <li>
+          <strong className="text-foreground">Sandboxed JavaScript in an iframe.</strong> User code runs in an isolated browsing context with no direct access to your cookies or DevBench DOM. Console output is bridged back to the parent page. There is still a trust boundary: malicious code could try CPU-heavy loops or annoy you — but it cannot open arbitrary network sockets from classic sandbox rules.
+        </li>
+        <li>
+          <strong className="text-foreground">WebAssembly interpreters (Pyodide).</strong> CPython and wheels are shipped to the client and run locally. First load can be large, but after that your Python source stays in-memory in the tab unless you explicitly fetch data. Stdin can be simulated line-by-line from a text area — useful for teaching and quick scripts.
+        </li>
+        <li>
+          <strong className="text-foreground">Remote compile or run APIs.</strong> Some languages proxy to an official or vendor-hosted service (for example the Go Playground). Your source crosses the network under that provider&apos;s policy. Read their terms before shipping internal code.
+        </li>
+      </ol>
+
+      <h2 className={h2}>Stdin and &quot;feels like a terminal&quot;</h2>
+      <p className={prose}>
+        Browser playgrounds cannot give you a real TTY. They approximate stdin with buffered lines or shims around small subsets of Node APIs. That is enough for exercises and many algorithms, but not for interactive ncurses apps or programs that expect binary stdin. When behaviour diverges, run the same snippet locally with your real toolchain.
+      </p>
+
+      <h2 className={h2}>Practical rules</h2>
+      <ul className={ul}>
+        <li>Treat every hosted editor as <strong className="text-foreground">public</strong> unless you have verified end-to-end where bytes go.</li>
+        <li>Use browser-first tools for <strong className="text-foreground">shape checks</strong> and learning; use locked-down CI or laptops for secrets.</li>
+        <li>Open DevTools → Network once per product so you know which requests fire on Run.</li>
+      </ul>
+
+      <p className={prose}>
+        DevBench&apos;s{" "}
+        <Link href="/playground" className="text-accent hover:underline">
+          code playground
+        </Link>{" "}
+        keeps JS/TS and Pyodide paths in the tab and documents Go&apos;s remote compile path in-page — match the tool to your threat model, then get back to shipping.
+      </p>
+    </div>
+  );
+}
+
 export const POST_CONTENT: Record<string, React.ReactNode> = {
+  "browser-code-playground-privacy": <BrowserCodePlaygroundPrivacy />,
   "how-base64-encoding-works-and-when-not-to-use-it": <Base64EncodingExplained />,
   "jwt-security-best-practices-10-things-developers-get-wrong": <JwtSecurityBestPractices />,
   "yaml-vs-json-key-differences-with-real-examples": <YamlVsJsonExplained />,

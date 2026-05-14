@@ -62,6 +62,7 @@ const TAG_COLORS: Record<string, string> = {
   encoding:    "bg-amber-500/10 text-amber-600 dark:text-amber-400",
   yaml:        "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
   config:      "bg-stone-500/10 text-stone-600 dark:text-stone-400",
+  devtools:    "bg-zinc-500/10 text-zinc-700 dark:text-zinc-300",
 };
 
 function formatDate(iso: string) {

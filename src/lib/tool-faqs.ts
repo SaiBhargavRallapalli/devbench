@@ -351,4 +351,27 @@ export const TOOL_FAQS: Record<string, Faq[]> = {
       a: "No. Parsing happens entirely in your browser. Treat every online paste as sensitive anyway — avoid sharing production secrets in screenshots or chat.",
     },
   ],
+
+  "code-playground": [
+    {
+      q: "Where does my code run?",
+      a: "JavaScript, TypeScript, and Node-style samples run in a sandboxed iframe in your browser with no filesystem or network access from user code. Python and notebook cells run in Pyodide (WebAssembly) in the tab. Go is sent to the official Go Playground compile API over HTTPS — the same remote sandbox used by go.dev/play — not executed on DevBench servers.",
+    },
+    {
+      q: "What is the Stdin tab for?",
+      a: "For Python and notebooks, each line you type in Stdin is delivered to sys.stdin in order, similar to piping a file into a local interpreter. For JavaScript modes, the preamble exposes readStdinLine() for simple prompts, and the Node tab includes a small readline shim for basic patterns. Remote Go compile does not accept arbitrary stdin through this playground, so the Go Stdin tab is disabled with an explanation.",
+    },
+    {
+      q: "Can I install npm packages in the Node tab?",
+      a: "No. The Node tab is a browser sandbox with a minimal readline-style shim for demos. There is no package manager or native Node runtime in your tab. Use a local project or CI when you need real dependencies.",
+    },
+    {
+      q: "Is Pyodide the same as my laptop Python?",
+      a: "Pyodide bundles CPython and many wheels built for WebAssembly. Most pure-Python code and common scientific stacks work, but anything that expects native extensions not shipped with Pyodide may fail. Treat it as a faithful but not identical environment.",
+    },
+    {
+      q: "Does DevBench store my snippets?",
+      a: "The playground does not upload your JavaScript, TypeScript, or Python source to DevBench for execution. Go compile requests go to Google's playground endpoint with the usual upstream policies. Do not paste secrets into any online editor — use local tools for credentials.",
+    },
+  ],
 };

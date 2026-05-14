@@ -92,6 +92,12 @@ export const DEVBENCH_WORKSPACES: readonly WorkspaceShortcut[] = [
     shortLabel: "Webhook",
     description: "Generate, send and verify signed GitHub/Stripe/Slack/Shopify webhook payloads",
     keywords: ["webhook", "hmac", "signature", "github", "stripe", "slack", "shopify", "x-hub-signature"],
+    id: "playground",
+    href: "/playground",
+    label: "Code playground",
+    shortLabel: "Play",
+    description: "Sandboxed JS/TS, Python (Pyodide), and .ipynb code cells — also at playground.devbench.co.in",
+    keywords: ["monaco", "typescript", "python", "jupyter", "pyodide", "snippet", "repl", "wasm", "playground.devbench"],
   },
 ] as const;
 
@@ -103,10 +109,16 @@ export const TOOL_SLUG_TO_WORKSPACE: Readonly<Record<string, string>> = {
   "yaml-formatter": "/yaml",
   "lambda-sandbox": "/lambda-sandbox",
   "webhook-simulator": "/webhook-simulator",
+  "code-playground": "/playground",
 };
 
 export function workspaceHrefForToolSlug(slug: string): string | undefined {
   return TOOL_SLUG_TO_WORKSPACE[slug];
+}
+
+/** Public URL for a tool card or sitemap — workspace routes override `/tools/[slug]`. */
+export function publicHrefForToolSlug(slug: string): string {
+  return workspaceHrefForToolSlug(slug) ?? `/tools/${slug}`;
 }
 
 export function filterWorkspaces(query: string): WorkspaceShortcut[] {

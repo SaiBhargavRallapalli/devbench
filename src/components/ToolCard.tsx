@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
+import { publicHrefForToolSlug } from "@/lib/devbench-workspaces";
 
 const categoryColors: Record<string, { bg: string; text: string; icon: string }> = {
   json: { bg: "bg-amber-500/10", text: "text-amber-600", icon: "bg-amber-500/15" },
@@ -35,7 +36,7 @@ export default function ToolCard({
 
   return (
     <Link
-      href={`/tools/${slug}`}
+      href={publicHrefForToolSlug(slug)}
       className="group flex flex-col rounded-xl border border-border bg-card p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-lg hover:shadow-accent/5"
     >
       <div className="mb-4 flex items-start justify-between">

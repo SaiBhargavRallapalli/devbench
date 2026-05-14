@@ -2,6 +2,8 @@ import type { MetadataRoute } from "next";
 import { TOOLS } from "@/lib/tools-registry";
 import { BLOG_POSTS } from "@/lib/blog";
 import { TOOL_COMPARISONS } from "@/lib/tool-comparisons";
+import { PLAYGROUND_ORIGIN } from "@/lib/site-config";
+import { publicHrefForToolSlug } from "@/lib/devbench-workspaces";
 
 const BASE = "https://www.devbench.co.in";
 
@@ -24,6 +26,7 @@ const WORKSPACE_ROUTES = [
   { path: "/astronomy",        priority: 0.85, freq: "monthly" },
   { path: "/code-beautify",    priority: 0.8,  freq: "monthly" },
   { path: "/graph-calculator", priority: 0.8,  freq: "monthly" },
+  { path: "/playground",       priority: 0.75, freq: "monthly" },
   { path: "/blog",             priority: 0.8,  freq: "weekly"  },
   { path: "/compare",          priority: 0.65, freq: "monthly" },
   { path: "/about",            priority: 0.5,  freq: "yearly"  },
@@ -45,14 +48,29 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: r.freq as MetadataRoute.Sitemap[number]["changeFrequency"],
       priority: r.priority,
     })),
+    {
+      url: `${PLAYGROUND_ORIGIN}/`,
+      lastModified: SITE_LASTMOD,
+      changeFrequency: "monthly" as const,
+      priority: 0.72,
+    },
   ];
 
-  const toolRoutes: MetadataRoute.Sitemap = TOOLS.map((tool) => ({
-    url: `${BASE}/tools/${tool.slug}`,
-    lastModified: SITE_LASTMOD,
-    changeFrequency: "monthly" as const,
-    priority: 0.8,
-  }));
+  const staticUrls = new Set(staticRoutes.map((r) => r.url));
+
+  const toolRoutes: MetadataRoute.Sitemap = [];
+  for (const tool of TOOLS) {
+    const path = publicHrefForToolSlug(tool.slug);
+    const url = path.startsWith("http") ? path : `${BASE}${path}`;
+    if (staticUrls.has(url)) continue;
+    staticUrls.add(url);
+    toolRoutes.push({
+      url,
+      lastModified: SITE_LASTMOD,
+      changeFrequency: "monthly" as const,
+      priority: 0.8,
+    });
+  }
 
   const blogRoutes: MetadataRoute.Sitemap = BLOG_POSTS.map((post) => ({
     url: `${BASE}/blog/${post.slug}`,

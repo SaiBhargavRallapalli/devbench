@@ -2924,6 +2924,30 @@ const CONTENT_MAP: Record<string, React.FC> = {
       </p>
     </Section>
   )) as React.FC,
+  "code-playground": (() => (
+    <Section>
+      <h2 className={h2}>Languages and runtimes</h2>
+      <p className={prose}>
+        The playground groups modes behind tabs at the top: <strong className="text-foreground">JavaScript</strong> and{" "}
+        <strong className="text-foreground">TypeScript</strong> execute transpiled code inside a dedicated sandbox iframe that forwards{" "}
+        <code className="font-mono text-xs bg-muted px-1 rounded">console.log</code> output back to the parent page.{" "}
+        <strong className="text-foreground">Node.js</strong> reuses the same engine with a small compatibility layer so simple{" "}
+        <code className="font-mono text-xs bg-muted px-1 rounded">readline</code> examples can read lines from the Stdin tab — it is still not a full Node install.{" "}
+        <strong className="text-foreground">Python</strong> and the <strong className="text-foreground">Notebook</strong> mode load Pyodide on first use; subsequent runs reuse the interpreter.{" "}
+        <strong className="text-foreground">Go</strong> sends your <code className="font-mono text-xs bg-muted px-1 rounded">main</code> package to the official Go Playground API and prints compiler and program output in the Output tab.
+      </p>
+      <h2 className={h2}>Output and standard input</h2>
+      <p className={prose}>
+        The right column switches between <strong className="text-foreground">Output</strong> (stdout, stderr, or console capture) and{" "}
+        <strong className="text-foreground">Stdin</strong>. For Python, lines from Stdin are fed to <code className="font-mono text-xs bg-muted px-1 rounded">sys.stdin</code> in order; notebooks share one Stdin buffer across Run and Run all. This matches how developers test CLIs locally without juggling separate windows.
+      </p>
+      <h2 className={h2}>Keyboard shortcuts</h2>
+      <p className={prose}>
+        Press <kbd className="font-mono text-xs bg-muted px-1 rounded">Ctrl</kbd>+<kbd className="font-mono text-xs bg-muted px-1 rounded">Enter</kbd> (or{" "}
+        <kbd className="font-mono text-xs bg-muted px-1 rounded">Cmd</kbd>+<kbd className="font-mono text-xs bg-muted px-1 rounded">Enter</kbd> on macOS) to run the active editor or cell. The shortcut is scoped to the playground page so it does not steal focus from other inputs unintentionally.
+      </p>
+    </Section>
+  )) as React.FC,
 };
 
 export default function ToolSeoContent({ slug }: { slug: string }) {

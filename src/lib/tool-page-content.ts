@@ -208,6 +208,14 @@ export const TOOL_PAGE_CONTENT: Record<string, ToolPageContent> = {
       "Paste unstructured logs one line at a time; each row becomes JSON with line number, optional timestamp, optional level (ERROR, WARN, INFO, DEBUG, TRACE), and the remaining message. Useful for triage before attaching logs to tickets — nothing leaves your browser.",
   },
 
+  "code-playground": {
+    title: "Code playground — JavaScript, TypeScript, Python, Go & notebooks",
+    metaDescription:
+      "Free browser code playground: Monaco editor, Output and Stdin tabs, JS/TS/Node-style snippets in a sandboxed iframe, Python and notebooks via Pyodide, Go via the official Go Playground API. No signup.",
+    openingParagraph:
+      "The DevBench code playground is a multi-language workspace for quick experiments: switch tabs for JavaScript, TypeScript, Node-style readline samples, Python, Go, or a lightweight Jupyter-style notebook. Each mode pairs a syntax-highlighted editor with an Output tab and, where supported, a Stdin tab so you can feed line-oriented input the same way you would in a terminal. JavaScript and TypeScript execute inside a locked-down iframe with console output captured in the UI; Python and notebook code cells run through Pyodide (CPython compiled to WebAssembly) so typical stdlib and scientific packages work without a server round-trip. Go uses your browser only for editing — compile and run go through the official Go Playground HTTP API with the same network and filesystem restrictions as go.dev/play. Nothing you type is stored by DevBench for analytics beyond normal site telemetry.",
+  },
+
   "image-to-pdf": {
     title: "Image to PDF — JPG, PNG, WebP to One PDF (Free, Browser-Only)",
     metaDescription:

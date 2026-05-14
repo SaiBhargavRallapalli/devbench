@@ -118,6 +118,15 @@ export const TOOLS: Tool[] = [
   { slug: "mermaid-editor", name: "Mermaid Diagram Editor", shortName: "Mermaid", description: "Live editor for Mermaid.js flowcharts, sequence diagrams, ER diagrams, Gantt charts — export SVG or PNG", category: "dev", icon: "◈" },
   { slug: "timezone-converter", name: "Timezone Converter", shortName: "Timezone", description: "Convert a moment in time across multiple time zones with DST handling, shareable links, and 600+ IANA zones", category: "datetime", icon: "🌐" },
   { slug: "websocket-tester", name: "WebSocket Tester", shortName: "WS", description: "Open a WebSocket to any ws:// or wss:// endpoint, send messages, watch frames in real time, export the session log", category: "dev", icon: "⇄" },
+  {
+    slug: "code-playground",
+    name: "Code playground",
+    shortName: "Playground",
+    description:
+      "Monaco editor with JavaScript, TypeScript, Node-style snippets, Python (Pyodide), Go, and notebook cells — output and stdin tabs, runs mostly in your browser",
+    category: "dev",
+    icon: "▶",
+  },
 
   // Conversion Tools
   { slug: "temperature-converter", name: "Temperature Converter", shortName: "Temp", description: "Convert Celsius, Fahrenheit, and Kelvin", category: "conversion", icon: "°" },
