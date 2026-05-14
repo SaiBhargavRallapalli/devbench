@@ -697,17 +697,8 @@ export default function GraphCalculatorPage() {
   const nextId = useRef(2);
 
   const compiled = useMemo(() => {
-    return expressions.map((e) => {
-      const result = compileExpression(e.text);
-      return result;
-    });
+    return expressions.map((e) => compileExpression(e.text));
   }, [expressions]);
-
-  useEffect(() => {
-    setExpressions((prev) =>
-      prev.map((e, i) => ({ ...e, error: compiled[i]?.error ?? null }))
-    );
-  }, [compiled]);
 
   const compiledFns = useMemo(() => compiled.map((c) => c.fn), [compiled]);
 
@@ -1001,8 +992,8 @@ export default function GraphCalculatorPage() {
                       </button>
                     )}
                   </div>
-                  {expr.error && (
-                    <p className="text-xs text-destructive mt-1 pl-7">{expr.error}</p>
+                  {compiled[idx]?.error && (
+                    <p className="text-xs text-destructive mt-1 pl-7">{compiled[idx].error}</p>
                   )}
                 </div>
               ))}
