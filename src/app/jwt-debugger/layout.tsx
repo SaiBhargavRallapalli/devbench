@@ -7,20 +7,28 @@ import { socialMetadata, SITE_URL } from "@/lib/social-metadata";
 import { breadcrumbSchema } from "@/lib/breadcrumb-schema";
 import { webApplicationEnrichment } from "@/lib/web-application-schema";
 
-const JWT_TITLE = "JWT Debugger — Decode, Encode & Verify Tokens";
+const JWT_TITLE = "JWT Debugger — Decode, Encode & Verify JWT Tokens Online";
 const JWT_DESC =
-  "Free online JWT decoder and encoder. Inspect headers and payloads, verify HMAC signatures (HS256/384/512), see claim breakdown and expiry — runs entirely in your browser.";
+  "Free online JWT debugger — decode headers and payloads, verify signatures (HS256/384/512, RS256, ES256, EdDSA), inspect claims and expiry. Runs entirely in your browser. No signup.";
 
 export const metadata: Metadata = {
   title: JWT_TITLE,
   description: JWT_DESC,
   keywords: [
+    "JWT debugger",
     "JWT decoder",
     "JWT encoder",
     "JSON Web Token",
     "verify JWT",
     "jwt.io alternative",
     "decode JWT online",
+    "HS256",
+    "RS256",
+    "ES256",
+    "EdDSA",
+    "JWT verify signature",
+    "JWT payload",
+    "JWT claims",
   ],
   alternates: { canonical: `${SITE_URL}/jwt-debugger` },
   ...socialMetadata({
@@ -55,7 +63,10 @@ const webAppSchema = {
     screenshotUrl: `${SITE_URL}/jwt-debugger/opengraph-image`,
     featureList: [
       "Decode JWT headers and payloads; inspect standard and custom claims",
-      "Verify HMAC signatures (HS256, HS384, HS512) locally with Web Crypto",
+      "Verify HMAC signatures (HS256, HS384, HS512) with Web Crypto",
+      "Verify RSA signatures (RS256, RS384, RS512) with PEM public key",
+      "Verify ECDSA signatures (ES256, ES384, ES512) and EdDSA",
+      "Encode and sign new tokens with any supported algorithm",
       "Runs entirely in your browser — tokens are never sent to a server",
       "Free — no account required",
     ],
