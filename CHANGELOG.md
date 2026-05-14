@@ -2,17 +2,37 @@
 
 > Auto-generated from git log. Run `npm run changelog` to refresh.
 
+## 2026-05-14
+
+### Added
+- sign and verify RS/ES/EdDSA, not just HMAC (`a04b1d8`)
+- Add 'Code playground' entry to devbench workspaces (`de23869`)
+
+### Fixed
+- stop render loop blocking nav clicks on /graph-calculator (#15) (`b1f6ac3`)
+- stop render loop blocking nav clicks on /graph-calculator (`3ef7c5b`)
+
+### Changed
+- Update CHANGELOG with recent additions, fixes, and changes (`a3d8e2c`)
+- Merge branch 'SaiBhargavRallapalli:main' into main (`cf17603`)
+- Update issue templates (`f7eb120`)
+- Merge pull request #12 from sharathrgupta-dev/main (`f847e6e`)
+- Merge branch 'main' into main (`1869eb0`)
+
 ## 2026-05-13
 
 ### Added
 - Add CI workflow for Python and Node.js projects (`370b8cc`)
+- add Webhook Payload Simulator workspace (`e875aeb`)
 - Add CI workflow for Node.js checks (`4a1c438`)
 - integrate Playwright for end-to-end testing and update dependencies (`a583068`)
 
 ### Changed
-- Implement code playground enhancements and routing updates (`328b77b`)
+- Implement code playground enhancements and routing updates (`086f6c5`)
 - Enhance playground functionality with Go support and improved user experience (`233a684`)
 - Update CSP in next.config.ts and enhance package dependencies (`177a14c`)
+- Merge pull request #2 from sharathrgupta-dev/claude/lucid-driscoll-67d1a1 (`beb4041`)
+- Merge branch 'SaiBhargavRallapalli:main' into main (`c64b837`)
 - Merge branch 'main' of https://github.com/SaiBhargavRallapalli/all-in-one (`6434b40`)
 - Update CHANGELOG with recent CI enhancements and dependency updates (`8c89eae`)
 - Update CHANGELOG with recent CI enhancements and dependency updates (`c475574`)
@@ -20,6 +40,8 @@
 - Refactor CI workflow to consolidate jobs (`b8cb2eb`)
 - Delete ci.yml (`ee0512f`)
 - Enhance README with additional badges (`4bfb0fe`)
+- Merge pull request #1 from SaiBhargavRallapalli/main (`eb53707`)
+- AWS lambda sandbox module (`76da173`)
 
 ### Chore
 - bump @types/jszip from 3.4.0 to 3.4.1 (`fe0d9cf`)
