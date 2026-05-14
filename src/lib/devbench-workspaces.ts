@@ -92,6 +92,8 @@ export const DEVBENCH_WORKSPACES: readonly WorkspaceShortcut[] = [
     shortLabel: "Webhook",
     description: "Generate, send and verify signed GitHub/Stripe/Slack/Shopify webhook payloads",
     keywords: ["webhook", "hmac", "signature", "github", "stripe", "slack", "shopify", "x-hub-signature"],
+  },
+  {
     id: "playground",
     href: "/playground",
     label: "Code playground",
