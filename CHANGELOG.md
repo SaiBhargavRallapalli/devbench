@@ -8,7 +8,8 @@
 - Add embed functionality and enhance security headers for tool pages (`9818028`)
 
 ### Changed
-- Update metadata and enhance page structure for improved clarity and SEO (`8186450`)
+- Update Morse code tool FAQs and page content for clarity and SEO (`88e8e99`)
+- Update metadata and enhance page structure for improved clarity and SEO (`67566e6`)
 - Enhance tool accessibility and performance (`146c91c`)
 
 ## 2026-05-14

@@ -363,20 +363,20 @@ export const TOOL_PAGE_CONTENT: Record<string, ToolPageContent> = {
   },
 
   "morse-code": {
-    title: "Morse Code Translator — Text to Morse & Back",
+    title: "Morse Code Generator — Convert & Translate Text Online",
     metaDescription:
-      "Convert text to Morse code and decode Morse to text online. International Morse Code with word and letter separators. No signup, 100% in your browser.",
+      "Generate Morse code from any text online — convert letters, words, and sentences to dots and dashes. Decode any Morse code back to text instantly. No signup, browser-only.",
     openingParagraph:
-      "Morse Code Translator converts any Latin text to International Morse Code (dots, dashes, and spaces) and decodes Morse back to text. Words are separated by slashes (/), letters by spaces. Paste SOS (... --- ...) or any Morse sequence to decode it, or type a message to get the Morse representation. Runs entirely in your browser with instant two-way conversion.",
+      "Morse Code Generator converts any Latin text to International Morse Code (dots, dashes, and spaces) and decodes Morse back to text — a full two-way Morse code converter in one tool. Words are separated by slashes (/), letters by spaces. Paste SOS (... --- ...) or any Morse sequence to decode it, or type any message to generate its Morse representation. Runs entirely in your browser with instant conversion.",
   },
 
   // ── Text tools ───────────────────────────────────────────────────────────────
   "case-converter": {
     title: "Case Converter — camelCase, snake_case, PascalCase Online",
     metaDescription:
-      "Convert text between camelCase, PascalCase, snake_case, kebab-case, CONSTANT_CASE, and Title Case instantly online. No signup, 100% in your browser.",
+      "Convert text between UPPER CASE, lower case, camelCase, PascalCase, snake_case, kebab-case, and Title Case instantly online. Free case conversion tool. No signup.",
     openingParagraph:
-      "Case Converter transforms any text between all common naming conventions — camelCase for JavaScript variables, PascalCase for class names, snake_case for Python and database columns, kebab-case for CSS and URLs, CONSTANT_CASE for environment variables, and Title Case for headings. Paste a phrase and toggle between all formats with one click. Runs entirely in your browser.",
+      "Case Converter transforms any text between all common naming conventions and text cases — UPPER CASE and lower case for quick text formatting, camelCase for JavaScript variables, PascalCase for class names, snake_case for Python and database columns, kebab-case for CSS and URLs, CONSTANT_CASE for environment variables, and Title Case for headings. Paste a phrase and toggle between all formats in one click. Runs entirely in your browser.",
   },
 
   "word-counter": {
@@ -412,11 +412,11 @@ export const TOOL_PAGE_CONTENT: Record<string, ToolPageContent> = {
   },
 
   "find-replace": {
-    title: "Find & Replace Text Online — Plain Text & Regex",
+    title: "Find and Replace Online — Like Word's Ctrl+H, with Regex",
     metaDescription:
-      "Find and replace text online with plain-text or regex patterns. Case-sensitive toggle, replace all or first match. Instant preview. No signup, 100% in your browser.",
+      "Find and replace text online — works like Word's Ctrl+H in your browser. Plain text or regex mode, case-sensitive toggle, replace all or first match. No signup.",
     openingParagraph:
-      "Find & Replace searches any text for a pattern — plain string or regular expression — and replaces matches with your substitution text. Toggle case-sensitivity, replace the first match or all occurrences, and preview the result before copying. Useful for bulk-editing config files, renaming variables in a pasted code block, and normalising text data. Runs entirely in your browser.",
+      "Find & Replace works like Ctrl+H in Word or Notepad but runs entirely in your browser — no software needed. Search any pasted text for a plain string or regular expression and replace matches with your substitution text. Toggle case-sensitivity, replace the first match or all occurrences, and preview the result before copying. Useful for bulk-editing config files, renaming variables in a pasted code block, and normalising text data.",
   },
 
   "whitespace-normalizer": {
@@ -460,11 +460,11 @@ export const TOOL_PAGE_CONTENT: Record<string, ToolPageContent> = {
   },
 
   "strip-markdown": {
-    title: "Strip Markdown — Remove Formatting, Get Plain Text",
+    title: "Strip Markdown — Remove Text Formatting Online Free",
     metaDescription:
-      "Remove all Markdown formatting from text online — headers, bold, italic, links, code blocks, lists. Returns plain text. No signup, 100% in your browser.",
+      "Remove Markdown text formatting online — strip headers, bold, italic, links, code blocks, and lists to get clean plain text instantly. No signup, 100% in your browser.",
     openingParagraph:
-      "Strip Markdown removes all Markdown syntax from any document — headings (#), bold (**), italic (*_), links, images, inline code, fenced code blocks, blockquotes, and list markers — leaving only the plain text content. Useful for extracting readable text from Markdown files for word count, search indexing, or tools that don't support Markdown. Runs entirely in your browser.",
+      "Strip Markdown removes all Markdown and text formatting syntax from any document — headings (#), bold (**), italic (*_), links, images, inline code, fenced code blocks, blockquotes, and list markers — leaving only the plain text content. Use it to remove formatting before pasting into tools that don't support Markdown, extract readable text for word count or SEO meta descriptions, or feed clean text to search indexes. Runs entirely in your browser.",
   },
 
   "unicode-checker": {
@@ -590,11 +590,11 @@ export const TOOL_PAGE_CONTENT: Record<string, ToolPageContent> = {
 
   // ── Conversion tools ─────────────────────────────────────────────────────────
   "temperature-converter": {
-    title: "Temperature Converter — Celsius, Fahrenheit, Kelvin",
+    title: "Celsius to Fahrenheit Converter — °C, °F & Kelvin",
     metaDescription:
-      "Convert temperatures between Celsius, Fahrenheit, and Kelvin online. All three values update simultaneously as you type. No signup, 100% in your browser.",
+      "Convert Celsius to Fahrenheit instantly — 35°C = 95°F, 37°C = 98.6°F, 100°C = 212°F. All three temperature units update live. No signup, 100% in your browser.",
     openingParagraph:
-      "Temperature Converter translates between Celsius (°C), Fahrenheit (°F), and Kelvin (K) in all directions — type in any field and the other two update instantly. Includes a reference table of common temperatures: water boiling and freezing points, body temperature, oven settings, and absolute zero. Runs entirely in your browser.",
+      "Temperature Converter translates between Celsius (°C), Fahrenheit (°F), and Kelvin (K) in all directions — type in any field and the other two update instantly. Whether you need to convert 35°C to 95°F, confirm that 37°C (98.6°F) is normal body temperature, know that water boils at 100°C (212°F), or work with scientific Kelvin values, a reference table of common temperatures is included below the calculator. Runs entirely in your browser.",
   },
 
   "byte-converter": {
@@ -777,11 +777,11 @@ export const TOOL_PAGE_CONTENT: Record<string, ToolPageContent> = {
   },
 
   "pythagorean-theorem": {
-    title: "Pythagorean Theorem Calculator — Find Missing Side",
+    title: "Pythagorean Theorem Calculator — a² + b² = c² Solver",
     metaDescription:
-      "Calculate the missing side of a right triangle using Pythagorean theorem online. Enter any two sides to find the third. Full working shown. No signup, browser-only.",
+      "Pythagorean theorem calculator — find the hypotenuse or missing leg of a right triangle. Enter any two sides to get the third with full working shown. No signup.",
     openingParagraph:
-      "Pythagorean Theorem Calculator finds the missing side of a right-angled triangle — enter any two sides (a, b, or hypotenuse c) and it calculates the third using a² + b² = c². Shows the full working including squared values and the square root step. Useful for geometry, construction, trigonometry, and physics. Runs entirely in your browser.",
+      "Pythagorean Theorem Calculator finds the missing side of any right-angled triangle — enter any two sides (leg a, leg b, or hypotenuse c) and it calculates the third using a² + b² = c². Shows the full step-by-step working including squared values and the square root. Common Pythagorean triples (3-4-5, 5-12-13) are listed for reference. Useful for geometry homework, construction, and physics problems. Runs entirely in your browser.",
   },
 
   "gcd-lcm-calculator": {

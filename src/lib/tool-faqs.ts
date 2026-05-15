@@ -734,9 +734,11 @@ export const TOOL_FAQS: Record<string, Faq[]> = {
   ],
 
   "morse-code": [
-    { q: "What is International Morse Code?", a: "International Morse Code is a system that encodes text as sequences of short signals (dots •) and long signals (dashes −). Originally designed for telegraph communication, it is still used in amateur radio, aviation, and accessibility contexts. Each letter and digit has a unique dot-dash sequence." },
-    { q: "How are spaces and word boundaries represented?", a: "Letters within a word are separated by a short gap (shown as a single space in text representation). Words are separated by a longer gap (shown as / in text). For example, 'SOS' in Morse is ... --- ... and 'HELLO WORLD' is .... . .-.. .-.. --- / .-- --- .-. .-.. -.." },
-    { q: "Does Morse Code support numbers and punctuation?", a: "Yes. All digits 0–9 have Morse representations (e.g. 1 = .---- and 0 = -----). Common punctuation marks are also defined in the International Morse Code standard, including period, comma, question mark, and slash." },
+    { q: "What is International Morse Code?", a: "International Morse Code encodes text as sequences of short signals (dots •) and long signals (dashes −). Originally designed for telegraph communication, it is still used in amateur radio (required for some licences), aviation, and accessibility contexts. Each letter and digit has a unique dot-dash sequence." },
+    { q: "How do I use this Morse code generator?", a: "Type or paste any text in the left field and the Morse code output appears instantly — dots and dashes separated by spaces, with words separated by slashes (/). To decode Morse, paste the dots and dashes in the Morse field and the plain text appears on the right. Both directions work simultaneously." },
+    { q: "What is SOS in Morse code?", a: "SOS is ... --- ... (three dots, three dashes, three dots). It is the international distress signal chosen because it is easy to transmit and distinguish in Morse. Despite the common folk etymology, SOS does not officially stand for 'Save Our Ship' or 'Save Our Souls' — it was chosen purely for its simplicity." },
+    { q: "How are spaces and word boundaries represented?", a: "Letters within a word are separated by a single space. Words are separated by a slash (/). For example, 'HELLO WORLD' in Morse is: .... . .-.. .-.. --- / .-- --- .-. .-.. -.. The converter follows standard International Morse Code spacing." },
+    { q: "Does Morse Code support numbers and punctuation?", a: "Yes. All digits 0–9 have Morse representations (1 = .----, 2 = ..---, 0 = -----). Common punctuation is also defined: period (.-.-.-), comma (--..--), question mark (..--..),  and more. Enter numbers or punctuation in the text field and the generator encodes them." },
     { q: "Is my text safe here?", a: "Yes. Translation runs in your browser. Nothing is sent to a server." },
   ],
 
@@ -981,9 +983,11 @@ export const TOOL_FAQS: Record<string, Faq[]> = {
 
   // ── Conversion tools ────────────────────────────────────────────────────────
   "temperature-converter": [
-    { q: "What is the formula for Celsius to Fahrenheit?", a: "°F = (°C × 9/5) + 32. The reverse: °C = (°F − 32) × 5/9. Quick mental approximation: double the Celsius and add 30 (e.g. 20°C ≈ 70°F). For exact conversion use the calculator." },
-    { q: "What is Kelvin and when is it used?", a: "Kelvin (K) is the absolute temperature scale used in physics and chemistry. 0 K is absolute zero (−273.15°C), the coldest possible temperature. Water freezes at 273.15 K and boils at 373.15 K. Kelvin is used in thermodynamics, gas laws, and colour temperature of light sources." },
-    { q: "What is normal human body temperature?", a: "The traditional value is 98.6°F (37°C), but research shows the average is closer to 97.5°F (36.4°C) and varies by person, age, and time of day. A temperature above 100.4°F (38°C) is generally considered a fever." },
+    { q: "What is the formula for Celsius to Fahrenheit?", a: "°F = (°C × 9/5) + 32. Examples: 0°C = 32°F (water freezes), 20°C = 68°F (room temperature), 35°C = 95°F, 37°C = 98.6°F (body temp), 100°C = 212°F (water boils). Reverse: °C = (°F − 32) × 5/9. Quick mental trick: double the °C and add 30 for an approximation." },
+    { q: "What is 35 degrees Celsius in Fahrenheit?", a: "35°C = (35 × 9/5) + 32 = 63 + 32 = 95°F. Similarly: 36°C = 96.8°F, 37°C = 98.6°F, 38°C = 100.4°F, 40°C = 104°F. The calculator converts any value instantly — just type in the Celsius field." },
+    { q: "What is Kelvin and when is it used?", a: "Kelvin (K) is the absolute temperature scale used in physics and chemistry. 0 K is absolute zero (−273.15°C) — the coldest possible temperature. Water freezes at 273.15 K and boils at 373.15 K. Kelvin is used in thermodynamics, gas laws, blackbody radiation, and the colour temperature of light sources (e.g. 6500 K = daylight)." },
+    { q: "What is normal human body temperature in Celsius and Fahrenheit?", a: "The traditional value is 37°C (98.6°F), but research shows the average adult temperature is closer to 36.4°C (97.5°F) and varies by person, age, and time of day. A temperature above 38°C (100.4°F) is generally considered a fever." },
+    { q: "What are common temperature reference points?", a: "Absolute zero: −273.15°C / −459.67°F / 0 K. Water freezes: 0°C / 32°F / 273.15 K. Room temperature: ~20°C / 68°F. Body temperature: 37°C / 98.6°F. Water boils: 100°C / 212°F. Oven (moderate): ~180°C / 356°F. The converter includes a reference table for these common values." },
     { q: "Is my data safe here?", a: "Yes. Conversion runs in your browser. Nothing is sent to a server." },
   ],
 
@@ -1124,23 +1128,29 @@ export const TOOL_FAQS: Record<string, Faq[]> = {
 
   // ── Math tools ──────────────────────────────────────────────────────────────
   "quadratic-solver": [
-    { q: "What is the quadratic formula?", a: "x = (−b ± √(b² − 4ac)) / 2a. The two roots are found by using + and − in the ± position. The solver computes both roots and also the discriminant (b² − 4ac) which tells you the nature of the roots before computing." },
-    { q: "What does the discriminant tell me?", a: "If b² − 4ac > 0: two distinct real roots. If b² − 4ac = 0: one repeated real root (the parabola touches the x-axis at one point). If b² − 4ac < 0: two complex conjugate roots (the parabola does not cross the x-axis)." },
-    { q: "What does a = 0 mean?", a: "If a = 0, the equation becomes linear (bx + c = 0) rather than quadratic. The solver detects this and reports the single linear solution x = −c/b." },
+    { q: "What is a quadratic equation?", a: "A quadratic equation is a polynomial equation of degree 2 in the form ax² + bx + c = 0, where a ≠ 0. The term 'quadratic' comes from 'quadratum' (Latin for square), referring to the x² term. Quadratic equations can have 0, 1, or 2 real solutions." },
+    { q: "What is the quadratic formula?", a: "x = (−b ± √(b² − 4ac)) / 2a. The two roots are found by substituting + and − in the ± position. The solver computes both roots along with the discriminant (b² − 4ac) which determines the nature of the roots." },
+    { q: "What does the discriminant tell me?", a: "If b² − 4ac > 0: two distinct real roots. If b² − 4ac = 0: one repeated real root (the parabola just touches the x-axis). If b² − 4ac < 0: two complex conjugate roots — no real solutions (the parabola does not cross the x-axis)." },
+    { q: "How do I factor a quadratic equation?", a: "For x² + bx + c = 0 (with a=1): find two numbers that multiply to c and add to b — e.g. x² + 5x + 6 = (x+2)(x+3) because 2×3=6 and 2+3=5. For a≠1, use the quadratic formula to find roots r₁ and r₂, then write: a(x − r₁)(x − r₂)." },
+    { q: "What are real-world uses of quadratic equations?", a: "Projectile motion (the height of a thrown ball follows h = −16t² + vt + h₀), area problems (finding a rectangle's dimensions from its area), economics (profit optimisation when revenue = price × demand), and engineering (parabolic arch and cable curves)." },
     { q: "Is my data safe here?", a: "Yes. Solving runs in your browser. Nothing is sent to a server." },
   ],
 
   "pythagorean-theorem": [
-    { q: "What is the Pythagorean theorem?", a: "In a right-angled triangle, the square of the hypotenuse (the side opposite the right angle) equals the sum of the squares of the other two sides: a² + b² = c². Given any two sides, the third can be calculated." },
-    { q: "What are Pythagorean triples?", a: "Pythagorean triples are sets of three integers that satisfy a² + b² = c². The most famous is (3, 4, 5) — confirmed: 9 + 16 = 25. Other common triples: (5, 12, 13), (8, 15, 17), (7, 24, 25). Any multiple of a triple is also a triple: (6, 8, 10)." },
-    { q: "Where is the Pythagorean theorem used in practice?", a: "Construction (verifying right angles with the 3-4-5 rule), navigation (calculating straight-line distances), computer graphics (2D/3D distance calculations), physics (vector magnitudes), and any geometry problem involving perpendicular sides." },
+    { q: "What is the Pythagorean theorem?", a: "The Pythagorean theorem states that in a right-angled triangle, the square of the hypotenuse (the longest side, opposite the 90° angle) equals the sum of the squares of the other two sides: a² + b² = c². It is one of the most fundamental theorems in geometry." },
+    { q: "How do I calculate the hypotenuse?", a: "If you know both legs (a and b), the hypotenuse c = √(a² + b²). For example, legs 3 and 4: c = √(9 + 16) = √25 = 5. Enter the two legs in the calculator and it computes the hypotenuse with full step-by-step working." },
+    { q: "How do I find a missing leg of a right triangle?", a: "Rearrange the formula: b = √(c² − a²). For example, hypotenuse c = 13, leg a = 5: b = √(169 − 25) = √144 = 12. Enter the hypotenuse and the known leg to find the missing leg." },
+    { q: "What are Pythagorean triples?", a: "Pythagorean triples are sets of three positive integers satisfying a² + b² = c². Common triples: (3, 4, 5), (5, 12, 13), (8, 15, 17), (7, 24, 25). Any integer multiple of a triple is also a triple — (6, 8, 10) is 2×(3, 4, 5). These appear frequently in homework problems and construction." },
+    { q: "Where is the Pythagorean theorem used in practice?", a: "Construction (verifying right angles with the 3-4-5 rule: if the sides measure 3, 4, and 5 units, the corner is square), navigation (straight-line distance from coordinate differences), screen diagonal calculations (a 16×9 screen has diagonal √(16²+9²) = √337 ≈ 18.4 units), and physics (vector resultant magnitude)." },
     { q: "Is my data safe here?", a: "Yes. Calculation runs in your browser. Nothing is sent to a server." },
   ],
 
   "gcd-lcm-calculator": [
-    { q: "What is the GCD used for?", a: "The GCD (Greatest Common Divisor) is used to simplify fractions (divide numerator and denominator by GCD), synchronise repeating events (finding the common cycle length), and in cryptography (RSA algorithm relies on GCD computation)." },
-    { q: "What is the LCM used for?", a: "The LCM (Least Common Multiple) is used to add fractions with different denominators (find the common denominator), schedule events that repeat at different intervals (when will two events next coincide), and in music theory (rhythm and metre)." },
-    { q: "How is GCD calculated (Euclidean algorithm)?", a: "GCD(a, b) = GCD(b, a mod b), recursively until b = 0. Example: GCD(48, 18): GCD(18, 12) → GCD(12, 6) → GCD(6, 0) = 6. Then LCM(a, b) = (a × b) / GCD(a, b)." },
+    { q: "What is the GCD (Greatest Common Divisor)?", a: "The GCD of two numbers is the largest positive integer that divides both without a remainder. GCD(12, 18) = 6 because 6 is the largest number that divides both 12 and 18. Also called Greatest Common Factor (GCF) or Highest Common Factor (HCF)." },
+    { q: "What is the LCM (Least Common Multiple)?", a: "The LCM of two numbers is the smallest positive integer that is divisible by both. LCM(4, 6) = 12 because 12 is the smallest number that both 4 and 6 divide evenly. The key relationship: GCD(a, b) × LCM(a, b) = a × b." },
+    { q: "How do I simplify a fraction using GCD?", a: "Divide both the numerator and denominator by their GCD. For 24/36: GCD(24, 36) = 12, so 24÷12 = 2 and 36÷12 = 3, giving the simplified fraction 2/3. The result is always in lowest terms because dividing by GCD removes all common factors." },
+    { q: "How is GCD calculated (Euclidean algorithm)?", a: "GCD(a, b) = GCD(b, a mod b), repeated until the remainder is 0. Example: GCD(48, 18) → GCD(18, 12) → GCD(12, 6) → GCD(6, 0) = 6. The algorithm is efficient and works for any size integers." },
+    { q: "When is LCM used in real life?", a: "Adding fractions with different denominators (find the LCD = LCM of denominators), scheduling events (if event A repeats every 4 days and B every 6 days, they coincide every LCM(4,6)=12 days), and gear ratio analysis in mechanical engineering." },
     { q: "Is my data safe here?", a: "Yes. Calculation runs in your browser. Nothing is sent to a server." },
   ],
 
