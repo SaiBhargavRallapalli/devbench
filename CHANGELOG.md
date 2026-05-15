@@ -8,7 +8,8 @@
 - Add embed functionality and enhance security headers for tool pages (`9818028`)
 
 ### Changed
-- Enhance tool accessibility and performance (`1c1ef10`)
+- Update metadata and enhance page structure for improved clarity and SEO (`8186450`)
+- Enhance tool accessibility and performance (`146c91c`)
 
 ## 2026-05-14
 

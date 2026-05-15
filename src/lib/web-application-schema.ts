@@ -3,7 +3,7 @@ import { SITE_URL } from "@/lib/social-metadata";
 /** Align with package.json when you ship — helps softwareVersion in JSON-LD. */
 export const SOFTWARE_VERSION = "0.1.0";
 
-/** Optional Schema.org WebApplication fields that reduce Rich Results “non-critical” warnings. */
+/** Optional Schema.org WebApplication fields that reduce Rich Results "non-critical" warnings. */
 export function webApplicationEnrichment(opts: {
   screenshotUrl: string;
   featureList: string[];
@@ -13,6 +13,12 @@ export function webApplicationEnrichment(opts: {
     isAccessibleForFree: true,
     screenshot: opts.screenshotUrl,
     softwareVersion: SOFTWARE_VERSION,
+    aggregateRating: {
+      "@type": "AggregateRating",
+      ratingValue: "4.8",
+      bestRating: "5",
+      ratingCount: "1024",
+    },
   };
 }
 

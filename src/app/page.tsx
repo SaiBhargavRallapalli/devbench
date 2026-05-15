@@ -72,6 +72,7 @@ export default function HomePage() {
             </p>
 
             {/* Trust strip — one row from md (grid avoids awkward 2+1 wrapping) */}
+            <h2 className="sr-only">Why DevBench</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 max-w-5xl mx-auto">
               {HERO_FEATURES.map((f) => (
                 <div
@@ -82,7 +83,7 @@ export default function HomePage() {
                     <f.icon className="h-5 w-5 text-accent md:h-6 md:w-6" aria-hidden />
                   </div>
                   <div className="min-w-0 flex-1 md:flex-none">
-                    <p className="text-sm font-semibold text-foreground">{f.title}</p>
+                    <h3 className="text-sm font-semibold text-foreground">{f.title}</h3>
                     <p className="mt-1 text-xs leading-relaxed text-muted-foreground md:mx-auto md:max-w-[18rem]">
                       {f.desc}
                     </p>

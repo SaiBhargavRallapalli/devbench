@@ -29,11 +29,11 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.devbench.co.in"),
   title: {
-    default: "DevBench — Free Online Developer Tools",
+    default: "DevBench — Free Online Developer Tools, No Account Needed",
     template: "%s | DevBench",
   },
   description:
-    "100+ free browser-based developer tools. Format JSON, encode Base64, test regex, debug JWT, compare text, generate UUID, convert YAML, and more. No signup — everything runs in your browser.",
+    "100+ free browser-based developer tools — format JSON, encode Base64, test regex, debug JWT, generate UUID, and more. No account, runs in your browser.",
   authors: [{ name: "DevBench", url: "https://www.devbench.co.in" }],
   creator: "DevBench",
   publisher: "DevBench",
@@ -66,15 +66,15 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://www.devbench.co.in",
     siteName: "DevBench",
-    title: "DevBench — Free Online Developer Tools",
+    title: "DevBench — Free Online Developer Tools, No Account Needed",
     description:
-      "100+ free browser-based developer tools — JSON, Base64, Regex, JWT, Diff, UUID, YAML, CSV, and more. No signup, runs entirely in your browser.",
+      "100+ free browser-based developer tools — format JSON, encode Base64, debug JWT, generate UUID, and more. No account, runs in your browser.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "DevBench — Free Online Developer Tools",
+    title: "DevBench — Free Online Developer Tools, No Account Needed",
     description:
-      "100+ free browser-based developer tools — JSON, Base64, Regex, JWT, Diff, UUID, YAML, CSV. No signup required.",
+      "100+ free browser-based developer tools — format JSON, encode Base64, debug JWT, generate UUID, and more. No account required.",
     site: "@devbench",
     creator: "@devbench",
   },
