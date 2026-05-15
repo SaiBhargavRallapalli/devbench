@@ -5,7 +5,10 @@
 ## 2026-05-15
 
 ### Added
-- Add embed functionality and enhance security headers for tool pages (`2b092fd`)
+- Add embed functionality and enhance security headers for tool pages (`9818028`)
+
+### Changed
+- Enhance tool accessibility and performance (`1c1ef10`)
 
 ## 2026-05-14
 

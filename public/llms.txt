@@ -1,0 +1,157 @@
+# DevBench
+
+> DevBench is a free, open-source collection of 60+ browser-based developer tools — JSON formatters, encoders, PDF utilities, calculators, and more. All processing runs client-side; no account required and no data is uploaded to servers.
+
+Live site: https://www.devbench.co.in
+
+## JSON & Data Tools
+
+- [JSON Formatter & Validator](https://www.devbench.co.in/tools/json-formatter): Format, validate, and minify JSON with error highlighting and tree view
+- [JSON Diff](https://www.devbench.co.in/tools/json-diff): Compare two JSON objects with color-coded diff visualization
+- [JSON to YAML](https://www.devbench.co.in/tools/json-to-yaml): Convert JSON to YAML format instantly
+- [YAML to JSON](https://www.devbench.co.in/tools/yaml-to-json): Convert YAML to JSON, supports anchors, aliases, multi-document streams
+- [YAML Formatter & Validator](https://www.devbench.co.in/tools/yaml-formatter): Format, validate and auto-fix YAML with error line numbers
+- [JSON to CSV](https://www.devbench.co.in/tools/json-to-csv): Convert JSON arrays to CSV with automatic header extraction
+- [CSV to JSON](https://www.devbench.co.in/tools/csv-to-json): Convert CSV to JSON with type inference
+- [JSON to TSV](https://www.devbench.co.in/tools/json-to-tsv): Convert JSON arrays to tab-separated values for Excel & Sheets
+- [TSV to JSON](https://www.devbench.co.in/tools/tsv-to-json): Parse tab-separated values into JSON arrays
+- [JSON to TypeScript](https://www.devbench.co.in/tools/json-to-typescript): Generate TypeScript interfaces from JSON data
+- [JSON to XML](https://www.devbench.co.in/tools/json-to-xml): Convert JSON to XML format
+- [XML to JSON](https://www.devbench.co.in/tools/xml-to-json): Convert XML to JSON format
+- [TOML to JSON](https://www.devbench.co.in/tools/toml-to-json): Convert TOML configuration files to JSON
+
+## Encoding & Decoding
+
+- [Base64 Encode](https://www.devbench.co.in/tools/base64-encode): Encode text to Base64 with full UTF-8 support
+- [Base64 Decode](https://www.devbench.co.in/tools/base64-decode): Decode Base64 strings back to plain text
+- [Base64 Image](https://www.devbench.co.in/tools/base64-image): Encode images to Base64 data URIs or decode Base64 back to image
+- [URL Encode](https://www.devbench.co.in/tools/url-encode): URL-encode text with percent-encoding
+- [URL Decode](https://www.devbench.co.in/tools/url-decode): Decode URL-encoded strings
+- [HTML Entity Encode](https://www.devbench.co.in/tools/html-entity-encode): Encode special characters to HTML entities
+- [HTML Entity Decode](https://www.devbench.co.in/tools/html-entity-decode): Decode HTML entities back to plain text
+- [Text to Hex](https://www.devbench.co.in/tools/text-to-hex): Convert text to hexadecimal bytes
+- [Hex to Text](https://www.devbench.co.in/tools/hex-to-text): Convert hex bytes back to text
+- [Text to Binary](https://www.devbench.co.in/tools/text-to-binary): Convert text to binary representation
+- [Binary to Text](https://www.devbench.co.in/tools/binary-to-text): Convert binary back to text
+- [ROT13](https://www.devbench.co.in/tools/rot13): Encode or decode text with ROT13 cipher
+- [Morse Code](https://www.devbench.co.in/tools/morse-code): Convert text to Morse code and back
+
+## Text Utilities
+
+- [String Inspector](https://www.devbench.co.in/tools/string-inspector): Deep-inspect any string — length, bytes, Unicode codepoints, char frequency, entropy
+- [Markdown Preview](https://www.devbench.co.in/tools/markdown-preview): Live side-by-side Markdown editor and rendered HTML preview with GFM support
+- [Regex Tester](https://www.devbench.co.in/tools/regex-tester): Test regular expressions with live match highlighting, group capture view, and substitution
+- [Case Converter](https://www.devbench.co.in/tools/case-converter): Convert text to camelCase, PascalCase, snake_case, kebab-case, and more
+- [Text Diff](https://www.devbench.co.in/tools/text-diff): Compare two texts and highlight differences
+- [Word Counter](https://www.devbench.co.in/tools/word-counter): Count words, characters, sentences with reading time
+- [Slug Generator](https://www.devbench.co.in/tools/slug-generator): Generate URL-friendly slugs from text
+- [Lorem Ipsum](https://www.devbench.co.in/tools/lorem-ipsum): Generate placeholder text in paragraphs, sentences, or words
+- [Line Sorter](https://www.devbench.co.in/tools/line-sorter): Sort, reverse, deduplicate, or shuffle lines
+- [Find & Replace](https://www.devbench.co.in/tools/find-replace): Find and replace with plain text or regex
+- [Whitespace Normalizer](https://www.devbench.co.in/tools/whitespace-normalizer): Trim lines, collapse spaces, remove blank lines
+- [String Reverse](https://www.devbench.co.in/tools/string-reverse): Reverse any string with full Unicode support
+- [Markdown to HTML](https://www.devbench.co.in/tools/markdown-to-html): Convert Markdown to HTML with GFM support
+- [HTML to Markdown](https://www.devbench.co.in/tools/html-to-markdown): Convert HTML back to Markdown
+- [HTML to Plain Text](https://www.devbench.co.in/tools/html-to-text): Strip all HTML tags and return plain text
+- [Strip Markdown](https://www.devbench.co.in/tools/strip-markdown): Remove all Markdown formatting
+- [Unicode Checker](https://www.devbench.co.in/tools/unicode-checker): Inspect every character: codepoint, name, category, script, UTF-8 bytes, HTML entity
+
+## Developer Tools
+
+- [JWT Debugger](https://www.devbench.co.in/jwt-debugger): Decode and verify JSON Web Tokens
+- [API Tester](https://www.devbench.co.in/api-tester): Test REST APIs directly in the browser
+- [Webhook Simulator](https://www.devbench.co.in/webhook-simulator): Generate, send, and verify signed webhook payloads — GitHub, Stripe, Slack, Shopify, or generic HMAC
+- [AWS Lambda Sandbox](https://www.devbench.co.in/lambda-sandbox): Run Node.js Lambda handlers against API Gateway, SQS, S3, EventBridge events — sandboxed in browser
+- [WebSocket Tester](https://www.devbench.co.in/tools/websocket-tester): Open a WebSocket to any ws:// or wss:// endpoint, send messages, watch frames in real time
+- [Code Playground](https://www.devbench.co.in/playground): Multi-language code playground
+- [Mermaid Diagram Editor](https://www.devbench.co.in/tools/mermaid-editor): Live editor for Mermaid.js flowcharts, sequence diagrams, ER diagrams, Gantt charts
+- [AES-256-GCM Encryptor](https://www.devbench.co.in/tools/aes-encrypt-decrypt): Encrypt and decrypt text with AES-256-GCM — password-based, client-side only
+- [Hash Generator](https://www.devbench.co.in/tools/hash-generator): Generate SHA-1, SHA-256, SHA-384, SHA-512 hashes
+- [UUID / ULID / Nano ID](https://www.devbench.co.in/tools/uuid-generator): Generate UUID v4, ULID, or Nano ID values
+- [HTML to JSX](https://www.devbench.co.in/tools/html-to-jsx): Convert HTML to React JSX — class→className, self-closing void elements, camelCase events
+- [HTML Preview](https://www.devbench.co.in/tools/html-preview): Live-render HTML in a sandboxed iframe with optional JavaScript execution
+- [Color Converter](https://www.devbench.co.in/tools/color-converter): Convert HEX, RGB, HSL colors with preview
+- [Unix Timestamp](https://www.devbench.co.in/tools/unix-timestamp): Convert Unix timestamps to dates and back
+- [Cron Parser](https://www.devbench.co.in/tools/cron-parser): Parse cron expressions with plain-English description
+- [Cron Editor](https://www.devbench.co.in/cron-editor): Visual cron expression builder and editor
+- [Password Generator](https://www.devbench.co.in/tools/password-generator): Generate secure random passwords
+- [QR Code Generator](https://www.devbench.co.in/tools/qr-code): Generate QR codes from text or URLs
+- [URL Parser](https://www.devbench.co.in/tools/url-parser): Parse URLs into protocol, host, path, query, and hash components
+- [Base Converter](https://www.devbench.co.in/tools/base-converter): Convert between decimal, hex, binary, octal
+- [CSS Minifier](https://www.devbench.co.in/tools/css-minifier): Minify and compress CSS
+- [HTML Minifier](https://www.devbench.co.in/tools/html-minifier): Minify and compress HTML
+- [SQL Formatter](https://www.devbench.co.in/tools/sql-formatter): Format and pretty-print SQL queries
+- [cURL to Fetch](https://www.devbench.co.in/tools/curl-to-fetch): Convert cURL commands to JavaScript fetch()
+- [cURL Formatter](https://www.devbench.co.in/tools/curl-formatter): Normalize messy cURL into clean, copy-pasteable commands
+- [String Escape](https://www.devbench.co.in/tools/string-escape): Escape strings for JSON, JS, SQL, Regex
+- [MIME Type Lookup](https://www.devbench.co.in/tools/mime-lookup): Look up MIME types by file extension
+- [SemVer Comparator](https://www.devbench.co.in/tools/semver-compare): Compare npm-style semantic versions
+- [chmod Calculator](https://www.devbench.co.in/tools/chmod-calculator): Convert Unix permission octals ↔ symbolic notation
+- [.env Parser](https://www.devbench.co.in/tools/dotenv-parser): Parse .env files to JSON and flag duplicate keys
+- [Log Line Parser](https://www.devbench.co.in/tools/log-parser): Turn plain-text logs into structured JSON
+- [Contrast Checker (WCAG)](https://www.devbench.co.in/tools/contrast-checker): Foreground & background — WCAG contrast ratio for accessibility
+- [CSS Gradient Generator](https://www.devbench.co.in/tools/gradient-generator): Linear gradient preview and CSS snippet
+- [HTTP Status Reference](https://www.devbench.co.in/tools/http-status-reference): Reference guide for HTTP status codes
+- [CSS Box Shadow](https://www.devbench.co.in/tools/css-box-shadow): Interactive CSS box-shadow generator
+
+## Date & Time Tools
+
+- [Epoch Converter](https://www.devbench.co.in/epoch): Convert between Unix epoch timestamps and human-readable dates
+- [Timezone Converter](https://www.devbench.co.in/tools/timezone-converter): Convert a moment across 600+ IANA time zones with DST handling and shareable links
+- [Age Calculator](https://www.devbench.co.in/tools/age-calculator): Calculate exact age from a birth date
+- [Days Between Dates](https://www.devbench.co.in/tools/days-between-dates): Calculate the number of days between two dates
+- [Date Calculator](https://www.devbench.co.in/date-calculator): Add or subtract days, weeks, months from a date
+- [Countdown Calculator](https://www.devbench.co.in/tools/countdown-calculator): Time remaining until a target date
+- [ISO Week Number](https://www.devbench.co.in/tools/week-number-calculator): Get the ISO week number and year for any date
+- [Due Date Calculator](https://www.devbench.co.in/tools/due-date-calculator): Estimate pregnancy due date from last menstrual period
+
+## PDF Tools
+
+- [Merge PDF](https://www.devbench.co.in/tools/merge-pdf): Combine multiple PDF files into one
+- [Split PDF](https://www.devbench.co.in/tools/split-pdf): Split a PDF into individual pages or page ranges
+- [Compress PDF](https://www.devbench.co.in/tools/compress-pdf): Reduce PDF file size
+- [Rotate PDF](https://www.devbench.co.in/tools/rotate-pdf): Rotate PDF pages
+- [PDF Page Numbers](https://www.devbench.co.in/tools/pdf-page-numbers): Add page numbers to a PDF
+- [PDF Page Editor](https://www.devbench.co.in/tools/pdf-page-editor): Reorder or delete PDF pages
+- [Watermark PDF](https://www.devbench.co.in/tools/watermark-pdf): Add a text or image watermark to a PDF
+- [Image to PDF](https://www.devbench.co.in/tools/image-to-pdf): Convert images to a PDF document
+- [Text to PDF](https://www.devbench.co.in/tools/text-to-pdf): Convert plain text to PDF
+- [HTML to PDF](https://www.devbench.co.in/tools/html-to-pdf): Convert HTML to PDF
+- [Jupyter to PDF](https://www.devbench.co.in/tools/ipynb-to-pdf): Convert Jupyter notebooks (.ipynb) to PDF
+- [PDF to JPG](https://www.devbench.co.in/tools/pdf-to-jpg): Export PDF pages as JPEG images
+- [PDF Compare](https://www.devbench.co.in/tools/pdf-compare): Compare two PDF documents side by side
+
+## Image Tools
+
+- [Background Remover](https://www.devbench.co.in/tools/background-remover): Remove image backgrounds in the browser
+- [Image Resizer](https://www.devbench.co.in/tools/image-resizer): Resize images to specific dimensions
+- [Image Compressor](https://www.devbench.co.in/tools/image-compressor): Compress images to reduce file size
+- [Image Format Converter](https://www.devbench.co.in/tools/image-format-converter): Convert between image formats (PNG, JPG, WebP, etc.)
+- [SVG Optimizer](https://www.devbench.co.in/tools/svg-optimizer): Optimize and minify SVG files
+- [EXIF Viewer](https://www.devbench.co.in/tools/exif-viewer): Inspect EXIF metadata from image files
+
+## Conversion Tools
+
+- [Temperature Converter](https://www.devbench.co.in/tools/temperature-converter): Convert between Celsius, Fahrenheit, and Kelvin
+- [Currency Converter](https://www.devbench.co.in/tools/currency-converter): Live exchange rates from ECB — convert any currency pair
+
+## Math Tools
+
+- [Graph Calculator](https://www.devbench.co.in/graph-calculator): Plot and visualize mathematical functions
+- [Quadratic Solver](https://www.devbench.co.in/tools/quadratic-solver): Find roots of ax²+bx+c=0 (real or complex)
+- [Pythagorean Theorem](https://www.devbench.co.in/tools/pythagorean-theorem): Find the missing side of a right triangle
+- [GCD & LCM Calculator](https://www.devbench.co.in/tools/gcd-lcm-calculator): Greatest common divisor and least common multiple
+
+## Health Calculators
+
+- [BMI Calculator](https://www.devbench.co.in/tools/bmi-calculator): Calculate Body Mass Index
+- [Water Intake Calculator](https://www.devbench.co.in/tools/water-intake-calculator): Estimate daily fluid needs from weight and exercise
+- [Body Fat Estimator](https://www.devbench.co.in/tools/body-fat-calculator): Estimate body fat percentage from BMI, age, and sex
+
+## Reference
+
+- [Linux Cheatsheet](https://www.devbench.co.in/linux-cheatsheet): Quick reference for common Linux commands
+- [Astronomy Tools](https://www.devbench.co.in/astronomy): Space and astronomy utilities
+- [Blog](https://www.devbench.co.in/blog): Articles and guides on developer tools and workflows
+- [About](https://www.devbench.co.in/about): About DevBench
+- [Privacy Policy](https://www.devbench.co.in/privacy): How DevBench handles (or rather, doesn't handle) your data
