@@ -2,6 +2,11 @@
 
 > Auto-generated from git log. Run `npm run changelog` to refresh.
 
+## 2026-05-15
+
+### Added
+- Add embed functionality and enhance security headers for tool pages (`2b092fd`)
+
 ## 2026-05-14
 
 ### Added
@@ -13,7 +18,7 @@
 - stop render loop blocking nav clicks on /graph-calculator (`3ef7c5b`)
 
 ### Changed
-- Enhance tool layouts with structured data and FAQ integration (`ef16d54`)
+- Enhance tool layouts with structured data and FAQ integration (`66ef211`)
 - Enhance tool metadata and FAQs for API Tester, Cron Editor, and Epoch Converter (`ae9adbf`)
 - Update CHANGELOG with recent additions, fixes, and changes (`778cb94`)
 - Merge branch 'SaiBhargavRallapalli:main' into main (`cf17603`)

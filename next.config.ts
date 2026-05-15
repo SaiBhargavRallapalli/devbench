@@ -38,6 +38,13 @@ const SECURITY_HEADERS = [
   { key: "X-DNS-Prefetch-Control", value: "on" },
 ];
 
+// /embed/* pages must be frameable by any origin — override the two anti-framing headers.
+const EMBED_CSP = CSP.replace("frame-ancestors 'none'", "frame-ancestors *");
+const EMBED_HEADERS = [
+  { key: "Content-Security-Policy", value: EMBED_CSP },
+  { key: "X-Frame-Options", value: "ALLOWALL" },
+];
+
 const nextConfig: NextConfig = {
   // Prevents readable source code appearing in browser DevTools on production
   productionBrowserSourceMaps: false,
@@ -53,6 +60,8 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       { source: "/(.*)", headers: SECURITY_HEADERS },
+      // Embed pages override the two anti-framing headers (rule applied after the general one)
+      { source: "/embed/(.*)", headers: EMBED_HEADERS },
     ];
   },
 

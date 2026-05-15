@@ -143,6 +143,66 @@ export const BLOG_POSTS: BlogPost[] = [
     relatedToolLabel: "Regex Tester",
     relatedToolHref: "/tools/regex-tester",
   },
+  {
+    slug: "how-to-generate-secure-passwords",
+    title: "How to Generate Secure Passwords: A Developer's Guide",
+    date: "2026-05-15",
+    excerpt:
+      "What makes a password truly secure — entropy, character sets, length — and how to generate cryptographically strong passwords in JavaScript, Python, and on the command line.",
+    tags: ["security", "javascript"],
+    readMinutes: 5,
+    relatedToolSlug: "password-generator",
+    relatedToolLabel: "Password Generator",
+    relatedToolHref: "/tools/password-generator",
+  },
+  {
+    slug: "sha256-vs-md5-hash-functions",
+    title: "SHA-256 vs MD5: Which Hash Function Should You Use?",
+    date: "2026-05-15",
+    excerpt:
+      "MD5 is fast and broken; SHA-256 is the modern baseline. A practical breakdown of hash functions, collision resistance, and when to reach for bcrypt or Argon2 instead.",
+    tags: ["security", "devtools"],
+    readMinutes: 6,
+    relatedToolSlug: "hash-generator",
+    relatedToolLabel: "Hash Generator",
+    relatedToolHref: "/tools/hash-generator",
+  },
+  {
+    slug: "cron-expression-syntax-guide",
+    title: "Cron Expression Syntax: A Complete Guide with Examples",
+    date: "2026-05-15",
+    excerpt:
+      "Master cron expression syntax from the five standard fields through extended six-field formats, special strings, and common scheduling patterns with copy-ready examples.",
+    tags: ["devtools", "reference"],
+    readMinutes: 7,
+    relatedToolSlug: "cron-parser",
+    relatedToolLabel: "Cron Expression Parser",
+    relatedToolHref: "/tools/cron-parser",
+  },
+  {
+    slug: "unix-timestamps-explained",
+    title: "Unix Timestamps Explained for Developers",
+    date: "2026-05-15",
+    excerpt:
+      "Unix timestamps are the lingua franca of time in software — what they are, how to work with them in JavaScript and Python, common pitfalls around timezones and milliseconds, and the 2038 problem.",
+    tags: ["devtools", "javascript"],
+    readMinutes: 5,
+    relatedToolSlug: "unix-timestamp",
+    relatedToolLabel: "Unix Timestamp Converter",
+    relatedToolHref: "/tools/unix-timestamp",
+  },
+  {
+    slug: "hex-rgb-hsl-css-colors-explained",
+    title: "HEX, RGB, HSL: CSS Color Formats Explained",
+    date: "2026-05-15",
+    excerpt:
+      "HEX, RGB, HSL, and modern CSS color formats each have a job: copy from design tools, manipulate programmatically, or communicate intent. Here is when to use each and how to convert between them.",
+    tags: ["web", "reference"],
+    readMinutes: 6,
+    relatedToolSlug: "color-converter",
+    relatedToolLabel: "Color Converter",
+    relatedToolHref: "/tools/color-converter",
+  },
 ];
 
 export function getBlogPost(slug: string): BlogPost | undefined {
