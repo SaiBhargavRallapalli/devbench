@@ -5,9 +5,10 @@
 ## 2026-05-16
 
 ### Added
-- Add Footer component to various tool layouts (`5164ac2`)
+- Add Footer component to various tool layouts (`c05f582`)
 
 ### Changed
+- Enhance About and Privacy pages with detailed content updates (`dbbc2d5`)
 - Update screenshot URLs and add new tools to the workspace registry (`443dde1`)
 - Update tool listings and add new blog posts for enhanced user guidance (`44b6e62`)
 - Rename AES FAQ entry for clarity and consistency (`4696fbe`)
