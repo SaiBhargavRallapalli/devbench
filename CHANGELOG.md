@@ -2,13 +2,18 @@
 
 > Auto-generated from git log. Run `npm run changelog` to refresh.
 
+## 2026-05-16
+
+### Changed
+- Rename AES FAQ entry for clarity and consistency (`d05f97b`)
+
 ## 2026-05-15
 
 ### Added
 - Add embed functionality and enhance security headers for tool pages (`9818028`)
 
 ### Changed
-- Update Morse code tool FAQs and page content for clarity and SEO (`88e8e99`)
+- Update Morse code tool FAQs and page content for clarity and SEO (`08ac8f6`)
 - Update metadata and enhance page structure for improved clarity and SEO (`67566e6`)
 - Enhance tool accessibility and performance (`146c91c`)
 

@@ -218,7 +218,7 @@ export const TOOL_FAQS: Record<string, Faq[]> = {
     },
   ],
 
-  "aes-encrypt": [
+  "aes-encrypt-decrypt": [
     {
       q: "What encryption algorithm is used?",
       a: "AES-256-GCM — the same algorithm used by TLS 1.3, Signal, and most modern secure systems. The 256 means a 256-bit key; GCM (Galois/Counter Mode) provides authenticated encryption, meaning any tampering with the ciphertext is detected on decryption. A 256-bit key derived from your password via PBKDF2 with 310,000 iterations is used.",
