@@ -47,6 +47,12 @@ const MermaidEditorTool       = dynamic(() => import("@/components/tools/Mermaid
 const TimezoneConverterTool   = dynamic(() => import("@/components/tools/TimezoneConverterTool"));
 const WebSocketTesterTool     = dynamic(() => import("@/components/tools/WebSocketTesterTool"));
 const IpynbToPdfTool          = dynamic(() => import("@/components/tools/IpynbToPdfTool"));
+const GitignoreGeneratorTool  = dynamic(() => import("@/components/tools/GitignoreGeneratorTool"));
+const LicenseGeneratorTool    = dynamic(() => import("@/components/tools/LicenseGeneratorTool"));
+const EnvValidatorTool        = dynamic(() => import("@/components/tools/EnvValidatorTool"));
+const DnsLookupTool           = dynamic(() => import("@/components/tools/DnsLookupTool"));
+const IpInfoTool              = dynamic(() => import("@/components/tools/IpInfoTool"));
+const NpmCompareTool          = dynamic(() => import("@/components/tools/NpmCompareTool"));
 
 const FINANCE_SLUGS = new Set([
   "simple-interest", "gst-calculator", "discount-calculator",
@@ -113,6 +119,12 @@ export default function CustomToolOutlet({ slug, tool }: { slug: string; tool: T
     case "timezone-converter":       return <TimezoneConverterTool tool={tool} />;
     case "websocket-tester":         return <WebSocketTesterTool tool={tool} />;
     case "ipynb-to-pdf":             return <IpynbToPdfTool tool={tool} />;
+    case "gitignore-generator":      return <GitignoreGeneratorTool tool={tool} />;
+    case "license-generator":        return <LicenseGeneratorTool tool={tool} />;
+    case "env-validator":            return <EnvValidatorTool tool={tool} />;
+    case "dns-lookup":               return <DnsLookupTool tool={tool} />;
+    case "ip-info":                  return <IpInfoTool tool={tool} />;
+    case "npm-compare":              return <NpmCompareTool tool={tool} />;
     default:                         return null;
   }
 }

@@ -13,7 +13,8 @@ import {
   Share2,
   Code2,
 } from "lucide-react";
-import { getToolBySlug, CATEGORIES } from "@/lib/tools-registry";
+import { getToolBySlug, CATEGORIES, TOOLS } from "@/lib/tools-registry";
+import { publicHrefForToolSlug } from "@/lib/devbench-workspaces";
 import { TOOL_PAGE_CONTENT } from "@/lib/tool-page-content";
 import Header from "@/components/Header";
 import * as engines from "@/lib/tool-engines";
@@ -71,6 +72,9 @@ const CUSTOM_TOOL_SLUGS = new Set([
   "websocket-tester",
   // PDF
   "ipynb-to-pdf",
+  // developer utilities
+  "gitignore-generator", "license-generator", "env-validator",
+  "dns-lookup", "ip-info", "npm-compare",
 ]);
 
 function EmbedButton({ slug }: { slug: string }) {
@@ -158,19 +162,32 @@ export default function ToolPage() {
 
   const [shareCopied, setShareCopied] = useState(false);
   const shareHydrated = useRef(false);
+  const persistKey = `devbench:input:${slug}`;
 
   useEffect(() => {
     if (shareHydrated.current) return;
     if (typeof window === "undefined") return;
     const shared = decodeSharedToolState(window.location.hash);
-    if (!shared) return;
-    shareHydrated.current = true;
-    setState((s) => ({
-      ...s,
-      input: shared.i,
-      input2: shared.i2 ?? "",
-    }));
-  }, []);
+    if (shared) {
+      shareHydrated.current = true;
+      setState((s) => ({ ...s, input: shared.i, input2: shared.i2 ?? "" }));
+      return;
+    }
+    try {
+      const saved = localStorage.getItem(persistKey);
+      if (saved) {
+        const { input, input2 } = JSON.parse(saved) as { input: string; input2: string };
+        setState((s) => ({ ...s, input: input ?? "", input2: input2 ?? "" }));
+      }
+    } catch {}
+  }, [persistKey]);
+
+  useEffect(() => {
+    if (CUSTOM_TOOL_SLUGS.has(slug)) return;
+    try {
+      localStorage.setItem(persistKey, JSON.stringify({ input: state.input, input2: state.input2 }));
+    } catch {}
+  }, [slug, persistKey, state.input, state.input2]);
 
   const copyShareLink = useCallback(() => {
     const fragment = encodeSharedToolState(
@@ -453,6 +470,42 @@ export default function ToolPage() {
             )}
           </div>
         )}
+
+        {/* Related tools */}
+        {(() => {
+          const related = TOOLS.filter(
+            (t) => t.category === tool.category && t.slug !== slug,
+          ).slice(0, 6);
+          if (related.length === 0) return null;
+          return (
+            <div className="mt-10 border-t border-border pt-8">
+              <h2 className="text-sm font-semibold mb-4 text-muted-foreground uppercase tracking-wide">
+                More {category.label} tools
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {related.map((t) => (
+                  <Link
+                    key={t.slug}
+                    href={publicHrefForToolSlug(t.slug)}
+                    className="flex items-center gap-3 p-4 rounded-xl border border-border bg-card hover:border-accent/40 hover:bg-muted/30 transition-colors"
+                  >
+                    <div
+                      className={`shrink-0 w-9 h-9 rounded-lg flex items-center justify-center text-xs font-bold font-mono ${CATEGORIES[t.category].color}`}
+                    >
+                      {t.icon}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold truncate">{t.name}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">
+                        {t.description}
+                      </p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          );
+        })()}
       </main>
     </>
   );

@@ -383,6 +383,56 @@ export const TOOLS: Tool[] = [
     category: "dev",
     icon: "🎨",
   },
+
+  // Developer utilities (new)
+  {
+    slug: "gitignore-generator",
+    name: "Gitignore Generator",
+    shortName: "Gitignore",
+    description: "Generate .gitignore files for 20+ languages, frameworks, editors, and OSes — combine multiple templates instantly",
+    category: "dev",
+    icon: "git",
+  },
+  {
+    slug: "license-generator",
+    name: "License Generator",
+    shortName: "License",
+    description: "Generate MIT, Apache 2.0, GPL 3.0, BSD, ISC, Unlicense, and MPL 2.0 license files with your name and year",
+    category: "dev",
+    icon: "📄",
+  },
+  {
+    slug: "env-validator",
+    name: ".env Validator",
+    shortName: ".env",
+    description: "Parse and validate .env files — catch duplicates, empty values, weak secrets, and invalid key names",
+    category: "dev",
+    icon: ".env",
+  },
+  {
+    slug: "dns-lookup",
+    name: "DNS Lookup",
+    shortName: "DNS",
+    description: "Query DNS records (A, AAAA, MX, TXT, CNAME, NS, SOA) for any domain via Cloudflare DoH",
+    category: "dev",
+    icon: "DNS",
+  },
+  {
+    slug: "ip-info",
+    name: "IP Info",
+    shortName: "IP Info",
+    description: "Look up geolocation, ISP, timezone, ASN, and currency for any IP address — or check your own",
+    category: "dev",
+    icon: "IP",
+  },
+  {
+    slug: "npm-compare",
+    name: "npm Package Compare",
+    shortName: "npm",
+    description: "Compare up to 3 npm packages side-by-side: weekly downloads, bundle size, dependencies, license, last publish",
+    category: "dev",
+    icon: "npm",
+  },
 ];
 
 export function getToolBySlug(slug: string): Tool | undefined {

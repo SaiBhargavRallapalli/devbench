@@ -8,7 +8,8 @@
 - Add Footer component to various tool layouts (`c05f582`)
 
 ### Changed
-- Enhance About and Privacy pages with detailed content updates (`dbbc2d5`)
+- Enhance tool page functionality and expand tool offerings (`5daa7b8`)
+- Enhance About and Privacy pages with detailed content updates (`ef60b8e`)
 - Update screenshot URLs and add new tools to the workspace registry (`443dde1`)
 - Update tool listings and add new blog posts for enhanced user guidance (`44b6e62`)
 - Rename AES FAQ entry for clarity and consistency (`4696fbe`)
