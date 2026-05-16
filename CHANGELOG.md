@@ -5,7 +5,8 @@
 ## 2026-05-16
 
 ### Changed
-- Update tool listings and add new blog posts for enhanced user guidance (`749c4ab`)
+- Update screenshot URLs and add new tools to the workspace registry (`65d97c0`)
+- Update tool listings and add new blog posts for enhanced user guidance (`44b6e62`)
 - Rename AES FAQ entry for clarity and consistency (`4696fbe`)
 
 ## 2026-05-15

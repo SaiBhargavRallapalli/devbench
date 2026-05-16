@@ -37,7 +37,7 @@ const webAppSchema = {
   offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
   provider: { "@type": "Organization", name: "DevBench", url: SITE_URL },
   ...webApplicationEnrichment({
-    screenshotUrl: `${SITE_URL}/opengraph-image`,
+    screenshotUrl: `${SITE_URL}/date-calculator/opengraph-image`,
     featureList: [
       "Add or subtract years, months, weeks, and days from any date",
       "Calendar-safe month arithmetic (handles month-end dates correctly)",

@@ -39,7 +39,7 @@ const webAppSchema = {
   offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
   provider: { "@type": "Organization", name: "DevBench", url: SITE_URL },
   ...webApplicationEnrichment({
-    screenshotUrl: `${SITE_URL}/opengraph-image`,
+    screenshotUrl: `${SITE_URL}/linux-cheatsheet/opengraph-image`,
     featureList: [
       "Searchable Linux and server command reference",
       "Categories: file system, permissions, processes, networking, Docker, Kubernetes, disk/memory",

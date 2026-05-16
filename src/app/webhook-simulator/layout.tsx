@@ -39,7 +39,7 @@ const webAppSchema = {
   offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
   provider: { "@type": "Organization", name: "DevBench", url: SITE_URL },
   ...webApplicationEnrichment({
-    screenshotUrl: `${SITE_URL}/opengraph-image`,
+    screenshotUrl: `${SITE_URL}/webhook-simulator/opengraph-image`,
     featureList: [
       "Generate signed webhook payloads for GitHub, Stripe, Slack, and Shopify",
       "HMAC-SHA256 signing runs in your browser — secrets never leave your device",

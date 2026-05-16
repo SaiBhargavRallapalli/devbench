@@ -37,7 +37,7 @@ const webAppSchema = {
   offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
   provider: { "@type": "Organization", name: "DevBench", url: SITE_URL },
   ...webApplicationEnrichment({
-    screenshotUrl: `${SITE_URL}/opengraph-image`,
+    screenshotUrl: `${SITE_URL}/graph-calculator/opengraph-image`,
     featureList: [
       "Plot multiple 2D functions with zoom, pan, and intersection detection",
       "Scientific expression evaluator: trig, log, sqrt, constants",

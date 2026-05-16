@@ -38,7 +38,7 @@ const webAppSchema = {
   offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
   provider: { "@type": "Organization", name: "DevBench", url: SITE_URL },
   ...webApplicationEnrichment({
-    screenshotUrl: `${SITE_URL}/opengraph-image`,
+    screenshotUrl: `${SITE_URL}/lambda-sandbox/opengraph-image`,
     featureList: [
       "Run Node.js Lambda handler functions in the browser",
       "Pre-built event templates: API Gateway, SQS, S3, SNS, DynamoDB Streams, EventBridge, Cognito",

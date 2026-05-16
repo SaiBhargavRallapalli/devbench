@@ -170,6 +170,13 @@ export const TOOLS: Tool[] = [
   { slug: "week-number-calculator", name: "ISO Week Number", shortName: "Wk", description: "ISO week & year for any date", category: "datetime", icon: "📆", inputLabel: "date=YYYY-MM-DD", outputLabel: "Week" },
   { slug: "due-date-calculator", name: "Due Date (pregnancy)", shortName: "EDD", description: "EDD from LMP (+280 days, Naegele)", category: "datetime", icon: "🍼", inputLabel: "lmp=YYYY-MM-DD", outputLabel: "EDD" },
 
+  // Standalone workspace tools (routes live outside /tools/[slug])
+  { slug: "epoch", name: "Unix Timestamp Converter", shortName: "Epoch", description: "Convert Unix timestamps (seconds or milliseconds) to human-readable dates — live clock, timezone support", category: "dev", icon: "⏱" },
+  { slug: "graph-calculator", name: "Graph Calculator", shortName: "Graph", description: "Plot and visualize math functions interactively — multi-function graphs, scientific calculator, matrix math", category: "math", icon: "∫" },
+  { slug: "linux-cheatsheet", name: "Linux Cheatsheet", shortName: "Linux", description: "Searchable Linux command reference — file ops, processes, networking, Docker, Kubernetes, permissions", category: "dev", icon: "$_" },
+  { slug: "date-calculator", name: "Date Calculator", shortName: "Date", description: "Add or subtract years, months, weeks, and days from any date — calendar-safe arithmetic", category: "datetime", icon: "📅" },
+  { slug: "jwt-debugger", name: "JWT Debugger", shortName: "JWT", description: "Decode, inspect, and verify JSON Web Tokens — header, payload, signature, expiry check", category: "dev", icon: "JWT" },
+
   // Dev / design extras
   { slug: "contrast-checker", name: "Contrast Checker (WCAG)", shortName: "AA", description: "Foreground & background — WCAG contrast ratio", category: "dev", icon: "👁" },
   { slug: "gradient-generator", name: "CSS Gradient Generator", shortName: "CSS ∇", description: "Linear gradient preview + CSS snippet", category: "dev", icon: "🌈" },

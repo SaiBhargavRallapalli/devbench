@@ -112,6 +112,11 @@ export const TOOL_SLUG_TO_WORKSPACE: Readonly<Record<string, string>> = {
   "lambda-sandbox": "/lambda-sandbox",
   "webhook-simulator": "/webhook-simulator",
   "code-playground": "/playground",
+  "epoch": "/epoch",
+  "graph-calculator": "/graph-calculator",
+  "linux-cheatsheet": "/linux-cheatsheet",
+  "date-calculator": "/date-calculator",
+  "jwt-debugger": "/jwt-debugger",
 };
 
 export function workspaceHrefForToolSlug(slug: string): string | undefined {
