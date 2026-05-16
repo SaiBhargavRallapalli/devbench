@@ -1362,6 +1362,357 @@ hexToRgb("#3a7bd5") // → { r: 58, g: 123, b: 213 }`}
   );
 }
 
+function CelsiusToFahrenheit() {
+  return (
+    <div className="space-y-4">
+      <p className={prose}>
+        Converting between Celsius and Fahrenheit comes up constantly — whether you are checking a weather forecast, reading a recipe, or monitoring a patient's temperature. The two scales use different zero points and different step sizes, so the conversion requires both multiplication and addition.
+      </p>
+
+      <h2 className={h2}>The Formula</h2>
+      <p className={prose}>
+        To convert Celsius to Fahrenheit, multiply by 9/5 (or 1.8) and then add 32:
+      </p>
+      <p className={prose}>
+        <code className={code}>°F = (°C × 9/5) + 32</code>
+      </p>
+      <p className={prose}>
+        To go the other way — Fahrenheit to Celsius — subtract 32 first, then multiply by 5/9:
+      </p>
+      <p className={prose}>
+        <code className={code}>°C = (°F − 32) × 5/9</code>
+      </p>
+      <p className={prose}>
+        The factor 9/5 comes from the ratio of the Fahrenheit degree size to the Celsius degree size. One Celsius degree spans 1.8 Fahrenheit degrees. The offset of 32 aligns the zero points: 0 °C (water freezes) equals 32 °F.
+      </p>
+
+      <h2 className={h2}>Quick Mental Trick</h2>
+      <p className={prose}>
+        For a fast approximation without a calculator, double the Celsius value and add 30:
+      </p>
+      <p className={prose}>
+        <code className={code}>°F ≈ (°C × 2) + 30</code>
+      </p>
+      <p className={prose}>
+        Example: 20 °C → (20 × 2) + 30 = 70 °F. The exact answer is 68 °F — off by just 2 degrees. This trick works well in the everyday temperature range (0–40 °C). It gets less accurate near the extremes.
+      </p>
+
+      <h2 className={h2}>Worked Example: What is 35 °C in Fahrenheit?</h2>
+      <p className={prose}>
+        35 °C is a hot summer day or a slightly elevated body temperature. Here is the step-by-step calculation:
+      </p>
+      <ol className={ol}>
+        <li>Start with the formula: <code className={code}>°F = (°C × 9/5) + 32</code></li>
+        <li>Substitute: <code className={code}>°F = (35 × 9/5) + 32</code></li>
+        <li>Multiply: <code className={code}>35 × 9 = 315</code>, then <code className={code}>315 ÷ 5 = 63</code></li>
+        <li>Add 32: <code className={code}>63 + 32 = 95</code></li>
+        <li>Result: <strong>35 °C = 95 °F</strong></li>
+      </ol>
+      <p className={prose}>
+        Similarly, 37 °C (normal human body temperature) = (37 × 9/5) + 32 = 66.6 + 32 = <strong>98.6 °F</strong>.
+      </p>
+
+      <h2 className={h2}>Reference Conversion Table</h2>
+      <table className={table}>
+        <thead>
+          <tr>
+            <th className={th}>Celsius (°C)</th>
+            <th className={th}>Fahrenheit (°F)</th>
+            <th className={th}>Context</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td className={td}>−40</td><td className={td}>−40</td><td className={td}>The only point where both scales meet</td></tr>
+          <tr><td className={td}>0</td><td className={td}>32</td><td className={td}>Water freezes / ice melts</td></tr>
+          <tr><td className={td}>10</td><td className={td}>50</td><td className={td}>Cool autumn day</td></tr>
+          <tr><td className={td}>20</td><td className={td}>68</td><td className={td}>Room temperature</td></tr>
+          <tr><td className={td}>25</td><td className={td}>77</td><td className={td}>Warm indoor temperature</td></tr>
+          <tr><td className={td}>30</td><td className={td}>86</td><td className={td}>Warm summer day</td></tr>
+          <tr><td className={td}>35</td><td className={td}>95</td><td className={td}>Hot day / mild fever</td></tr>
+          <tr><td className={td}>37</td><td className={td}>98.6</td><td className={td}>Normal human body temperature</td></tr>
+          <tr><td className={td}>40</td><td className={td}>104</td><td className={td}>High fever / extreme heat</td></tr>
+          <tr><td className={td}>50</td><td className={td}>122</td><td className={td}>Dangerously hot weather</td></tr>
+          <tr><td className={td}>100</td><td className={td}>212</td><td className={td}>Water boils (at sea level)</td></tr>
+          <tr><td className={td}>180</td><td className={td}>356</td><td className={td}>Slow oven (bread proofing temperature)</td></tr>
+          <tr><td className={td}>200</td><td className={td}>392</td><td className={td}>Moderate oven (baking cakes)</td></tr>
+        </tbody>
+      </table>
+
+      <h2 className={h2}>Why These Temperatures Matter</h2>
+      <ul className={ul}>
+        <li><strong>0 °C / 32 °F</strong> — water transitions between solid and liquid. Critical for food safety, road conditions, and biology.</li>
+        <li><strong>37 °C / 98.6 °F</strong> — average human core body temperature. Readings above 38 °C (100.4 °F) indicate fever.</li>
+        <li><strong>100 °C / 212 °F</strong> — water boils at standard atmospheric pressure (sea level). Boiling point drops about 1 °C for every 300 m of altitude.</li>
+        <li><strong>Oven temperatures</strong> — most baking recipes are written in one scale. A moderate oven is around 180 °C (356 °F); a hot oven is 220 °C (428 °F).</li>
+        <li><strong>Weather comfort</strong> — temperatures below 0 °C (32 °F) risk frost; above 35 °C (95 °F) pose heat-stress risks without proper hydration.</li>
+      </ul>
+
+      <h2 className={h2}>Adding Kelvin to the Mix</h2>
+      <p className={prose}>
+        Scientists use the Kelvin scale, which starts at absolute zero — the theoretical point where all molecular motion stops. Converting from Celsius to Kelvin is straightforward:
+      </p>
+      <p className={prose}>
+        <code className={code}>K = °C + 273.15</code>
+      </p>
+      <p className={prose}>
+        So 0 °C = 273.15 K, 100 °C = 373.15 K, and −273.15 °C = 0 K (absolute zero). Kelvin has no negative values and no degree symbol — you write 300 K, not 300 °K.
+      </p>
+
+      <p className={prose}>
+        Need to convert any temperature instantly?{" "}
+        <Link href="/tools/temperature-converter" className="text-primary underline underline-offset-2 hover:no-underline">
+          Use the DevBench Temperature Converter
+        </Link>{" "}
+        — it handles Celsius, Fahrenheit, Kelvin, and Rankine in real time.
+      </p>
+    </div>
+  );
+}
+
+function MorseCodeAlphabetChart() {
+  return (
+    <div className="space-y-4">
+      <p className={prose}>
+        Morse code is one of the most enduring communication systems ever invented. Nearly two centuries after its creation, it still appears in ham radio transmissions, aviation beacons, and accessibility tools. This guide covers the complete alphabet, numbers, punctuation, and a brief look at why Morse has lasted so long.
+      </p>
+
+      <h2 className={h2}>A Brief History</h2>
+      <p className={prose}>
+        In the 1830s, American artist and inventor Samuel Morse partnered with physicist Joseph Henry and machinist Alfred Vail to develop an electrical telegraph system. The code they devised — officially called International Morse Code after its 1865 standardization — assigned short signals (dots) and long signals (dashes) to each letter of the alphabet. On 24 May 1844, Morse sent the first long-distance telegraph message from Washington D.C. to Baltimore: "What hath God wrought."
+      </p>
+      <p className={prose}>
+        The original American Morse Code differed slightly from the International version used today. The International standard was adopted by the ITU and remains the global reference.
+      </p>
+
+      <h2 className={h2}>How Morse Code Works</h2>
+      <p className={prose}>
+        Morse uses just two signals — a short mark called a <strong>dot</strong> (<code className={code}>·</code>) and a long mark called a <strong>dash</strong> (<code className={code}>−</code>). The timing rules define everything:
+      </p>
+      <ul className={ul}>
+        <li>A dash is 3× the duration of a dot.</li>
+        <li>The gap between signals within a letter = 1 dot length.</li>
+        <li>The gap between letters = 3 dot lengths.</li>
+        <li>The gap between words = 7 dot lengths.</li>
+      </ul>
+      <p className={prose}>
+        These timing ratios mean Morse can be sent at any speed — a skilled operator can transmit over 30 words per minute, while a beginner might start at 5 wpm.
+      </p>
+
+      <h2 className={h2}>Complete A–Z Alphabet</h2>
+      <table className={table}>
+        <thead>
+          <tr>
+            <th className={th}>Letter</th>
+            <th className={th}>Morse Code</th>
+            <th className={th}>Letter</th>
+            <th className={th}>Morse Code</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td className={td}>A</td><td className={td}><code className={code}>· −</code></td><td className={td}>N</td><td className={td}><code className={code}>− ·</code></td></tr>
+          <tr><td className={td}>B</td><td className={td}><code className={code}>− · · ·</code></td><td className={td}>O</td><td className={td}><code className={code}>− − −</code></td></tr>
+          <tr><td className={td}>C</td><td className={td}><code className={code}>− · − ·</code></td><td className={td}>P</td><td className={td}><code className={code}>· − − ·</code></td></tr>
+          <tr><td className={td}>D</td><td className={td}><code className={code}>− · ·</code></td><td className={td}>Q</td><td className={td}><code className={code}>− − · −</code></td></tr>
+          <tr><td className={td}>E</td><td className={td}><code className={code}>·</code></td><td className={td}>R</td><td className={td}><code className={code}>· − ·</code></td></tr>
+          <tr><td className={td}>F</td><td className={td}><code className={code}>· · − ·</code></td><td className={td}>S</td><td className={td}><code className={code}>· · ·</code></td></tr>
+          <tr><td className={td}>G</td><td className={td}><code className={code}>− − ·</code></td><td className={td}>T</td><td className={td}><code className={code}>−</code></td></tr>
+          <tr><td className={td}>H</td><td className={td}><code className={code}>· · · ·</code></td><td className={td}>U</td><td className={td}><code className={code}>· · −</code></td></tr>
+          <tr><td className={td}>I</td><td className={td}><code className={code}>· ·</code></td><td className={td}>V</td><td className={td}><code className={code}>· · · −</code></td></tr>
+          <tr><td className={td}>J</td><td className={td}><code className={code}>· − − −</code></td><td className={td}>W</td><td className={td}><code className={code}>· − −</code></td></tr>
+          <tr><td className={td}>K</td><td className={td}><code className={code}>− · −</code></td><td className={td}>X</td><td className={td}><code className={code}>− · · −</code></td></tr>
+          <tr><td className={td}>L</td><td className={td}><code className={code}>· − · ·</code></td><td className={td}>Y</td><td className={td}><code className={code}>− · − −</code></td></tr>
+          <tr><td className={td}>M</td><td className={td}><code className={code}>− −</code></td><td className={td}>Z</td><td className={td}><code className={code}>− − · ·</code></td></tr>
+        </tbody>
+      </table>
+
+      <h2 className={h2}>Numbers 0–9</h2>
+      <table className={table}>
+        <thead>
+          <tr>
+            <th className={th}>Digit</th>
+            <th className={th}>Morse Code</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td className={td}>0</td><td className={td}><code className={code}>− − − − −</code></td></tr>
+          <tr><td className={td}>1</td><td className={td}><code className={code}>· − − − −</code></td></tr>
+          <tr><td className={td}>2</td><td className={td}><code className={code}>· · − − −</code></td></tr>
+          <tr><td className={td}>3</td><td className={td}><code className={code}>· · · − −</code></td></tr>
+          <tr><td className={td}>4</td><td className={td}><code className={code}>· · · · −</code></td></tr>
+          <tr><td className={td}>5</td><td className={td}><code className={code}>· · · · ·</code></td></tr>
+          <tr><td className={td}>6</td><td className={td}><code className={code}>− · · · ·</code></td></tr>
+          <tr><td className={td}>7</td><td className={td}><code className={code}>− − · · ·</code></td></tr>
+          <tr><td className={td}>8</td><td className={td}><code className={code}>− − − · ·</code></td></tr>
+          <tr><td className={td}>9</td><td className={td}><code className={code}>− − − − ·</code></td></tr>
+        </tbody>
+      </table>
+
+      <h2 className={h2}>Common Punctuation</h2>
+      <table className={table}>
+        <thead>
+          <tr>
+            <th className={th}>Symbol</th>
+            <th className={th}>Morse Code</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td className={td}>. (period)</td><td className={td}><code className={code}>· − · − · −</code></td></tr>
+          <tr><td className={td}>, (comma)</td><td className={td}><code className={code}>− − · · − −</code></td></tr>
+          <tr><td className={td}>? (question mark)</td><td className={td}><code className={code}>· · − − · ·</code></td></tr>
+          <tr><td className={td}>! (exclamation)</td><td className={td}><code className={code}>− · − · − −</code></td></tr>
+          <tr><td className={td}>/ (slash)</td><td className={td}><code className={code}>− · · − ·</code></td></tr>
+          <tr><td className={td}>@ (at sign)</td><td className={td}><code className={code}>· − − · − ·</code></td></tr>
+          <tr><td className={td}>= (equals)</td><td className={td}><code className={code}>− · · · −</code></td></tr>
+        </tbody>
+      </table>
+
+      <h2 className={h2}>SOS — The Most Famous Morse Sequence</h2>
+      <p className={prose}>
+        The international distress signal SOS is sent as <code className={code}>· · · − − − · · ·</code> (three dots, three dashes, three dots) without any letter gaps — it is transmitted as a single continuous prosign. It was chosen in 1906 precisely because it is easy to recognize: a distinct pattern that stands out from ordinary traffic. SOS does not stand for "Save Our Ship" or "Save Our Souls" — those backronyms came later. The letters were simply chosen for their memorability in Morse.
+      </p>
+
+      <h2 className={h2}>Where Morse Code is Still Used Today</h2>
+      <ul className={ul}>
+        <li><strong>Amateur (ham) radio</strong> — the FCC no longer requires a Morse test to obtain a US amateur licence, but many operators still use CW (continuous wave Morse) because it cuts through noise better than voice at low power levels.</li>
+        <li><strong>Aviation</strong> — VOR navigation beacons and Non-Directional Beacons (NDB) transmit their three-letter identifier in Morse so pilots can confirm they are tuned to the correct station.</li>
+        <li><strong>Military and emergency communications</strong> — Morse remains a backup communication method in scenarios where voice or digital links fail.</li>
+        <li><strong>Accessibility</strong> — people with limited motor control can input Morse via a single switch to type text. iOS and Android both support Morse input as an accessibility keyboard option.</li>
+        <li><strong>Hobbyist and cultural uses</strong> — Morse tattoos, jewellery, puzzle design, and escape rooms have given the code a popular-culture second life.</li>
+      </ul>
+
+      <p className={prose}>
+        Want to translate text to Morse and hear the audio?{" "}
+        <Link href="/tools/morse-code" className="text-primary underline underline-offset-2 hover:no-underline">
+          Try the DevBench Morse Code Translator
+        </Link>{" "}
+        — it converts in both directions and plays back the dots and dashes.
+      </p>
+    </div>
+  );
+}
+
+function PythagoreanTheoremExamples() {
+  return (
+    <div className="space-y-4">
+      <p className={prose}>
+        The Pythagorean theorem is one of the oldest and most useful relationships in mathematics. It connects the three sides of any right-angled triangle and appears in everything from construction and navigation to screen dimensions and physics. Here is a complete guide — from the formula to worked examples and real-world applications.
+      </p>
+
+      <h2 className={h2}>The Theorem</h2>
+      <p className={prose}>
+        In a right-angled triangle, the square of the length of the hypotenuse (the side opposite the right angle) equals the sum of the squares of the other two sides. Written as a formula:
+      </p>
+      <p className={prose}>
+        <code className={code}>a² + b² = c²</code>
+      </p>
+      <p className={prose}>
+        Where <code className={code}>c</code> is the hypotenuse (the longest side, always opposite the 90° angle) and <code className={code}>a</code> and <code className={code}>b</code> are the two shorter sides, called legs. The theorem holds for <em>every</em> right-angled triangle, regardless of size.
+      </p>
+      <p className={prose}>
+        Geometrically, it means: the area of the square drawn on the hypotenuse equals the combined area of the squares drawn on the two legs. This is why the theorem is often shown with three squares attached to the sides of a triangle.
+      </p>
+
+      <h2 className={h2}>Finding the Hypotenuse</h2>
+      <p className={prose}>
+        When you know both legs and need the hypotenuse, rearrange to isolate <code className={code}>c</code>:
+      </p>
+      <p className={prose}>
+        <code className={code}>c = √(a² + b²)</code>
+      </p>
+      <h3 className={h3}>Worked Example: The 3-4-5 Triangle</h3>
+      <ol className={ol}>
+        <li>Known values: <code className={code}>a = 3</code>, <code className={code}>b = 4</code></li>
+        <li>Apply the formula: <code className={code}>c = √(3² + 4²)</code></li>
+        <li>Square each leg: <code className={code}>9 + 16 = 25</code></li>
+        <li>Take the square root: <code className={code}>√25 = 5</code></li>
+        <li>Result: <strong>c = 5</strong></li>
+      </ol>
+      <p className={prose}>
+        The 3-4-5 triangle is the simplest Pythagorean triple — three whole numbers that satisfy the theorem exactly with no rounding.
+      </p>
+
+      <h2 className={h2}>Finding a Missing Leg</h2>
+      <p className={prose}>
+        When you know the hypotenuse and one leg, rearrange to find the missing leg:
+      </p>
+      <p className={prose}>
+        <code className={code}>b = √(c² − a²)</code>
+      </p>
+      <h3 className={h3}>Worked Example: Hypotenuse 13, One Leg 5</h3>
+      <ol className={ol}>
+        <li>Known values: <code className={code}>c = 13</code>, <code className={code}>a = 5</code></li>
+        <li>Apply the formula: <code className={code}>b = √(13² − 5²)</code></li>
+        <li>Square each value: <code className={code}>169 − 25 = 144</code></li>
+        <li>Take the square root: <code className={code}>√144 = 12</code></li>
+        <li>Result: <strong>b = 12</strong></li>
+      </ol>
+      <p className={prose}>
+        This is the 5-12-13 triple — another set of whole-number values that satisfy the theorem perfectly.
+      </p>
+
+      <h2 className={h2}>Pythagorean Triples</h2>
+      <p className={prose}>
+        A Pythagorean triple is a set of three positive integers that satisfy <code className={code}>a² + b² = c²</code>. They are useful for quick mental checks and for problems where exact integer answers are expected.
+      </p>
+      <table className={table}>
+        <thead>
+          <tr>
+            <th className={th}>a</th>
+            <th className={th}>b</th>
+            <th className={th}>c</th>
+            <th className={th}>Verification</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td className={td}>3</td><td className={td}>4</td><td className={td}>5</td><td className={td}><code className={code}>9 + 16 = 25</code></td></tr>
+          <tr><td className={td}>5</td><td className={td}>12</td><td className={td}>13</td><td className={td}><code className={code}>25 + 144 = 169</code></td></tr>
+          <tr><td className={td}>8</td><td className={td}>15</td><td className={td}>17</td><td className={td}><code className={code}>64 + 225 = 289</code></td></tr>
+          <tr><td className={td}>7</td><td className={td}>24</td><td className={td}>25</td><td className={td}><code className={code}>49 + 576 = 625</code></td></tr>
+          <tr><td className={td}>20</td><td className={td}>21</td><td className={td}>29</td><td className={td}><code className={code}>400 + 441 = 841</code></td></tr>
+        </tbody>
+      </table>
+
+      <h2 className={h2}>Real-World Applications</h2>
+      <ul className={ul}>
+        <li>
+          <strong>Construction squareness check</strong> — builders use the 3-4-5 method to verify a corner is exactly 90°. Measure 3 units along one wall and 4 units along the adjacent wall; if the diagonal is 5 units, the corner is square. No protractor needed.
+        </li>
+        <li>
+          <strong>Screen diagonal</strong> — a monitor described as "27 inches" refers to the diagonal. If you know the width is 23.5 in and the height is 13.2 in, verify: <code className={code}>√(23.5² + 13.2²) = √(552.25 + 174.24) ≈ 26.97 in</code>.
+        </li>
+        <li>
+          <strong>Navigation distance</strong> — if a ship travels 60 km east and 80 km north, the straight-line distance from start to finish is <code className={code}>√(60² + 80²) = √(3600 + 6400) = √10000 = 100 km</code>.
+        </li>
+        <li>
+          <strong>Ramp and staircase design</strong> — given a horizontal run and a required height, the Pythagorean theorem gives the exact length of the ramp or stringer needed.
+        </li>
+      </ul>
+
+      <h2 className={h2}>Word Problem: The Ladder</h2>
+      <p className={prose}>
+        A ladder 10 ft long leans against a wall. The base of the ladder is 6 ft from the wall. How high up the wall does the ladder reach?
+      </p>
+      <ol className={ol}>
+        <li>The ladder is the hypotenuse: <code className={code}>c = 10</code></li>
+        <li>The base distance is one leg: <code className={code}>a = 6</code></li>
+        <li>Find the height (other leg): <code className={code}>b = √(c² − a²) = √(100 − 36) = √64 = 8</code></li>
+        <li>Result: the ladder reaches <strong>8 ft</strong> up the wall.</li>
+      </ol>
+      <p className={prose}>
+        Notice that 6, 8, 10 is just the 3-4-5 triple scaled by 2. Recognising common triples lets you solve these problems in your head.
+      </p>
+
+      <p className={prose}>
+        Need to solve a triangle quickly?{" "}
+        <Link href="/tools/pythagorean-theorem" className="text-primary underline underline-offset-2 hover:no-underline">
+          Use the DevBench Pythagorean Theorem Calculator
+        </Link>{" "}
+        — enter any two sides and it instantly computes the third.
+      </p>
+    </div>
+  );
+}
+
 export const POST_CONTENT: Record<string, React.ReactNode> = {
   "browser-code-playground-privacy": <BrowserCodePlaygroundPrivacy />,
   "how-base64-encoding-works-and-when-not-to-use-it": <Base64EncodingExplained />,
@@ -1379,4 +1730,7 @@ export const POST_CONTENT: Record<string, React.ReactNode> = {
   "cron-expression-syntax-guide": <CronExpressionSyntaxGuide />,
   "unix-timestamps-explained": <UnixTimestampsExplained />,
   "hex-rgb-hsl-css-colors-explained": <HexRgbHslCssColors />,
+  "celsius-to-fahrenheit-converter": <CelsiusToFahrenheit />,
+  "morse-code-alphabet-chart": <MorseCodeAlphabetChart />,
+  "pythagorean-theorem-examples": <PythagoreanTheoremExamples />,
 };

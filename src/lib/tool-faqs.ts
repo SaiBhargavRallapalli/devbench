@@ -1399,10 +1399,12 @@ export const TOOL_FAQS: Record<string, Faq[]> = {
   ],
 
   "date-calculator": [
+    { q: "How do I add days to a date?", a: "Enter your start date and type the number of days to add in the Days field, then click Calculate. The result date appears instantly with the weekday name. Enter a negative number to subtract days instead." },
     { q: "How does adding months work when the result month has fewer days?", a: "When you add months and the resulting month is shorter than the start month, the date is clamped to the last day of that month. For example, 31 January + 1 month = 28 February (or 29 in a leap year). This is standard calendar-safe month arithmetic — the same behaviour as most date libraries." },
-    { q: "Can I add negative values to subtract time?", a: "Yes. Enter a negative number in any field to subtract that unit. For example, -7 days subtracts a week, -1 year subtracts a year. The result is the same as if you had subtracted that duration." },
-    { q: "How are years and months different from weeks and days?", a: "Years and months are calendar units — their exact length varies (months have 28–31 days, years have 365 or 366). Weeks and days are fixed durations (7 days, 86400 seconds). The calculator applies year/month arithmetic on the calendar first, then adds the day/week count as an exact offset." },
-    { q: "What day of the week will a date fall on?", a: "The result date shows the weekday name (Monday, Tuesday, etc.) so you can instantly see whether a deadline falls on a weekend or a business day." },
+    { q: "Can I add negative values to subtract time?", a: "Yes. Enter a negative number in any field to subtract that unit. -7 days subtracts a week, -1 year subtracts a year. The result is the same as using the subtraction direction." },
+    { q: "How are years and months different from weeks and days?", a: "Years and months are calendar units — their exact length varies (months have 28–31 days, years have 365 or 366). Weeks and days are fixed durations. The calculator applies year/month arithmetic on the calendar first, then adds any day offset — matching the behaviour of most programming date libraries." },
+    { q: "What day of the week will a date fall on?", a: "The result date shows the full weekday name (Monday, Tuesday, etc.) so you can instantly check whether a deadline, meeting, or event lands on a weekend or a working day." },
+    { q: "Is my data safe here?", a: "Yes. Date arithmetic runs in your browser. Nothing is sent to a server." },
   ],
 
   "astronomy": [
@@ -1422,8 +1424,10 @@ export const TOOL_FAQS: Record<string, Faq[]> = {
 
   "linux-cheatsheet": [
     { q: "How do I find a file by name on Linux?", a: "Use find: find /path -name 'filename.txt' searches by exact name; find /path -name '*.log' uses a wildcard. Add -type f to match only files, -type d for directories. For faster searches on an indexed system, use locate filename (requires the locate database to be updated with sudo updatedb)." },
+    { q: "How do I search inside files for a string?", a: "grep 'search term' filename searches one file. grep -r 'search term' /path searches recursively. grep -rn shows line numbers. grep -rl lists only matching filenames. For case-insensitive search add -i. For regex patterns use -E (extended regex). Example: grep -rn 'TODO' ./src" },
     { q: "How do I check disk usage?", a: "df -h shows free and used space on all mounted filesystems in human-readable units. du -sh /path shows the total size of a directory. du -sh * lists sizes of all items in the current directory. To find the largest directories: du -h /path | sort -rh | head -20." },
     { q: "How do I check what is running on a port?", a: "Use ss -tlnp | grep :PORT or lsof -i :PORT. For example, ss -tlnp | grep :8080 shows what process is listening on port 8080. On older systems, netstat -tlnp | grep :PORT serves the same purpose." },
+    { q: "How do I kill a process by name or port?", a: "By name: pkill process-name or killall process-name. For a specific PID: kill PID. By port: kill $(lsof -t -i:8080) kills the process on port 8080. Use kill -9 PID for a force kill when the process ignores SIGTERM." },
     { q: "What is journalctl and how do I use it?", a: "journalctl reads logs from the systemd journal. Common uses: journalctl -u nginx (logs for the nginx service), journalctl -f (follow live logs, like tail -f), journalctl --since '1 hour ago' (recent logs), journalctl -p err (errors only). Add -n 100 to limit output to the last 100 lines." },
     { q: "How do I give a file executable permissions?", a: "chmod +x filename makes a file executable for all users. chmod 755 filename sets owner read/write/execute and group/other read/execute. To make a script executable and run it: chmod +x script.sh && ./script.sh." },
   ],
@@ -1438,9 +1442,11 @@ export const TOOL_FAQS: Record<string, Faq[]> = {
 
   "graph-calculator": [
     { q: "How do I plot a function?", a: "Type the function expression using x as the variable — for example, sin(x), x^2 - 3*x + 2, or sqrt(x). Add multiple functions to plot them simultaneously. Use pi for π and e for Euler's number. Scroll to zoom, drag to pan, and hover over the graph to read values at any x." },
+    { q: "Can I graph multiple functions at once?", a: "Yes. Add additional function inputs using the '+' button — each gets a distinct colour. This lets you compare functions visually, find intersections, and observe how parameter changes affect the curve. There is no hard limit on the number of functions plotted simultaneously." },
     { q: "What functions are supported in the expression evaluator?", a: "Trigonometry: sin, cos, tan, asin, acos, atan, atan2. Hyperbolic: sinh, cosh, tanh. Exponential and logarithm: exp, log (natural), log2, log10. Roots: sqrt, cbrt. Rounding: floor, ceil, round, abs, sign. Constants: pi, e, phi (golden ratio). Power: pow(base, exp) or use the ^ operator." },
-    { q: "How do I calculate a matrix determinant or inverse?", a: "Switch to the Matrix tab. Enter the size (N×N) and fill in the values. The calculator computes the determinant, inverse (if it exists), transpose, and matrix multiplication instantly. Non-square matrices cannot be inverted — the inverse button is disabled for those." },
-    { q: "How do I find where two functions intersect?", a: "Plot both functions on the graph. The calculator automatically detects intersections and marks them on the graph. Hover over an intersection marker to see the exact (x, y) coordinates." },
+    { q: "How do I find where two functions intersect?", a: "Plot both functions on the graph. The calculator automatically detects intersections and marks them on the graph with a point. Hover over an intersection marker to read the exact (x, y) coordinates." },
+    { q: "How do I calculate a matrix determinant or inverse?", a: "Switch to the Matrix tab. Enter the size (N×N) and fill in the values. The calculator computes the determinant, inverse (if it exists), transpose, and matrix product instantly. Non-square matrices cannot be inverted — the inverse option is disabled for those." },
+    { q: "Is my data safe here?", a: "Yes. All graphing and calculation runs in your browser using JavaScript. Nothing is sent to a server." },
   ],
 
   "pdf": [

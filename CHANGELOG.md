@@ -5,7 +5,8 @@
 ## 2026-05-16
 
 ### Changed
-- Rename AES FAQ entry for clarity and consistency (`d05f97b`)
+- Update tool listings and add new blog posts for enhanced user guidance (`749c4ab`)
+- Rename AES FAQ entry for clarity and consistency (`4696fbe`)
 
 ## 2026-05-15
 

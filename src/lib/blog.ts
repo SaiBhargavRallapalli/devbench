@@ -203,6 +203,42 @@ export const BLOG_POSTS: BlogPost[] = [
     relatedToolLabel: "Color Converter",
     relatedToolHref: "/tools/color-converter",
   },
+  {
+    slug: "celsius-to-fahrenheit-converter",
+    title: "Celsius to Fahrenheit: Formula, Examples & Quick Reference Chart",
+    date: "2026-05-16",
+    excerpt:
+      "The exact formula, a quick mental trick, and a reference table for every temperature that matters — freezing, body temp, oven settings, and more.",
+    tags: ["temperature", "converter", "math", "reference"],
+    readMinutes: 5,
+    relatedToolSlug: "temperature-converter",
+    relatedToolLabel: "Temperature Converter",
+    relatedToolHref: "/tools/temperature-converter",
+  },
+  {
+    slug: "morse-code-alphabet-chart",
+    title: "Morse Code Alphabet: Complete A–Z Chart, Numbers & How to Use It",
+    date: "2026-05-16",
+    excerpt:
+      "A complete Morse code reference: every letter, digit, and common punctuation mark, plus a brief history and where Morse is still used today.",
+    tags: ["encoding", "morse-code", "reference", "communication"],
+    readMinutes: 5,
+    relatedToolSlug: "morse-code",
+    relatedToolLabel: "Morse Code Translator",
+    relatedToolHref: "/tools/morse-code",
+  },
+  {
+    slug: "pythagorean-theorem-examples",
+    title: "Pythagorean Theorem: Formula, Worked Examples & Calculator",
+    date: "2026-05-16",
+    excerpt:
+      "a² + b² = c² explained from scratch: finding the hypotenuse, solving for a missing leg, Pythagorean triples, and real-world applications with step-by-step worked examples.",
+    tags: ["math", "geometry", "calculator", "education"],
+    readMinutes: 6,
+    relatedToolSlug: "pythagorean-theorem",
+    relatedToolLabel: "Pythagorean Theorem Calculator",
+    relatedToolHref: "/tools/pythagorean-theorem",
+  },
 ];
 
 export function getBlogPost(slug: string): BlogPost | undefined {

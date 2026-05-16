@@ -10,7 +10,7 @@ const BASE = "https://www.devbench.co.in";
 // Bump this when content (tools, comparisons, structure) changes.
 // Using a stable date instead of `new Date()` so Google trusts lastmod —
 // Search Console penalises sitemaps where lastmod ticks forward on every deploy.
-const SITE_LASTMOD = new Date("2026-05-11");
+const SITE_LASTMOD = new Date("2026-05-16");
 
 const WORKSPACE_ROUTES = [
   { path: "/json",             priority: 0.9,  freq: "weekly"  },

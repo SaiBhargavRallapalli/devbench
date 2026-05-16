@@ -1,6 +1,6 @@
 # DevBench
 
-> DevBench is a free, open-source collection of 60+ browser-based developer tools — JSON formatters, encoders, PDF utilities, calculators, and more. All processing runs client-side; no account required and no data is uploaded to servers.
+> DevBench is a free, open-source collection of 130+ browser-based developer tools — JSON formatters, encoders, PDF utilities, calculators, converters, and more. All processing runs client-side; no account required and no data is uploaded to servers.
 
 Live site: https://www.devbench.co.in
 
@@ -41,19 +41,19 @@ Live site: https://www.devbench.co.in
 - [String Inspector](https://www.devbench.co.in/tools/string-inspector): Deep-inspect any string — length, bytes, Unicode codepoints, char frequency, entropy
 - [Markdown Preview](https://www.devbench.co.in/tools/markdown-preview): Live side-by-side Markdown editor and rendered HTML preview with GFM support
 - [Regex Tester](https://www.devbench.co.in/tools/regex-tester): Test regular expressions with live match highlighting, group capture view, and substitution
-- [Case Converter](https://www.devbench.co.in/tools/case-converter): Convert text to camelCase, PascalCase, snake_case, kebab-case, and more
+- [Case Converter](https://www.devbench.co.in/tools/case-converter): Convert text to camelCase, PascalCase, snake_case, kebab-case, UPPER CASE, lower case, and more
 - [Text Diff](https://www.devbench.co.in/tools/text-diff): Compare two texts and highlight differences
 - [Word Counter](https://www.devbench.co.in/tools/word-counter): Count words, characters, sentences with reading time
 - [Slug Generator](https://www.devbench.co.in/tools/slug-generator): Generate URL-friendly slugs from text
 - [Lorem Ipsum](https://www.devbench.co.in/tools/lorem-ipsum): Generate placeholder text in paragraphs, sentences, or words
 - [Line Sorter](https://www.devbench.co.in/tools/line-sorter): Sort, reverse, deduplicate, or shuffle lines
-- [Find & Replace](https://www.devbench.co.in/tools/find-replace): Find and replace with plain text or regex
+- [Find & Replace](https://www.devbench.co.in/tools/find-replace): Find and replace with plain text or regex — works like Word's Ctrl+H
 - [Whitespace Normalizer](https://www.devbench.co.in/tools/whitespace-normalizer): Trim lines, collapse spaces, remove blank lines
 - [String Reverse](https://www.devbench.co.in/tools/string-reverse): Reverse any string with full Unicode support
 - [Markdown to HTML](https://www.devbench.co.in/tools/markdown-to-html): Convert Markdown to HTML with GFM support
 - [HTML to Markdown](https://www.devbench.co.in/tools/html-to-markdown): Convert HTML back to Markdown
 - [HTML to Plain Text](https://www.devbench.co.in/tools/html-to-text): Strip all HTML tags and return plain text
-- [Strip Markdown](https://www.devbench.co.in/tools/strip-markdown): Remove all Markdown formatting
+- [Strip Markdown](https://www.devbench.co.in/tools/strip-markdown): Remove all Markdown and text formatting, return plain text
 - [Unicode Checker](https://www.devbench.co.in/tools/unicode-checker): Inspect every character: codepoint, name, category, script, UTF-8 bytes, HTML entity
 
 ## Developer Tools
@@ -63,14 +63,14 @@ Live site: https://www.devbench.co.in
 - [Webhook Simulator](https://www.devbench.co.in/webhook-simulator): Generate, send, and verify signed webhook payloads — GitHub, Stripe, Slack, Shopify, or generic HMAC
 - [AWS Lambda Sandbox](https://www.devbench.co.in/lambda-sandbox): Run Node.js Lambda handlers against API Gateway, SQS, S3, EventBridge events — sandboxed in browser
 - [WebSocket Tester](https://www.devbench.co.in/tools/websocket-tester): Open a WebSocket to any ws:// or wss:// endpoint, send messages, watch frames in real time
-- [Code Playground](https://www.devbench.co.in/playground): Multi-language code playground
+- [Code Playground](https://www.devbench.co.in/playground): Multi-language code playground — JavaScript, TypeScript, Python, Go, Jupyter-style notebooks
 - [Mermaid Diagram Editor](https://www.devbench.co.in/tools/mermaid-editor): Live editor for Mermaid.js flowcharts, sequence diagrams, ER diagrams, Gantt charts
 - [AES-256-GCM Encryptor](https://www.devbench.co.in/tools/aes-encrypt-decrypt): Encrypt and decrypt text with AES-256-GCM — password-based, client-side only
 - [Hash Generator](https://www.devbench.co.in/tools/hash-generator): Generate SHA-1, SHA-256, SHA-384, SHA-512 hashes
 - [UUID / ULID / Nano ID](https://www.devbench.co.in/tools/uuid-generator): Generate UUID v4, ULID, or Nano ID values
 - [HTML to JSX](https://www.devbench.co.in/tools/html-to-jsx): Convert HTML to React JSX — class→className, self-closing void elements, camelCase events
 - [HTML Preview](https://www.devbench.co.in/tools/html-preview): Live-render HTML in a sandboxed iframe with optional JavaScript execution
-- [Color Converter](https://www.devbench.co.in/tools/color-converter): Convert HEX, RGB, HSL colors with preview
+- [Color Converter](https://www.devbench.co.in/tools/color-converter): Convert HEX, RGB, HSL, HSV colors with preview
 - [Unix Timestamp](https://www.devbench.co.in/tools/unix-timestamp): Convert Unix timestamps to dates and back
 - [Cron Parser](https://www.devbench.co.in/tools/cron-parser): Parse cron expressions with plain-English description
 - [Cron Editor](https://www.devbench.co.in/cron-editor): Visual cron expression builder and editor
@@ -132,26 +132,48 @@ Live site: https://www.devbench.co.in
 
 ## Conversion Tools
 
-- [Temperature Converter](https://www.devbench.co.in/tools/temperature-converter): Convert between Celsius, Fahrenheit, and Kelvin
+- [Temperature Converter](https://www.devbench.co.in/tools/temperature-converter): Convert between Celsius, Fahrenheit, and Kelvin — includes common reference temperatures
 - [Currency Converter](https://www.devbench.co.in/tools/currency-converter): Live exchange rates from ECB — convert any currency pair
+- [Byte Converter](https://www.devbench.co.in/tools/byte-converter): Convert between bytes, KB, MB, GB, TB — SI and binary IEC modes
+- [Unit Converter](https://www.devbench.co.in/tools/unit-converter): Convert length, weight, area, volume, and speed — metric and imperial
+- [Number to Words](https://www.devbench.co.in/tools/number-to-words): Convert numbers to English words — supports Indian lakh/crore system and currency format
+- [Roman Numerals](https://www.devbench.co.in/tools/roman-numerals): Convert between Roman numerals and decimal numbers
+- [Duration Converter](https://www.devbench.co.in/tools/duration-converter): Convert seconds to HH:MM:SS and break down into days, hours, minutes
+- [Percentage Calculator](https://www.devbench.co.in/tools/percentage-calc): Calculate X% of Y, X as % of Y, and % change from A to B
+- [Aspect Ratio Calculator](https://www.devbench.co.in/tools/aspect-ratio): Find missing width or height from an aspect ratio
+- [World Clock](https://www.devbench.co.in/tools/world-clock): Current time in major cities worldwide with DST support
+
+## Finance Calculators
+
+- [Discount Calculator](https://www.devbench.co.in/tools/discount-calculator): Calculate sale price and savings from original price and discount percentage
+- [GST / VAT Calculator](https://www.devbench.co.in/tools/gst-calculator): Add or remove GST/VAT — supports Indian GST brackets 5%, 12%, 18%, 28%
+- [Tip Calculator](https://www.devbench.co.in/tools/tip-calculator): Calculate tip amount and split bill between multiple people
+- [Simple Interest Calculator](https://www.devbench.co.in/tools/simple-interest): Calculate simple interest using I = P × R × T
+- [Compound Interest Calculator](https://www.devbench.co.in/tools/compound-interest): Calculate future value with monthly, quarterly, or annual compounding
+- [Loan EMI Calculator](https://www.devbench.co.in/tools/loan-emi-calculator): Monthly loan installment, total interest payable, and amortization summary
+- [ROI Calculator](https://www.devbench.co.in/tools/roi-calculator): Calculate return on investment percentage and net profit
+- [Profit & Loss Calculator](https://www.devbench.co.in/tools/profit-loss-calculator): Calculate profit, gross margin, and markup
+- [Salary Hike Calculator](https://www.devbench.co.in/tools/salary-hike-calculator): Calculate raise percentage and monthly salary difference
 
 ## Math Tools
 
-- [Graph Calculator](https://www.devbench.co.in/graph-calculator): Plot and visualize mathematical functions
-- [Quadratic Solver](https://www.devbench.co.in/tools/quadratic-solver): Find roots of ax²+bx+c=0 (real or complex)
-- [Pythagorean Theorem](https://www.devbench.co.in/tools/pythagorean-theorem): Find the missing side of a right triangle
-- [GCD & LCM Calculator](https://www.devbench.co.in/tools/gcd-lcm-calculator): Greatest common divisor and least common multiple
+- [Graph Calculator](https://www.devbench.co.in/graph-calculator): Plot and visualize mathematical functions with zoom, pan, and intersection detection
+- [Quadratic Solver](https://www.devbench.co.in/tools/quadratic-solver): Find roots of ax²+bx+c=0 (real or complex) with step-by-step working
+- [Pythagorean Theorem](https://www.devbench.co.in/tools/pythagorean-theorem): Find the missing side of a right triangle — hypotenuse or leg
+- [GCD & LCM Calculator](https://www.devbench.co.in/tools/gcd-lcm-calculator): Greatest common divisor and least common multiple with Euclidean algorithm steps
 
 ## Health Calculators
 
-- [BMI Calculator](https://www.devbench.co.in/tools/bmi-calculator): Calculate Body Mass Index
+- [BMI Calculator](https://www.devbench.co.in/tools/bmi-calculator): Calculate Body Mass Index with WHO categories
 - [Water Intake Calculator](https://www.devbench.co.in/tools/water-intake-calculator): Estimate daily fluid needs from weight and exercise
 - [Body Fat Estimator](https://www.devbench.co.in/tools/body-fat-calculator): Estimate body fat percentage from BMI, age, and sex
+- [BMR Calculator](https://www.devbench.co.in/tools/bmr-calculator): Basal Metabolic Rate using Mifflin-St Jeor equation
+- [TDEE Calculator](https://www.devbench.co.in/tools/calorie-calculator): Total Daily Energy Expenditure from BMR and activity level
 
 ## Reference
 
-- [Linux Cheatsheet](https://www.devbench.co.in/linux-cheatsheet): Quick reference for common Linux commands
-- [Astronomy Tools](https://www.devbench.co.in/astronomy): Space and astronomy utilities
+- [Linux Cheatsheet](https://www.devbench.co.in/linux-cheatsheet): Quick reference for common Linux commands — searchable, with copy-ready examples
+- [Astronomy Tools](https://www.devbench.co.in/astronomy): Sunrise, sunset, moon phase, and space utilities
 - [Blog](https://www.devbench.co.in/blog): Articles and guides on developer tools and workflows
 - [About](https://www.devbench.co.in/about): About DevBench
 - [Privacy Policy](https://www.devbench.co.in/privacy): How DevBench handles (or rather, doesn't handle) your data
