@@ -17,7 +17,6 @@ import {
   FileImage,
 } from "lucide-react";
 import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import FormatWorkspace from "@/components/FormatWorkspace";
 import { TOOLS, CATEGORIES } from "@/lib/tools-registry";
 import { publicHrefForToolSlug } from "@/lib/devbench-workspaces";
@@ -461,7 +460,6 @@ export default function CodeBeautifyPage() {
         </p>
       </section>
 
-      <Footer />
     </>
   );
 }

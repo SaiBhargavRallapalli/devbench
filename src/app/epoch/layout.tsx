@@ -4,6 +4,7 @@ import JsonLd from "@/components/JsonLd";
 import { breadcrumbSchema } from "@/lib/breadcrumb-schema";
 import { TOOL_FAQS } from "@/lib/tool-faqs";
 import ToolFaqSection from "@/components/tools/ToolFaqSection";
+import Footer from "@/components/Footer";
 import { webApplicationEnrichment } from "@/lib/web-application-schema";
 
 const title = "Unix Timestamp Converter — Epoch to Date & Time";
@@ -71,6 +72,7 @@ export default function EpochLayout({ children }: { children: React.ReactNode })
       {faqSchema && <JsonLd data={faqSchema} />}
       {children}
       <ToolFaqSection slug="epoch" />
+      <Footer />
     </>
   );
 }

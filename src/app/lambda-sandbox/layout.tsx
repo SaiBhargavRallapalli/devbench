@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { socialMetadata, SITE_URL } from "@/lib/social-metadata";
 import JsonLd from "@/components/JsonLd";
 import ToolFaqSection from "@/components/tools/ToolFaqSection";
+import Footer from "@/components/Footer";
 import { TOOL_FAQS } from "@/lib/tool-faqs";
 import { breadcrumbSchema } from "@/lib/breadcrumb-schema";
 import { webApplicationEnrichment } from "@/lib/web-application-schema";
@@ -76,6 +77,7 @@ export default function LambdaSandboxLayout({
       {faqSchema && <JsonLd data={faqSchema} />}
       {children}
       <ToolFaqSection slug="lambda-sandbox" />
+      <Footer />
     </>
   );
 }

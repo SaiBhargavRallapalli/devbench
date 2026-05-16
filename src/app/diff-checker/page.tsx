@@ -19,7 +19,6 @@ import {
   EyeOff,
 } from "lucide-react";
 import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import { trackToolSuccess } from "@/lib/analytics-events";
 
 const TOOL_SLUG = "diff-checker";
@@ -819,7 +818,6 @@ export default function DiffCheckerPage() {
         </ul>
       </section>
 
-      <Footer />
     </>
   );
 }

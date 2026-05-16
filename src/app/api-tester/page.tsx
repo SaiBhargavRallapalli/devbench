@@ -27,7 +27,6 @@ import {
 } from "lucide-react";
 import { io, type Socket as IoSocket } from "socket.io-client";
 import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import {
   trackToolSuccess,
   trackToolError,
@@ -1920,7 +1919,6 @@ export default function ApiTesterPage() {
         </p>
       </section>
 
-      <Footer />
     </>
   );
 }

@@ -15,7 +15,6 @@ import {
   RefreshCw,
 } from "lucide-react";
 import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 
 // ─── helpers ───────────────────────────────────────────────────────────
 
@@ -604,7 +603,6 @@ export default function EpochConverterPage() {
         </p>
       </section>
 
-      <Footer />
     </>
   );
 }

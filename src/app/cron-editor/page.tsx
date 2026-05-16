@@ -16,7 +16,6 @@ import {
   Zap,
 } from "lucide-react";
 import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 
 // ─── cron parsing engine ──────────────────────────────────────────────
 
@@ -580,7 +579,6 @@ export default function CronEditorPage() {
         </ul>
       </section>
 
-      <Footer />
     </>
   );
 }

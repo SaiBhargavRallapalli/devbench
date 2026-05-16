@@ -24,7 +24,6 @@ import {
   Webhook,
 } from "lucide-react";
 import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import {
   PROVIDER_LABELS,
   PROVIDER_DEFAULT_SECRET,
@@ -632,7 +631,6 @@ export default function WebhookSimulatorPage() {
           </footer>
         </div>
       </main>
-      <Footer />
     </div>
   );
 }

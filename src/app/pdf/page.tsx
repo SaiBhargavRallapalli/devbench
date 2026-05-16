@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import PdfToolsHub from "@/components/pdf/PdfToolsHub";
 import JsonLd from "@/components/JsonLd";
 import { SITE_URL } from "@/lib/social-metadata";
@@ -34,7 +33,6 @@ export default function PdfWorkspacePage() {
           <PdfToolsHub />
         </Suspense>
       </main>
-      <Footer />
     </>
   );
 }

@@ -25,7 +25,6 @@ import {
   Server,
 } from "lucide-react";
 import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import {
   LAMBDA_EVENT_PRESETS,
   PRESETS_BY_ID,
@@ -678,7 +677,6 @@ export default function LambdaSandboxPage() {
         </div>
       </main>
 
-      <Footer />
     </div>
   );
 }
