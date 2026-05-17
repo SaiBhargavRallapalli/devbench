@@ -5,7 +5,10 @@
 ## 2026-05-18
 
 ### Added
-- Add new tools and enhance image processing features (`105f6de`)
+- Add new tools and enhance image processing features (`4849c1b`)
+
+### Changed
+- Update Go playground API endpoint to use new URL (`b21009d`)
 
 ## 2026-05-16
 

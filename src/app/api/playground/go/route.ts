@@ -11,7 +11,7 @@ function wrapGoBody(src: string): string {
 }
 
 /**
- * Proxies to https://play.golang.org/compile (JSON `version` + `body`).
+ * Proxies to https://go.dev/_/compile (JSON `version` + `body`).
  * Unique User-Agent per https://go.dev/blog/playground "Other clients".
  */
 export async function POST(request: Request) {
@@ -39,7 +39,7 @@ export async function POST(request: Request) {
 
   let upstream: Response;
   try {
-    upstream = await fetch("https://play.golang.org/compile", {
+    upstream = await fetch("https://go.dev/_/compile", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
