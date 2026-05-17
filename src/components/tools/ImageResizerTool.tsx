@@ -4,12 +4,18 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Download, Trash2, Upload } from "lucide-react";
 import type { Tool } from "@/lib/tools-registry";
 import { trackToolDownload } from "@/lib/analytics-events";
+import { getImageWorkerUrl, type ImageWorkerResult } from "@/lib/image-worker";
 import ToolPageHero from "@/components/tools/ToolPageHero";
 
 type ImgFmt = "image/png" | "image/jpeg" | "image/webp";
 
 export default function ImageResizerTool({ tool }: { tool: Tool }) {
   const fileRef = useRef<HTMLInputElement>(null);
+  const bufRef = useRef<ArrayBuffer | null>(null);
+  const workerRef = useRef<Worker | null>(null);
+  const srcUrlRef = useRef<string | null>(null);
+  const previewUrlRef = useRef<string | null>(null);
+
   const [srcUrl, setSrcUrl] = useState<string | null>(null);
   const [naturalW, setNaturalW] = useState(0);
   const [naturalH, setNaturalH] = useState(0);
@@ -22,44 +28,43 @@ export default function ImageResizerTool({ tool }: { tool: Tool }) {
   const [error, setError] = useState("");
   const [lastName, setLastName] = useState("image");
 
+  useEffect(() => { srcUrlRef.current = srcUrl; }, [srcUrl]);
+  useEffect(() => { previewUrlRef.current = previewUrl; }, [previewUrl]);
+
   useEffect(() => {
     return () => {
-      if (srcUrl) URL.revokeObjectURL(srcUrl);
-      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      if (srcUrlRef.current) URL.revokeObjectURL(srcUrlRef.current);
+      if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current);
+      workerRef.current?.terminate();
     };
-  }, [srcUrl, previewUrl]);
-
-  const applyDimsFromNatural = useCallback((w: number, h: number) => {
-    setNaturalW(w);
-    setNaturalH(h);
-    setWidthIn(String(w));
-    setHeightIn(String(h));
   }, []);
 
-  const onPickFile = useCallback(
-    (file: File | null) => {
-      setError("");
-      setPreviewUrl((prev) => {
-        if (prev) URL.revokeObjectURL(prev);
-        return null;
-      });
-      if (!file || !file.type.startsWith("image/")) {
-        setError("Choose an image file (PNG, JPEG, or WebP).");
-        return;
-      }
-      if (srcUrl) URL.revokeObjectURL(srcUrl);
-      const url = URL.createObjectURL(file);
-      setSrcUrl(url);
-      setLastName(file.name.replace(/\.[^.]+$/, "") || "image");
-      const img = new Image();
-      img.onload = () => {
-        applyDimsFromNatural(img.naturalWidth, img.naturalHeight);
-      };
-      img.onerror = () => setError("Could not read this image.");
-      img.src = url;
-    },
-    [applyDimsFromNatural, srcUrl]
-  );
+  const onPickFile = useCallback((file: File | null) => {
+    setError("");
+    setPreviewUrl((prev) => { if (prev) URL.revokeObjectURL(prev); return null; });
+
+    if (!file || !file.type.startsWith("image/")) {
+      setError("Choose an image file (PNG, JPEG, or WebP).");
+      return;
+    }
+
+    const newUrl = URL.createObjectURL(file);
+    setSrcUrl((prev) => { if (prev) URL.revokeObjectURL(prev); return newUrl; });
+    setLastName(file.name.replace(/\.[^.]+$/, "") || "image");
+
+    // Load image dimensions, then read buffer so the resize effect fires after
+    // both naturalW/H and bufRef are populated
+    const img = new Image();
+    img.onload = () => {
+      setNaturalW(img.naturalWidth);
+      setNaturalH(img.naturalHeight);
+      setWidthIn(String(img.naturalWidth));
+      setHeightIn(String(img.naturalHeight));
+      void file.arrayBuffer().then((buf) => { bufRef.current = buf; });
+    };
+    img.onerror = () => setError("Could not read this image.");
+    img.src = newUrl;
+  }, []);
 
   const ratio = naturalW > 0 && naturalH > 0 ? naturalW / naturalH : 1;
 
@@ -68,8 +73,7 @@ export default function ImageResizerTool({ tool }: { tool: Tool }) {
     if (!lockAspect || !naturalW) return;
     const w = parseInt(wStr, 10);
     if (!Number.isFinite(w) || w <= 0) return;
-    const h = Math.max(1, Math.round(w / ratio));
-    setHeightIn(String(h));
+    setHeightIn(String(Math.max(1, Math.round(w / ratio))));
   };
 
   const updateHeight = (hStr: string) => {
@@ -77,65 +81,62 @@ export default function ImageResizerTool({ tool }: { tool: Tool }) {
     if (!lockAspect || !naturalH) return;
     const h = parseInt(hStr, 10);
     if (!Number.isFinite(h) || h <= 0) return;
-    const w = Math.max(1, Math.round(h * ratio));
-    setWidthIn(String(w));
+    setWidthIn(String(Math.max(1, Math.round(h * ratio))));
   };
 
-  const renderPreview = useCallback(async () => {
-    if (!srcUrl) return;
+  const renderPreview = useCallback(() => {
+    if (!bufRef.current) return;
     const w = parseInt(widthIn, 10);
     const h = parseInt(heightIn, 10);
     if (!Number.isFinite(w) || !Number.isFinite(h) || w < 1 || h < 1) {
       setError("Enter positive width and height.");
       return;
     }
+
+    workerRef.current?.terminate();
     setError("");
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-    img.src = srcUrl;
-    await new Promise<void>((res, rej) => {
-      img.onload = () => res();
-      img.onerror = () => rej(new Error("load"));
-    });
-    const canvas = document.createElement("canvas");
-    canvas.width = w;
-    canvas.height = h;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) {
-      setError("Canvas is unavailable.");
-      return;
-    }
-    ctx.drawImage(img, 0, 0, w, h);
-    setPreviewUrl((prev) => {
-      if (prev) URL.revokeObjectURL(prev);
-      return null;
-    });
-    canvas.toBlob(
-      (blob) => {
-        if (!blob) {
-          setError("Could not encode image.");
-          return;
-        }
-        const u = URL.createObjectURL(blob);
-        setPreviewUrl(u);
-      },
-      format,
-      format === "image/png" ? undefined : quality
+    const copy = bufRef.current.slice(0);
+    const worker = new Worker(getImageWorkerUrl());
+    workerRef.current = worker;
+
+    worker.onmessage = (e: MessageEvent<ImageWorkerResult>) => {
+      if (workerRef.current === worker) workerRef.current = null;
+      worker.terminate();
+      if (!e.data.ok) {
+        setError(e.data.error);
+        return;
+      }
+      const blob = new Blob([e.data.buffer], { type: format });
+      setPreviewUrl((prev) => {
+        if (prev) URL.revokeObjectURL(prev);
+        return URL.createObjectURL(blob);
+      });
+    };
+
+    worker.onerror = () => {
+      if (workerRef.current === worker) workerRef.current = null;
+      worker.terminate();
+      setError("Could not encode image.");
+    };
+
+    worker.postMessage(
+      { type: "resize", buffer: copy, format, quality: format === "image/png" ? 1 : quality, width: w, height: h },
+      [copy]
     );
-  }, [srcUrl, widthIn, heightIn, format, quality]);
+  }, [widthIn, heightIn, format, quality]);
 
   useEffect(() => {
     if (!srcUrl || !widthIn || !heightIn) return;
-    const t = setTimeout(() => {
-      void renderPreview();
-    }, 200);
+    // bufRef may not be set yet on the very first render (image.onload fires
+    // async), so poll briefly — it's typically ready within one animation frame
+    const t = setTimeout(renderPreview, 250);
     return () => clearTimeout(t);
   }, [srcUrl, widthIn, heightIn, format, quality, renderPreview]);
 
   const download = () => {
     if (!previewUrl) return;
-    const a = document.createElement("a");
     const ext = format === "image/png" ? "png" : format === "image/jpeg" ? "jpg" : "webp";
+    const a = document.createElement("a");
     a.href = previewUrl;
     a.download = `${lastName}-resized.${ext}`;
     a.click();
@@ -143,10 +144,11 @@ export default function ImageResizerTool({ tool }: { tool: Tool }) {
   };
 
   const clear = () => {
-    if (srcUrl) URL.revokeObjectURL(srcUrl);
-    if (previewUrl) URL.revokeObjectURL(previewUrl);
-    setSrcUrl(null);
-    setPreviewUrl(null);
+    workerRef.current?.terminate();
+    workerRef.current = null;
+    bufRef.current = null;
+    setSrcUrl((prev) => { if (prev) URL.revokeObjectURL(prev); return null; });
+    setPreviewUrl((prev) => { if (prev) URL.revokeObjectURL(prev); return null; });
     setNaturalW(0);
     setNaturalH(0);
     setWidthIn("");
@@ -268,11 +270,7 @@ export default function ImageResizerTool({ tool }: { tool: Tool }) {
             <div className="flex min-h-[220px] items-center justify-center rounded-xl border border-dashed border-border bg-muted/30 p-4">
               {srcUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={srcUrl}
-                  alt="Original"
-                  className="max-h-80 max-w-full object-contain"
-                />
+                <img src={srcUrl} alt="Original" className="max-h-80 max-w-full object-contain" />
               ) : (
                 <span className="text-sm text-muted-foreground">
                   No image yet — upload PNG, JPEG, or WebP.
@@ -296,11 +294,7 @@ export default function ImageResizerTool({ tool }: { tool: Tool }) {
             <div className="flex min-h-[220px] items-center justify-center rounded-xl border border-border bg-muted/20 p-4">
               {previewUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={previewUrl}
-                  alt="Resized preview"
-                  className="max-h-80 max-w-full object-contain"
-                />
+                <img src={previewUrl} alt="Resized preview" className="max-h-80 max-w-full object-contain" />
               ) : (
                 <span className="text-sm text-muted-foreground">
                   Preview appears after you set dimensions.

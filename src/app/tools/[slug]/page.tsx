@@ -75,6 +75,7 @@ const CUSTOM_TOOL_SLUGS = new Set([
   // developer utilities
   "gitignore-generator", "license-generator", "env-validator",
   "dns-lookup", "ip-info", "npm-compare",
+  "color-converter", "color-palette",
 ]);
 
 function EmbedButton({ slug }: { slug: string }) {

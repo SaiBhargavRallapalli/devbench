@@ -3,11 +3,13 @@ import { ArrowLeft } from "lucide-react";
 import type { Tool } from "@/lib/tools-registry";
 import { CATEGORIES } from "@/lib/tools-registry";
 import { TOOL_PAGE_CONTENT } from "@/lib/tool-page-content";
+import { getToolConnectivity } from "@/lib/tool-connectivity";
 import ToolConnectivityBadge from "@/components/ToolConnectivityBadge";
 
 export default function ToolPageHero({ tool }: { tool: Tool }) {
   const category = CATEGORIES[tool.category];
   const extraContent = TOOL_PAGE_CONTENT[tool.slug];
+  const connectivity = getToolConnectivity(tool.slug);
   return (
     <div className="mb-6 animate-fade-in">
       <Link
@@ -40,6 +42,11 @@ export default function ToolPageHero({ tool }: { tool: Tool }) {
           ) : (
             <p className="mt-3 text-sm text-muted-foreground max-w-prose">
               {tool.description}
+            </p>
+          )}
+          {connectivity.mode === "offline" && (
+            <p className="mt-2 text-xs text-muted-foreground">
+              Your files and inputs stay in your browser — nothing is uploaded or stored.
             </p>
           )}
         </div>

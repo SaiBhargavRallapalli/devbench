@@ -4,12 +4,18 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Download, Trash2, Upload } from "lucide-react";
 import type { Tool } from "@/lib/tools-registry";
 import { trackToolDownload } from "@/lib/analytics-events";
+import { getImageWorkerUrl, type ImageWorkerResult } from "@/lib/image-worker";
 import ToolPageHero from "@/components/tools/ToolPageHero";
 
 type ImgFmt = "image/jpeg" | "image/webp";
 
 export default function ImageCompressorTool({ tool }: { tool: Tool }) {
   const fileRef = useRef<HTMLInputElement>(null);
+  const bufRef = useRef<ArrayBuffer | null>(null);
+  const workerRef = useRef<Worker | null>(null);
+  const srcUrlRef = useRef<string | null>(null);
+  const previewUrlRef = useRef<string | null>(null);
+
   const [srcUrl, setSrcUrl] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [format, setFormat] = useState<ImgFmt>("image/jpeg");
@@ -19,76 +25,79 @@ export default function ImageCompressorTool({ tool }: { tool: Tool }) {
   const [origBytes, setOrigBytes] = useState<number | null>(null);
   const [outBytes, setOutBytes] = useState<number | null>(null);
 
+  // Keep refs current so the unmount cleanup sees the latest URLs
+  useEffect(() => { srcUrlRef.current = srcUrl; }, [srcUrl]);
+  useEffect(() => { previewUrlRef.current = previewUrl; }, [previewUrl]);
+
   useEffect(() => {
     return () => {
-      if (srcUrl) URL.revokeObjectURL(srcUrl);
-      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      if (srcUrlRef.current) URL.revokeObjectURL(srcUrlRef.current);
+      if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current);
+      workerRef.current?.terminate();
     };
-  }, [srcUrl, previewUrl]);
+  }, []);
 
-  const onPickFile = useCallback(
-    async (file: File | null) => {
-      setError("");
-      setOutBytes(null);
-      setOrigBytes(file?.size ?? null);
-      setPreviewUrl((prev) => {
-        if (prev) URL.revokeObjectURL(prev);
-        return null;
-      });
-      if (!file || !file.type.startsWith("image/")) {
-        setError("Choose PNG, JPEG, or WebP.");
-        return;
-      }
-      if (srcUrl) URL.revokeObjectURL(srcUrl);
-      const url = URL.createObjectURL(file);
-      setSrcUrl(url);
-      setLastName(file.name.replace(/\.[^.]+$/, "") || "image");
-    },
-    [srcUrl]
-  );
-
-  const compress = useCallback(async () => {
-    if (!srcUrl) return;
+  const onPickFile = useCallback(async (file: File | null) => {
     setError("");
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-    img.src = srcUrl;
-    await new Promise<void>((res, rej) => {
-      img.onload = () => res();
-      img.onerror = () => rej(new Error("load"));
-    });
-    const canvas = document.createElement("canvas");
-    canvas.width = img.naturalWidth;
-    canvas.height = img.naturalHeight;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) {
-      setError("Canvas unavailable.");
+    setOutBytes(null);
+    setOrigBytes(file?.size ?? null);
+
+    if (!file || !file.type.startsWith("image/")) {
+      setError("Choose PNG, JPEG, or WebP.");
       return;
     }
-    ctx.drawImage(img, 0, 0);
-    setPreviewUrl((prev) => {
-      if (prev) URL.revokeObjectURL(prev);
-      return null;
-    });
-    canvas.toBlob(
-      (blob) => {
-        if (!blob) {
-          setError("Encode failed.");
-          return;
-        }
-        setOutBytes(blob.size);
-        setPreviewUrl(URL.createObjectURL(blob));
-      },
-      format,
-      quality
-    );
-  }, [srcUrl, format, quality]);
+
+    // Read buffer before updating srcUrl so the compress effect always finds
+    // bufRef.current populated when it fires.
+    const newUrl = URL.createObjectURL(file);
+    bufRef.current = await file.arrayBuffer();
+
+    setLastName(file.name.replace(/\.[^.]+$/, "") || "image");
+    setPreviewUrl((prev) => { if (prev) URL.revokeObjectURL(prev); return null; });
+    setSrcUrl((prev) => { if (prev) URL.revokeObjectURL(prev); return newUrl; });
+  }, []);
+
+  const compress = useCallback(() => {
+    if (!bufRef.current) return;
+
+    // Terminate any in-flight worker before starting a new one
+    workerRef.current?.terminate();
+
+    setError("");
+    const copy = bufRef.current.slice(0);
+    const worker = new Worker(getImageWorkerUrl());
+    workerRef.current = worker;
+
+    worker.onmessage = (e: MessageEvent<ImageWorkerResult>) => {
+      if (workerRef.current === worker) workerRef.current = null;
+      worker.terminate();
+      if (!e.data.ok) {
+        setError(e.data.error);
+        return;
+      }
+      const blob = new Blob([e.data.buffer], { type: format });
+      setOutBytes(blob.size);
+      setPreviewUrl((prev) => {
+        if (prev) URL.revokeObjectURL(prev);
+        return URL.createObjectURL(blob);
+      });
+    };
+
+    worker.onerror = () => {
+      if (workerRef.current === worker) workerRef.current = null;
+      worker.terminate();
+      setError("Compression failed.");
+    };
+
+    // Transfer the copy — zero-copy into the worker; original bufRef is intact
+    worker.postMessage({ type: "compress", buffer: copy, format, quality }, [copy]);
+  }, [format, quality]);
 
   useEffect(() => {
     if (!srcUrl) return;
-    const t = setTimeout(() => void compress(), 200);
+    const t = setTimeout(compress, 200);
     return () => clearTimeout(t);
-  }, [srcUrl, format, quality, compress]);
+  }, [srcUrl, compress]);
 
   const download = () => {
     if (!previewUrl) return;
@@ -101,10 +110,11 @@ export default function ImageCompressorTool({ tool }: { tool: Tool }) {
   };
 
   const clear = () => {
-    if (srcUrl) URL.revokeObjectURL(srcUrl);
-    if (previewUrl) URL.revokeObjectURL(previewUrl);
-    setSrcUrl(null);
-    setPreviewUrl(null);
+    workerRef.current?.terminate();
+    workerRef.current = null;
+    bufRef.current = null;
+    setSrcUrl((prev) => { if (prev) URL.revokeObjectURL(prev); return null; });
+    setPreviewUrl((prev) => { if (prev) URL.revokeObjectURL(prev); return null; });
     setOrigBytes(null);
     setOutBytes(null);
     setError("");

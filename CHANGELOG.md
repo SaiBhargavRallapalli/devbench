@@ -2,13 +2,18 @@
 
 > Auto-generated from git log. Run `npm run changelog` to refresh.
 
+## 2026-05-18
+
+### Added
+- Add new tools and enhance image processing features (`105f6de`)
+
 ## 2026-05-16
 
 ### Added
 - Add Footer component to various tool layouts (`c05f582`)
 
 ### Changed
-- Enhance tool page functionality and expand tool offerings (`5daa7b8`)
+- Enhance tool page functionality and expand tool offerings (`71454ac`)
 - Enhance About and Privacy pages with detailed content updates (`ef60b8e`)
 - Update screenshot URLs and add new tools to the workspace registry (`443dde1`)
 - Update tool listings and add new blog posts for enhanced user guidance (`44b6e62`)

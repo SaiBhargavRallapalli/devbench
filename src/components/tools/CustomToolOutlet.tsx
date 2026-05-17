@@ -53,6 +53,8 @@ const EnvValidatorTool        = dynamic(() => import("@/components/tools/EnvVali
 const DnsLookupTool           = dynamic(() => import("@/components/tools/DnsLookupTool"));
 const IpInfoTool              = dynamic(() => import("@/components/tools/IpInfoTool"));
 const NpmCompareTool          = dynamic(() => import("@/components/tools/NpmCompareTool"));
+const ColorConverterTool      = dynamic(() => import("@/components/tools/ColorConverterTool"));
+const ColorPaletteTool        = dynamic(() => import("@/components/tools/ColorPaletteTool"));
 
 const FINANCE_SLUGS = new Set([
   "simple-interest", "gst-calculator", "discount-calculator",
@@ -125,6 +127,8 @@ export default function CustomToolOutlet({ slug, tool }: { slug: string; tool: T
     case "dns-lookup":               return <DnsLookupTool tool={tool} />;
     case "ip-info":                  return <IpInfoTool tool={tool} />;
     case "npm-compare":              return <NpmCompareTool tool={tool} />;
+    case "color-converter":          return <ColorConverterTool tool={tool} />;
+    case "color-palette":            return <ColorPaletteTool tool={tool} />;
     default:                         return null;
   }
 }

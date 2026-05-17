@@ -94,7 +94,7 @@ export const TOOLS: Tool[] = [
   { slug: "uuid-generator", name: "UUID / ULID / Nano ID", shortName: "UUID", description: "Generate UUID v4, ULID, or Nano ID values with one click", category: "dev", icon: "ID" },
   { slug: "html-to-jsx", name: "HTML → JSX", shortName: "HTML→JSX", description: "Convert HTML to React JSX — class→className, self-closing void elements, camelCase events", category: "dev", icon: "⚛" },
   { slug: "html-preview", name: "HTML Preview", shortName: "Preview", description: "Live-render HTML in a sandboxed iframe with optional JavaScript execution", category: "dev", icon: "🖥" },
-  { slug: "color-converter", name: "Color Converter", shortName: "Color", description: "Convert HEX, RGB, HSL colors with preview", category: "dev", icon: "🎨" },
+  { slug: "color-converter", name: "Color Converter", shortName: "Color", description: "Convert colors between HEX, RGB, HSL and HSV formats with a live preview", category: "dev", icon: "🎨" },
   { slug: "unix-timestamp", name: "Unix Timestamp", shortName: "Time", description: "Convert Unix timestamps to dates and back", category: "dev", icon: "⏱" },
   { slug: "cron-parser", name: "Cron Parser", shortName: "Cron", description: "Parse cron expressions with plain-English description", category: "dev", icon: "⏰" },
   { slug: "password-generator", name: "Password Generator", shortName: "Pass", description: "Generate secure random passwords", category: "dev", icon: "🔑" },
@@ -180,6 +180,7 @@ export const TOOLS: Tool[] = [
   // Dev / design extras
   { slug: "contrast-checker", name: "Contrast Checker (WCAG)", shortName: "AA", description: "Foreground & background — WCAG contrast ratio", category: "dev", icon: "👁" },
   { slug: "gradient-generator", name: "CSS Gradient Generator", shortName: "CSS ∇", description: "Linear gradient preview + CSS snippet", category: "dev", icon: "🌈" },
+  { slug: "color-palette", name: "Color Palette Generator", shortName: "Palette", description: "Generate complementary, analogous, triadic and other palettes from any seed color — export as CSS vars, Tailwind or array", category: "dev", icon: "🖌" },
   { slug: "currency-converter", name: "Currency Converter", shortName: "FX", description: "Live exchange rates (ECB reference) — amount & currency pair", category: "conversion", icon: "💱" },
 
   // Browser-based files & XML suite
