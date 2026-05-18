@@ -48,14 +48,14 @@ export default function UuidGeneratorTool({ tool }: { tool: Tool }) {
     navigator.clipboard.writeText(id).then(() => {
       setCopiedIdx(idx);
       setTimeout(() => setCopiedIdx(null), 2000);
-    });
+    }).catch(() => {});
   };
 
   const copyAll = () => {
     navigator.clipboard.writeText(ids.join("\n")).then(() => {
       setCopiedAll(true);
       setTimeout(() => setCopiedAll(false), 2000);
-    });
+    }).catch(() => {});
   };
 
   return (

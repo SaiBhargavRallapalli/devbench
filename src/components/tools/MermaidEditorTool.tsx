@@ -208,7 +208,7 @@ export default function MermaidEditorTool({ tool }: { tool: Tool }) {
       setCopied(what);
       setTimeout(() => setCopied(null), 1500);
       trackToolCopy(TOOL_SLUG, what);
-    });
+    }).catch(() => {});
   };
 
   const charCount = useMemo(() => code.length, [code]);

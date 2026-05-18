@@ -634,7 +634,7 @@ export default function IpynbToPdfTool({ tool }: { tool: Tool }) {
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
       trackToolCopy(TOOL_SLUG, "html");
-    });
+    }).catch(() => {});
   }, [html]);
 
   const handleDrop = (e: React.DragEvent) => {

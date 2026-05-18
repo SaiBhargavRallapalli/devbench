@@ -1104,7 +1104,7 @@ function InteractiveTreeNode({
     navigator.clipboard.writeText(jsonpath).then(() => {
       setNodeCopied(true);
       setTimeout(() => setNodeCopied(false), 1500);
-    });
+    }).catch(() => {});
   }
 
   return (
@@ -1615,7 +1615,7 @@ export default function JsonToolkitPage() {
     navigator.clipboard.writeText(text).then(() => {
       setPathCopied(format);
       setTimeout(() => setPathCopied(null), 2000);
-    });
+    }).catch(() => {});
   }
 
   const stats = useMemo(() => (input ? getJsonStats(input) : null), [input]);
@@ -1736,7 +1736,9 @@ export default function JsonToolkitPage() {
 
   const handleCopy = useCallback(async () => {
     const textToCopy = activeTab === "convert" || activeTab === "format" || activeTab === "generate" ? output : input;
-    await navigator.clipboard.writeText(textToCopy);
+    try {
+      await navigator.clipboard.writeText(textToCopy);
+    } catch {}
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
     trackToolCopy(TOOL_SLUG, activeTab);
@@ -2054,14 +2056,14 @@ export default function JsonToolkitPage() {
     switch (action) {
       case "copy": {
         const val = deepGet(parsedForTree, ctx.path);
-        navigator.clipboard.writeText(JSON.stringify(val, null, 2));
+        void navigator.clipboard.writeText(JSON.stringify(val, null, 2)).catch(() => {});
         return;
       }
       case "copyPath": {
         const jsonpath = ctx.path.length === 0 ? "$" : "$" + ctx.path.map((p) =>
           typeof p === "number" ? `[${p}]` : /^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(String(p)) ? `.${p}` : `["${p}"]`
         ).join("");
-        navigator.clipboard.writeText(jsonpath);
+        void navigator.clipboard.writeText(jsonpath).catch(() => {});
         return;
       }
       case "paste": {

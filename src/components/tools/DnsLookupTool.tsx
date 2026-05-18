@@ -192,7 +192,9 @@ export default function DnsLookupTool({ tool }: { tool: Tool }) {
 
   const handleCopy = useCallback(async () => {
     if (!results) return;
-    await navigator.clipboard.writeText(resultsToText(results));
+    try {
+      await navigator.clipboard.writeText(resultsToText(results));
+    } catch {}
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }, [results]);

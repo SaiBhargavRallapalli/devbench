@@ -72,7 +72,7 @@ export default function XmlSuiteTool({ tool }: { tool: Tool }) {
     void navigator.clipboard.writeText(out).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    });
+    }).catch(() => {});
   };
 
   const tabs: { id: Mode; label: string; hint: string }[] = [

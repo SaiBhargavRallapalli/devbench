@@ -47,7 +47,7 @@ function CopyBtn({ text }: { text: string }) {
         navigator.clipboard.writeText(text).then(() => {
           setCopied(true);
           setTimeout(() => setCopied(false), 2000);
-        });
+        }).catch(() => {});
       }}
       disabled={!text}
       className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-accent/10 text-accent hover:bg-accent/20 disabled:opacity-40 transition-colors"

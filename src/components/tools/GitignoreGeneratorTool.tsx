@@ -360,7 +360,9 @@ export default function GitignoreGeneratorTool({ tool }: { tool: Tool }) {
 
   async function handleCopy() {
     if (!output) return;
-    await navigator.clipboard.writeText(output);
+    try {
+      await navigator.clipboard.writeText(output);
+    } catch {}
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }

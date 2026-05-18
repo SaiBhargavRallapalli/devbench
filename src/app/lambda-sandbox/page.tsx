@@ -106,7 +106,7 @@ function CopyBtn({
       type="button"
       disabled={!text}
       onClick={() => {
-        navigator.clipboard.writeText(text);
+        void navigator.clipboard.writeText(text).catch(() => {});
         setCopied(true);
         setTimeout(() => setCopied(false), 1500);
         trackToolCopy(TOOL_SLUG, what);

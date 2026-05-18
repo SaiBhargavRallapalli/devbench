@@ -137,7 +137,7 @@ export default function DateCalculatorPage() {
               <button
                 type="button"
                 onClick={() => {
-                  void navigator.clipboard.writeText(summary);
+                  void navigator.clipboard.writeText(summary).catch(() => {});
                   setCopied(true);
                   setTimeout(() => setCopied(false), 1500);
                 }}

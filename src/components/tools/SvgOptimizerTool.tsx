@@ -161,7 +161,7 @@ export default function SvgOptimizerTool({ tool }: { tool: Tool }) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
       trackToolCopy("svg-optimizer", "output");
-    });
+    }).catch(() => {});
   }, [result]);
 
   function download() {

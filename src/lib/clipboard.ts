@@ -1,4 +1,17 @@
 /**
+ * Copy text to the clipboard; resolves true on success, false on failure.
+ * Never throws — use this in fire-and-forget contexts.
+ */
+export async function safeCopyToClipboard(text: string): Promise<boolean> {
+  try {
+    await copyToClipboard(text);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Copy text to the clipboard with a execCommand fallback for older / non-secure contexts.
  */
 export async function copyToClipboard(text: string): Promise<void> {

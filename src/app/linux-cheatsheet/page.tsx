@@ -28,7 +28,7 @@ export default function LinuxCheatsheetPage() {
   }, [flat, query]);
 
   const copyExample = useCallback((text: string, key: string) => {
-    void navigator.clipboard.writeText(text.replace(/\n/g, " ").trim());
+    void navigator.clipboard.writeText(text.replace(/\n/g, " ").trim()).catch(() => {});
     setCopied(key);
     setTimeout(() => setCopied(null), 1500);
   }, []);

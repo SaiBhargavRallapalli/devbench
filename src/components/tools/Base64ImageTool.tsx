@@ -96,7 +96,7 @@ export default function Base64ImageTool({ tool }: { tool: Tool }) {
     navigator.clipboard.writeText(text).then(() => {
       setCopied(id);
       setTimeout(() => setCopied(null), 2000);
-    });
+    }).catch(() => {});
   };
 
   const fmtSize = (bytes: number) =>

@@ -87,7 +87,7 @@ export default function CssBoxShadowTool({ tool }: { tool: Tool }) {
     navigator.clipboard.writeText(fullCss).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    });
+    }).catch(() => {});
   }
 
   return (

@@ -624,7 +624,7 @@ export default function RegexTesterTool({ tool }: { tool: Tool }) {
     navigator.clipboard.writeText(text).then(() => {
       if (which === "code") { setCopiedCode(true); setTimeout(() => setCopiedCode(false), 2000); }
       else { setCopiedSubst(true); setTimeout(() => setCopiedSubst(false), 2000); }
-    });
+    }).catch(() => {});
   }, []);
 
   return (

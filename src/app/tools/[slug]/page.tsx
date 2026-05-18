@@ -85,7 +85,7 @@ function EmbedButton({ slug }: { slug: string }) {
     navigator.clipboard.writeText(code).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    });
+    }).catch(() => {});
   };
   return (
     <button
@@ -110,7 +110,7 @@ function CopyBtn({ text, toolSlug }: { text: string; toolSlug?: string }) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
       if (toolSlug) trackToolCopy(toolSlug, "output");
-    });
+    }).catch(() => {});
   };
   return (
     <button
@@ -206,7 +206,7 @@ export default function ToolPage() {
       setShareCopied(true);
       setTimeout(() => setShareCopied(false), 2000);
       trackToolShareLink(slug);
-    });
+    }).catch(() => {});
   }, [slug, state.input, state.input2]);
 
   const setInput = (input: string) => setState((s) => ({ ...s, input }));

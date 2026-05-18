@@ -166,7 +166,7 @@ export default function TimezoneConverterTool({ tool }: { tool: Tool }) {
       setCopied(zone);
       setTimeout(() => setCopied(null), 1500);
       trackToolCopy(TOOL_SLUG, "moment");
-    });
+    }).catch(() => {});
   };
 
   const copyShareLink = () => {
@@ -181,7 +181,7 @@ export default function TimezoneConverterTool({ tool }: { tool: Tool }) {
       setCopied("__share");
       setTimeout(() => setCopied(null), 1500);
       trackToolShareLink(TOOL_SLUG);
-    });
+    }).catch(() => {});
   };
 
   // Restore from URL params on mount. State-setters here are correct: this is

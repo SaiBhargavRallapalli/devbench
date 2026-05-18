@@ -20,7 +20,7 @@ export default function GradientGeneratorTool({ tool }: { tool: Tool }) {
     void navigator.clipboard.writeText(`background: ${css};`).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    });
+    }).catch(() => {});
   };
 
   return (

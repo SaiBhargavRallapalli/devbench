@@ -104,7 +104,9 @@ export default function IpInfoTool({ tool }: { tool: Tool }) {
 
   const handleCopy = async () => {
     if (!data?.ip) return;
-    await navigator.clipboard.writeText(data.ip);
+    try {
+      await navigator.clipboard.writeText(data.ip);
+    } catch {}
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };

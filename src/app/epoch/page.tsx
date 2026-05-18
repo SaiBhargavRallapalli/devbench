@@ -114,7 +114,7 @@ function CopyBtn({ text, className = "" }: { text: string; className?: string })
   return (
     <button
       onClick={() => {
-        navigator.clipboard.writeText(text);
+        void navigator.clipboard.writeText(text).catch(() => {});
         setCopied(true);
         setTimeout(() => setCopied(false), 1500);
       }}

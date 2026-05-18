@@ -8,9 +8,14 @@
 - Add new tools and enhance image processing features (`4849c1b`)
 
 ### Changed
-- Enhance image processing tools with dimension validation and error handling (`6646705`)
+- Update dependencies and enhance clipboard functionality (`d6be4e1`)
+- Enhance image processing tools with dimension validation and error handling (`ac95993`)
 - Refactor color tools and enhance clipboard functionality (`15b879e`)
 - Update Go playground API endpoint to use new URL (`eac9bcb`)
+
+### Chore
+- bump next from 16.2.4 to 16.2.6 (`853f9f2`)
+- bump tailwindcss from 4.2.4 to 4.3.0 (`07542cb`)
 
 ## 2026-05-16
 
@@ -79,14 +84,12 @@
 
 ### Chore
 - bump @types/jszip from 3.4.0 to 3.4.1 (`fe0d9cf`)
-- bump next from 16.2.4 to 16.2.6 (`bcc50bc`)
 - bump react from 19.2.4 to 19.2.6 (`39bb6b1`)
 - bump @codemirror/view from 6.41.1 to 6.42.1 (`bc5ffaf`)
 - bump react-dom from 19.2.4 to 19.2.6 (`731c8f1`)
 - bump sql-formatter from 15.7.3 to 15.7.4 (`67ab491`)
 - bump semver from 7.7.4 to 7.8.0 (`ba36bb4`)
 - bump @types/diff from 7.0.2 to 8.0.0 (`3d0003f`)
-- bump tailwindcss from 4.2.4 to 4.3.0 (`d57001c`)
 - bump @tailwindcss/postcss from 4.2.4 to 4.3.0 (`378c5bd`)
 
 ### Docs

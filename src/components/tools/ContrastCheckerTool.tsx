@@ -171,7 +171,7 @@ export default function ContrastCheckerTool({ tool }: { tool: Tool }) {
     navigator.clipboard.writeText(hex).then(() => {
       setCopied(hex);
       setTimeout(() => setCopied(null), 1500);
-    });
+    }).catch(() => {});
   };
 
   const applySuggestion = (rgb: RGB) => {

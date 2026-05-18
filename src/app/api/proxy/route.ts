@@ -4,6 +4,23 @@ const BLOCKED_HOSTS = new Set(["localhost", "127.0.0.1", "0.0.0.0", "[::1]"]);
 const MAX_BODY_SIZE = 5 * 1024 * 1024; // 5 MB
 const TIMEOUT_MS = 30_000;
 
+// Sliding-window rate limiter: 20 req/min per IP.
+// In-memory — per warm instance. Adequate for serverless abuse prevention.
+const RATE_WINDOW_MS = 60_000;
+const RATE_LIMIT = 20;
+const rateLimitMap = new Map<string, number[]>();
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const timestamps = (rateLimitMap.get(ip) ?? []).filter(
+    (t) => now - t < RATE_WINDOW_MS,
+  );
+  if (timestamps.length >= RATE_LIMIT) return true;
+  timestamps.push(now);
+  rateLimitMap.set(ip, timestamps);
+  return false;
+}
+
 function isPrivateAddress(hostname: string): boolean {
   const parts = hostname.split(".").map(Number);
   if (parts.length === 4 && parts.every((n) => !isNaN(n) && n >= 0 && n <= 255)) {
@@ -22,6 +39,17 @@ function isPrivateAddress(hostname: string): boolean {
 }
 
 export async function POST(req: NextRequest) {
+  const ip =
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+    req.headers.get("x-real-ip") ??
+    "unknown";
+  if (isRateLimited(ip)) {
+    return NextResponse.json(
+      { error: "Rate limit exceeded. Max 20 requests per minute." },
+      { status: 429 },
+    );
+  }
+
   try {
     const body = await req.json();
     const { url, method, headers, payload } = body as {

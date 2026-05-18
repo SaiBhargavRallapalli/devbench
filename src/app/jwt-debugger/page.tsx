@@ -144,7 +144,7 @@ function relativeTime(epochSec: number): string {
 function CopyBtn({ text, label, className = "" }: { text: string; label?: string; className?: string }) {
   const [copied, setCopied] = useState(false);
   const handleCopy = useCallback(() => {
-    navigator.clipboard.writeText(text);
+    void navigator.clipboard.writeText(text).catch(() => {});
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
     trackToolCopy(TOOL_SLUG, label);

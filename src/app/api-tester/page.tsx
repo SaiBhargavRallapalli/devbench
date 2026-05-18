@@ -229,7 +229,7 @@ function CopyBtn({ text, label }: { text: string; label?: string }) {
   return (
     <button
       onClick={() => {
-        navigator.clipboard.writeText(text);
+        void navigator.clipboard.writeText(text).catch(() => {});
         setCopied(true);
         setTimeout(() => setCopied(false), 1500);
       }}

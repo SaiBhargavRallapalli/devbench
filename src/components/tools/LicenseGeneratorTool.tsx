@@ -129,7 +129,7 @@ export default function LicenseGeneratorTool({ tool }: { tool: Tool }) {
     navigator.clipboard.writeText(licenseText).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    });
+    }).catch(() => {});
   };
 
   const handleDownload = () => {
