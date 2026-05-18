@@ -39,9 +39,12 @@ export default function ImageResizerTool({ tool }: { tool: Tool }) {
     };
   }, []);
 
-  const onPickFile = useCallback((file: File | null) => {
+  const onPickFile = useCallback(async (file: File | null) => {
     setError("");
-    setPreviewUrl((prev) => { if (prev) URL.revokeObjectURL(prev); return null; });
+    setPreviewUrl((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return null;
+    });
 
     if (!file || !file.type.startsWith("image/")) {
       setError("Choose an image file (PNG, JPEG, or WebP).");
@@ -49,21 +52,28 @@ export default function ImageResizerTool({ tool }: { tool: Tool }) {
     }
 
     const newUrl = URL.createObjectURL(file);
-    setSrcUrl((prev) => { if (prev) URL.revokeObjectURL(prev); return newUrl; });
-    setLastName(file.name.replace(/\.[^.]+$/, "") || "image");
-
-    // Load image dimensions, then read buffer so the resize effect fires after
-    // both naturalW/H and bufRef are populated
-    const img = new Image();
-    img.onload = () => {
-      setNaturalW(img.naturalWidth);
-      setNaturalH(img.naturalHeight);
-      setWidthIn(String(img.naturalWidth));
-      setHeightIn(String(img.naturalHeight));
-      void file.arrayBuffer().then((buf) => { bufRef.current = buf; });
-    };
-    img.onerror = () => setError("Could not read this image.");
-    img.src = newUrl;
+    try {
+      bufRef.current = await file.arrayBuffer();
+      const dims = await new Promise<{ w: number; h: number }>((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve({ w: img.naturalWidth, h: img.naturalHeight });
+        img.onerror = () => reject(new Error("decode"));
+        img.src = newUrl;
+      });
+      setLastName(file.name.replace(/\.[^.]+$/, "") || "image");
+      setNaturalW(dims.w);
+      setNaturalH(dims.h);
+      setWidthIn(String(dims.w));
+      setHeightIn(String(dims.h));
+      setSrcUrl((prev) => {
+        if (prev) URL.revokeObjectURL(prev);
+        return newUrl;
+      });
+    } catch {
+      URL.revokeObjectURL(newUrl);
+      bufRef.current = null;
+      setError("Could not read this image.");
+    }
   }, []);
 
   const ratio = naturalW > 0 && naturalH > 0 ? naturalW / naturalH : 1;
@@ -127,9 +137,7 @@ export default function ImageResizerTool({ tool }: { tool: Tool }) {
 
   useEffect(() => {
     if (!srcUrl || !widthIn || !heightIn) return;
-    // bufRef may not be set yet on the very first render (image.onload fires
-    // async), so poll briefly — it's typically ready within one animation frame
-    const t = setTimeout(renderPreview, 250);
+    const t = setTimeout(renderPreview, 150);
     return () => clearTimeout(t);
   }, [srcUrl, widthIn, heightIn, format, quality, renderPreview]);
 

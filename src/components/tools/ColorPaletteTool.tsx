@@ -1,44 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { Check, Copy } from "lucide-react";
 import type { Tool } from "@/lib/tools-registry";
+import { copyToClipboard } from "@/lib/clipboard";
+import { hexToRgb, hslToRgb, rgbToHex, rgbToHsl } from "@/lib/color-math";
 import ToolPageHero from "@/components/tools/ToolPageHero";
-
-// ── color math ────────────────────────────────────────────────────────────────
-
-function hexToRgb(hex: string): [number, number, number] | null {
-  const m = /^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(hex.trim());
-  if (!m) return null;
-  return [parseInt(m[1], 16), parseInt(m[2], 16), parseInt(m[3], 16)];
-}
-
-function rgbToHex(r: number, g: number, b: number): string {
-  return "#" + [r, g, b].map((v) => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, "0")).join("");
-}
-
-function rgbToHsl(r: number, g: number, b: number): [number, number, number] {
-  const rn = r / 255, gn = g / 255, bn = b / 255;
-  const max = Math.max(rn, gn, bn), min = Math.min(rn, gn, bn);
-  const l = (max + min) / 2;
-  if (max === min) return [0, 0, Math.round(l * 100)];
-  const d = max - min;
-  const s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-  let h = 0;
-  if (max === rn) h = (gn - bn) / d + (gn < bn ? 6 : 0);
-  else if (max === gn) h = (bn - rn) / d + 2;
-  else h = (rn - gn) / d + 4;
-  return [Math.round(h * 60), Math.round(s * 100), Math.round(l * 100)];
-}
-
-function hslToRgb(h: number, s: number, l: number): [number, number, number] {
-  const sn = s / 100, ln = l / 100;
-  const k = (n: number) => (n + h / 30) % 12;
-  const a = sn * Math.min(ln, 1 - ln);
-  const f = (n: number) =>
-    Math.round((ln - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)))) * 255);
-  return [f(0), f(8), f(4)];
-}
 
 // ── palette generation ─────────────────────────────────────────────────────────
 
@@ -127,7 +94,8 @@ function toExport(palette: Swatch[], fmt: ExportFmt): string {
     case "tailwind":
       return JSON.stringify(
         { theme: { extend: { colors: Object.fromEntries(palette.map((s, i) => [`color${i + 1}`, s.hex])) } } },
-        null, 2
+        null,
+        2
       );
     case "array":
       return JSON.stringify(palette.map((s) => s.hex), null, 2);
@@ -137,11 +105,42 @@ function toExport(palette: Swatch[], fmt: ExportFmt): string {
 // ── component ─────────────────────────────────────────────────────────────────
 
 export default function ColorPaletteTool({ tool }: { tool: Tool }) {
+  const formId = useId();
+  const seedColorId = `${formId}-seed-color`;
+  const hexInputId = `${formId}-hex`;
+
   const [seed, setSeed] = useState("#6366f1");
   const [hexInput, setHexInput] = useState("#6366f1");
   const [paletteType, setPaletteType] = useState<PaletteType>("complementary");
   const [exportFmt, setExportFmt] = useState<ExportFmt>("css");
   const [copied, setCopied] = useState(false);
+  const [clipboardError, setClipboardError] = useState<string | null>(null);
+  const copiedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const errorTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (copiedTimerRef.current) clearTimeout(copiedTimerRef.current);
+      if (errorTimerRef.current) clearTimeout(errorTimerRef.current);
+    };
+  }, []);
+
+  const scheduleClearCopied = () => {
+    if (copiedTimerRef.current) clearTimeout(copiedTimerRef.current);
+    copiedTimerRef.current = setTimeout(() => {
+      copiedTimerRef.current = null;
+      setCopied(false);
+    }, 2000);
+  };
+
+  const showClipboardError = (message: string) => {
+    if (errorTimerRef.current) clearTimeout(errorTimerRef.current);
+    setClipboardError(message);
+    errorTimerRef.current = setTimeout(() => {
+      errorTimerRef.current = null;
+      setClipboardError(null);
+    }, 4000);
+  };
 
   const palette = useMemo(() => generatePalette(seed, paletteType), [seed, paletteType]);
   const exportText = useMemo(() => toExport(palette, exportFmt), [palette, exportFmt]);
@@ -152,14 +151,16 @@ export default function ColorPaletteTool({ tool }: { tool: Tool }) {
   };
 
   const copyExport = () => {
-    void navigator.clipboard.writeText(exportText).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
+    void copyToClipboard(exportText)
+      .then(() => {
+        setCopied(true);
+        scheduleClearCopied();
+      })
+      .catch(() => showClipboardError("Could not copy export — try selecting the text manually."));
   };
 
   const copyHex = (hex: string) => {
-    void navigator.clipboard.writeText(hex);
+    void copyToClipboard(hex).catch(() => showClipboardError("Could not copy to clipboard."));
   };
 
   return (
@@ -170,17 +171,26 @@ export default function ColorPaletteTool({ tool }: { tool: Tool }) {
         {/* Seed color */}
         <div className="flex flex-wrap items-end gap-4">
           <div>
-            <label className="mb-2 block text-sm font-medium">Seed color</label>
+            <label htmlFor={seedColorId} className="mb-2 block text-sm font-medium">
+              Seed color
+            </label>
             <input
+              id={seedColorId}
               type="color"
               value={seed}
-              onChange={(e) => { setSeed(e.target.value); setHexInput(e.target.value); }}
+              onChange={(e) => {
+                setSeed(e.target.value);
+                setHexInput(e.target.value);
+              }}
               className="h-12 w-12 cursor-pointer rounded-xl border border-border bg-background p-1"
             />
           </div>
           <div className="flex-1 min-w-[160px]">
-            <label className="mb-2 block text-sm font-medium">HEX value</label>
+            <label htmlFor={hexInputId} className="mb-2 block text-sm font-medium">
+              HEX value
+            </label>
             <input
+              id={hexInputId}
               value={hexInput}
               onChange={(e) => applyHex(e.target.value)}
               className="w-full rounded-xl border border-border bg-background px-3 py-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-ring/40"
@@ -192,12 +202,13 @@ export default function ColorPaletteTool({ tool }: { tool: Tool }) {
 
         {/* Palette type selector */}
         <div>
-          <label className="mb-3 block text-sm font-medium">Palette type</label>
-          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+          <span className="mb-3 block text-sm font-medium">Palette type</span>
+          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3" role="list">
             {PALETTE_OPTIONS.map((opt) => (
               <button
                 key={opt.value}
                 type="button"
+                aria-pressed={paletteType === opt.value}
                 onClick={() => setPaletteType(opt.value)}
                 className={`rounded-xl border px-4 py-3 text-left transition-colors ${
                   paletteType === opt.value
@@ -214,7 +225,7 @@ export default function ColorPaletteTool({ tool }: { tool: Tool }) {
 
         {/* Swatches */}
         <div>
-          <label className="mb-3 block text-sm font-medium">Generated palette</label>
+          <span className="mb-3 block text-sm font-medium">Generated palette</span>
           <div className="flex flex-wrap gap-3">
             {palette.map((swatch) => (
               <button
@@ -239,12 +250,13 @@ export default function ColorPaletteTool({ tool }: { tool: Tool }) {
         {/* Export */}
         <div>
           <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-            <label className="text-sm font-medium">Export</label>
-            <div className="flex gap-1">
+            <span className="text-sm font-medium">Export</span>
+            <div className="flex gap-1" role="group" aria-label="Export format">
               {(["css", "tailwind", "array"] as const).map((fmt) => (
                 <button
                   key={fmt}
                   type="button"
+                  aria-pressed={exportFmt === fmt}
                   onClick={() => setExportFmt(fmt)}
                   className={`rounded-lg px-3 py-1 text-xs font-medium transition-colors ${
                     exportFmt === fmt
@@ -257,6 +269,11 @@ export default function ColorPaletteTool({ tool }: { tool: Tool }) {
               ))}
             </div>
           </div>
+          {clipboardError && (
+            <p className="mb-2 text-sm text-destructive" role="alert">
+              {clipboardError}
+            </p>
+          )}
           <div className="relative rounded-xl border border-border bg-muted/30">
             <pre className="overflow-x-auto p-4 font-mono text-xs leading-relaxed">
               {exportText}
@@ -266,9 +283,17 @@ export default function ColorPaletteTool({ tool }: { tool: Tool }) {
               onClick={copyExport}
               className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-lg bg-background/80 px-2.5 py-1.5 text-xs font-medium backdrop-blur-sm hover:bg-muted"
             >
-              {copied
-                ? <><Check className="h-3.5 w-3.5 text-emerald-500" /> Copied</>
-                : <><Copy className="h-3.5 w-3.5" /> Copy</>}
+              {copied ? (
+                <>
+                  <Check className="h-3.5 w-3.5 text-emerald-500" aria-hidden />
+                  Copied
+                </>
+              ) : (
+                <>
+                  <Copy className="h-3.5 w-3.5" aria-hidden />
+                  Copy
+                </>
+              )}
             </button>
           </div>
         </div>

@@ -134,7 +134,6 @@ export const TOOLS: Tool[] = [
   { slug: "unit-converter", name: "Unit Converter", shortName: "Units", description: "Convert length, weight, area, volume, speed", category: "conversion", icon: "📐" },
   { slug: "number-to-words", name: "Number → Words", shortName: "Num→Words", description: "Convert numbers to English words", category: "conversion", icon: "123" },
   { slug: "roman-numerals", name: "Roman Numerals", shortName: "Roman", description: "Convert between Roman numerals and decimal", category: "conversion", icon: "IV" },
-  { slug: "timezone-converter", name: "Timezone Converter", shortName: "TZ", description: "Convert times between world time zones", category: "conversion", icon: "🌐" },
   { slug: "duration-converter", name: "Duration Converter", shortName: "Duration", description: "Convert seconds to HH:MM:SS and breakdown", category: "conversion", icon: "⏳" },
   { slug: "percentage-calc", name: "Percentage Calculator", shortName: "%", description: "Calculate percentages — X% of Y, % change", category: "conversion", icon: "%" },
   { slug: "aspect-ratio", name: "Aspect Ratio Calculator", shortName: "Ratio", description: "Calculate aspect ratio from dimensions", category: "conversion", icon: "⊞" },
