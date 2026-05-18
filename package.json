@@ -9,6 +9,8 @@
     "start": "next start",
     "lint": "eslint",
     "changelog": "node scripts/changelog.mjs",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "test:e2e": "playwright test"
   },
   "dependencies": {
@@ -68,6 +70,8 @@
     "@types/suncalc": "^1.9.2",
     "eslint": "^9",
     "eslint-config-next": "16.2.4",
-    "tailwindcss": "^4"
+    "jsdom": "^26.1.0",
+    "tailwindcss": "^4",
+    "vitest": "^3.2.4"
   }
 }

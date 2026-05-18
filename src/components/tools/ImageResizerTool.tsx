@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Download, Trash2, Upload } from "lucide-react";
 import type { Tool } from "@/lib/tools-registry";
 import { trackToolDownload } from "@/lib/analytics-events";
+import { IMAGE_WORKER_LIMITS_HELP, rejectInputImageDimensions, rejectOutputDimensions } from "@/lib/image-worker-limits";
 import { getImageWorkerUrl, type ImageWorkerResult } from "@/lib/image-worker";
 import ToolPageHero from "@/components/tools/ToolPageHero";
 
@@ -60,6 +61,13 @@ export default function ImageResizerTool({ tool }: { tool: Tool }) {
         img.onerror = () => reject(new Error("decode"));
         img.src = newUrl;
       });
+      const dimErr = rejectInputImageDimensions(dims.w, dims.h);
+      if (dimErr) {
+        URL.revokeObjectURL(newUrl);
+        bufRef.current = null;
+        setError(dimErr);
+        return;
+      }
       setLastName(file.name.replace(/\.[^.]+$/, "") || "image");
       setNaturalW(dims.w);
       setNaturalH(dims.h);
@@ -100,6 +108,12 @@ export default function ImageResizerTool({ tool }: { tool: Tool }) {
     const h = parseInt(heightIn, 10);
     if (!Number.isFinite(w) || !Number.isFinite(h) || w < 1 || h < 1) {
       setError("Enter positive width and height.");
+      return;
+    }
+
+    const outErr = rejectOutputDimensions(w, h);
+    if (outErr) {
+      setError(outErr);
       return;
     }
 
@@ -170,6 +184,7 @@ export default function ImageResizerTool({ tool }: { tool: Tool }) {
       <ToolPageHero tool={tool} />
 
       <div className="animate-slide-up space-y-6 rounded-2xl border border-border bg-card p-6">
+        <p className="text-xs text-muted-foreground leading-relaxed">{IMAGE_WORKER_LIMITS_HELP}</p>
         <div className="flex flex-wrap items-center gap-3">
           <input
             ref={fileRef}

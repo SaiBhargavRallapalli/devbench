@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Download, Trash2, Upload } from "lucide-react";
 import type { Tool } from "@/lib/tools-registry";
 import { trackToolDownload } from "@/lib/analytics-events";
+import { IMAGE_WORKER_LIMITS_HELP, rejectInputImageDimensions } from "@/lib/image-worker-limits";
 import { getImageWorkerUrl, type ImageWorkerResult } from "@/lib/image-worker";
 import ToolPageHero from "@/components/tools/ToolPageHero";
 
@@ -47,10 +48,30 @@ export default function ImageCompressorTool({ tool }: { tool: Tool }) {
       return;
     }
 
-    // Read buffer before updating srcUrl so the compress effect always finds
-    // bufRef.current populated when it fires.
     const newUrl = URL.createObjectURL(file);
-    bufRef.current = await file.arrayBuffer();
+    try {
+      bufRef.current = await file.arrayBuffer();
+      const dims = await new Promise<{ w: number; h: number }>((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve({ w: img.naturalWidth, h: img.naturalHeight });
+        img.onerror = () => reject(new Error("decode"));
+        img.src = newUrl;
+      });
+      const dimErr = rejectInputImageDimensions(dims.w, dims.h);
+      if (dimErr) {
+        URL.revokeObjectURL(newUrl);
+        bufRef.current = null;
+        setOrigBytes(null);
+        setError(dimErr);
+        return;
+      }
+    } catch {
+      URL.revokeObjectURL(newUrl);
+      bufRef.current = null;
+      setOrigBytes(null);
+      setError("Could not read this image.");
+      return;
+    }
 
     setLastName(file.name.replace(/\.[^.]+$/, "") || "image");
     setPreviewUrl((prev) => { if (prev) URL.revokeObjectURL(prev); return null; });
@@ -130,6 +151,7 @@ export default function ImageCompressorTool({ tool }: { tool: Tool }) {
     <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">
       <ToolPageHero tool={tool} />
       <div className="animate-slide-up space-y-6 rounded-2xl border border-border bg-card p-6">
+        <p className="text-xs text-muted-foreground leading-relaxed">{IMAGE_WORKER_LIMITS_HELP}</p>
         <div className="flex flex-wrap gap-3">
           <input
             ref={fileRef}

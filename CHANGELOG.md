@@ -8,7 +8,8 @@
 - Add new tools and enhance image processing features (`4849c1b`)
 
 ### Changed
-- Refactor color tools and enhance clipboard functionality (`ec3cf20`)
+- Enhance image processing tools with dimension validation and error handling (`6646705`)
+- Refactor color tools and enhance clipboard functionality (`15b879e`)
 - Update Go playground API endpoint to use new URL (`eac9bcb`)
 
 ## 2026-05-16

@@ -4,17 +4,19 @@
  * pipeline is needed and the CSP's existing `worker-src 'self' blob:` covers it.
  */
 
+import { IMAGE_WORKER_MAX_PIXELS, IMAGE_WORKER_MAX_SIDE } from "@/lib/image-worker-limits";
+
 const WORKER_SOURCE = `
 "use strict";
-var MAX_SIDE = 16384;
-var MAX_PIXELS = 50000000;
+var MAX_SIDE = ${IMAGE_WORKER_MAX_SIDE};
+var MAX_PIXELS = ${IMAGE_WORKER_MAX_PIXELS};
 self.onmessage = async function(e) {
   var d = e.data;
   try {
     var bitmap = await createImageBitmap(new Blob([d.buffer]));
     if (bitmap.width > MAX_SIDE || bitmap.height > MAX_SIDE || bitmap.width * bitmap.height > MAX_PIXELS) {
       bitmap.close();
-      self.postMessage({ ok: false, error: "Image exceeds safe limits (" + MAX_SIDE + "px per side, max ~50MP)." });
+      self.postMessage({ ok: false, error: "Image exceeds safe limits (" + MAX_SIDE + "px per side, max ~${Math.round(IMAGE_WORKER_MAX_PIXELS / 1_000_000)}MP)." });
       return;
     }
     var w = d.type === "resize" ? d.width : bitmap.width;
