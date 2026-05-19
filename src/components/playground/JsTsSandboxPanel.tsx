@@ -47,10 +47,32 @@ const STDIN_HINT_JS =
 const STDIN_PLACEHOLDER = "Ada\nBob\n";
 
 export default function JsTsSandboxPanel({ mode, dark }: { mode: WebPlayMode; dark: boolean }) {
-  const initialCode =
-    mode === "typescript" ? DEFAULT_TS : mode === "nodejs" ? DEFAULT_NODE : DEFAULT_JS;
-  const [code, setCode] = useState(initialCode);
-  const [stdin, setStdin] = useState("Ada\nBob\n");
+  const [code, setCode] = useState(() => {
+    const hash = typeof window !== "undefined" ? window.location.hash : "";
+    const payload = decodePlaygroundShare(hash);
+    if (
+      payload &&
+      ((mode === "javascript" && payload.lang === "javascript") ||
+        (mode === "typescript" && payload.lang === "typescript") ||
+        (mode === "nodejs" && payload.lang === "nodejs"))
+    ) {
+      return payload.code;
+    }
+    return mode === "typescript" ? DEFAULT_TS : mode === "nodejs" ? DEFAULT_NODE : DEFAULT_JS;
+  });
+  const [stdin, setStdin] = useState(() => {
+    const hash = typeof window !== "undefined" ? window.location.hash : "";
+    const payload = decodePlaygroundShare(hash);
+    if (
+      payload &&
+      ((mode === "javascript" && payload.lang === "javascript") ||
+        (mode === "typescript" && payload.lang === "typescript") ||
+        (mode === "nodejs" && payload.lang === "nodejs"))
+    ) {
+      return payload.stdin ?? "Ada\nBob\n";
+    }
+    return "Ada\nBob\n";
+  });
   const [output, setOutput] = useState<string[]>([]);
   const [running, setRunning] = useState(false);
   const [iframeReady, setIframeReady] = useState(false);
@@ -71,20 +93,6 @@ export default function JsTsSandboxPanel({ mode, dark }: { mode: WebPlayMode; da
     ensureMonacoCdn();
   }, []);
 
-  useEffect(() => {
-    const hash = typeof window !== "undefined" ? window.location.hash : "";
-    const payload = decodePlaygroundShare(hash);
-    if (!payload) return;
-    const lang = payload.lang;
-    if (
-      (mode === "javascript" && lang === "javascript") ||
-      (mode === "typescript" && lang === "typescript") ||
-      (mode === "nodejs" && lang === "nodejs")
-    ) {
-      setCode(payload.code);
-      if (payload.stdin) setStdin(payload.stdin);
-    }
-  }, [mode]);
 
   function shareSnippet() {
     const lang =

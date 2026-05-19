@@ -10,13 +10,11 @@ type BeforeInstallPromptEvent = Event & {
 
 export default function PwaInstallPrompt() {
   const [deferred, setDeferred] = useState<BeforeInstallPromptEvent | null>(null);
-  const [dismissed, setDismissed] = useState(true);
+  const [dismissed, setDismissed] = useState(
+    () => typeof window === "undefined" || localStorage.getItem("devbench:pwa-dismiss") === "1"
+  );
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (localStorage.getItem("devbench:pwa-dismiss") === "1") return;
-    setDismissed(false);
-
     function onBip(e: Event) {
       e.preventDefault();
       setDeferred(e as BeforeInstallPromptEvent);

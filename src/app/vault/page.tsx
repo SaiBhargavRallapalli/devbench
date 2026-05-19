@@ -33,15 +33,20 @@ export default function VaultPage() {
   const [message, setMessage] = useState("");
 
   const refresh = useCallback(async () => {
-    setLoading(true);
     const list = await vaultList();
     setEntries(list);
     setLoading(false);
   }, []);
 
   useEffect(() => {
-    void refresh();
-  }, [refresh]);
+    let mounted = true;
+    vaultList().then((list) => {
+      if (!mounted) return;
+      setEntries(list);
+      setLoading(false);
+    });
+    return () => { mounted = false; };
+  }, []);
 
   async function handleSave() {
     if (!title.trim() || !content.trim()) {

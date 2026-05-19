@@ -77,7 +77,9 @@ export default function EmbedPage() {
   });
   const [embedConfig, setEmbedConfig] = useState<EmbedConfig>({ autoRun: true });
   const stateRef = useRef(state);
-  stateRef.current = state;
+  useEffect(() => {
+    stateRef.current = state;
+  });
 
   const process = useCallback(async () => {
     if (CUSTOM_TOOL_SLUGS.has(slug)) return;

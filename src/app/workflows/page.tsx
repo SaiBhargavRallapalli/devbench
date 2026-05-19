@@ -27,12 +27,8 @@ export default function WorkflowsPage() {
   const [stepLog, setStepLog] = useState<{ label: string; error: string }[]>([]);
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
-  const [saved, setSaved] = useState<SavedPipeline[]>([]);
+  const [saved, setSaved] = useState<SavedPipeline[]>(() => listSavedPipelines());
   const [saveName, setSaveName] = useState("My pipeline");
-
-  useEffect(() => {
-    setSaved(listSavedPipelines());
-  }, []);
 
   const run = useCallback(async () => {
     setRunning(true);
