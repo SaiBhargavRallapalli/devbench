@@ -324,13 +324,28 @@ function fixCommonMistakes(input: string): FixResult {
     let expandCount = 0;
     function deepParseStrings(val: unknown): unknown {
       if (typeof val === "string") {
+        // Attempt 1: val is already clean JSON, e.g. {"key":"val"}
         try {
           const inner = JSON.parse(val) as unknown;
           if (inner !== null && typeof inner === "object") {
             expandCount++;
             return deepParseStrings(inner);
           }
-        } catch { /* not a JSON object/array string */ }
+        } catch {
+          // Attempt 2: val has backslash-escaped quotes, e.g. {\"key\":\"val\"}
+          // (happens when a JSON string was encoded twice: \\\" in raw text → \" in val)
+          // Wrapping in quotes lets JSON.parse unescape it, then we parse the result.
+          try {
+            const unescaped = JSON.parse('"' + val + '"') as unknown;
+            if (typeof unescaped === "string") {
+              const inner = JSON.parse(unescaped) as unknown;
+              if (inner !== null && typeof inner === "object") {
+                expandCount++;
+                return deepParseStrings(inner);
+              }
+            }
+          } catch { /* not parseable either way */ }
+        }
         return val;
       }
       if (Array.isArray(val)) return val.map(deepParseStrings);

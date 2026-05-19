@@ -5,7 +5,8 @@
 ## 2026-05-19
 
 ### Changed
-- Implement bracket matching and deep JSON parsing enhancements (`b344422`)
+- Enhance JSON parsing capabilities with improved error handling (`2fcdbb9`)
+- Implement bracket matching and deep JSON parsing enhancements (`96bab77`)
 - Enhance ESLint configuration and update dependencies (`70ec28b`)
 
 ### Chore
