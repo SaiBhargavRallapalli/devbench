@@ -317,7 +317,83 @@ function fixCommonMistakes(input: string): FixResult {
     fixes.push("Replaced JavaScript-only literals (NaN, undefined, Infinity) with JSON null");
   }
 
+  // Deep-parse string values that are themselves valid JSON objects/arrays
+  // e.g. location_info: "{\"city\":\"NYC\"}" → location_info: { city: "NYC" }
+  try {
+    const parsed = JSON.parse(text) as unknown;
+    let expandCount = 0;
+    function deepParseStrings(val: unknown): unknown {
+      if (typeof val === "string") {
+        try {
+          const inner = JSON.parse(val) as unknown;
+          if (inner !== null && typeof inner === "object") {
+            expandCount++;
+            return deepParseStrings(inner);
+          }
+        } catch { /* not a JSON object/array string */ }
+        return val;
+      }
+      if (Array.isArray(val)) return val.map(deepParseStrings);
+      if (val !== null && typeof val === "object") {
+        const r: Record<string, unknown> = {};
+        for (const [k, v] of Object.entries(val as Record<string, unknown>)) r[k] = deepParseStrings(v);
+        return r;
+      }
+      return val;
+    }
+    const deep = deepParseStrings(parsed);
+    const deepText = JSON.stringify(deep, null, 2);
+    if (expandCount > 0) {
+      text = deepText;
+      fixes.push(`Expanded ${expandCount} embedded JSON string${expandCount > 1 ? "s" : ""} into nested objects`);
+    }
+  } catch { /* outer JSON still invalid — skip */ }
+
   return { text, fixes };
+}
+
+// ── Bracket-pair matching helpers ─────────────────────────────────────────
+
+function findMatchingBracket(text: string, cursorPos: number): { open: number; close: number } | null {
+  const opens = "{[";
+  const closes = "}]";
+  // Precompute string context (which positions are inside a JSON string)
+  const inStr = new Uint8Array(text.length);
+  let inside = false, esc = false;
+  for (let i = 0; i < text.length; i++) {
+    inStr[i] = inside ? 1 : 0;
+    const c = text[i];
+    if (inside) { if (esc) esc = false; else if (c === "\\") esc = true; else if (c === '"') inside = false; }
+    else if (c === '"') inside = true;
+  }
+  let checkPos = -1;
+  for (const p of [cursorPos, cursorPos - 1]) {
+    if (p >= 0 && p < text.length && !inStr[p] && (opens.includes(text[p]) || closes.includes(text[p]))) {
+      checkPos = p; break;
+    }
+  }
+  if (checkPos === -1) return null;
+  const ch = text[checkPos];
+  const isOpen = opens.includes(ch);
+  const matchChar = isOpen ? closes[opens.indexOf(ch)] : opens[closes.indexOf(ch)];
+  const dir = isOpen ? 1 : -1;
+  let depth = 1;
+  for (let i = checkPos + dir; i >= 0 && i < text.length; i += dir) {
+    if (inStr[i]) continue;
+    const c = text[i];
+    if (c === ch) depth++;
+    else if (c === matchChar && --depth === 0) {
+      return isOpen ? { open: checkPos, close: i } : { open: i, close: checkPos };
+    }
+  }
+  return null;
+}
+
+function charOffsetToLineCol(text: string, offset: number): { line: number; col: number } {
+  const before = text.slice(0, offset);
+  const line = (before.match(/\n/g) ?? []).length + 1;
+  const lastNl = before.lastIndexOf("\n");
+  return { line, col: offset - lastNl }; // col is 1-based
 }
 
 // ── Transform utilities ──────────────────────────────────────────────────
@@ -1607,6 +1683,13 @@ export default function JsonToolkitPage() {
   const [selectedTreePath, setSelectedTreePath] = useState<(string | number)[] | null>(null);
   const [pathCopied, setPathCopied] = useState<"jsonpath" | "pointer" | "bracket" | null>(null);
   const [splitView, setSplitView] = useState(false);
+  const [bracketHighlight, setBracketHighlight] = useState<{ open: number; close: number } | null>(null);
+
+  const handleBracketDetect = useCallback(() => {
+    const ta = inputRef.current;
+    if (!ta || input.length > 200_000) { setBracketHighlight(null); return; }
+    setBracketHighlight(findMatchingBracket(input, ta.selectionStart));
+  }, [input]);
 
   function copyTreePath(format: "jsonpath" | "pointer" | "bracket") {
     if (!selectedTreePath) return;
@@ -2250,6 +2333,8 @@ export default function JsonToolkitPage() {
 
   const errorLine = error?.line ?? -1;
   const inputLines = input.split("\n");
+  const bracketOpenLC = bracketHighlight ? charOffsetToLineCol(input, bracketHighlight.open) : null;
+  const bracketCloseLC = bracketHighlight ? charOffsetToLineCol(input, bracketHighlight.close) : null;
 
   const nodeCounter = useRef({ current: 0 });
 
@@ -2702,24 +2787,55 @@ export default function JsonToolkitPage() {
               <div className="px-3 py-1.5 text-xs text-muted-foreground font-medium bg-muted/50 border-b border-border shrink-0">
                 JSON INPUT
               </div>
-              <textarea
-                ref={inputRef}
-                value={input}
-                onChange={(e) => { setInputWithHistory(e.target.value); clearError(); setFixResult(null); }}
-                onPaste={(e) => {
-                  if (!autoFormat) return;
-                  const raw = e.clipboardData.getData("text");
-                  e.preventDefault();
-                  try {
-                    const pretty = JSON.stringify(JSON.parse(raw), null, 2);
-                    setInputWithHistory(pretty);
-                    clearError();
-                  } catch { setInputWithHistory(raw); }
-                }}
-                spellCheck={false}
-                placeholder='Paste or type JSON here…\n\n{\n  "key": "value"\n}'
-                className="flex-1 min-h-0 w-full resize-none bg-background text-foreground font-mono text-sm p-4 outline-none placeholder:text-muted-foreground/30 scrollbar-thin"
-              />
+              <div className="flex-1 min-h-0 relative">
+                {bracketOpenLC && bracketCloseLC && (
+                  <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden" aria-hidden>
+                    <div className="font-mono text-sm p-4 whitespace-pre leading-[1.625]">
+                      {inputLines.map((line, idx) => {
+                        const ln = idx + 1;
+                        if (ln === bracketOpenLC.line) {
+                          const c = bracketOpenLC.col - 1;
+                          return <div key={idx}><span style={{ color: "transparent" }}>{line.slice(0, c)}</span><span style={{ color: "transparent", background: "rgba(234,179,8,0.35)", borderRadius: "2px" }}>{line[c]}</span><span style={{ color: "transparent" }}>{line.slice(c + 1)}</span></div>;
+                        }
+                        if (ln === bracketCloseLC.line) {
+                          const c = bracketCloseLC.col - 1;
+                          return <div key={idx}><span style={{ color: "transparent" }}>{line.slice(0, c)}</span><span style={{ color: "transparent", background: "rgba(234,179,8,0.35)", borderRadius: "2px" }}>{line[c]}</span><span style={{ color: "transparent" }}>{line.slice(c + 1)}</span></div>;
+                        }
+                        return <div key={idx}><span style={{ color: "transparent" }}>{line || " "}</span></div>;
+                      })}
+                    </div>
+                  </div>
+                )}
+                <textarea
+                  ref={inputRef}
+                  value={input}
+                  onChange={(e) => { setInputWithHistory(e.target.value); clearError(); setFixResult(null); setBracketHighlight(null); }}
+                  onPaste={(e) => {
+                    if (!autoFormat) return;
+                    const raw = e.clipboardData.getData("text");
+                    e.preventDefault();
+                    try {
+                      const pretty = JSON.stringify(JSON.parse(raw), null, 2);
+                      setInputWithHistory(pretty);
+                      clearError();
+                    } catch { setInputWithHistory(raw); }
+                  }}
+                  onClick={handleBracketDetect}
+                  onKeyUp={handleBracketDetect}
+                  onSelect={handleBracketDetect}
+                  onBlur={() => setBracketHighlight(null)}
+                  spellCheck={false}
+                  placeholder='Paste or type JSON here…\n\n{\n  "key": "value"\n}'
+                  className="absolute inset-0 resize-none bg-background text-foreground font-mono text-sm p-4 outline-none placeholder:text-muted-foreground/30 scrollbar-thin"
+                />
+              </div>
+              {bracketOpenLC && bracketCloseLC && bracketOpenLC.line !== bracketCloseLC.line && (
+                <div className="shrink-0 border-t border-border bg-muted/30 px-3 py-1 text-[10px] font-mono text-muted-foreground flex items-center gap-1.5">
+                  <span style={{ color: "rgba(234,179,8,0.8)" }}>⌥</span>
+                  Block: lines {bracketOpenLC.line}–{bracketCloseLC.line}
+                  <span className="text-muted-foreground/50">({bracketCloseLC.line - bracketOpenLC.line + 1} lines)</span>
+                </div>
+              )}
             </div>
 
             {/* Right: Tree view */}
@@ -2821,8 +2937,13 @@ export default function JsonToolkitPage() {
                     setInputWithHistory(newVal);
                     clearError();
                     setFixResult(null);
+                    setBracketHighlight(null);
                   }}
                   onPaste={handlePaste}
+                  onClick={handleBracketDetect}
+                  onKeyUp={handleBracketDetect}
+                  onSelect={handleBracketDetect}
+                  onBlur={() => setBracketHighlight(null)}
                   placeholder='Paste or type JSON here...\n{\n  "hello": "world"\n}'
                   spellCheck={false}
                   className="w-full h-full resize-none bg-background text-foreground font-mono text-sm p-4 outline-none placeholder:text-muted-foreground/50 scrollbar-thin"
@@ -2841,7 +2962,32 @@ export default function JsonToolkitPage() {
                     </div>
                   </div>
                 )}
+                {bracketOpenLC && bracketCloseLC && (
+                  <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden" aria-hidden>
+                    <div className="font-mono text-sm p-4 whitespace-pre leading-[1.625]">
+                      {inputLines.map((line, idx) => {
+                        const ln = idx + 1;
+                        if (ln === bracketOpenLC.line) {
+                          const c = bracketOpenLC.col - 1;
+                          return <div key={idx}><span style={{ color: "transparent" }}>{line.slice(0, c)}</span><span style={{ color: "transparent", background: "rgba(234,179,8,0.35)", borderRadius: "2px" }}>{line[c]}</span><span style={{ color: "transparent" }}>{line.slice(c + 1)}</span></div>;
+                        }
+                        if (ln === bracketCloseLC.line) {
+                          const c = bracketCloseLC.col - 1;
+                          return <div key={idx}><span style={{ color: "transparent" }}>{line.slice(0, c)}</span><span style={{ color: "transparent", background: "rgba(234,179,8,0.35)", borderRadius: "2px" }}>{line[c]}</span><span style={{ color: "transparent" }}>{line.slice(c + 1)}</span></div>;
+                        }
+                        return <div key={idx}><span style={{ color: "transparent" }}>{line || " "}</span></div>;
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
+              {bracketOpenLC && bracketCloseLC && bracketOpenLC.line !== bracketCloseLC.line && (
+                <div className="shrink-0 border-t border-border bg-muted/30 px-3 py-1 text-[10px] font-mono text-muted-foreground flex items-center gap-1.5">
+                  <span style={{ color: "rgba(234,179,8,0.8)" }}>⌥</span>
+                  Block: lines {bracketOpenLC.line}–{bracketCloseLC.line}
+                  <span className="text-muted-foreground/50">({bracketCloseLC.line - bracketOpenLC.line + 1} lines)</span>
+                </div>
+              )}
             </div>
             <div className="flex-1 flex flex-col min-h-0">
               <div className="px-3 py-1.5 text-xs text-muted-foreground font-medium bg-muted/50 border-b border-border shrink-0">

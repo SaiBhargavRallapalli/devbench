@@ -5,7 +5,11 @@
 ## 2026-05-19
 
 ### Changed
-- Enhance ESLint configuration and update dependencies (`9ea1ecb`)
+- Implement bracket matching and deep JSON parsing enhancements (`b344422`)
+- Enhance ESLint configuration and update dependencies (`70ec28b`)
+
+### Chore
+- bump sql-formatter from 15.7.3 to 15.8.0 (`f92de89`)
 
 ## 2026-05-18
 
@@ -19,7 +23,6 @@
 - Update Go playground API endpoint to use new URL (`eac9bcb`)
 
 ### Chore
-- bump sql-formatter from 15.7.3 to 15.8.0 (`5fb4ff6`)
 - bump @codemirror/view from 6.41.1 to 6.43.0 (`2c6a2c5`)
 - bump jsdom from 26.1.0 to 29.1.1 (`0cf8b3a`)
 - bump react from 19.2.4 to 19.2.6 (`6cf7550`)
