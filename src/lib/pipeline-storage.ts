@@ -1,3 +1,4 @@
+// Copyright (c) 2026 DevBench contributors. MIT License.
 import type { PipelineStep } from "@/lib/tool-pipelines";
 
 const KEY = "devbench:saved-pipelines";

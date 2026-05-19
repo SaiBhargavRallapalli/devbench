@@ -1,3 +1,4 @@
+// Copyright (c) 2026 DevBench contributors. MIT License.
 import Link from "next/link";
 import { Shield, ExternalLink } from "lucide-react";
 import DevBenchMark from "@/components/DevBenchMark";

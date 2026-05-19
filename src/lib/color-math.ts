@@ -1,3 +1,4 @@
+// Copyright (c) 2026 DevBench contributors. MIT License.
 /** Shared color conversions for dev tools (HEX ↔ RGB ↔ HSL ↔ HSV). */
 
 export function hexToRgb(hex: string): [number, number, number] | null {

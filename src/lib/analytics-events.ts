@@ -1,3 +1,4 @@
+// Copyright (c) 2026 DevBench contributors. MIT License.
 import { track } from "@vercel/analytics";
 
 // Vercel Analytics constrains property values to primitives. Keep the surface

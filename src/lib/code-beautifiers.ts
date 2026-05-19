@@ -1,3 +1,4 @@
+// Copyright (c) 2026 DevBench contributors. MIT License.
 import * as prettier from "prettier/standalone";
 import * as estreePlugin from "prettier/plugins/estree";
 import * as babelPlugin from "prettier/plugins/babel";

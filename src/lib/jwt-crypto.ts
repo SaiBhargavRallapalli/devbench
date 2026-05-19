@@ -1,3 +1,4 @@
+// Copyright (c) 2026 DevBench contributors. MIT License.
 /**
  * Sign and verify JWTs across the WebCrypto-supported algorithm families:
  * HMAC (HS256/384/512), RSA (RS256/384/512), ECDSA (ES256/384/512), and

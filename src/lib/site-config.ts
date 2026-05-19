@@ -1,3 +1,4 @@
+// Copyright (c) 2026 DevBench contributors. MIT License.
 export const SITE_URL = "https://www.devbench.co.in";
 export const SITE_NAME = "DevBench";
 

@@ -1,3 +1,4 @@
+// Copyright (c) 2026 DevBench contributors. MIT License.
 import { getToolBySlug, type Tool } from "@/lib/tools-registry";
 
 /** Hub display order — matches registry PDF block: organize → optimize → convert → review */

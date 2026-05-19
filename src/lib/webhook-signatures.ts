@@ -1,3 +1,4 @@
+// Copyright (c) 2026 DevBench contributors. MIT License.
 /**
  * Signs (and verifies) webhook payloads exactly the way each provider does.
  *

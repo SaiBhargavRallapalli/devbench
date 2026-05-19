@@ -1,3 +1,4 @@
+// Copyright (c) 2026 DevBench contributors. MIT License.
 /** Share tool inputs via URL fragment `#state=…` (fully client-side; never hits the server). */
 
 export type SharedToolPayload = {

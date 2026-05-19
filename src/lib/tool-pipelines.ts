@@ -1,3 +1,4 @@
+// Copyright (c) 2026 DevBench contributors. MIT License.
 /**
  * Client-side tool pipelines — chain runTool-compatible steps without copy-paste.
  */

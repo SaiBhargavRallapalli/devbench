@@ -1,3 +1,4 @@
+// Copyright (c) 2026 DevBench contributors. MIT License.
 import semver from "semver";
 import yaml from "js-yaml";
 

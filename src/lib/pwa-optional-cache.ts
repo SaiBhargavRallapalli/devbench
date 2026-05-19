@@ -1,3 +1,4 @@
+// Copyright (c) 2026 DevBench contributors. MIT License.
 /** Ask the service worker to cache optional URLs (Monaco, workers) after first use. */
 
 export function cacheUrlsForOffline(urls: string[]): void {

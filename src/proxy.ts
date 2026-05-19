@@ -1,3 +1,4 @@
+// Copyright (c) 2026 DevBench contributors. MIT License.
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { BLOG_HOST, PLAYGROUND_HOST, SITE_URL } from "@/lib/site-config";

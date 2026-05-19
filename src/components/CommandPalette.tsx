@@ -1,3 +1,4 @@
+// Copyright (c) 2026 DevBench contributors. MIT License.
 "use client";
 
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";

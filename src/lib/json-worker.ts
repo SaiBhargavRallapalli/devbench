@@ -1,3 +1,4 @@
+// Copyright (c) 2026 DevBench contributors. MIT License.
 /** Run JSON format/minify in a Web Worker for large payloads (>256 KB). */
 
 const THRESHOLD = 256 * 1024;

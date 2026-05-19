@@ -1,3 +1,4 @@
+// Copyright (c) 2026 DevBench contributors. MIT License.
 /**
  * Simple 3-way diff: compare left and right each against base (ancestor).
  */

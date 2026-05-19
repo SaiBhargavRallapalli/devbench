@@ -1,3 +1,4 @@
+// Copyright (c) 2026 DevBench contributors. MIT License.
 /**
  * Local preferences: favorites, tool history, custom homepage pins — all in localStorage.
  */

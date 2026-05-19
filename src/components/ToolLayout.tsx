@@ -1,3 +1,4 @@
+// Copyright (c) 2026 DevBench contributors. MIT License.
 import Link from "next/link";
 import { ArrowLeft, Globe } from "lucide-react";
 

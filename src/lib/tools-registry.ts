@@ -1,3 +1,4 @@
+// Copyright (c) 2026 DevBench contributors. MIT License.
 export interface Tool {
   slug: string;
   name: string;

@@ -1,3 +1,4 @@
+// Copyright (c) 2026 DevBench contributors. MIT License.
 /**
  * First-class workspace routes (multi-tool pages). Kept in one module so the
  * command palette, shortcuts, and docs stay aligned.

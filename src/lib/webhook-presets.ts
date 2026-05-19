@@ -1,3 +1,4 @@
+// Copyright (c) 2026 DevBench contributors. MIT License.
 /**
  * Realistic event payloads + suggested event-type header values for each
  * provider's webhooks. These match the shapes documented by the upstreams

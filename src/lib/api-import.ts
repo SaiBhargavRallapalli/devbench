@@ -1,3 +1,4 @@
+// Copyright (c) 2026 DevBench contributors. MIT License.
 /**
  * Import HTTP requests from HAR, OpenAPI 3, or cURL — client-side only.
  */

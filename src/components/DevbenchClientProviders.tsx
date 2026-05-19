@@ -1,3 +1,4 @@
+// Copyright (c) 2026 DevBench contributors. MIT License.
 "use client";
 
 import { useDevbenchShortcuts } from "@/hooks/use-devbench-shortcuts";

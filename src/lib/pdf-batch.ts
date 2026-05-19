@@ -1,3 +1,4 @@
+// Copyright (c) 2026 DevBench contributors. MIT License.
 /**
  * Batch PDF operations — process multiple files sequentially in-browser.
  */

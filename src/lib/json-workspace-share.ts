@@ -1,3 +1,4 @@
+// Copyright (c) 2026 DevBench contributors. MIT License.
 /**
  * Shareable JSON workspace state via URL fragment `#jw=…` (client-only).
  * Distinct from `/tools/*` #state= payloads (see shareable-tool-state.ts).

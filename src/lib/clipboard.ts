@@ -1,3 +1,4 @@
+// Copyright (c) 2026 DevBench contributors. MIT License.
 /**
  * Copy text to the clipboard; resolves true on success, false on failure.
  * Never throws — use this in fire-and-forget contexts.

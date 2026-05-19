@@ -4,8 +4,11 @@
 
 ## 2026-05-19
 
+### Added
+- Add copyright notice to multiple files and update metadata in layout.tsx (`4be12ab`)
+
 ### Changed
-- Update CSP configuration, enhance package.json, and improve service worker functionality (`e6d4e38`)
+- Update CSP configuration, enhance package.json, and improve service worker functionality (`b8a13ec`)
 - Enhance JSON input editor with active line tracking and bracket overlay (`ddd1bf3`)
 - Quote unquoted template variables in JSON parsing (`c01db2c`)
 - Enhance bracket matching visualization in JSON toolkit (`eb13196`)

@@ -1,3 +1,4 @@
+// Copyright (c) 2026 DevBench contributors. MIT License.
 import type { JsonWorkspaceTab } from "@/lib/json-workspace-types";
 
 const STORAGE_KEY = "devbench:json-workspace-presets";

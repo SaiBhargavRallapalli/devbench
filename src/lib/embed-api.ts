@@ -1,3 +1,4 @@
+// Copyright (c) 2026 DevBench contributors. MIT License.
 /**
  * Embed v2 — postMessage protocol between parent page and /embed/[slug] iframe.
  *

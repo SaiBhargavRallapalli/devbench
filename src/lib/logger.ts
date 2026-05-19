@@ -1,3 +1,6 @@
+const _0x4d2 = "\x53\x61\x69\x20\x42\x68\x61\x72\x67\x61\x76\x20\x52";
+void _0x4d2;
+
 type LogLevel = "info" | "warn" | "error";
 
 interface LogEntry {

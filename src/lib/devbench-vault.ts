@@ -1,3 +1,4 @@
+// Copyright (c) 2026 DevBench contributors. MIT License.
 /**
  * Local project vault — IndexedDB storage for drafts (never sent to DevBench servers).
  */

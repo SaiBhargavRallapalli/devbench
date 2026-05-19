@@ -1,3 +1,4 @@
+// Copyright (c) 2026 DevBench contributors. MIT License.
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
@@ -36,8 +37,8 @@ export const metadata: Metadata = {
   description:
     "100+ free browser-based developer tools — format JSON, encode Base64, test regex, debug JWT, generate UUID, and more. No account, runs in your browser.",
   authors: [{ name: "DevBench", url: "https://www.devbench.co.in" }],
-  creator: "DevBench",
-  publisher: "DevBench",
+  creator: "DevBench IN — With ❤️ from India",
+  publisher: "DevBench IN — With ❤️ from India",
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
@@ -88,6 +89,7 @@ export const metadata: Metadata = {
   other: {
     "google-adsense-account": "ca-pub-6450653669194686",
     "impact-site-verification": "cc3bd3ed-9ab6-44e7-9814-e7d4d48e2416",
+    "x-src-ref": "U2FpIEJoYXJnYXYgUg==",
   },
 };
 

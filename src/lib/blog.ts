@@ -1,3 +1,4 @@
+// Copyright (c) 2026 DevBench contributors. MIT License.
 export interface BlogPost {
   slug: string;
   title: string;

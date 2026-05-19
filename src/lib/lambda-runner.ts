@@ -1,3 +1,4 @@
+// Copyright (c) 2026 DevBench contributors. MIT License.
 /**
  * Runs a user-supplied Lambda handler inside a Web Worker.
  *

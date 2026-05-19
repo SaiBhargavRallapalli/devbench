@@ -1,3 +1,4 @@
+// Copyright (c) 2026 DevBench contributors. MIT License.
 import * as engines from "@/lib/tool-engines";
 
 export type ToolState = {

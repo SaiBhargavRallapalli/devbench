@@ -1,3 +1,4 @@
+// Copyright (c) 2026 DevBench contributors. MIT License.
 /**
  * Off-main-thread image processing via OffscreenCanvas.
  * Uses the same Blob-URL pattern as lambda-runner.ts so no build-time worker
