@@ -26,7 +26,7 @@ const TABS: { id: PlaygroundTab; label: string; short: string; icon: typeof Brac
 export default function PlaygroundClient() {
   const [tab, setTab] = useState<PlaygroundTab>("javascript");
   const [dark, setDark] = useState(false);
-  const navOrigin = useExternalNavOrigin();
+  const { origin: navOrigin, homePath } = useExternalNavOrigin();
 
   useEffect(() => {
     const sync = () => setDark(document.documentElement.classList.contains("dark"));
@@ -47,7 +47,7 @@ export default function PlaygroundClient() {
         <div className="flex flex-wrap items-start justify-between gap-3 shrink-0">
           <div>
             <Link
-              href={resolveToolHref("/", navOrigin)}
+              href={resolveToolHref("/", navOrigin, homePath)}
               className="mb-2 inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
             >
               <ArrowLeft className="h-4 w-4" aria-hidden />

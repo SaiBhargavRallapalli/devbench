@@ -1,29 +1,34 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Clock, Tag } from "lucide-react";
+import { headers } from "next/headers";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import JsonLd from "@/components/JsonLd";
 import { BLOG_POSTS } from "@/lib/blog";
 import { socialMetadata, SITE_URL } from "@/lib/social-metadata";
 import { breadcrumbSchema } from "@/lib/breadcrumb-schema";
+import { BLOG_HOST, BLOG_ORIGIN, normaliseHost } from "@/lib/site-config";
 
 const BLOG_TITLE = "DevBench Blog — Developer Guides & Tutorials";
 const BLOG_DESC =
   "In-depth guides for developers: JWT, UUID, regex, JSON, URL encoding, and more. Written by the team behind DevBench's free browser-based developer tools.";
 
-export const metadata: Metadata = {
-  title: BLOG_TITLE,
-  description: BLOG_DESC,
-  keywords:
-    "developer guides, jwt tutorial, base64 explained, regex cheat sheet, json syntax errors, uuid vs ulid, url encoding javascript, web development tips, devbench blog",
-  alternates: { canonical: `${SITE_URL}/blog` },
-  ...socialMetadata({
+export async function generateMetadata(): Promise<Metadata> {
+  const h = await headers();
+  const host = normaliseHost(h.get("x-forwarded-host") ?? h.get("host"));
+  const canonical = host === BLOG_HOST ? `${BLOG_ORIGIN}/` : `${SITE_URL}/blog`;
+  const social = socialMetadata({ title: BLOG_TITLE, description: BLOG_DESC, canonicalPath: "/blog" });
+  return {
     title: BLOG_TITLE,
     description: BLOG_DESC,
-    canonicalPath: "/blog",
-  }),
-};
+    keywords:
+      "developer guides, jwt tutorial, base64 explained, regex cheat sheet, json syntax errors, uuid vs ulid, url encoding javascript, web development tips, devbench blog",
+    alternates: { canonical },
+    openGraph: { ...social.openGraph, url: canonical },
+    twitter: social.twitter,
+  };
+}
 
 const TAG_COLORS: Record<string, string> = {
   identifiers: "bg-blue-500/10 text-blue-600 dark:text-blue-400",

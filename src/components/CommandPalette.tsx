@@ -24,7 +24,7 @@ export default function CommandPalette({ tools }: { tools: Tool[] }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
   const router = useRouter();
-  const navOrigin = useExternalNavOrigin();
+  const { origin: navOrigin, homePath } = useExternalNavOrigin();
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -91,7 +91,7 @@ export default function CommandPalette({ tools }: { tools: Tool[] }) {
     (row: PaletteRow) => {
       const raw =
         row.kind === "workspace" ? row.workspace.href : toolHref(row.tool.slug);
-      const href = resolveToolHref(raw, navOrigin);
+      const href = resolveToolHref(raw, navOrigin, homePath);
       if (href.startsWith("http")) {
         window.location.assign(href);
       } else {

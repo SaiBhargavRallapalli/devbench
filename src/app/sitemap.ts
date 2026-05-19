@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { TOOLS } from "@/lib/tools-registry";
 import { BLOG_POSTS } from "@/lib/blog";
 import { TOOL_COMPARISONS } from "@/lib/tool-comparisons";
-import { PLAYGROUND_ORIGIN } from "@/lib/site-config";
+import { BLOG_ORIGIN, PLAYGROUND_ORIGIN } from "@/lib/site-config";
 import { publicHrefForToolSlug } from "@/lib/devbench-workspaces";
 
 const BASE = "https://www.devbench.co.in";
@@ -56,6 +56,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: SITE_LASTMOD,
       changeFrequency: "monthly" as const,
       priority: 0.72,
+    },
+    {
+      url: `${BLOG_ORIGIN}/`,
+      lastModified: SITE_LASTMOD,
+      changeFrequency: "weekly" as const,
+      priority: 0.78,
     },
   ];
 

@@ -2,13 +2,18 @@
 
 > Auto-generated from git log. Run `npm run changelog` to refresh.
 
+## 2026-05-20
+
+### Changed
+- Enhance sitemap and blog metadata handling (`f3dc44c`)
+
 ## 2026-05-19
 
 ### Added
 - Add copyright notice to multiple files and update metadata in layout.tsx (`0b21b83`)
 
 ### Changed
-- Refactor state management and loading logic in multiple components (`44cee67`)
+- Refactor state management and loading logic in multiple components (`41ccec5`)
 - Update CSP configuration, enhance package.json, and improve service worker functionality (`b8a13ec`)
 - Enhance JSON input editor with active line tracking and bracket overlay (`ddd1bf3`)
 - Quote unquoted template variables in JSON parsing (`c01db2c`)
