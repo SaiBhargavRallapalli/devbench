@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import { ProxyRequestSchema, isBlockedHost } from "./validation";
+import { logger } from "@/lib/logger";
 
-const BLOCKED_HOSTS = new Set(["localhost", "127.0.0.1", "0.0.0.0", "[::1]"]);
 const MAX_BODY_SIZE = 5 * 1024 * 1024; // 5 MB
 const TIMEOUT_MS = 30_000;
 
@@ -21,23 +22,6 @@ function isRateLimited(ip: string): boolean {
   return false;
 }
 
-function isPrivateAddress(hostname: string): boolean {
-  const parts = hostname.split(".").map(Number);
-  if (parts.length === 4 && parts.every((n) => !isNaN(n) && n >= 0 && n <= 255)) {
-    const [a, b] = parts;
-    return (
-      a === 10 ||
-      (a === 172 && b >= 16 && b <= 31) ||
-      (a === 192 && b === 168) ||
-      (a === 169 && b === 254) ||
-      a === 127 ||
-      a === 0
-    );
-  }
-  const h = hostname.replace(/^\[|\]$/g, "").toLowerCase();
-  return h === "::1" || h.startsWith("fc") || h.startsWith("fd") || h.startsWith("fe80");
-}
-
 export async function POST(req: NextRequest) {
   const ip =
     req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
@@ -50,38 +34,44 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  let body: unknown;
   try {
-    const body = await req.json();
-    const { url, method, headers, payload } = body as {
-      url: string;
-      method: string;
-      headers: Record<string, string>;
-      payload?: string;
-    };
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON body." }, { status: 400 });
+  }
 
-    if (!url || !method) {
-      return NextResponse.json({ error: "URL and method are required." }, { status: 400 });
-    }
+  const parsed = ProxyRequestSchema.safeParse(body);
+  if (!parsed.success) {
+    const message = parsed.error.issues[0]?.message ?? "Invalid request.";
+    return NextResponse.json({ error: message }, { status: 400 });
+  }
 
-    let parsed: URL;
-    try {
-      parsed = new URL(url);
-    } catch {
-      return NextResponse.json({ error: "Invalid URL." }, { status: 400 });
-    }
+  const { url, method, headers, payload } = parsed.data;
 
-    if (BLOCKED_HOSTS.has(parsed.hostname) || isPrivateAddress(parsed.hostname)) {
-      return NextResponse.json({ error: "Requests to private/internal addresses are not allowed." }, { status: 403 });
-    }
+  let parsedUrl: URL;
+  try {
+    parsedUrl = new URL(url);
+  } catch {
+    return NextResponse.json({ error: "Invalid URL." }, { status: 400 });
+  }
 
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+  if (isBlockedHost(parsedUrl.hostname)) {
+    return NextResponse.json(
+      { error: "Requests to private/internal addresses are not allowed." },
+      { status: 403 },
+    );
+  }
 
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+
+  try {
     const startTime = performance.now();
 
     const fetchOpts: RequestInit = {
       method: method.toUpperCase(),
-      headers: headers || {},
+      headers: headers ?? {},
       signal: controller.signal,
       redirect: "follow",
     };
@@ -121,10 +111,13 @@ export async function POST(req: NextRequest) {
       finalUrl: response.url,
     });
   } catch (err) {
+    clearTimeout(timer);
     const msg = err instanceof Error ? err.message : "Unknown error";
     if (msg.includes("abort")) {
+      logger.warn("/api/proxy", "Request timed out", { url, method });
       return NextResponse.json({ error: "Request timed out (30s limit)." }, { status: 504 });
     }
+    logger.error("/api/proxy", "Fetch failed", { url, method, error: msg });
     return NextResponse.json({ error: msg }, { status: 502 });
   }
 }

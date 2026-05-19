@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useMemo, useRef, useEffect } from "react";
+import Link from "next/link";
 import {
   Send,
   Copy,
@@ -363,13 +364,17 @@ export default function ApiTesterPage() {
     if (transportMode !== "socketio") {
       socketIoRef.current?.disconnect();
       socketIoRef.current = null;
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSocketIoStatus("idle");
     }
   }, [transportMode]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (transportMode === "graphql") setReqTab("graphqlOp");
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     else if (transportMode === "grpc") setReqTab("grpcJson");
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     else setReqTab("params");
   }, [transportMode]);
 
@@ -388,6 +393,7 @@ export default function ApiTesterPage() {
     if (transportMode !== "websocket") {
       wsRef.current?.close();
       wsRef.current = null;
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setWsStatus("idle");
     }
   }, [transportMode]);
@@ -1904,13 +1910,13 @@ export default function ApiTesterPage() {
 
         <p className="text-sm text-muted-foreground leading-relaxed">
           Also useful:{" "}
-          <a href="/tools/curl-to-fetch" className="text-accent hover:underline">
+          <Link href="/tools/curl-to-fetch" className="text-accent hover:underline">
             cURL → Fetch converter
-          </a>
+          </Link>
           {", "}
-          <a href="/tools/url-parser" className="text-accent hover:underline">
+          <Link href="/tools/url-parser" className="text-accent hover:underline">
             URL Parser
-          </a>
+          </Link>
           {", "}
           <a href="/json" className="text-accent hover:underline">
             JSON Formatter

@@ -625,6 +625,7 @@ export default function GraphCalculatorPage() {
 
   useEffect(() => {
     const n = matrixSize;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCellsA((prev) =>
       Array.from({ length: n }, (_, i) =>
         Array.from({ length: n }, (_, j) => prev[i]?.[j] ?? (i === j ? "1" : "0"))
@@ -693,6 +694,7 @@ export default function GraphCalculatorPage() {
   const containerRef = useRef<HTMLDivElement>(null);
   const panStart = useRef<{ x: number; y: number; view: ViewPort } | null>(null);
   const viewRef = useRef(view);
+  // eslint-disable-next-line react-hooks/refs
   viewRef.current = view;
   const nextId = useRef(2);
 

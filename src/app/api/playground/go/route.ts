@@ -1,6 +1,15 @@
 import { NextResponse } from "next/server";
+import { z } from "zod";
+import { logger } from "@/lib/logger";
 
 const MAX_BYTES = 96_000;
+
+const PlaygroundSchema = z.object({
+  code: z
+    .string()
+    .min(1, "Missing `code` string")
+    .max(MAX_BYTES, "Code exceeds size limit"),
+});
 
 /** Ensure a compilable unit for the upstream playground (expects `body`, not `files`). */
 function wrapGoBody(src: string): string {
@@ -15,25 +24,20 @@ function wrapGoBody(src: string): string {
  * Unique User-Agent per https://go.dev/blog/playground "Other clients".
  */
 export async function POST(request: Request) {
-  let payload: unknown;
+  let raw: unknown;
   try {
-    payload = await request.json();
+    raw = await request.json();
   } catch {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
-  const code =
-    typeof payload === "object" &&
-    payload !== null &&
-    "code" in payload &&
-    typeof (payload as { code: unknown }).code === "string"
-      ? (payload as { code: string }).code
-      : "";
-  if (!code.trim()) {
-    return NextResponse.json({ error: "Missing `code` string" }, { status: 400 });
+
+  const parsed = PlaygroundSchema.safeParse(raw);
+  if (!parsed.success) {
+    const message = parsed.error.issues[0]?.message ?? "Invalid request.";
+    return NextResponse.json({ error: message }, { status: 400 });
   }
-  if (code.length > MAX_BYTES) {
-    return NextResponse.json({ error: "Code exceeds size limit" }, { status: 400 });
-  }
+
+  const { code } = parsed.data;
 
   const body = wrapGoBody(code);
 
@@ -48,13 +52,13 @@ export async function POST(request: Request) {
       body: JSON.stringify({ version: 2, body }),
     });
   } catch (e) {
-    return NextResponse.json(
-      { error: e instanceof Error ? e.message : "Upstream request failed" },
-      { status: 502 },
-    );
+    const msg = e instanceof Error ? e.message : "Upstream request failed";
+    logger.error("/api/playground/go", "Upstream fetch failed", { error: msg });
+    return NextResponse.json({ error: msg }, { status: 502 });
   }
 
   if (!upstream.ok) {
+    logger.warn("/api/playground/go", "Upstream returned non-OK", { status: upstream.status });
     return NextResponse.json({ error: `Playground returned ${upstream.status}` }, { status: 502 });
   }
 
@@ -62,6 +66,7 @@ export async function POST(request: Request) {
   try {
     data = await upstream.json();
   } catch {
+    logger.error("/api/playground/go", "Failed to parse upstream JSON");
     return NextResponse.json({ error: "Invalid response from playground" }, { status: 502 });
   }
 

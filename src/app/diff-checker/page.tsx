@@ -84,8 +84,8 @@ function backtrackDiff(
   const result: DiffLine[] = [];
   let i = a.length;
   let j = b.length;
-  let leftNum = a.length;
-  let rightNum = b.length;
+  const leftNum = a.length;
+  const rightNum = b.length;
 
   const lines: DiffLine[] = [];
 
@@ -130,8 +130,8 @@ function computeLineDiff(
   modified: string,
   options: DiffOptions
 ): DiffLine[] {
-  let leftLines = original.split("\n");
-  let rightLines = modified.split("\n");
+  const leftLines = original.split("\n");
+  const rightLines = modified.split("\n");
 
   const processLine = (line: string): string => {
     let processed = line;
@@ -148,8 +148,8 @@ function computeLineDiff(
   const rawDiff = backtrackDiff(dp, processedLeft, processedRight);
 
   const result: DiffLine[] = [];
-  let li = 0;
-  let ri = 0;
+  const li = 0;
+  const ri = 0;
   for (const line of rawDiff) {
     if (line.type === "unchanged") {
       result.push({
@@ -810,9 +810,9 @@ export default function DiffCheckerPage() {
           <li>Comparing two versions of a legal document or contract</li>
           <li>
             For JSON-specific diffing with structure awareness, use the{" "}
-            <a href="/tools/json-diff" className="text-accent hover:underline">
+            <Link href="/tools/json-diff" className="text-accent hover:underline">
               JSON Diff
-            </a>{" "}
+            </Link>{" "}
             tool.
           </li>
         </ul>

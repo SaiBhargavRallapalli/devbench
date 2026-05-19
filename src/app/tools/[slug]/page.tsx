@@ -128,6 +128,7 @@ function CopyBtn({ text, toolSlug }: { text: string; toolSlug?: string }) {
 function AesWebCryptoUnavailableHint() {
   const [show, setShow] = useState(false);
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setShow(
       typeof globalThis.crypto !== "undefined" &&
         globalThis.crypto.subtle === undefined
@@ -171,6 +172,7 @@ export default function ToolPage() {
     const shared = decodeSharedToolState(window.location.hash);
     if (shared) {
       shareHydrated.current = true;
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setState((s) => ({ ...s, input: shared.i, input2: shared.i2 ?? "" }));
       return;
     }

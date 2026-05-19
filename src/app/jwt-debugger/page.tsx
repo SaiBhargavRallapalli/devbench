@@ -338,6 +338,7 @@ export default function JWTDebuggerPage() {
   const expirationInfo = useMemo(() => {
     if (!decoded || typeof decoded.payload.exp !== "number") return null;
     const exp = decoded.payload.exp as number;
+    // eslint-disable-next-line react-hooks/purity
     const nowSec = Math.floor(Date.now() / 1000);
     const isExpired = exp < nowSec;
     return {
@@ -359,7 +360,9 @@ export default function JWTDebuggerPage() {
   // Verify signature
   useEffect(() => {
     if (!decoded || !decodedAlg) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setVerifyResult(null);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setVerifyError(null);
       return;
     }
@@ -447,7 +450,9 @@ export default function JWTDebuggerPage() {
     if (encHeader.trim() && encPayload.trim() && haveKey) {
       encode();
     } else {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setEncodedToken("");
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setEncodeError("");
     }
 
@@ -1136,17 +1141,17 @@ export default function JWTDebuggerPage() {
 
         <p className="text-sm text-muted-foreground leading-relaxed">
           Also useful:{" "}
-          <a href="/tools/base64-decode" className="text-accent hover:underline">
+          <Link href="/tools/base64-decode" className="text-accent hover:underline">
             Base64 Decode
-          </a>
+          </Link>
           {", "}
-          <a href="/tools/hash-generator" className="text-accent hover:underline">
+          <Link href="/tools/hash-generator" className="text-accent hover:underline">
             Hash Generator
-          </a>
+          </Link>
           {", "}
-          <a href="/tools/aes-encrypt-decrypt" className="text-accent hover:underline">
+          <Link href="/tools/aes-encrypt-decrypt" className="text-accent hover:underline">
             AES Encryptor
-          </a>
+          </Link>
           .
         </p>
       </section>

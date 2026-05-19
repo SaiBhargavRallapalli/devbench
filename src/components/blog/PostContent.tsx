@@ -290,7 +290,7 @@ function CommonJsonErrors() {
 
       <h2 className={h2}>4. Comments</h2>
       <p className={prose}>
-        JSON has no comment syntax. Neither <code className={code}>// single-line</code> nor <code className={code}>/* block */</code> comments are valid. If you need comments in config files, consider JSONC (JSON with Comments, used by VS Code), YAML, or TOML instead.
+        JSON has no comment syntax. Neither <code className={code}>{"// single-line"}</code> nor <code className={code}>{"/* block */"}</code> comments are valid. If you need comments in config files, consider JSONC (JSON with Comments, used by VS Code), YAML, or TOML instead.
       </p>
 
       <h2 className={h2}>5. NaN, Infinity, and undefined</h2>

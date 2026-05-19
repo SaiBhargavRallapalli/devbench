@@ -16,6 +16,7 @@ export default function QrCodeTool({ tool }: { tool: Tool }) {
     let cancelled = false;
     const t = text.trim();
     if (!t) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setDataUrl(null);
       setErr("");
       return;

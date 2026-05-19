@@ -26,7 +26,7 @@ function bytesToBase64Url(bytes: Uint8Array): string {
 }
 
 function base64UrlToBytes(b64url: string): Uint8Array {
-  let b64 = b64url.replace(/-/g, "+").replace(/_/g, "/");
+  const b64 = b64url.replace(/-/g, "+").replace(/_/g, "/");
   const pad = b64.length % 4 ? "=".repeat(4 - (b64.length % 4)) : "";
   const bin = atob(b64 + pad);
   const out = new Uint8Array(bin.length);

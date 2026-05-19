@@ -942,7 +942,7 @@ export function formatCurl(input: string, layout: CurlFormatLayout = "multiline"
     };
 
     while (i < tokens.length) {
-      let tok = tokens[i];
+      const tok = tokens[i];
       if (/^https?:\/\//i.test(tok)) {
         url = tok;
         i++;
@@ -2062,9 +2062,9 @@ export function calcDueDateFromLmp(input: string): Result {
 
 export function solveQuadraticEquation(input: string): Result {
   const kv = parseCalcKV(input);
-  let a = kvNum(kv, "a");
-  let b = kvNum(kv, "b");
-  let c = kvNum(kv, "c");
+  const a = kvNum(kv, "a");
+  const b = kvNum(kv, "b");
+  const c = kvNum(kv, "c");
   if (a === undefined || b === undefined || c === undefined) {
     return { output: "", error: "a=1\nb=-5\nc=6   → roots of ax²+bx+c=0" };
   }
@@ -2095,9 +2095,9 @@ export function solveQuadraticEquation(input: string): Result {
 
 export function solvePythagorean(input: string): Result {
   const kv = parseCalcKV(input);
-  let a = kvNum(kv, "a");
-  let b = kvNum(kv, "b");
-  let c = kvNum(kv, "c");
+  const a = kvNum(kv, "a");
+  const b = kvNum(kv, "b");
+  const c = kvNum(kv, "c");
   const count = [a, b, c].filter((x) => x !== undefined).length;
   if (count !== 2) {
     return {

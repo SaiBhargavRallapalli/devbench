@@ -33,8 +33,10 @@ function useLocalList(key: string) {
   useEffect(() => {
     try {
       const raw = localStorage.getItem(key);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setList(raw ? JSON.parse(raw) : []);
     } catch {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setList([]);
     }
   }, [key]);

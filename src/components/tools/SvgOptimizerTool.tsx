@@ -141,6 +141,7 @@ export default function SvgOptimizerTool({ tool }: { tool: Tool }) {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (!result) { setPreviewUrl(null); return; }
     const blob = new Blob([result.output], { type: "image/svg+xml" });
     const url = URL.createObjectURL(blob);

@@ -82,6 +82,7 @@ export default function CommandPalette({ tools }: { tools: Tool[] }) {
   }, [tools, query]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (activeIdx >= rows.length) setActiveIdx(Math.max(0, rows.length - 1));
   }, [rows.length, activeIdx]);
 

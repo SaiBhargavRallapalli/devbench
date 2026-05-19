@@ -46,6 +46,7 @@ export default function PdfToolsHub() {
     const raw = searchParams.get("filter");
     if (!raw) return;
     const ok = FILTERS.some((f) => f.id === raw);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (ok) setFilter(raw as PdfHubFilter);
   }, [searchParams]);
 

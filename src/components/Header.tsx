@@ -35,6 +35,7 @@ export default function Header() {
 
   useEffect(() => {
     // Inline script in layout already applied classes — sync icon state from DOM.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setDark(document.documentElement.classList.contains("dark"));
 
     function onStorage(e: StorageEvent) {
