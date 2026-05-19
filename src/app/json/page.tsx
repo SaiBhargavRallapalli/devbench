@@ -277,6 +277,19 @@ function fixCommonMistakes(input: string): FixResult {
     text = stripped.text;
   }
 
+  // Quote unquoted {{template}} variables used as values
+  // e.g. "key": {{device_type}} → "key": "{{device_type}}"
+  // JSON sees {{ as a nested object and immediately errors on the inner {
+  const templateVarBefore = text;
+  text = text.replace(/([:\[,]\s*)\{\{([^{}]*)\}\}(?=\s*[,\]}\r\n])/g, '$1"{{$2}}"');
+  // Also handle at end of object/array with closing brace on same token
+  text = text.replace(/([:\[,]\s*)\{\{([^{}]*)\}\}(\s*[}\]])/g, (_, pre, name, post) =>
+    `${pre}"{{${name}}}"${post}`
+  );
+  if (text !== templateVarBefore) {
+    fixes.push('Quoted unquoted template variables ({{variable}} → "{{variable}}")');
+  }
+
   const singleQuoteBefore = text;
   text = text.replace(
     /(?<=[\[{,:\s])(\s*)'((?:[^'\\]|\\.)*)'(\s*)(?=[,\]}\s:])/g,

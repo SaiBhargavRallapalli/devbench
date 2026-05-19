@@ -5,7 +5,8 @@
 ## 2026-05-19
 
 ### Changed
-- Enhance bracket matching visualization in JSON toolkit (`a063421`)
+- Quote unquoted template variables in JSON parsing (`9d6ea97`)
+- Enhance bracket matching visualization in JSON toolkit (`eb13196`)
 - Update vitest configuration and remove middleware (`40aa6c3`)
 - Enhance JSON parsing capabilities with improved error handling (`cb231e2`)
 - Implement bracket matching and deep JSON parsing enhancements (`96bab77`)
