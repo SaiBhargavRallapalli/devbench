@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo, useRef, useEffect } from "react";
+import { useState, useCallback, useMemo, useRef, useEffect, type RefObject } from "react";
 import yaml from "js-yaml";
 import {
   Copy,
@@ -395,7 +395,7 @@ function findMatchingBracket(text: string, cursorPos: number): { open: number; c
     else if (c === '"') inside = true;
   }
   let checkPos = -1;
-  for (const p of [cursorPos, cursorPos - 1]) {
+  for (const p of [cursorPos - 1, cursorPos, cursorPos + 1]) {
     if (p >= 0 && p < text.length && !inStr[p] && (opens.includes(text[p]) || closes.includes(text[p]))) {
       checkPos = p; break;
     }
@@ -418,10 +418,92 @@ function findMatchingBracket(text: string, cursorPos: number): { open: number; c
 }
 
 function charOffsetToLineCol(text: string, offset: number): { line: number; col: number } {
-  const before = text.slice(0, offset);
+  const pos = Math.max(0, Math.min(offset, text.length));
+  const before = text.slice(0, pos);
   const line = (before.match(/\n/g) ?? []).length + 1;
   const lastNl = before.lastIndexOf("\n");
-  return { line, col: offset - lastNl }; // col is 1-based
+  const col = lastNl === -1 ? pos + 1 : pos - lastNl;
+  return { line, col };
+}
+
+type LineCol = { line: number; col: number };
+
+function bracketColsForLine(
+  lineNum: number,
+  bracketOpen: LineCol | null,
+  bracketClose: LineCol | null,
+): number[] {
+  const cols: number[] = [];
+  if (bracketOpen && bracketOpen.line === lineNum) cols.push(bracketOpen.col);
+  if (bracketClose && bracketClose.line === lineNum && bracketClose.col !== bracketOpen?.col) {
+    cols.push(bracketClose.col);
+  }
+  return cols;
+}
+
+/** Underlay mirror: active line (full row) + 1ch bracket markers (no per-char layout drift). */
+function JsonInputMirrorLine({
+  line,
+  lineNum,
+  bracketOpen,
+  bracketClose,
+  isActive,
+}: {
+  line: string;
+  lineNum: number;
+  bracketOpen: LineCol | null;
+  bracketClose: LineCol | null;
+  isActive: boolean;
+}) {
+  const bracketCols = bracketColsForLine(lineNum, bracketOpen, bracketClose);
+  const rowClass = `relative -mx-4 px-4${isActive ? " bg-muted/30" : ""}`;
+  return (
+    <div className={rowClass}>
+      <span className="invisible whitespace-pre select-none">{line.length > 0 ? line : "\u00a0"}</span>
+      {bracketCols.map((col) => (
+        <span
+          key={col}
+          className="pointer-events-none absolute inset-y-0 w-[1ch] rounded-[2px] bg-teal-400/35 dark:bg-teal-400/25"
+          style={{ left: `${col - 1}ch` }}
+        />
+      ))}
+    </div>
+  );
+}
+
+function JsonInputMirrorOverlay({
+  lines,
+  overlayRef,
+  bracketOpen,
+  bracketClose,
+  activeLine,
+}: {
+  lines: string[];
+  overlayRef: RefObject<HTMLDivElement | null>;
+  bracketOpen: LineCol | null;
+  bracketClose: LineCol | null;
+  activeLine: number | null;
+}) {
+  return (
+    <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden bg-background" aria-hidden>
+      <div
+        ref={overlayRef}
+        className="h-full w-full font-mono text-sm p-4 whitespace-pre leading-[1.625] [tab-size:2]"
+        style={{ overflow: "scroll", scrollbarWidth: "none" } as React.CSSProperties}
+      >
+        {lines.map((line, idx) => (
+          <JsonInputMirrorLine
+            key={idx}
+            line={line}
+            lineNum={idx + 1}
+            bracketOpen={bracketOpen}
+            bracketClose={bracketClose}
+            isActive={activeLine !== null && activeLine === idx + 1}
+          />
+        ))}
+      </div>
+    </div>
+  );
 }
 
 // ── Transform utilities ──────────────────────────────────────────────────
@@ -1712,18 +1794,31 @@ export default function JsonToolkitPage() {
   const [pathCopied, setPathCopied] = useState<"jsonpath" | "pointer" | "bracket" | null>(null);
   const [splitView, setSplitView] = useState(false);
   const [bracketHighlight, setBracketHighlight] = useState<{ open: number; close: number } | null>(null);
+  const [activeInputLine, setActiveInputLine] = useState<number | null>(null);
   const bracketOverlayRef = useRef<HTMLDivElement>(null);
 
-  const handleBracketDetect = useCallback(() => {
-    const ta = inputRef.current;
-    if (!ta || input.length > 200_000) { setBracketHighlight(null); return; }
-    setBracketHighlight(findMatchingBracket(input, ta.selectionStart));
-  }, [input]);
+  const syncInputEditorOverlays = useCallback(
+    (source?: { value: string; selectionStart: number }) => {
+      const text = source?.value ?? input;
+      const sel = source?.selectionStart ?? inputRef.current?.selectionStart ?? 0;
+      const before = text.slice(0, sel);
+      setActiveInputLine((before.match(/\n/g) ?? []).length + 1);
+      if (text.length > 200_000) {
+        setBracketHighlight(null);
+        return;
+      }
+      setBracketHighlight(findMatchingBracket(text, sel));
+    },
+    [input],
+  );
 
   const syncBracketOverlay = useCallback(() => {
     const ta = inputRef.current;
     const ov = bracketOverlayRef.current;
-    if (ta && ov) ov.scrollTop = ta.scrollTop;
+    if (ta && ov) {
+      ov.scrollTop = ta.scrollTop;
+      ov.scrollLeft = ta.scrollLeft;
+    }
   }, []);
 
   function copyTreePath(format: "jsonpath" | "pointer" | "bracket") {
@@ -2129,9 +2224,13 @@ export default function JsonToolkitPage() {
             setShowErrorPanel(true);
           }
         }
+        requestAnimationFrame(() => {
+          const ta = inputRef.current;
+          if (ta) syncInputEditorOverlays({ value: ta.value, selectionStart: ta.selectionStart });
+        });
       }
     },
-    [autoFormat, clearError, setInputWithHistory]
+    [autoFormat, clearError, setInputWithHistory, syncInputEditorOverlays]
   );
 
   const handleConvert = useCallback(() => {
@@ -2370,6 +2469,11 @@ export default function JsonToolkitPage() {
   const inputLines = input.split("\n");
   const bracketOpenLC = bracketHighlight ? charOffsetToLineCol(input, bracketHighlight.open) : null;
   const bracketCloseLC = bracketHighlight ? charOffsetToLineCol(input, bracketHighlight.close) : null;
+  const mirrorOverlaySimple = input.length > 200_000;
+  const showInputMirrorOverlay = activeInputLine !== null;
+  const inputEditorTextareaClass = `resize-none text-foreground font-mono text-sm p-4 outline-none leading-[1.625] [tab-size:2] scrollbar-thin ${
+    showInputMirrorOverlay ? "relative z-10 bg-transparent caret-foreground" : "bg-background"
+  }`;
 
   const nodeCounter = useRef({ current: 0 });
 
@@ -2822,11 +2926,26 @@ export default function JsonToolkitPage() {
               <div className="px-3 py-1.5 text-xs text-muted-foreground font-medium bg-muted/50 border-b border-border shrink-0">
                 JSON INPUT
               </div>
-              <div className="flex-1 min-h-0 relative">
+              <div className="flex-1 min-h-0 relative bg-background">
+                {showInputMirrorOverlay && (
+                  <JsonInputMirrorOverlay
+                    lines={inputLines}
+                    overlayRef={bracketOverlayRef}
+                    bracketOpen={mirrorOverlaySimple ? null : bracketOpenLC}
+                    bracketClose={mirrorOverlaySimple ? null : bracketCloseLC}
+                    activeLine={activeInputLine}
+                  />
+                )}
                 <textarea
                   ref={inputRef}
                   value={input}
-                  onChange={(e) => { setInputWithHistory(e.target.value); clearError(); setFixResult(null); setBracketHighlight(null); }}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    setInputWithHistory(v);
+                    clearError();
+                    setFixResult(null);
+                    syncInputEditorOverlays({ value: v, selectionStart: e.target.selectionStart });
+                  }}
                   onPaste={(e) => {
                     if (!autoFormat) return;
                     const raw = e.clipboardData.getData("text");
@@ -2835,37 +2954,31 @@ export default function JsonToolkitPage() {
                       const pretty = JSON.stringify(JSON.parse(raw), null, 2);
                       setInputWithHistory(pretty);
                       clearError();
-                    } catch { setInputWithHistory(raw); }
+                    } catch {
+                      setInputWithHistory(raw);
+                    }
+                    requestAnimationFrame(() => {
+                      const ta = inputRef.current;
+                      if (ta) syncInputEditorOverlays({ value: ta.value, selectionStart: ta.selectionStart });
+                    });
                   }}
-                  onClick={handleBracketDetect}
-                  onKeyUp={handleBracketDetect}
-                  onSelect={handleBracketDetect}
-                  onBlur={() => setBracketHighlight(null)}
+                  onFocus={() => syncInputEditorOverlays()}
+                  onClick={() => syncInputEditorOverlays()}
+                  onKeyUp={() => syncInputEditorOverlays()}
+                  onSelect={() => syncInputEditorOverlays()}
+                  onBlur={() => {
+                    setBracketHighlight(null);
+                    setActiveInputLine(null);
+                  }}
                   onScroll={syncBracketOverlay}
                   spellCheck={false}
                   placeholder='Paste or type JSON here…\n\n{\n  "key": "value"\n}'
-                  className="absolute inset-0 resize-none bg-background text-foreground font-mono text-sm p-4 outline-none placeholder:text-muted-foreground/30 scrollbar-thin"
+                  className={`absolute inset-0 placeholder:text-muted-foreground/30 ${inputEditorTextareaClass}`}
                 />
-                {bracketOpenLC && bracketCloseLC && (
-                  <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden>
-                    <div ref={bracketOverlayRef} className="font-mono text-sm p-4 whitespace-pre leading-[1.625]" style={{ overflow: "scroll", scrollbarWidth: "none" } as React.CSSProperties}>
-                      {inputLines.map((line, idx) => {
-                        const ln = idx + 1;
-                        const isBracketLine = ln === bracketOpenLC.line || ln === bracketCloseLC.line;
-                        const isBetween = ln > bracketOpenLC.line && ln < bracketCloseLC.line;
-                        return (
-                          <div key={idx} className={isBracketLine ? "bg-amber-400/25 -mx-4 px-4" : isBetween ? "bg-amber-400/8 -mx-4 px-4" : ""}>
-                            <span className="invisible">{line || " "}</span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
               </div>
               {bracketOpenLC && bracketCloseLC && bracketOpenLC.line !== bracketCloseLC.line && (
                 <div className="shrink-0 border-t border-border bg-muted/30 px-3 py-1 text-[10px] font-mono text-muted-foreground flex items-center gap-1.5">
-                  <span style={{ color: "rgba(234,179,8,0.8)" }}>⌥</span>
+                  <span className="text-sky-600/80 dark:text-sky-400/80">⌥</span>
                   Block: lines {bracketOpenLC.line}–{bracketCloseLC.line}
                   <span className="text-muted-foreground/50">({bracketCloseLC.line - bracketOpenLC.line + 1} lines)</span>
                 </div>
@@ -2963,6 +3076,29 @@ export default function JsonToolkitPage() {
                     </div>
                   </div>
                 )}
+                {showInputMirrorOverlay && (
+                  <JsonInputMirrorOverlay
+                    lines={inputLines}
+                    overlayRef={bracketOverlayRef}
+                    bracketOpen={mirrorOverlaySimple ? null : bracketOpenLC}
+                    bracketClose={mirrorOverlaySimple ? null : bracketCloseLC}
+                    activeLine={activeInputLine}
+                  />
+                )}
+                {error && (
+                  <div className="absolute inset-0 z-[1] pointer-events-none overflow-hidden">
+                    <div className="font-mono text-sm p-4 whitespace-pre leading-[1.625] [tab-size:2]">
+                      {inputLines.map((line, idx) => (
+                        <div
+                          key={idx}
+                          className={idx + 1 === errorLine ? "bg-destructive/15 -mx-4 px-4" : ""}
+                        >
+                          <span className="invisible whitespace-pre">{line || "\u00a0"}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 <textarea
                   ref={inputRef}
                   value={input}
@@ -2971,52 +3107,26 @@ export default function JsonToolkitPage() {
                     setInputWithHistory(newVal);
                     clearError();
                     setFixResult(null);
-                    setBracketHighlight(null);
+                    syncInputEditorOverlays({ value: newVal, selectionStart: e.target.selectionStart });
                   }}
                   onPaste={handlePaste}
-                  onClick={handleBracketDetect}
-                  onKeyUp={handleBracketDetect}
-                  onSelect={handleBracketDetect}
-                  onBlur={() => setBracketHighlight(null)}
+                  onFocus={() => syncInputEditorOverlays()}
+                  onClick={() => syncInputEditorOverlays()}
+                  onKeyUp={() => syncInputEditorOverlays()}
+                  onSelect={() => syncInputEditorOverlays()}
+                  onBlur={() => {
+                    setBracketHighlight(null);
+                    setActiveInputLine(null);
+                  }}
                   onScroll={syncBracketOverlay}
                   placeholder='Paste or type JSON here...\n{\n  "hello": "world"\n}'
                   spellCheck={false}
-                  className="w-full h-full resize-none bg-background text-foreground font-mono text-sm p-4 outline-none placeholder:text-muted-foreground/50 scrollbar-thin"
+                  className={`w-full h-full placeholder:text-muted-foreground/50 ${inputEditorTextareaClass}`}
                 />
-                {error && (
-                  <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
-                    <div className="font-mono text-sm p-4 whitespace-pre leading-[1.625]">
-                      {inputLines.map((line, idx) => (
-                        <div
-                          key={idx}
-                          className={idx + 1 === errorLine ? "bg-destructive/15 -mx-4 px-4" : ""}
-                        >
-                          <span className="invisible">{line || " "}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                {bracketOpenLC && bracketCloseLC && (
-                  <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden>
-                    <div ref={bracketOverlayRef} className="font-mono text-sm p-4 whitespace-pre leading-[1.625]" style={{ overflow: "scroll", scrollbarWidth: "none" } as React.CSSProperties}>
-                      {inputLines.map((line, idx) => {
-                        const ln = idx + 1;
-                        const isBracketLine = ln === bracketOpenLC.line || ln === bracketCloseLC.line;
-                        const isBetween = ln > bracketOpenLC.line && ln < bracketCloseLC.line;
-                        return (
-                          <div key={idx} className={isBracketLine ? "bg-amber-400/25 -mx-4 px-4" : isBetween ? "bg-amber-400/8 -mx-4 px-4" : ""}>
-                            <span className="invisible">{line || " "}</span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
               </div>
               {bracketOpenLC && bracketCloseLC && bracketOpenLC.line !== bracketCloseLC.line && (
                 <div className="shrink-0 border-t border-border bg-muted/30 px-3 py-1 text-[10px] font-mono text-muted-foreground flex items-center gap-1.5">
-                  <span style={{ color: "rgba(234,179,8,0.8)" }}>⌥</span>
+                  <span className="text-sky-600/80 dark:text-sky-400/80">⌥</span>
                   Block: lines {bracketOpenLC.line}–{bracketCloseLC.line}
                   <span className="text-muted-foreground/50">({bracketCloseLC.line - bracketOpenLC.line + 1} lines)</span>
                 </div>

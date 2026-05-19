@@ -5,7 +5,8 @@
 ## 2026-05-19
 
 ### Changed
-- Quote unquoted template variables in JSON parsing (`9d6ea97`)
+- Enhance JSON input editor with active line tracking and bracket overlay (`52d88e8`)
+- Quote unquoted template variables in JSON parsing (`c01db2c`)
 - Enhance bracket matching visualization in JSON toolkit (`eb13196`)
 - Update vitest configuration and remove middleware (`40aa6c3`)
 - Enhance JSON parsing capabilities with improved error handling (`cb231e2`)
