@@ -5,7 +5,8 @@
 ## 2026-05-19
 
 ### Changed
-- Enhance JSON parsing capabilities with improved error handling (`2fcdbb9`)
+- Update vitest configuration and remove middleware (`961d738`)
+- Enhance JSON parsing capabilities with improved error handling (`cb231e2`)
 - Implement bracket matching and deep JSON parsing enhancements (`96bab77`)
 - Enhance ESLint configuration and update dependencies (`70ec28b`)
 

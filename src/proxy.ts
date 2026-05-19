@@ -28,7 +28,7 @@ function isPlaygroundAssetPath(pathname: string): boolean {
  * playground route; everything else redirects to the main site so nav and
  * deep links stay on www.
  */
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   if (requestHost(request) !== PLAYGROUND_HOST) {
     return NextResponse.next();
   }

@@ -1,7 +1,7 @@
 export const SITE_URL = "https://www.devbench.co.in";
 export const SITE_NAME = "DevBench";
 
-/** Subdomain that serves only the code playground (same Vercel project; see `src/middleware.ts`). */
+/** Subdomain that serves only the code playground (same Vercel project; see `src/proxy.ts`). */
 export const PLAYGROUND_HOST = "playground.devbench.co.in";
 
 export const PLAYGROUND_ORIGIN = `https://${PLAYGROUND_HOST}`;
