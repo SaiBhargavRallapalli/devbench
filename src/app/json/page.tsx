@@ -1699,12 +1699,19 @@ export default function JsonToolkitPage() {
   const [pathCopied, setPathCopied] = useState<"jsonpath" | "pointer" | "bracket" | null>(null);
   const [splitView, setSplitView] = useState(false);
   const [bracketHighlight, setBracketHighlight] = useState<{ open: number; close: number } | null>(null);
+  const bracketOverlayRef = useRef<HTMLDivElement>(null);
 
   const handleBracketDetect = useCallback(() => {
     const ta = inputRef.current;
     if (!ta || input.length > 200_000) { setBracketHighlight(null); return; }
     setBracketHighlight(findMatchingBracket(input, ta.selectionStart));
   }, [input]);
+
+  const syncBracketOverlay = useCallback(() => {
+    const ta = inputRef.current;
+    const ov = bracketOverlayRef.current;
+    if (ta && ov) ov.scrollTop = ta.scrollTop;
+  }, []);
 
   function copyTreePath(format: "jsonpath" | "pointer" | "bracket") {
     if (!selectedTreePath) return;
@@ -2803,24 +2810,6 @@ export default function JsonToolkitPage() {
                 JSON INPUT
               </div>
               <div className="flex-1 min-h-0 relative">
-                {bracketOpenLC && bracketCloseLC && (
-                  <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden" aria-hidden>
-                    <div className="font-mono text-sm p-4 whitespace-pre leading-[1.625]">
-                      {inputLines.map((line, idx) => {
-                        const ln = idx + 1;
-                        if (ln === bracketOpenLC.line) {
-                          const c = bracketOpenLC.col - 1;
-                          return <div key={idx}><span style={{ color: "transparent" }}>{line.slice(0, c)}</span><span style={{ color: "transparent", background: "rgba(234,179,8,0.35)", borderRadius: "2px" }}>{line[c]}</span><span style={{ color: "transparent" }}>{line.slice(c + 1)}</span></div>;
-                        }
-                        if (ln === bracketCloseLC.line) {
-                          const c = bracketCloseLC.col - 1;
-                          return <div key={idx}><span style={{ color: "transparent" }}>{line.slice(0, c)}</span><span style={{ color: "transparent", background: "rgba(234,179,8,0.35)", borderRadius: "2px" }}>{line[c]}</span><span style={{ color: "transparent" }}>{line.slice(c + 1)}</span></div>;
-                        }
-                        return <div key={idx}><span style={{ color: "transparent" }}>{line || " "}</span></div>;
-                      })}
-                    </div>
-                  </div>
-                )}
                 <textarea
                   ref={inputRef}
                   value={input}
@@ -2839,10 +2828,27 @@ export default function JsonToolkitPage() {
                   onKeyUp={handleBracketDetect}
                   onSelect={handleBracketDetect}
                   onBlur={() => setBracketHighlight(null)}
+                  onScroll={syncBracketOverlay}
                   spellCheck={false}
                   placeholder='Paste or type JSON here…\n\n{\n  "key": "value"\n}'
                   className="absolute inset-0 resize-none bg-background text-foreground font-mono text-sm p-4 outline-none placeholder:text-muted-foreground/30 scrollbar-thin"
                 />
+                {bracketOpenLC && bracketCloseLC && (
+                  <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden>
+                    <div ref={bracketOverlayRef} className="font-mono text-sm p-4 whitespace-pre leading-[1.625]" style={{ overflow: "scroll", scrollbarWidth: "none" } as React.CSSProperties}>
+                      {inputLines.map((line, idx) => {
+                        const ln = idx + 1;
+                        const isBracketLine = ln === bracketOpenLC.line || ln === bracketCloseLC.line;
+                        const isBetween = ln > bracketOpenLC.line && ln < bracketCloseLC.line;
+                        return (
+                          <div key={idx} className={isBracketLine ? "bg-amber-400/25 -mx-4 px-4" : isBetween ? "bg-amber-400/8 -mx-4 px-4" : ""}>
+                            <span className="invisible">{line || " "}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
               {bracketOpenLC && bracketCloseLC && bracketOpenLC.line !== bracketCloseLC.line && (
                 <div className="shrink-0 border-t border-border bg-muted/30 px-3 py-1 text-[10px] font-mono text-muted-foreground flex items-center gap-1.5">
@@ -2959,6 +2965,7 @@ export default function JsonToolkitPage() {
                   onKeyUp={handleBracketDetect}
                   onSelect={handleBracketDetect}
                   onBlur={() => setBracketHighlight(null)}
+                  onScroll={syncBracketOverlay}
                   placeholder='Paste or type JSON here...\n{\n  "hello": "world"\n}'
                   spellCheck={false}
                   className="w-full h-full resize-none bg-background text-foreground font-mono text-sm p-4 outline-none placeholder:text-muted-foreground/50 scrollbar-thin"
@@ -2978,19 +2985,17 @@ export default function JsonToolkitPage() {
                   </div>
                 )}
                 {bracketOpenLC && bracketCloseLC && (
-                  <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden" aria-hidden>
-                    <div className="font-mono text-sm p-4 whitespace-pre leading-[1.625]">
+                  <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden>
+                    <div ref={bracketOverlayRef} className="font-mono text-sm p-4 whitespace-pre leading-[1.625]" style={{ overflow: "scroll", scrollbarWidth: "none" } as React.CSSProperties}>
                       {inputLines.map((line, idx) => {
                         const ln = idx + 1;
-                        if (ln === bracketOpenLC.line) {
-                          const c = bracketOpenLC.col - 1;
-                          return <div key={idx}><span style={{ color: "transparent" }}>{line.slice(0, c)}</span><span style={{ color: "transparent", background: "rgba(234,179,8,0.35)", borderRadius: "2px" }}>{line[c]}</span><span style={{ color: "transparent" }}>{line.slice(c + 1)}</span></div>;
-                        }
-                        if (ln === bracketCloseLC.line) {
-                          const c = bracketCloseLC.col - 1;
-                          return <div key={idx}><span style={{ color: "transparent" }}>{line.slice(0, c)}</span><span style={{ color: "transparent", background: "rgba(234,179,8,0.35)", borderRadius: "2px" }}>{line[c]}</span><span style={{ color: "transparent" }}>{line.slice(c + 1)}</span></div>;
-                        }
-                        return <div key={idx}><span style={{ color: "transparent" }}>{line || " "}</span></div>;
+                        const isBracketLine = ln === bracketOpenLC.line || ln === bracketCloseLC.line;
+                        const isBetween = ln > bracketOpenLC.line && ln < bracketCloseLC.line;
+                        return (
+                          <div key={idx} className={isBracketLine ? "bg-amber-400/25 -mx-4 px-4" : isBetween ? "bg-amber-400/8 -mx-4 px-4" : ""}>
+                            <span className="invisible">{line || " "}</span>
+                          </div>
+                        );
                       })}
                     </div>
                   </div>
