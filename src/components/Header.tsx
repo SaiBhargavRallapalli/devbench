@@ -24,6 +24,8 @@ const NAV_LINKS = [
   { href: "/cron-editor",      label: "Cron"      },
   { href: "/graph-calculator", label: "Math"      },
   { href: "/playground",       label: "Playground"},
+  { href: "/workflows",        label: "Pipelines" },
+  { href: "/vault",            label: "Vault"     },
   { href: "/blog",             label: "Blog"      },
   { href: "/contact",          label: "Contact"   },
 ];

@@ -2207,6 +2207,23 @@ export function convertUnits(value: number, from: string, to: string, category: 
 // JSON CONVERSION
 // ============================================================
 
+export function formatJson(input: string, indent = 2): Result {
+  try {
+    const parsed = JSON.parse(input);
+    return JSON.stringify(parsed, null, indent);
+  } catch (e) {
+    return { output: "", error: `Invalid JSON: ${(e as Error).message}` };
+  }
+}
+
+export function minifyJson(input: string): Result {
+  try {
+    return JSON.stringify(JSON.parse(input));
+  } catch (e) {
+    return { output: "", error: `Invalid JSON: ${(e as Error).message}` };
+  }
+}
+
 export function jsonToYaml(input: string): Result {
   try {
     const obj = JSON.parse(input);

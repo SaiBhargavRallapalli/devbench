@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useParams } from "next/navigation";
 import { Copy, Check, Trash2, ExternalLink } from "lucide-react";
 import { getToolBySlug } from "@/lib/tools-registry";
@@ -11,6 +11,11 @@ import {
   needsDualInput,
   needsNoInput,
 } from "@/lib/tool-runner";
+import {
+  isEmbedCommand,
+  postEmbedEvent,
+  type EmbedConfig,
+} from "@/lib/embed-api";
 
 const CUSTOM_TOOL_SLUGS = new Set([
   "background-remover",
@@ -70,28 +75,75 @@ export default function EmbedPage() {
     error: "",
     options: {},
   });
+  const [embedConfig, setEmbedConfig] = useState<EmbedConfig>({ autoRun: true });
+  const stateRef = useRef(state);
+  stateRef.current = state;
 
   const process = useCallback(async () => {
     if (CUSTOM_TOOL_SLUGS.has(slug)) return;
-    if (!state.input.trim() && !needsNoInput(slug)) {
-      setState((s) => ({ ...s, output: "", error: "" }));
+    const s = stateRef.current;
+    if (!s.input.trim() && !needsNoInput(slug)) {
+      setState((prev) => ({ ...prev, output: "", error: "" }));
+      postEmbedEvent(window.parent, { type: "OUTPUT", output: "", error: "" });
       return;
     }
     try {
-      const result = await runTool(slug, state);
+      const result = await runTool(slug, s);
       const output = typeof result === "string" ? result : result.output || "";
       const error = typeof result === "string" ? "" : result.error || "";
-      setState((s) => ({ ...s, output, error }));
+      setState((prev) => ({ ...prev, output, error }));
+      postEmbedEvent(window.parent, { type: "OUTPUT", output, error });
     } catch (e) {
-      setState((s) => ({ ...s, output: "", error: (e as Error).message }));
+      const msg = (e as Error).message;
+      setState((prev) => ({ ...prev, output: "", error: msg }));
+      postEmbedEvent(window.parent, { type: "OUTPUT", output: "", error: msg });
     }
-  }, [slug, state.input, state.input2, state.options]);
+  }, [slug]);
+
+  useEffect(() => {
+    if (!tool || CUSTOM_TOOL_SLUGS.has(slug)) return;
+    postEmbedEvent(window.parent, { type: "READY", slug, name: tool.name });
+  }, [slug, tool]);
+
+  useEffect(() => {
+    function onMessage(ev: MessageEvent) {
+      if (!isEmbedCommand(ev.data)) return;
+      const cmd = ev.data;
+      if (cmd.type === "SET_INPUT") {
+        setState((s) => ({
+          ...s,
+          input: cmd.input,
+          input2: cmd.input2 ?? s.input2,
+        }));
+        if (embedConfig.autoRun !== false) {
+          setTimeout(() => void process(), 50);
+        }
+      } else if (cmd.type === "RUN") {
+        void process();
+      } else if (cmd.type === "CLEAR") {
+        setState({ input: "", input2: "", output: "", error: "", options: {} });
+      } else if (cmd.type === "GET_STATE") {
+        const s = stateRef.current;
+        postEmbedEvent(window.parent, {
+          type: "STATE",
+          input: s.input,
+          input2: s.input2 ?? "",
+          output: s.output,
+          error: s.error,
+        });
+      } else if (cmd.type === "CONFIGURE") {
+        setEmbedConfig(cmd.config);
+      }
+    }
+    window.addEventListener("message", onMessage);
+    return () => window.removeEventListener("message", onMessage);
+  }, [embedConfig.autoRun, process]);
 
   useEffect(() => {
     if (CUSTOM_TOOL_SLUGS.has(slug)) return;
     const timer = setTimeout(process, 150);
     return () => clearTimeout(timer);
-  }, [process, slug]);
+  }, [process, slug, state.input, state.input2, state.options]);
 
   if (!tool) {
     return (

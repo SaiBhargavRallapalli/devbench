@@ -4,6 +4,7 @@ import Script from "next/script";
 import "./globals.css";
 import { TOOLS } from "@/lib/tools-registry";
 import LazyCommandPalette from "@/components/LazyCommandPalette";
+import DevbenchClientProviders from "@/components/DevbenchClientProviders";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -175,7 +176,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             DevBench tools require JavaScript to run in your browser. Please enable JS to use them.
           </div>
         </noscript>
-        {children}
+        <DevbenchClientProviders>
+          {children}
+        </DevbenchClientProviders>
         <LazyCommandPalette tools={TOOLS} />
         <ServiceWorkerRegister />
         <Analytics />

@@ -5,7 +5,8 @@
 ## 2026-05-19
 
 ### Changed
-- Enhance JSON input editor with active line tracking and bracket overlay (`52d88e8`)
+- Update CSP configuration, enhance package.json, and improve service worker functionality (`e6d4e38`)
+- Enhance JSON input editor with active line tracking and bracket overlay (`ddd1bf3`)
 - Quote unquoted template variables in JSON parsing (`c01db2c`)
 - Enhance bracket matching visualization in JSON toolkit (`eb13196`)
 - Update vitest configuration and remove middleware (`40aa6c3`)

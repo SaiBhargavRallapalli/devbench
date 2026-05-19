@@ -64,6 +64,24 @@ export default function manifest(): MetadataRoute.Manifest {
         description: "Compare two pieces of text side by side",
         url: "/diff-checker",
       },
+      {
+        name: "Tool Pipelines",
+        short_name: "Flow",
+        description: "Chain tools in one client-side pipeline",
+        url: "/workflows",
+      },
+      {
+        name: "Project Vault",
+        short_name: "Vault",
+        description: "Local drafts and backup bundles",
+        url: "/vault",
+      },
+      {
+        name: "Code Playground",
+        short_name: "Play",
+        description: "JS, TS, Python, Go sandbox",
+        url: "/playground",
+      },
     ],
   };
 }

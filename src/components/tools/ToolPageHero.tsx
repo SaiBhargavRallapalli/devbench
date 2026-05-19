@@ -5,6 +5,7 @@ import { CATEGORIES } from "@/lib/tools-registry";
 import { TOOL_PAGE_CONTENT } from "@/lib/tool-page-content";
 import { getToolConnectivity } from "@/lib/tool-connectivity";
 import ToolConnectivityBadge from "@/components/ToolConnectivityBadge";
+import ToolPageActions from "@/components/ToolPageActions";
 
 export default function ToolPageHero({ tool }: { tool: Tool }) {
   const category = CATEGORIES[tool.category];
@@ -34,6 +35,7 @@ export default function ToolPageHero({ tool }: { tool: Tool }) {
               {category.label}
             </span>
             <ToolConnectivityBadge slug={tool.slug} />
+            <ToolPageActions slug={tool.slug} />
           </div>
           {extraContent ? (
             <p className="mt-3 text-sm text-muted-foreground leading-relaxed max-w-2xl">

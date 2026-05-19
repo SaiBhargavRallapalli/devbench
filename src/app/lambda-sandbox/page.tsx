@@ -212,7 +212,8 @@ export default function LambdaSandboxPage() {
 
   const [running, setRunning] = useState(false);
   const [result, setResult] = useState<LambdaRunResult | null>(null);
-  const [tab, setTab] = useState<"response" | "logs" | "details">("response");
+  const [prevResult, setPrevResult] = useState<LambdaRunResult | null>(null);
+  const [tab, setTab] = useState<"response" | "logs" | "details" | "compare">("response");
 
   // Switch event preset → swap editor contents.
   const onPresetChange = useCallback((id: string) => {
@@ -256,6 +257,7 @@ export default function LambdaSandboxPage() {
     }
 
     setRunning(true);
+    const previousRun = result;
     setResult(null);
 
     const requestId = makeRequestId();
@@ -277,6 +279,7 @@ export default function LambdaSandboxPage() {
           region,
         },
       });
+      if (previousRun) setPrevResult(previousRun);
       setResult(res);
       setTab(res.ok ? "response" : "logs");
       if (res.ok) {
@@ -297,6 +300,7 @@ export default function LambdaSandboxPage() {
     eventText,
     functionName,
     handlerName,
+    result,
     memoryMB,
     presetId,
     region,
@@ -323,17 +327,20 @@ export default function LambdaSandboxPage() {
     setResult(null);
   }, []);
 
-  const responseText = useMemo(() => {
-    if (!result) return "";
-    if (!result.ok) {
+  const formatRunResponse = (r: LambdaRunResult | null) => {
+    if (!r) return "";
+    if (!r.ok) {
       return safeStringify({
-        errorType: result.error.name,
-        errorMessage: result.error.message,
-        stackTrace: result.error.stack?.split("\n") ?? [],
+        errorType: r.error.name,
+        errorMessage: r.error.message,
+        stackTrace: r.error.stack?.split("\n") ?? [],
       });
     }
-    return safeStringify(result.result);
-  }, [result]);
+    return safeStringify(r.result);
+  };
+
+  const responseText = useMemo(() => formatRunResponse(result), [result]);
+  const prevResponseText = useMemo(() => formatRunResponse(prevResult), [prevResult]);
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -612,6 +619,9 @@ export default function LambdaSandboxPage() {
                         ["response", "Response"],
                         ["logs", `Logs${result ? ` (${result.logs.length})` : ""}`],
                         ["details", "Details"],
+                        ...(prevResult && result
+                          ? ([["compare", "Compare runs"]] as const)
+                          : []),
                       ] as const
                     ).map(([id, label]) => (
                       <button
@@ -657,6 +667,19 @@ export default function LambdaSandboxPage() {
 
                   {result && tab === "details" && (
                     <DetailsPanel result={result} memoryMB={memoryMB} />
+                  )}
+
+                  {result && prevResult && tab === "compare" && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-0 divide-y md:divide-y-0 md:divide-x divide-border">
+                      <div className="p-3">
+                        <p className="text-[10px] font-semibold uppercase text-muted-foreground mb-2">Previous</p>
+                        <pre className="text-[12px] font-mono whitespace-pre-wrap break-words">{prevResponseText}</pre>
+                      </div>
+                      <div className="p-3">
+                        <p className="text-[10px] font-semibold uppercase text-muted-foreground mb-2">Current</p>
+                        <pre className="text-[12px] font-mono whitespace-pre-wrap break-words">{responseText}</pre>
+                      </div>
+                    </div>
                   )}
                 </div>
               </section>

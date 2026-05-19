@@ -26,6 +26,7 @@ import {
 } from "@/lib/analytics-events";
 import CustomToolOutlet from "@/components/tools/CustomToolOutlet";
 import ToolConnectivityBadge from "@/components/ToolConnectivityBadge";
+import ToolPageActions from "@/components/ToolPageActions";
 import {
   encodeSharedToolState,
   decodeSharedToolState,
@@ -302,6 +303,12 @@ export default function ToolPage() {
                   {category.label}
                 </span>
                 <ToolConnectivityBadge slug={slug} />
+                <ToolPageActions
+                  slug={slug}
+                  getContent={() => state.input}
+                  getContent2={() => state.input2 ?? ""}
+                  vaultTitle={tool.shortName}
+                />
                 <button
                   type="button"
                   onClick={copyShareLink}

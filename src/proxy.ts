@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { PLAYGROUND_HOST, SITE_URL } from "@/lib/site-config";
+import { BLOG_HOST, PLAYGROUND_HOST, SITE_URL } from "@/lib/site-config";
 
 function requestHost(request: NextRequest): string {
   const raw =
@@ -10,7 +10,7 @@ function requestHost(request: NextRequest): string {
   return raw.split(":")[0].trim().toLowerCase();
 }
 
-function isPlaygroundAssetPath(pathname: string): boolean {
+function isSharedAssetPath(pathname: string): boolean {
   return (
     pathname.startsWith("/_next") ||
     pathname.startsWith("/api") ||
@@ -24,36 +24,50 @@ function isPlaygroundAssetPath(pathname: string): boolean {
 }
 
 /**
- * `playground.devbench.co.in` is a branded entry point: `/` rewrites to the
- * playground route; everything else redirects to the main site so nav and
- * deep links stay on www.
+ * Subdomain routing: playground.devbench.co.in and blog.devbench.co.in.
  */
 export function proxy(request: NextRequest) {
-  if (requestHost(request) !== PLAYGROUND_HOST) {
-    return NextResponse.next();
-  }
-
+  const host = requestHost(request);
   const { pathname, search } = request.nextUrl;
 
-  if (isPlaygroundAssetPath(pathname)) {
+  if (isSharedAssetPath(pathname)) {
     return NextResponse.next();
   }
 
-  if (pathname === "/" || pathname === "") {
-    const url = request.nextUrl.clone();
-    url.pathname = "/playground";
-    return NextResponse.rewrite(url);
+  if (host === PLAYGROUND_HOST) {
+    if (pathname === "/" || pathname === "") {
+      const url = request.nextUrl.clone();
+      url.pathname = "/playground";
+      return NextResponse.rewrite(url);
+    }
+    if (pathname === "/playground" || pathname === "/playground/") {
+      const url = request.nextUrl.clone();
+      url.pathname = "/";
+      url.search = search;
+      return NextResponse.redirect(url, 308);
+    }
+    return NextResponse.redirect(new URL(pathname + search, SITE_URL), 308);
   }
 
-  if (pathname === "/playground" || pathname === "/playground/") {
-    const url = request.nextUrl.clone();
-    url.pathname = "/";
-    url.search = search;
-    return NextResponse.redirect(url, 308);
+  if (host === BLOG_HOST) {
+    if (pathname === "/" || pathname === "") {
+      const url = request.nextUrl.clone();
+      url.pathname = "/blog";
+      return NextResponse.rewrite(url);
+    }
+    if (pathname === "/blog" || pathname === "/blog/") {
+      const url = request.nextUrl.clone();
+      url.pathname = "/";
+      url.search = search;
+      return NextResponse.redirect(url, 308);
+    }
+    if (pathname.startsWith("/blog/")) {
+      return NextResponse.next();
+    }
+    return NextResponse.redirect(new URL(pathname + search, SITE_URL), 308);
   }
 
-  const target = new URL(pathname + search, SITE_URL);
-  return NextResponse.redirect(target, 308);
+  return NextResponse.next();
 }
 
 export const config = {

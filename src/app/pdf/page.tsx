@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import Header from "@/components/Header";
 import PdfToolsHub from "@/components/pdf/PdfToolsHub";
+import PdfBatchPanel from "@/components/pdf/PdfBatchPanel";
 import JsonLd from "@/components/JsonLd";
 import { SITE_URL } from "@/lib/social-metadata";
 import { socialMetadata } from "@/lib/social-metadata";
@@ -31,6 +32,7 @@ export default function PdfWorkspacePage() {
       <main className="flex-1">
         <Suspense fallback={<div className="mx-auto max-w-6xl px-4 py-24 text-center text-sm text-muted-foreground" aria-busy>Loading PDF tools…</div>}>
           <PdfToolsHub />
+          <PdfBatchPanel />
         </Suspense>
       </main>
     </>

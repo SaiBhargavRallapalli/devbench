@@ -18,6 +18,10 @@ function readStdinLine() {
   if (__STDIN_I >= __STDIN_LINES.length) return null;
   return __STDIN_LINES[__STDIN_I++];
 }
+/** Load an npm package from esm.sh (network). Example: const _ = await importEsm("lodash-es"); */
+async function importEsm(spec) {
+  return import("https://esm.sh/" + spec);
+}
 `;
 
   if (nodeShim) {

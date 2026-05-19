@@ -72,6 +72,9 @@ import {
   trackToolError,
   trackToolCopy,
 } from "@/lib/analytics-events";
+import { formatJsonWorkspace } from "@/lib/format-json-workspace";
+import { shouldUseJsonWorker } from "@/lib/json-worker";
+import ToolPageActions from "@/components/ToolPageActions";
 
 const TOOL_SLUG = "json";
 
@@ -1507,6 +1510,7 @@ function TreeContextMenu({
 
 export default function JsonToolkitPage() {
   const [input, setInput] = useState("");
+  const [jsonFormatBusy, setJsonFormatBusy] = useState(false);
   const [output, setOutput] = useState("");
   const [activeTab, setActiveTab] = useState<Tab>("format");
   const [convertTarget, setConvertTarget] = useState<ConvertTarget>("yaml");
@@ -1911,37 +1915,47 @@ export default function JsonToolkitPage() {
     }
   }, [activeTab, input, transformQuery]);
 
-  const handleFormat = useCallback(() => {
+  const handleFormat = useCallback(async () => {
     clearError();
     setFixResult(null);
+    setJsonFormatBusy(true);
     try {
-      const parsed = JSON.parse(input);
-      setOutput(JSON.stringify(parsed, null, 2));
-      trackToolSuccess(TOOL_SLUG, "format");
-    } catch {
-      const err = parseJsonError(input);
-      if (err) {
-        setError(err);
-        setShowErrorPanel(true);
-        trackToolError(TOOL_SLUG, "format", err.message);
+      const result = await formatJsonWorkspace(input, "format");
+      if (result.error) {
+        const err = parseJsonError(input);
+        if (err) {
+          setError(err);
+          setShowErrorPanel(true);
+          trackToolError(TOOL_SLUG, "format", err.message);
+        }
+      } else {
+        setOutput(result.output);
+        trackToolSuccess(TOOL_SLUG, "format", { worker: result.usedWorker ?? false });
       }
+    } finally {
+      setJsonFormatBusy(false);
     }
   }, [input, clearError]);
 
-  const handleMinify = useCallback(() => {
+  const handleMinify = useCallback(async () => {
     clearError();
     setFixResult(null);
+    setJsonFormatBusy(true);
     try {
-      const parsed = JSON.parse(input);
-      setOutput(JSON.stringify(parsed));
-      trackToolSuccess(TOOL_SLUG, "minify");
-    } catch {
-      const err = parseJsonError(input);
-      if (err) {
-        setError(err);
-        setShowErrorPanel(true);
-        trackToolError(TOOL_SLUG, "minify", err.message);
+      const result = await formatJsonWorkspace(input, "minify");
+      if (result.error) {
+        const err = parseJsonError(input);
+        if (err) {
+          setError(err);
+          setShowErrorPanel(true);
+          trackToolError(TOOL_SLUG, "minify", err.message);
+        }
+      } else {
+        setOutput(result.output);
+        trackToolSuccess(TOOL_SLUG, "minify", { worker: result.usedWorker ?? false });
       }
+    } finally {
+      setJsonFormatBusy(false);
     }
   }, [input, clearError]);
 
@@ -2549,8 +2563,21 @@ export default function JsonToolkitPage() {
       <div className="border-b border-border bg-card px-4 py-2 flex flex-wrap items-center gap-1.5 shrink-0">
         {activeTab === "format" && (
           <>
-            <ToolButton onClick={handleFormat} icon={<Braces size={15} />} label="Format" />
-            <ToolButton onClick={handleMinify} icon={<Minimize2 size={15} />} label="Compact" />
+            <ToolButton
+              onClick={() => void handleFormat()}
+              icon={<Braces size={15} />}
+              label={jsonFormatBusy ? "Formatting…" : "Format"}
+            />
+            <ToolButton
+              onClick={() => void handleMinify()}
+              icon={<Minimize2 size={15} />}
+              label={jsonFormatBusy ? "Compacting…" : "Compact"}
+            />
+            {shouldUseJsonWorker(input) && (
+              <span className="text-[10px] text-muted-foreground px-1" title="Large payload — using background worker">
+                Worker
+              </span>
+            )}
             <ToolButton onClick={handleFix} icon={<Wrench size={15} />} label="Fix" variant="warning" />
             <div className="w-px h-5 bg-border mx-0.5" />
             <ToolButton onClick={handleSortKeys} icon={<SortAsc size={15} />} label="Sort Keys" />
@@ -2622,6 +2649,12 @@ export default function JsonToolkitPage() {
           icon={shareCopied ? <Check size={15} /> : <Share2 size={15} />}
           label={shareCopied ? "Link copied" : "Share link"}
           variant={shareCopied ? "success" : "default"}
+        />
+        <ToolPageActions
+          slug="json-formatter"
+          getContent={() => input}
+          getContent2={() => output}
+          vaultTitle="JSON workspace"
         />
         <div
           className="flex items-center gap-1 shrink-0 max-sm:flex-wrap"

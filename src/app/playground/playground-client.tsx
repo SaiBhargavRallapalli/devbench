@@ -10,6 +10,7 @@ import PythonSandboxPanel from "@/components/playground/PythonSandboxPanel";
 import NotebookSandboxPanel from "@/components/playground/NotebookSandboxPanel";
 import GoSandboxPanel from "@/components/playground/GoSandboxPanel";
 import { resolveToolHref } from "@/lib/site-config";
+import { cacheUrlsForOffline, PLAYGROUND_OPTIONAL_URLS } from "@/lib/pwa-optional-cache";
 
 type PlaygroundTab = "javascript" | "typescript" | "nodejs" | "python" | "go" | "notebook";
 
@@ -33,6 +34,10 @@ export default function PlaygroundClient() {
     const obs = new MutationObserver(sync);
     obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
     return () => obs.disconnect();
+  }, []);
+
+  useEffect(() => {
+    cacheUrlsForOffline(PLAYGROUND_OPTIONAL_URLS);
   }, []);
 
   return (

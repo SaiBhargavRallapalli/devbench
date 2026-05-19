@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import Editor, { loader } from "@monaco-editor/react";
-import { Play, Trash2, Loader2, Keyboard } from "lucide-react";
+import { Play, Trash2, Loader2, Keyboard, Share2 } from "lucide-react";
+import { encodePlaygroundShare, decodePlaygroundShare } from "@/lib/playground-share";
 import { PLAYGROUND_MONACO_VS_CDN } from "@/lib/playground/constants";
 import { getSandboxJsSrcdoc } from "@/lib/playground/sandbox-js-srcdoc";
 import { isSandboxChildMessage } from "@/lib/playground/sandbox-js-messages";
@@ -69,6 +70,29 @@ export default function JsTsSandboxPanel({ mode, dark }: { mode: WebPlayMode; da
   useEffect(() => {
     ensureMonacoCdn();
   }, []);
+
+  useEffect(() => {
+    const hash = typeof window !== "undefined" ? window.location.hash : "";
+    const payload = decodePlaygroundShare(hash);
+    if (!payload) return;
+    const lang = payload.lang;
+    if (
+      (mode === "javascript" && lang === "javascript") ||
+      (mode === "typescript" && lang === "typescript") ||
+      (mode === "nodejs" && lang === "nodejs")
+    ) {
+      setCode(payload.code);
+      if (payload.stdin) setStdin(payload.stdin);
+    }
+  }, [mode]);
+
+  function shareSnippet() {
+    const lang =
+      mode === "typescript" ? "typescript" : mode === "nodejs" ? "nodejs" : "javascript";
+    const frag = encodePlaygroundShare({ v: 1, lang, code, stdin });
+    const url = `${window.location.origin}${window.location.pathname}${frag}`;
+    void navigator.clipboard.writeText(url);
+  }
 
   useEffect(() => {
     function onMessage(ev: MessageEvent) {
@@ -189,9 +213,19 @@ export default function JsTsSandboxPanel({ mode, dark }: { mode: WebPlayMode; da
               <Keyboard className="h-3.5 w-3.5 shrink-0" aria-hidden />
               Ctrl+Enter
             </span>
+            <button
+              type="button"
+              onClick={shareSnippet}
+              className="inline-flex items-center gap-1 rounded-lg border border-border px-3 py-2 text-xs text-muted-foreground hover:bg-muted"
+            >
+              <Share2 className="h-3.5 w-3.5" />
+              Copy share link
+            </button>
             <span className="text-xs text-muted-foreground">
               {title}
-              {mode === "nodejs" ? " — readline shim only; npm packages are not installed." : ""}
+              {mode === "nodejs"
+                ? " — readline shim; use importEsm(\"pkg\") for esm.sh CDN."
+                : " — importEsm(\"lodash-es\") loads from esm.sh."}
               {iframeReady ? "" : " - loading sandbox…"}
             </span>
           </>

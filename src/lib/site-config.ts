@@ -6,6 +6,9 @@ export const PLAYGROUND_HOST = "playground.devbench.co.in";
 
 export const PLAYGROUND_ORIGIN = `https://${PLAYGROUND_HOST}`;
 
+/** Subdomain that serves only the blog (same Vercel project). */
+export const BLOG_HOST = "blog.devbench.co.in";
+
 /** Normalised hostname without port (for middleware / server layouts). */
 export function normaliseHost(hostHeader: string | null): string {
   return (hostHeader ?? "").split(":")[0].trim().toLowerCase();

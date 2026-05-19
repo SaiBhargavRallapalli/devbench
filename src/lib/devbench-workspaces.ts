@@ -101,6 +101,22 @@ export const DEVBENCH_WORKSPACES: readonly WorkspaceShortcut[] = [
     description: "Sandboxed JS/TS, Python (Pyodide), and .ipynb code cells — also at playground.devbench.co.in",
     keywords: ["monaco", "typescript", "python", "jupyter", "pyodide", "snippet", "repl", "wasm", "playground.devbench"],
   },
+  {
+    id: "workflows",
+    href: "/workflows",
+    label: "Tool pipelines",
+    shortLabel: "Flow",
+    description: "Chain DevBench tools in one run — JSON to YAML, encode pipelines, and more",
+    keywords: ["pipeline", "workflow", "chain", "automation"],
+  },
+  {
+    id: "vault",
+    href: "/vault",
+    label: "Project vault",
+    shortLabel: "Vault",
+    description: "Save drafts locally in IndexedDB and export .devbench.json bundles",
+    keywords: ["draft", "save", "backup", "indexeddb"],
+  },
 ] as const;
 
 /** Map legacy tool slugs that live on a workspace URL (palette + deep links). */

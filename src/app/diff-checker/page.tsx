@@ -20,12 +20,14 @@ import {
 } from "lucide-react";
 import Header from "@/components/Header";
 import { trackToolSuccess } from "@/lib/analytics-events";
+import ThreeWayMergePanel from "@/components/diff/ThreeWayMergePanel";
 
 const TOOL_SLUG = "diff-checker";
 
 // ─── Types ──────────────────────────────────────────────────────────────
 
 type ViewMode = "side-by-side" | "unified" | "inline";
+type CompareMode = "2-way" | "3-way";
 
 interface DiffOptions {
   ignoreWhitespace: boolean;
@@ -365,6 +367,9 @@ function pairChangedLines(lines: DiffLine[]): DiffLine[][] {
 export default function DiffCheckerPage() {
   const [original, setOriginal] = useState("");
   const [modified, setModified] = useState("");
+  const [base, setBase] = useState("");
+  const [compareMode, setCompareMode] = useState<CompareMode>("2-way");
+  const [threeWayShown, setThreeWayShown] = useState(false);
   const [diffResult, setDiffResult] = useState<DiffLine[] | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>("side-by-side");
   const [options, setOptions] = useState<DiffOptions>({
@@ -380,11 +385,18 @@ export default function DiffCheckerPage() {
   const rightFileRef = useRef<HTMLInputElement>(null);
 
   const handleFindDiff = useCallback(() => {
+    if (compareMode === "3-way") {
+      setDiffResult(null);
+      setThreeWayShown(true);
+      trackToolSuccess(TOOL_SLUG, "compare-3way");
+      return;
+    }
+    setThreeWayShown(false);
     const lines = computeLineDiff(original, modified, options);
     setDiffResult(lines);
     const changes = lines.filter((l) => l.type !== "unchanged").length;
     trackToolSuccess(TOOL_SLUG, "compare", { changes });
-  }, [original, modified, options]);
+  }, [original, modified, options, compareMode]);
 
   const handleSwap = useCallback(() => {
     setOriginal(modified);
@@ -490,8 +502,48 @@ export default function DiffCheckerPage() {
           </div>
         </div>
 
+        <div className="flex flex-wrap gap-2 animate-slide-up">
+          <button
+            type="button"
+            onClick={() => {
+              setCompareMode("2-way");
+              setThreeWayShown(false);
+            }}
+            className={`rounded-lg px-3 py-1.5 text-xs font-medium ${compareMode === "2-way" ? "bg-accent text-accent-foreground" : "border border-border text-muted-foreground"}`}
+          >
+            2-way diff
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setCompareMode("3-way");
+              setDiffResult(null);
+            }}
+            className={`rounded-lg px-3 py-1.5 text-xs font-medium ${compareMode === "3-way" ? "bg-accent text-accent-foreground" : "border border-border text-muted-foreground"}`}
+          >
+            3-way merge view
+          </button>
+        </div>
+
         {/* Input textareas */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 animate-slide-up">
+        <div className={`grid grid-cols-1 gap-4 animate-slide-up ${compareMode === "3-way" ? "lg:grid-cols-3" : "lg:grid-cols-2"}`}>
+          {compareMode === "3-way" && (
+            <div className="rounded-xl border border-border bg-card overflow-hidden">
+              <div className="px-4 py-2.5 border-b border-border bg-muted/30">
+                <span className="text-sm font-semibold">Base (ancestor)</span>
+              </div>
+              <textarea
+                value={base}
+                onChange={(e) => {
+                  setBase(e.target.value);
+                  setThreeWayShown(false);
+                }}
+                placeholder="Common ancestor text…"
+                className="w-full h-64 lg:h-80 p-4 bg-card font-mono text-sm resize-none focus:outline-none"
+                spellCheck={false}
+              />
+            </div>
+          )}
           {/* Left: Original */}
           <div className="rounded-xl border border-border bg-card overflow-hidden">
             <div className="flex items-center justify-between px-4 py-2.5 border-b border-border bg-muted/30">
@@ -757,8 +809,12 @@ export default function DiffCheckerPage() {
           </div>
         )}
 
+        {compareMode === "3-way" && threeWayShown && (
+          <ThreeWayMergePanel base={base} left={original} right={modified} />
+        )}
+
         {/* Empty state */}
-        {!diffResult && (
+        {!diffResult && !threeWayShown && (
           <div className="rounded-xl border border-border border-dashed bg-card/50 p-12 text-center animate-fade-in">
             <FileText className="h-10 w-10 mx-auto text-muted-foreground/40 mb-3" />
             <p className="text-sm text-muted-foreground">

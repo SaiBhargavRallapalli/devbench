@@ -2,6 +2,7 @@ import { Shield, Zap, Globe, Sparkles } from "lucide-react";
 import { TOOLS } from "@/lib/tools-registry";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import FavoritesBar from "@/components/FavoritesBar";
 import ToolSearch from "@/components/ToolSearch";
 import JsonLd from "@/components/JsonLd";
 import TrackedAffiliateLink from "@/components/TrackedAffiliateLink";
@@ -45,6 +46,7 @@ export default function HomePage() {
   return (
     <>
       <Header />
+      <FavoritesBar />
       <main id="main" className="flex-1">
         {/* Hero — server-rendered for fast LCP */}
         <section className="relative overflow-hidden border-b border-border">

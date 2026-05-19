@@ -25,9 +25,12 @@ import {
   PlugZap,
   Share2,
   Workflow,
+  FileUp,
 } from "lucide-react";
 import { io, type Socket as IoSocket } from "socket.io-client";
 import Header from "@/components/Header";
+import ApiImportPanel, { type ApiImportApply } from "@/components/ApiImportPanel";
+import type { ImportedRequest } from "@/lib/api-import";
 import {
   trackToolSuccess,
   trackToolError,
@@ -325,6 +328,7 @@ export default function ApiTesterPage() {
 
   // History
   const [history, setHistory] = useState<{ method: HttpMethod; url: string; status: number; time: number }[]>([]);
+  const [showImport, setShowImport] = useState(false);
   const [showMethodMenu, setShowMethodMenu] = useState(false);
   const methodRef = useRef<HTMLDivElement>(null);
 
@@ -380,6 +384,25 @@ export default function ApiTesterPage() {
 
   const pushWsLog = useCallback((kind: WsLogEntry["kind"], text: string) => {
     setWsLog((prev) => [...prev, { id: uid(), t: Date.now(), kind, text }]);
+  }, []);
+
+  const applyImportedRequest: ApiImportApply = useCallback((req: ImportedRequest) => {
+    setTransportMode("http");
+    setMethod(req.method as HttpMethod);
+    setUrl(req.url);
+    if (req.body) {
+      setBodyContent(req.body);
+      setBodyType(req.bodyType === "json" ? "json" : req.bodyType === "raw" ? "raw" : "none");
+    }
+    const headerPairs: KVPair[] = Object.entries(req.headers).map(([key, value]) => ({
+      key,
+      value,
+      enabled: true,
+      id: uid(),
+    }));
+    if (headerPairs.length) setCustomHeaders([...headerPairs, emptyKV()]);
+    setResponse(null);
+    setResError("");
   }, []);
 
   useEffect(() => {
@@ -886,10 +909,23 @@ export default function ApiTesterPage() {
           </button>
         </div>
 
+        {showImport && (
+          <ApiImportPanel onApply={applyImportedRequest} onClose={() => setShowImport(false)} />
+        )}
+
         {/* ── URL bar ───────────────────────────────────────────────── */}
         <div className="flex gap-2 animate-slide-up flex-wrap">
           {transportMode === "http" && (
             <>
+              <button
+                type="button"
+                onClick={() => setShowImport(true)}
+                className="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-lg border border-border bg-card text-xs font-medium text-muted-foreground hover:bg-muted shrink-0"
+                title="Import HAR, cURL, OpenAPI, or Postman"
+              >
+                <FileUp className="w-4 h-4" />
+                Import
+              </button>
               <div className="relative" ref={methodRef}>
                 <button
                   onClick={() => setShowMethodMenu(!showMethodMenu)}
