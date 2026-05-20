@@ -151,6 +151,23 @@ function parseJsonError(input: string): JsonError | null {
   }
 }
 
+/** Normalize invalid JSON escape sequences (\\x, \\u{}, \\—, etc.). */
+function fixInvalidJsonEscapes(text: string): string {
+  let t = text;
+  t = t.replace(/\\x([0-9a-fA-F]{2})/g, (_, h) => `\\u00${h}`);
+  t = t.replace(/\\u\{([0-9a-fA-F]{1,5})\}/g, (_, hex) => {
+    const code = parseInt(hex, 16);
+    if (code <= 0xffff) return `\\u${code.toString(16).padStart(4, "0")}`;
+    const shifted = code - 0x10000;
+    const high = 0xd800 + (shifted >> 10);
+    const low = 0xdc00 + (shifted & 0x3ff);
+    return `\\u${high.toString(16)}\\u${low.toString(16)}`;
+  });
+  t = t.replace(/\\u(?![0-9a-fA-F]{4})/g, "\\\\u");
+  t = t.replace(/\\(?!["\\/bfnrtu])/g, "\\\\");
+  return t;
+}
+
 /** Strip BOM, trim, unwrap `"{\n  \"a\": 1\n}"` style stringified JSON (up to 3 layers). */
 function unwrapStringifiedJsonLayers(raw: string): { text: string; fixes: string[] } {
   const fixes: string[] = [];
@@ -171,22 +188,191 @@ function unwrapStringifiedJsonLayers(raw: string): { text: string; fixes: string
     try {
       const inner = JSON.parse(s) as unknown;
       if (typeof inner !== "string") break;
-      try {
-        JSON.parse(inner);
-        t = inner;
-        fixes.push(
-          layer === 0
-            ? "Unwrapped stringified JSON (document was stored as a JSON string)"
-            : "Unwrapped another JSON string layer",
-        );
-      } catch {
-        break;
+      let candidate = inner;
+      let innerEscapesFixed = false;
+      let unwrappedLayer = false;
+      for (let attempt = 0; attempt < 4; attempt++) {
+        try {
+          JSON.parse(candidate);
+          t = candidate;
+          unwrappedLayer = true;
+          fixes.push(
+            layer === 0
+              ? "Unwrapped stringified JSON (document was stored as a JSON string)"
+              : "Unwrapped another JSON string layer",
+          );
+          if (innerEscapesFixed) {
+            fixes.push("Fixed invalid escape sequences inside a stringified JSON layer");
+          }
+          break;
+        } catch {
+          const refixed = fixInvalidJsonEscapes(candidate);
+          if (refixed === candidate) break;
+          candidate = refixed;
+          innerEscapesFixed = true;
+        }
       }
+      if (!unwrappedLayer) break;
     } catch {
       break;
     }
   }
   return { text: t, fixes };
+}
+
+/** Replace Python-style single-quoted strings only outside JSON double-quoted strings. */
+function replaceSingleQuotesOutsideStrings(raw: string): { text: string; fixed: boolean } {
+  const pattern = /(?<=[\[{,:\s])(\s*)'((?:[^'\\]|\\.)*)'(\s*)(?=[,\]}\s:])/;
+  let out = "";
+  let i = 0;
+  let fixed = false;
+  let inString = false;
+  let escape = false;
+
+  while (i < raw.length) {
+    const ch = raw[i];
+    if (inString) {
+      out += ch;
+      if (escape) escape = false;
+      else if (ch === "\\") escape = true;
+      else if (ch === '"') inString = false;
+      i++;
+      continue;
+    }
+    if (ch === '"') {
+      inString = true;
+      out += ch;
+      i++;
+      continue;
+    }
+    const rest = raw.slice(i);
+    const m = rest.match(pattern);
+    if (m && m.index === 0) {
+      out += `${m[1]}"${m[2]}"${m[3]}`;
+      i += m[0].length;
+      fixed = true;
+      continue;
+    }
+    out += ch;
+    i++;
+  }
+  return { text: out, fixed };
+}
+
+/** Read a JavaScript double-quoted string starting at or after `start` (leading whitespace skipped). */
+function readJsDoubleQuotedString(
+  s: string,
+  start: number,
+): { value: string; end: number } | null {
+  let i = start;
+  while (i < s.length && /\s/.test(s[i])) i++;
+  if (s[i] !== '"') return null;
+  i++;
+  let value = "";
+  while (i < s.length) {
+    const ch = s[i];
+    if (ch === '"') return { value, end: i + 1 };
+    if (ch === "\\") {
+      i++;
+      if (i >= s.length) return null;
+      const esc = s[i];
+      switch (esc) {
+        case '"':
+        case "\\":
+        case "/":
+          value += esc;
+          break;
+        case "n":
+          value += "\n";
+          break;
+        case "r":
+          value += "\r";
+          break;
+        case "t":
+          value += "\t";
+          break;
+        case "b":
+          value += "\b";
+          break;
+        case "f":
+          value += "\f";
+          break;
+        case "u": {
+          if (i + 4 >= s.length) return null;
+          const hex = s.slice(i + 1, i + 5);
+          if (!/^[0-9a-fA-F]{4}$/.test(hex)) return null;
+          value += String.fromCharCode(parseInt(hex, 16));
+          i += 4;
+          break;
+        }
+        case "x": {
+          if (i + 2 >= s.length) return null;
+          const hex = s.slice(i + 1, i + 3);
+          if (!/^[0-9a-fA-F]{2}$/.test(hex)) return null;
+          value += String.fromCharCode(parseInt(hex, 16));
+          i += 2;
+          break;
+        }
+        default:
+          value += esc;
+      }
+      i++;
+      continue;
+    }
+    value += ch;
+    i++;
+  }
+  return null;
+}
+
+/**
+ * Strip leading `+` and join `"a" + "b"` fragments copied from JavaScript source
+ * (e.g. `+ "{\"resp\": true}"` or chunked JSON string builds).
+ */
+function unwrapJsStringConcatenation(raw: string): { text: string; fixes: string[] } {
+  const fixes: string[] = [];
+  let text = raw.trim();
+
+  const leadingPlus = /^\+\s*/.exec(text);
+  if (leadingPlus) {
+    text = text.slice(leadingPlus[0].length).trimStart();
+    fixes.push("Removed leading + from JavaScript string concatenation");
+  }
+
+  const parts: string[] = [];
+  let pos = 0;
+  while (pos <= text.length) {
+    const tail = text.slice(pos).trimStart();
+    if (!tail) break;
+    pos = text.length - tail.length;
+    const parsed = readJsDoubleQuotedString(text, pos);
+    if (!parsed) break;
+    parts.push(parsed.value);
+    pos = parsed.end;
+    const after = text.slice(pos).trimStart();
+    if (!after) {
+      pos = text.length;
+      break;
+    }
+    if (after[0] !== "+") break;
+    pos = text.length - after.length + 1;
+    while (pos < text.length && /\s/.test(text[pos])) pos++;
+  }
+
+  const remainder = text.slice(pos).trim();
+  if (parts.length > 0 && !remainder) {
+    const joined = parts.join("");
+    if (joined !== text) {
+      if (parts.length > 1) {
+        fixes.push(`Joined ${parts.length} JavaScript string literals`);
+      } else if (!fixes.some((f) => f.includes("leading +"))) {
+        fixes.push("Unwrapped JavaScript string literal");
+      }
+      text = joined;
+    }
+  }
+
+  return { text, fixes };
 }
 
 /** Removes line and block comments (// and slash-star pairs) outside JSON strings. */
@@ -336,21 +522,15 @@ function fixCommonMistakes(input: string): FixResult {
     fixes.push("Replaced curly/smart quotes (“”‘’) with straight ASCII quotes");
   }
 
+  const jsConcat = unwrapJsStringConcatenation(text);
+  if (jsConcat.fixes.length) {
+    fixes.push(...jsConcat.fixes);
+    text = jsConcat.text;
+  }
+
   // Fix escape sequences FIRST so that stringified-JSON layers can be parsed below.
-  // Order matters: \x → \u00xx, \u{xxxx} → \uXXXX, partial \u → escaped, then any
-  // remaining bad backslash (e.g. \— \★ \₹) → doubled.
   const escapeBefore = text;
-  text = text.replace(/\\x([0-9a-fA-F]{2})/g, (_, h) => `\\u00${h}`);
-  text = text.replace(/\\u\{([0-9a-fA-F]{1,5})\}/g, (_, hex) => {
-    const code = parseInt(hex, 16);
-    if (code <= 0xffff) return `\\u${code.toString(16).padStart(4, "0")}`;
-    const shifted = code - 0x10000;
-    const high = 0xd800 + (shifted >> 10);
-    const low = 0xdc00 + (shifted & 0x3ff);
-    return `\\u${high.toString(16)}\\u${low.toString(16)}`;
-  });
-  text = text.replace(/\\u(?![0-9a-fA-F]{4})/g, "\\\\u");
-  text = text.replace(/\\(?!["\\/bfnrtu])/g, "\\\\");
+  text = fixInvalidJsonEscapes(text);
   if (text !== escapeBefore) {
     fixes.push("Fixed invalid escape sequences (\\x, \\u{}, partial \\u, non-standard backslash)");
   }
@@ -403,12 +583,10 @@ function fixCommonMistakes(input: string): FixResult {
   }
 
   const singleQuoteBefore = text;
-  text = text.replace(
-    /(?<=[\[{,:\s])(\s*)'((?:[^'\\]|\\.)*)'(\s*)(?=[,\]}\s:])/g,
-    '$1"$2"$3'
-  );
-  if (text !== singleQuoteBefore) {
-    fixes.push("Replaced single quotes with double quotes");
+  const singleQuoteResult = replaceSingleQuotesOutsideStrings(text);
+  if (singleQuoteResult.fixed) {
+    fixes.push("Replaced single quotes with double quotes (outside string values only)");
+    text = singleQuoteResult.text;
   }
 
   const unquotedKeysBefore = text;

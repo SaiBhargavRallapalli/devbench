@@ -4,8 +4,11 @@
 
 ## 2026-05-20
 
+### Added
+- Add functions to handle invalid JSON escape sequences and JavaScript string concatenation (`9d26b2a`)
+
 ### Changed
-- Refactor RegexTesterTool to improve result handling and performance (`0cbc0ce`)
+- Refactor RegexTesterTool to improve result handling and performance (`83c1d47`)
 - Enhance performance metrics and accessibility checks in Lighthouse configuration (`53cc767`)
 - Refactor form components to improve accessibility and usability (`d7c47ce`)
 - Integrate bundle analyzer and enhance build scripts (`859d7f4`)
