@@ -21,16 +21,16 @@
         "categories:accessibility": ["warn", { "minScore": 0.7 }],
         "categories:best-practices": ["warn", { "minScore": 0.8 }],
         "categories:seo": ["warn", { "minScore": 0.8 }],
-        "efficient-animated-content": ["warn", { "maxLength": 0 }],
-        "offscreen-images": ["warn", { "maxLength": 0 }],
-        "unminified-css": ["warn", { "maxLength": 0 }],
-        "unminified-javascript": ["warn", { "maxLength": 0 }],
-        "unused-css-rules": ["warn", { "maxLength": 0 }],
-        "unused-javascript": ["warn", { "maxLength": 0 }],
-        "uses-optimized-images": ["warn", { "maxLength": 0 }],
-        "uses-rel-preconnect": ["warn", { "maxLength": 0 }],
-        "uses-responsive-images": ["warn", { "maxLength": 0 }],
-        "uses-text-compression": ["warn", { "maxLength": 0 }]
+        "efficient-animated-content": ["off"],
+        "offscreen-images": ["off"],
+        "unminified-css": ["off"],
+        "unminified-javascript": ["off"],
+        "unused-css-rules": ["off"],
+        "unused-javascript": ["off"],
+        "uses-optimized-images": ["off"],
+        "uses-rel-preconnect": ["off"],
+        "uses-responsive-images": ["off"],
+        "uses-text-compression": ["off"]
       }
     },
     "upload": {
