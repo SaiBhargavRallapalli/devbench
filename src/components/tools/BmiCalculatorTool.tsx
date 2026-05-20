@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useId, useState } from "react";
 import type { Tool } from "@/lib/tools-registry";
 import ToolPageHero from "@/components/tools/ToolPageHero";
 
@@ -14,6 +14,8 @@ function band(bmi: number): string {
 export default function BmiCalculatorTool({ tool }: { tool: Tool }) {
   const [weightKg, setWeightKg] = useState("70");
   const [heightCm, setHeightCm] = useState("175");
+  const idWeight = useId();
+  const idHeight = useId();
 
   const result = useMemo(() => {
     const w = parseFloat(weightKg);
@@ -31,8 +33,9 @@ export default function BmiCalculatorTool({ tool }: { tool: Tool }) {
       <div className="animate-slide-up space-y-6 rounded-2xl border border-border bg-card p-6">
         <div className="grid max-w-md gap-4 sm:grid-cols-2">
           <div>
-            <label className="mb-2 block text-sm font-medium">Weight (kg)</label>
+            <label htmlFor={idWeight} className="mb-2 block text-sm font-medium">Weight (kg)</label>
             <input
+              id={idWeight}
               type="number"
               min={1}
               step={0.1}
@@ -42,8 +45,9 @@ export default function BmiCalculatorTool({ tool }: { tool: Tool }) {
             />
           </div>
           <div>
-            <label className="mb-2 block text-sm font-medium">Height (cm)</label>
+            <label htmlFor={idHeight} className="mb-2 block text-sm font-medium">Height (cm)</label>
             <input
+              id={idHeight}
               type="number"
               min={50}
               step={0.1}

@@ -5,8 +5,15 @@
 ## 2026-05-20
 
 ### Changed
-- Integrate bundle analyzer and enhance build scripts (`bae3d00`)
+- Refactor form components to improve accessibility and usability (`08ac126`)
+- Integrate bundle analyzer and enhance build scripts (`859d7f4`)
 - Enhance sitemap and blog metadata handling (`5dc4d1b`)
+
+### Chore
+- bump @types/jszip from 3.4.0 to 3.4.1 (`9234a64`)
+- bump @tailwindcss/postcss from 4.2.4 to 4.3.0 (`9deeccd`)
+- bump jsdom from 26.1.0 to 29.1.1 (`62e02a8`)
+- bump tailwindcss from 4.2.4 to 4.3.0 (`ca2bed7`)
 
 ## 2026-05-19
 
@@ -40,9 +47,7 @@
 
 ### Chore
 - bump @codemirror/view from 6.41.1 to 6.43.0 (`2c6a2c5`)
-- bump jsdom from 26.1.0 to 29.1.1 (`0cf8b3a`)
 - bump react from 19.2.4 to 19.2.6 (`6cf7550`)
-- bump tailwindcss from 4.2.4 to 4.3.0 (`07542cb`)
 
 ## 2026-05-16
 
@@ -110,11 +115,9 @@
 - AWS lambda sandbox module (`76da173`)
 
 ### Chore
-- bump @types/jszip from 3.4.0 to 3.4.1 (`fe0d9cf`)
 - bump react-dom from 19.2.4 to 19.2.6 (`731c8f1`)
 - bump semver from 7.7.4 to 7.8.0 (`ba36bb4`)
 - bump @types/diff from 7.0.2 to 8.0.0 (`3d0003f`)
-- bump @tailwindcss/postcss from 4.2.4 to 4.3.0 (`378c5bd`)
 
 ### Docs
 - update contributing guidelines and project documentation (`30dcd98`)

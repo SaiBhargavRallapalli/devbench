@@ -7,7 +7,7 @@
       "url": [
         "http://localhost:3000/",
         "http://localhost:3000/json",
-        "http://localhost:3000/base64"
+        "http://localhost:3000/tools/base64-encode"
       ],
       "numberOfRuns": 1,
       "settings": {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useId, useState } from "react";
 import type { Tool } from "@/lib/tools-registry";
 import ToolPageHero from "@/components/tools/ToolPageHero";
 
@@ -8,6 +8,9 @@ export default function LoanEmiTool({ tool }: { tool: Tool }) {
   const [principal, setPrincipal] = useState("500000");
   const [annualPct, setAnnualPct] = useState("8.5");
   const [months, setMonths] = useState("240");
+  const idPrincipal = useId();
+  const idAnnualPct = useId();
+  const idMonths = useId();
 
   const out = useMemo(() => {
     const P = parseFloat(principal);
@@ -33,8 +36,9 @@ export default function LoanEmiTool({ tool }: { tool: Tool }) {
       <div className="animate-slide-up space-y-6 rounded-2xl border border-border bg-card p-6">
         <div className="grid gap-4 sm:grid-cols-3">
           <div>
-            <label className="mb-2 block text-sm font-medium">Loan amount</label>
+            <label htmlFor={idPrincipal} className="mb-2 block text-sm font-medium">Loan amount</label>
             <input
+              id={idPrincipal}
               type="number"
               value={principal}
               onChange={(e) => setPrincipal(e.target.value)}
@@ -42,8 +46,9 @@ export default function LoanEmiTool({ tool }: { tool: Tool }) {
             />
           </div>
           <div>
-            <label className="mb-2 block text-sm font-medium">Annual interest (%)</label>
+            <label htmlFor={idAnnualPct} className="mb-2 block text-sm font-medium">Annual interest (%)</label>
             <input
+              id={idAnnualPct}
               type="number"
               step={0.01}
               value={annualPct}
@@ -52,8 +57,9 @@ export default function LoanEmiTool({ tool }: { tool: Tool }) {
             />
           </div>
           <div>
-            <label className="mb-2 block text-sm font-medium">Tenure (months)</label>
+            <label htmlFor={idMonths} className="mb-2 block text-sm font-medium">Tenure (months)</label>
             <input
+              id={idMonths}
               type="number"
               value={months}
               onChange={(e) => setMonths(e.target.value)}

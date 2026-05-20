@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { cloneElement, isValidElement, useId, useMemo, useState } from "react";
 import type { Tool } from "@/lib/tools-registry";
 import ToolPageHero from "@/components/tools/ToolPageHero";
 
@@ -19,11 +19,14 @@ function Field({
   hint?: string;
   children: React.ReactNode;
 }) {
+  const id = useId();
   return (
     <div>
-      <label className="mb-1.5 block text-sm font-medium">{label}</label>
+      <label htmlFor={id} className="mb-1.5 block text-sm font-medium">{label}</label>
       {hint && <p className="mb-1.5 text-xs text-muted-foreground">{hint}</p>}
-      {children}
+      {isValidElement(children)
+        ? cloneElement(children as React.ReactElement<{ id?: string }>, { id })
+        : children}
     </div>
   );
 }

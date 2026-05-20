@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useId, useState } from "react";
 import type { Tool } from "@/lib/tools-registry";
 import ToolPageHero from "@/components/tools/ToolPageHero";
 
@@ -9,6 +9,10 @@ export default function CompoundInterestTool({ tool }: { tool: Tool }) {
   const [annualPct, setAnnualPct] = useState("5.5");
   const [years, setYears] = useState("10");
   const [nPerYear, setNPerYear] = useState("12");
+  const idPrincipal = useId();
+  const idAnnualPct = useId();
+  const idYears = useId();
+  const idNPerYear = useId();
 
   const out = useMemo(() => {
     const P = parseFloat(principal);
@@ -30,8 +34,9 @@ export default function CompoundInterestTool({ tool }: { tool: Tool }) {
       <div className="animate-slide-up space-y-6 rounded-2xl border border-border bg-card p-6">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div>
-            <label className="mb-2 block text-sm font-medium">Principal</label>
+            <label htmlFor={idPrincipal} className="mb-2 block text-sm font-medium">Principal</label>
             <input
+              id={idPrincipal}
               type="number"
               value={principal}
               onChange={(e) => setPrincipal(e.target.value)}
@@ -39,8 +44,9 @@ export default function CompoundInterestTool({ tool }: { tool: Tool }) {
             />
           </div>
           <div>
-            <label className="mb-2 block text-sm font-medium">Annual rate (%)</label>
+            <label htmlFor={idAnnualPct} className="mb-2 block text-sm font-medium">Annual rate (%)</label>
             <input
+              id={idAnnualPct}
               type="number"
               step={0.01}
               value={annualPct}
@@ -49,8 +55,9 @@ export default function CompoundInterestTool({ tool }: { tool: Tool }) {
             />
           </div>
           <div>
-            <label className="mb-2 block text-sm font-medium">Years</label>
+            <label htmlFor={idYears} className="mb-2 block text-sm font-medium">Years</label>
             <input
+              id={idYears}
               type="number"
               step={0.25}
               value={years}
@@ -59,8 +66,9 @@ export default function CompoundInterestTool({ tool }: { tool: Tool }) {
             />
           </div>
           <div>
-            <label className="mb-2 block text-sm font-medium">Compounds / year</label>
+            <label htmlFor={idNPerYear} className="mb-2 block text-sm font-medium">Compounds / year</label>
             <select
+              id={idNPerYear}
               value={nPerYear}
               onChange={(e) => setNPerYear(e.target.value)}
               className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm"

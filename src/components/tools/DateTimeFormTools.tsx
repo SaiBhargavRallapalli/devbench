@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import { cloneElement, isValidElement, useId, useMemo, useState, useEffect } from "react";
 import type { Tool } from "@/lib/tools-registry";
 import ToolPageHero from "@/components/tools/ToolPageHero";
 
@@ -10,11 +10,14 @@ const sel =
   "w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring/40";
 
 function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
+  const id = useId();
   return (
     <div>
-      <label className="mb-1.5 block text-sm font-medium">{label}</label>
+      <label htmlFor={id} className="mb-1.5 block text-sm font-medium">{label}</label>
       {hint && <p className="mb-1.5 text-xs text-muted-foreground">{hint}</p>}
-      {children}
+      {isValidElement(children)
+        ? cloneElement(children as React.ReactElement<{ id?: string }>, { id })
+        : children}
     </div>
   );
 }
