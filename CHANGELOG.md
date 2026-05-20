@@ -5,7 +5,8 @@
 ## 2026-05-20
 
 ### Changed
-- Enhance performance metrics and accessibility checks in Lighthouse configuration (`0742056`)
+- Refactor RegexTesterTool to improve result handling and performance (`0cbc0ce`)
+- Enhance performance metrics and accessibility checks in Lighthouse configuration (`53cc767`)
 - Refactor form components to improve accessibility and usability (`d7c47ce`)
 - Integrate bundle analyzer and enhance build scripts (`859d7f4`)
 - Enhance sitemap and blog metadata handling (`5dc4d1b`)

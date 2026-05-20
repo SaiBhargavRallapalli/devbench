@@ -568,10 +568,25 @@ export default function RegexTesterTool({ tool }: { tool: Tool }) {
 
   const flagStr = Array.from(flags).join("");
 
+  const emptyResult = useMemo<RegexRunResult>(
+    () => ({
+      id: 0,
+      error: null,
+      matches: [],
+      highlighted: escHtml(testStr),
+      substituted: testStr,
+      count: 0,
+      truncated: false,
+    }),
+    [testStr],
+  );
+
   const [result, setResult] = useState<RegexRunResult>(() => ({
     id: 0, error: null, matches: [], highlighted: escHtml(testStr), substituted: testStr, count: 0, truncated: false,
   }));
   const [regexRunning, setRegexRunning] = useState(false);
+  const displayResult = pattern ? result : emptyResult;
+  const showRegexRunning = Boolean(pattern && regexRunning);
 
   // Run regex in an isolated Web Worker — prevents catastrophic backtracking
   // from freezing the main thread (ReDoS). Worker is terminated after 3 seconds.
@@ -579,12 +594,11 @@ export default function RegexTesterTool({ tool }: { tool: Tool }) {
   // cancels independently — a shared ref would be reset by the next effect before
   // a previous async result can check it.
   useEffect(() => {
-    if (!pattern) {
-      setResult({ id: 0, error: null, matches: [], highlighted: escHtml(testStr), substituted: testStr, count: 0, truncated: false });
-      return;
-    }
+    if (!pattern) return;
     let cancelled = false;
-    setRegexRunning(true);
+    void Promise.resolve().then(() => {
+      if (!cancelled) setRegexRunning(true);
+    });
     runRegex({ pattern, flags: flagStr, testStr, replacement, matchColors: MATCH_COLORS }).then((r) => {
       if (cancelled) return;
       setResult(r);
@@ -595,13 +609,12 @@ export default function RegexTesterTool({ tool }: { tool: Tool }) {
       setRegexRunning(false);
     });
     return () => { cancelled = true; };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pattern, flagStr, testStr, replacement]);
 
   const explanation = useMemo(() => {
-    if (!pattern || result.error) return [];
+    if (!pattern || displayResult.error) return [];
     try { return explainRegex(pattern); } catch { return []; }
-  }, [pattern, result.error]);
+  }, [pattern, displayResult.error]);
 
   const code = useMemo(
     () => generateCode(pattern, flagStr, replacement, codeLang),
@@ -657,7 +670,7 @@ export default function RegexTesterTool({ tool }: { tool: Tool }) {
           </div>
 
           {/* Regex explanation */}
-          {explanation.length > 0 && !result.error && (
+          {explanation.length > 0 && !displayResult.error && (
             <div className="px-4 py-2 border-t border-border bg-muted/20 flex flex-wrap gap-x-1 gap-y-1.5 font-mono text-sm">
               {explanation.map((tok, i) => (
                 <span
@@ -674,9 +687,9 @@ export default function RegexTesterTool({ tool }: { tool: Tool }) {
             </div>
           )}
 
-          {result.error && (
+          {displayResult.error && (
             <div className="px-4 py-2 text-xs text-destructive border-t border-border bg-destructive/5 font-mono">
-              ⚠ {result.error}
+              ⚠ {displayResult.error}
             </div>
           )}
         </div>
@@ -691,10 +704,10 @@ export default function RegexTesterTool({ tool }: { tool: Tool }) {
               <div className="flex items-center justify-between px-3 py-1.5 border-b border-border bg-muted/50">
                 <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Test String</span>
                 <span className="text-xs font-mono">
-                  {regexRunning ? (
+                  {showRegexRunning ? (
                     <span className="text-muted-foreground animate-pulse">running…</span>
-                  ) : result.count > 0 ? (
-                    <span className="text-accent font-bold">{result.count} match{result.count !== 1 ? "es" : ""}</span>
+                  ) : displayResult.count > 0 ? (
+                    <span className="text-accent font-bold">{displayResult.count} match{displayResult.count !== 1 ? "es" : ""}</span>
                   ) : pattern ? (
                     <span className="text-muted-foreground">no matches</span>
                   ) : null}
@@ -715,11 +728,11 @@ export default function RegexTesterTool({ tool }: { tool: Tool }) {
                 <div className="px-3 py-1.5 border-b border-border bg-muted/50 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                   Match Highlights
                 </div>
-                {/* Safe: result.highlighted is built using escHtml() for all user text;
+                {/* Safe: displayResult.highlighted is built using escHtml() for all user text;
                     only <mark> tags with static class/title attributes are injected. lgtm[js/xss] */}
                 <div
                   className="p-4 font-mono text-sm whitespace-pre-wrap leading-relaxed select-none"
-                  dangerouslySetInnerHTML={{ __html: result.highlighted }} // CodeQL[js/xss]
+                  dangerouslySetInnerHTML={{ __html: displayResult.highlighted }} // CodeQL[js/xss]
                 />
               </div>
             )}
@@ -739,7 +752,7 @@ export default function RegexTesterTool({ tool }: { tool: Tool }) {
                     }`}
                   >
                     {tab === "code" && <Code2 className="w-3.5 h-3.5" />}
-                    {tab === "matches" ? `Matches (${result.count})` : tab === "substitution" ? "Substitution" : "Code Generator"}
+                    {tab === "matches" ? `Matches (${displayResult.count})` : tab === "substitution" ? "Substitution" : "Code Generator"}
                   </button>
                 ))}
               </div>
@@ -747,18 +760,18 @@ export default function RegexTesterTool({ tool }: { tool: Tool }) {
               {/* Matches panel */}
               {activeSection === "matches" && (
                 <div>
-                  {result.matches.length === 0 ? (
+                  {displayResult.matches.length === 0 ? (
                     <p className="px-4 py-8 text-sm text-center text-muted-foreground">
                       {pattern ? "No matches found." : "Enter a pattern to see matches."}
                     </p>
                   ) : (
                     <div className="divide-y divide-border max-h-80 overflow-auto">
-                      {result.truncated && (
+                      {displayResult.truncated && (
                         <p className="px-4 py-2 text-xs text-muted-foreground bg-muted/40 border-b border-border">
                           Showing first 10 000 matches — results truncated.
                         </p>
                       )}
-                      {result.matches.map((m, i) => (
+                      {displayResult.matches.map((m, i) => (
                         <div key={i} className="px-4 py-3 text-xs font-mono">
                           <div className="flex flex-wrap items-center gap-3 mb-1">
                             <span className={`px-2 py-0.5 rounded-full text-[11px] font-bold ${MATCH_COLORS[i % MATCH_COLORS.length]}`}>
@@ -827,14 +840,14 @@ export default function RegexTesterTool({ tool }: { tool: Tool }) {
                       <span className="text-xs font-medium text-muted-foreground">Result</span>
                       <button
                         type="button"
-                        onClick={() => copy(result.substituted, "subst")}
+                        onClick={() => copy(displayResult.substituted, "subst")}
                         className="flex items-center gap-1.5 px-2 py-1 text-xs rounded-md bg-accent/10 text-accent hover:bg-accent/20 transition-colors"
                       >
                         {copiedSubst ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
                         {copiedSubst ? "Copied!" : "Copy"}
                       </button>
                     </div>
-                    <pre className="p-3 text-sm font-mono whitespace-pre-wrap">{result.substituted}</pre>
+                    <pre className="p-3 text-sm font-mono whitespace-pre-wrap">{displayResult.substituted}</pre>
                   </div>
                 </div>
               )}
