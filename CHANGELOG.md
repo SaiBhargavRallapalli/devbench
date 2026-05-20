@@ -5,7 +5,8 @@
 ## 2026-05-20
 
 ### Changed
-- Enhance sitemap and blog metadata handling (`f3dc44c`)
+- Integrate bundle analyzer and enhance build scripts (`bae3d00`)
+- Enhance sitemap and blog metadata handling (`5dc4d1b`)
 
 ## 2026-05-19
 

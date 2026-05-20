@@ -33,5 +33,19 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Bundle size report
+        run: |
+          echo "=== Top 15 largest JS chunks ==="
+          find .next/static/chunks -name "*.js" ! -name "*.js.map" \
+            -exec du -sh {} + 2>/dev/null | sort -rh | head -15
+          echo ""
+          echo "=== Total static JS ==="
+          du -sh .next/static/chunks/ 2>/dev/null || true
+
       - name: Run tests
         run: npm test --if-present
+
+      - name: Lighthouse CI
+        run: npx lhci autorun
+        env:
+          PORT: 3000

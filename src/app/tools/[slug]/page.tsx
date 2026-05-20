@@ -24,7 +24,7 @@ import {
   trackToolCopy,
   trackToolShareLink,
 } from "@/lib/analytics-events";
-import CustomToolOutlet from "@/components/tools/CustomToolOutlet";
+import CustomToolOutlet, { CUSTOM_TOOL_SLUGS } from "@/components/tools/CustomToolOutlet";
 import ToolConnectivityBadge from "@/components/ToolConnectivityBadge";
 import ToolPageActions from "@/components/ToolPageActions";
 import {
@@ -38,46 +38,6 @@ import {
   needsDualInput,
   needsNoInput,
 } from "@/lib/tool-runner";
-
-const CUSTOM_TOOL_SLUGS = new Set([
-  // rich UI workspaces
-  "background-remover",
-  "image-resizer", "image-compressor",
-  "pdf-page-editor", "image-to-pdf",
-  "merge-pdf", "split-pdf", "compress-pdf", "pdf-to-jpg", "rotate-pdf",
-  "watermark-pdf", "organize-pdf", "pdf-page-numbers", "pdf-compare",
-  "text-to-pdf", "html-to-pdf",
-  "xml-suite",
-  "qr-code", "age-calculator", "bmi-calculator", "compound-interest",
-  "loan-emi-calculator", "contrast-checker", "gradient-generator", "currency-converter",
-  // dev tools with rich UI
-  "html-preview", "base64-image", "string-inspector", "markdown-preview",
-  "regex-tester", "uuid-generator",
-  "http-status-reference", "css-box-shadow",
-  "image-format-converter", "svg-optimizer", "exif-viewer",
-  "unicode-checker",
-  // finance form tools
-  "simple-interest", "gst-calculator", "discount-calculator",
-  "tip-calculator", "roi-calculator", "profit-loss-calculator",
-  "salary-hike-calculator",
-  // health form tools
-  "bmr-calculator", "calorie-calculator", "water-intake-calculator", "body-fat-calculator",
-  // math form tools
-  "quadratic-solver", "pythagorean-theorem", "gcd-lcm-calculator",
-  // datetime form tools
-  "days-between-dates", "countdown-calculator", "week-number-calculator", "due-date-calculator",
-  "timezone-converter",
-  // diagramming
-  "mermaid-editor",
-  // networking
-  "websocket-tester",
-  // PDF
-  "ipynb-to-pdf",
-  // developer utilities
-  "gitignore-generator", "license-generator", "env-validator",
-  "dns-lookup", "ip-info", "npm-compare",
-  "color-converter", "color-palette",
-]);
 
 function EmbedButton({ slug }: { slug: string }) {
   const [copied, setCopied] = useState(false);
@@ -338,7 +298,7 @@ export default function ToolPage() {
           {/* Input */}
           <div className="flex flex-col">
             <div className="flex items-center justify-between mb-2">
-              <label className="text-sm font-medium">
+              <label htmlFor="tool-input" className="text-sm font-medium">
                 {tool.inputLabel || "Input"}
               </label>
               <div className="flex items-center gap-1">
@@ -359,6 +319,7 @@ export default function ToolPage() {
               </div>
             </div>
             <textarea
+              id="tool-input"
               value={state.input}
               onChange={(e) => setInput(e.target.value)}
               placeholder={`Paste your ${tool.inputLabel?.toLowerCase() || "input"} here...`}
@@ -371,7 +332,7 @@ export default function ToolPage() {
           {needsDualInput(slug) ? (
             <div className="flex flex-col">
               <div className="flex items-center justify-between mb-2">
-                <label className="text-sm font-medium">
+                <label htmlFor="tool-input2" className="text-sm font-medium">
                   {tool.outputLabel || "Input B"}
                 </label>
                 <button
@@ -382,6 +343,7 @@ export default function ToolPage() {
                 </button>
               </div>
               <textarea
+                id="tool-input2"
                 value={state.input2}
                 onChange={(e) => setInput2(e.target.value)}
                 placeholder="Paste second input here..."
@@ -393,7 +355,7 @@ export default function ToolPage() {
             /* Output */
             <div className="flex flex-col">
               <div className="flex items-center justify-between mb-2">
-                <label className="text-sm font-medium">
+                <label htmlFor="tool-output" className="text-sm font-medium">
                   {tool.outputLabel || "Output"}
                 </label>
                 <div className="flex items-center gap-1">
@@ -420,6 +382,7 @@ export default function ToolPage() {
                 </div>
               </div>
               <textarea
+                id="tool-output"
                 value={state.output}
                 readOnly
                 placeholder="Output will appear here..."
@@ -535,8 +498,9 @@ function renderOptions(
     case "case-converter":
       return (
         <div className="mb-4">
-          <label className="text-sm font-medium mr-2">Target Case:</label>
+          <label htmlFor="opt-case" className="text-sm font-medium mr-2">Target Case:</label>
           <select
+            id="opt-case"
             value={(options.targetCase as string) || "camelCase"}
             onChange={(e) => setOption("targetCase", e.target.value)}
             className={selectClass}
@@ -555,8 +519,9 @@ function renderOptions(
     case "line-sorter":
       return (
         <div className="mb-4">
-          <label className="text-sm font-medium mr-2">Mode:</label>
+          <label htmlFor="opt-sort-mode" className="text-sm font-medium mr-2">Mode:</label>
           <select
+            id="opt-sort-mode"
             value={(options.mode as string) || "asc"}
             onChange={(e) => setOption("mode", e.target.value)}
             className={selectClass}
@@ -573,8 +538,9 @@ function renderOptions(
       return (
         <div className="mb-4 flex flex-wrap gap-3">
           <div>
-            <label className="text-sm font-medium mr-2">Count:</label>
+            <label htmlFor="opt-lorem-count" className="text-sm font-medium mr-2">Count:</label>
             <input
+              id="opt-lorem-count"
               type="number"
               min={1}
               max={50}
@@ -584,8 +550,9 @@ function renderOptions(
             />
           </div>
           <div>
-            <label className="text-sm font-medium mr-2">Unit:</label>
+            <label htmlFor="opt-lorem-unit" className="text-sm font-medium mr-2">Unit:</label>
             <select
+              id="opt-lorem-unit"
               value={(options.unit as string) || "paragraphs"}
               onChange={(e) => setOption("unit", e.target.value)}
               className={selectClass}
@@ -600,8 +567,9 @@ function renderOptions(
     case "uuid-generator":
       return (
         <div className="mb-4">
-          <label className="text-sm font-medium mr-2">Count:</label>
+          <label htmlFor="opt-uuid-count" className="text-sm font-medium mr-2">Count:</label>
           <input
+            id="opt-uuid-count"
             type="number"
             min={1}
             max={25}
@@ -615,8 +583,9 @@ function renderOptions(
       return (
         <div className="mb-4 flex flex-wrap gap-3 items-center">
           <div>
-            <label className="text-sm font-medium mr-2">Length:</label>
+            <label htmlFor="opt-pw-len" className="text-sm font-medium mr-2">Length:</label>
             <input
+              id="opt-pw-len"
               type="number"
               min={4}
               max={128}
@@ -646,8 +615,9 @@ function renderOptions(
     case "string-escape":
       return (
         <div className="mb-4">
-          <label className="text-sm font-medium mr-2">Mode:</label>
+          <label htmlFor="opt-escape-mode" className="text-sm font-medium mr-2">Mode:</label>
           <select
+            id="opt-escape-mode"
             value={(options.mode as string) || "json"}
             onChange={(e) => setOption("mode", e.target.value)}
             className={selectClass}
@@ -662,8 +632,9 @@ function renderOptions(
     case "curl-formatter":
       return (
         <div className="mb-4">
-          <label className="text-sm font-medium mr-2">Output:</label>
+          <label htmlFor="opt-curl-layout" className="text-sm font-medium mr-2">Output:</label>
           <select
+            id="opt-curl-layout"
             value={(options.layout as string) || "multiline"}
             onChange={(e) => setOption("layout", e.target.value)}
             className={selectClass}
@@ -677,8 +648,9 @@ function renderOptions(
       return (
         <div className="mb-4 flex flex-wrap gap-3">
           <div>
-            <label className="text-sm font-medium mr-2">From:</label>
+            <label htmlFor="opt-base-from" className="text-sm font-medium mr-2">From:</label>
             <select
+              id="opt-base-from"
               value={(options.fromBase as number) || 10}
               onChange={(e) => setOption("fromBase", parseInt(e.target.value))}
               className={selectClass}
@@ -690,8 +662,9 @@ function renderOptions(
             </select>
           </div>
           <div>
-            <label className="text-sm font-medium mr-2">To:</label>
+            <label htmlFor="opt-base-to" className="text-sm font-medium mr-2">To:</label>
             <select
+              id="opt-base-to"
               value={(options.toBase as number) || 16}
               onChange={(e) => setOption("toBase", parseInt(e.target.value))}
               className={selectClass}
@@ -707,8 +680,9 @@ function renderOptions(
     case "whitespace-normalizer":
       return (
         <div className="mb-4">
-          <label className="text-sm font-medium mr-2">Mode:</label>
+          <label htmlFor="opt-ws-mode" className="text-sm font-medium mr-2">Mode:</label>
           <select
+            id="opt-ws-mode"
             value={(options.mode as string) || "collapse"}
             onChange={(e) => setOption("mode", e.target.value)}
             className={selectClass}
@@ -725,8 +699,9 @@ function renderOptions(
       return (
         <div className="mb-4 flex flex-wrap gap-3 items-end">
           <div>
-            <label className="text-sm font-medium block mb-1">Find:</label>
+            <label htmlFor="opt-find" className="text-sm font-medium block mb-1">Find:</label>
             <input
+              id="opt-find"
               type="text"
               value={(options.find as string) || ""}
               onChange={(e) => setOption("find", e.target.value)}
@@ -735,8 +710,9 @@ function renderOptions(
             />
           </div>
           <div>
-            <label className="text-sm font-medium block mb-1">Replace:</label>
+            <label htmlFor="opt-replace" className="text-sm font-medium block mb-1">Replace:</label>
             <input
+              id="opt-replace"
               type="text"
               value={(options.replace as string) || ""}
               onChange={(e) => setOption("replace", e.target.value)}
@@ -778,20 +754,20 @@ function renderOptions(
       return (
         <div className="mb-4 flex flex-wrap gap-3">
           <div>
-            <label className="text-sm font-medium mr-2">Category:</label>
-            <select value={cat} onChange={(e) => setOption("unitCategory", e.target.value)} className={selectClass}>
+            <label htmlFor="opt-unit-cat" className="text-sm font-medium mr-2">Category:</label>
+            <select id="opt-unit-cat" value={cat} onChange={(e) => setOption("unitCategory", e.target.value)} className={selectClass}>
               {Object.keys(unitOptions).map((c) => <option key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>)}
             </select>
           </div>
           <div>
-            <label className="text-sm font-medium mr-2">From:</label>
-            <select value={(options.unitFrom as string) || units[0]} onChange={(e) => setOption("unitFrom", e.target.value)} className={selectClass}>
+            <label htmlFor="opt-unit-from" className="text-sm font-medium mr-2">From:</label>
+            <select id="opt-unit-from" value={(options.unitFrom as string) || units[0]} onChange={(e) => setOption("unitFrom", e.target.value)} className={selectClass}>
               {units.map((u) => <option key={u} value={u}>{u}</option>)}
             </select>
           </div>
           <div>
-            <label className="text-sm font-medium mr-2">To:</label>
-            <select value={(options.unitTo as string) || units[1]} onChange={(e) => setOption("unitTo", e.target.value)} className={selectClass}>
+            <label htmlFor="opt-unit-to" className="text-sm font-medium mr-2">To:</label>
+            <select id="opt-unit-to" value={(options.unitTo as string) || units[1]} onChange={(e) => setOption("unitTo", e.target.value)} className={selectClass}>
               {units.map((u) => <option key={u} value={u}>{u}</option>)}
             </select>
           </div>
@@ -801,8 +777,9 @@ function renderOptions(
     case "temperature-converter":
       return (
         <div className="mb-4">
-          <label className="text-sm font-medium mr-2">From:</label>
+          <label htmlFor="opt-temp-from" className="text-sm font-medium mr-2">From:</label>
           <select
+            id="opt-temp-from"
             value={(options.from as string) || "C"}
             onChange={(e) => setOption("from", e.target.value)}
             className={selectClass}
@@ -816,8 +793,9 @@ function renderOptions(
     case "byte-converter":
       return (
         <div className="mb-4">
-          <label className="text-sm font-medium mr-2">From Unit:</label>
+          <label htmlFor="opt-byte-from" className="text-sm font-medium mr-2">From Unit:</label>
           <select
+            id="opt-byte-from"
             value={(options.fromUnit as string) || "B"}
             onChange={(e) => setOption("fromUnit", e.target.value)}
             className={selectClass}
@@ -833,8 +811,9 @@ function renderOptions(
     case "hash-generator":
       return (
         <div className="mb-4">
-          <label className="text-sm font-medium mr-2">Algorithm:</label>
+          <label htmlFor="opt-hash-algo" className="text-sm font-medium mr-2">Algorithm:</label>
           <select
+            id="opt-hash-algo"
             value={(options.algo as string) || "SHA-256"}
             onChange={(e) => setOption("algo", e.target.value)}
             className={selectClass}
@@ -870,8 +849,9 @@ function renderOptions(
         <div className="mb-4 space-y-3">
           <div className="flex flex-wrap gap-3 items-end">
             <div>
-              <label className="text-sm font-medium block mb-1">Mode:</label>
+              <label htmlFor="opt-aes-mode" className="text-sm font-medium block mb-1">Mode:</label>
               <select
+                id="opt-aes-mode"
                 value={(options.mode as string) || "encrypt"}
                 onChange={(e) => setOption("mode", e.target.value)}
                 className={selectClass}
@@ -881,8 +861,9 @@ function renderOptions(
               </select>
             </div>
             <div className="min-w-[12rem] flex-1 max-w-md">
-              <label className="text-sm font-medium block mb-1">Password:</label>
+              <label htmlFor="opt-aes-pw" className="text-sm font-medium block mb-1">Password:</label>
               <input
+                id="opt-aes-pw"
                 type="password"
                 value={(options.password as string) || ""}
                 onChange={(e) => setOption("password", e.target.value)}
@@ -902,8 +883,9 @@ function renderOptions(
             </p>
             <div className="flex flex-wrap gap-3 items-center">
               <div>
-                <label className="text-xs font-medium mr-2">Length:</label>
+                <label htmlFor="opt-aes-gen-len" className="text-xs font-medium mr-2">Length:</label>
                 <input
+                  id="opt-aes-gen-len"
                   type="number"
                   min={4}
                   max={128}
@@ -950,8 +932,9 @@ function renderOptions(
     case "gst-calculator":
       return (
         <div className="mb-4">
-          <label className="text-sm font-medium mr-2">GST basis:</label>
+          <label htmlFor="opt-gst-basis" className="text-sm font-medium mr-2">GST basis:</label>
           <select
+            id="opt-gst-basis"
             value={(options.gstBasis as string) || "exclusive"}
             onChange={(e) => setOption("gstBasis", e.target.value)}
             className={selectClass}

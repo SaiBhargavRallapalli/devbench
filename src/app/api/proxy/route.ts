@@ -22,11 +22,28 @@ function isRateLimited(ip: string): boolean {
   return false;
 }
 
+// Requests without an Origin header (server-to-server, Postman, curl) are
+// allowed through. Browser-initiated cross-origin requests always include
+// Origin, so checking it is enough to prevent CSRF/tunneling from other sites.
+const ALLOWED_ORIGIN_RE =
+  /^https:\/\/(www\.devbench\.co\.in|devbench\.co\.in|[a-z0-9-]+\.devbench\.co\.in)$|^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/;
+
+function isAllowedOrigin(origin: string | null): boolean {
+  if (origin === null) return true;
+  return ALLOWED_ORIGIN_RE.test(origin);
+}
+
 export async function POST(req: NextRequest) {
   const ip =
     req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
     req.headers.get("x-real-ip") ??
     "unknown";
+
+  const origin = req.headers.get("origin");
+  if (!isAllowedOrigin(origin)) {
+    return NextResponse.json({ error: "Forbidden." }, { status: 403 });
+  }
+
   if (isRateLimited(ip)) {
     return NextResponse.json(
       { error: "Rate limit exceeded. Max 20 requests per minute." },

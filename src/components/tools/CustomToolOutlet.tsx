@@ -73,6 +73,27 @@ const DATETIME_SLUGS = new Set([
   "week-number-calculator", "due-date-calculator",
 ]);
 
+// Single source of truth — page.tsx imports this instead of maintaining its own copy.
+export const CUSTOM_TOOL_SLUGS: ReadonlySet<string> = new Set([
+  ...FINANCE_SLUGS,
+  ...HEALTH_SLUGS,
+  ...MATH_SLUGS,
+  ...DATETIME_SLUGS,
+  "background-remover", "image-resizer", "image-compressor",
+  "pdf-page-editor", "merge-pdf", "split-pdf", "compress-pdf",
+  "pdf-to-jpg", "rotate-pdf", "watermark-pdf", "organize-pdf",
+  "pdf-page-numbers", "pdf-compare", "image-to-pdf", "text-to-pdf",
+  "html-to-pdf", "xml-suite", "qr-code", "age-calculator",
+  "bmi-calculator", "compound-interest", "loan-emi-calculator",
+  "contrast-checker", "gradient-generator", "currency-converter",
+  "html-preview", "base64-image", "string-inspector", "markdown-preview",
+  "regex-tester", "uuid-generator", "http-status-reference", "css-box-shadow",
+  "image-format-converter", "svg-optimizer", "exif-viewer", "unicode-checker",
+  "mermaid-editor", "timezone-converter", "websocket-tester", "ipynb-to-pdf",
+  "gitignore-generator", "license-generator", "env-validator",
+  "dns-lookup", "ip-info", "npm-compare", "color-converter", "color-palette",
+]);
+
 export default function CustomToolOutlet({ slug, tool }: { slug: string; tool: Tool }) {
   if (FINANCE_SLUGS.has(slug))  return <FinanceFormTools tool={tool} />;
   if (HEALTH_SLUGS.has(slug))   return <HealthFormTools tool={tool} />;
