@@ -1,7 +1,7 @@
 # DevBench
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![CI](https://github.com/SaiBhargavRallapalli/all-in-one/actions/workflows/ci.yml/badge.svg)](https://github.com/SaiBhargavRallapalli/all-in-one/actions)
+[![CI](https://github.com/SaiBhargavRallapalli/devbench/actions/workflows/ci.yml/badge.svg)](https://github.com/SaiBhargavRallapalli/devbench/actions)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
@@ -37,7 +37,7 @@ This repo follows project-specific Next.js guidance in [`AGENTS.md`](AGENTS.md).
 
 ```bash
 git clone <your-fork-or-upstream-url>
-cd all-in-one
+cd devbench
 npm install
 npm run dev
 ```

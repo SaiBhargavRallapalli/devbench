@@ -99,12 +99,8 @@ export default function ImageToPdfTool({ tool }: { tool: Tool }) {
       }
       const next: Row[] = [];
       for (const file of files) {
-        const id =
-          typeof crypto !== "undefined" && crypto.randomUUID
-            ? crypto.randomUUID()
-            : `${Date.now()}-${Math.random()}`;
         next.push({
-          id,
+          id: crypto.randomUUID(),
           file,
           preview: URL.createObjectURL(file),
         });

@@ -54,7 +54,7 @@ const TIMEOUT_OPTIONS = [3, 10, 30, 60, 120, 300, 600, 900];
 type EnvVar = { id: string; key: string; value: string };
 
 function uid(): string {
-  return Math.random().toString(36).slice(2, 9);
+  return crypto.randomUUID().replace(/-/g, "").slice(0, 12);
 }
 
 function safeStringify(value: unknown): string {

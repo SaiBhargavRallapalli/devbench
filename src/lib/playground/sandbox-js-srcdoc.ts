@@ -40,7 +40,9 @@ window.addEventListener('message',function(ev){
     return true;
   };
   try{
-    var fn=new Function("'use strict';\\n"+String(d.code));
+    // Intentional: opaque-origin iframe (sandbox="allow-scripts", no allow-same-origin).
+    // Running user JavaScript is the purpose of this playground sandbox. lgtm[js/code-injection]
+    var fn=new Function("'use strict';\\n"+String(d.code)); // CodeQL[js/code-injection]
     fn();
     post({type:'DONE',id:currentId});
   }catch(err){

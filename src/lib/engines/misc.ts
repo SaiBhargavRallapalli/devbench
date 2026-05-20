@@ -48,8 +48,9 @@ export function htmlToJsx(input: string): Result {
       "link", "meta", "param", "source", "track", "wbr",
     ];
     for (const el of voidElements) {
+      // lgtm[js/redos] — `el` is from a hardcoded array of safe HTML tag names (no special chars)
       out = out.replace(
-        new RegExp(`<(${el})(\\s[^>]*)?(?<!/)>`, "gi"),
+        new RegExp(`<(${el})(\\s[^>]*)?(?<!/)>`, "gi"), // CodeQL[js/redos]
         (_, tag, attrs) => `<${tag}${attrs || ""} />`,
       );
     }
@@ -91,10 +92,9 @@ export function generateUlid(): string {
     time = CHARS[n % 32] + time;
     n = Math.floor(n / 32);
   }
-  let rand = "";
-  for (let i = 0; i < 16; i++) {
-    rand += CHARS[Math.floor(Math.random() * 32)];
-  }
+  const randBytes = new Uint8Array(16);
+  crypto.getRandomValues(randBytes);
+  const rand = Array.from(randBytes, (b) => CHARS[b % 32]).join("");
   return time + rand;
 }
 

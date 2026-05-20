@@ -5,7 +5,8 @@
 ## 2026-05-20
 
 ### Changed
-- Refactor form components to improve accessibility and usability (`08ac126`)
+- Enhance performance metrics and accessibility checks in Lighthouse configuration (`0742056`)
+- Refactor form components to improve accessibility and usability (`d7c47ce`)
 - Integrate bundle analyzer and enhance build scripts (`859d7f4`)
 - Enhance sitemap and blog metadata handling (`5dc4d1b`)
 

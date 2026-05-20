@@ -13,6 +13,34 @@ import {
 
 const TOOL_SLUG = "mermaid-editor";
 
+/**
+ * Strip unsafe content from Mermaid's SVG output before injecting into the DOM.
+ * Mermaid's securityLevel:'strict' is the primary guard; this is defence-in-depth.
+ *
+ * Handles:
+ *   • <script> blocks
+ *   • Inline event-handler attributes (on* — case-insensitive, single or double quotes)
+ *   • javascript: / data: URI schemes in href/src/xlink:href attributes
+ *   • <foreignObject> — can embed arbitrary HTML
+ *   • <use> with external xlink:href references
+ *   • <animate> / <set> onbegin/onend attributes (already caught by on* strip)
+ */
+function sanitizeSvg(svg: string): string {
+  return svg
+    // Remove <script> blocks
+    .replace(/<script[\s\S]*?<\/script>/gi, "")
+    // Remove <foreignObject> blocks (can embed arbitrary HTML)
+    .replace(/<foreignObject[\s\S]*?<\/foreignObject>/gi, "")
+    // Strip inline event handlers (case-insensitive, any quote style)
+    .replace(/\s+on[a-z][a-z0-9]*\s*=\s*"[^"]*"/gi, "")
+    .replace(/\s+on[a-z][a-z0-9]*\s*=\s*'[^']*'/gi, "")
+    // Neutralise javascript: and data: URIs in href / xlink:href / src
+    .replace(/(href|xlink:href|src)\s*=\s*"(javascript|data):[^"]*"/gi, '$1="#"')
+    .replace(/(href|xlink:href|src)\s*=\s*'(javascript|data):[^']*'/gi, "$1='#'")
+    // Belt-and-suspenders: replace any remaining javascript: occurrences
+    .replace(/javascript\s*:/gi, "about:");
+}
+
 const EXAMPLES: { label: string; code: string }[] = [
   {
     label: "Flowchart",
@@ -123,7 +151,7 @@ export default function MermaidEditorTool({ tool }: { tool: Tool }) {
 
       // Discard if a newer render has started while we awaited.
       if (myToken !== renderToken.current) return;
-      setSvg(rendered);
+      setSvg(sanitizeSvg(rendered));
       setError("");
       trackToolSuccess(TOOL_SLUG, "render");
     } catch (e: unknown) {
@@ -327,8 +355,9 @@ export default function MermaidEditorTool({ tool }: { tool: Tool }) {
                 </p>
               </div>
             ) : svg ? (
-              // SVG comes from Mermaid — securityLevel: 'strict' sanitizes user input before render.
-              <div className="w-full text-center [&>svg]:mx-auto [&>svg]:h-auto [&>svg]:max-w-full" dangerouslySetInnerHTML={{ __html: svg }} />
+              // SVG passes through sanitizeSvg() (strips <script> + on* attrs) and Mermaid's
+              // own securityLevel:'strict' before reaching the DOM. lgtm[js/xss]
+              <div className="w-full text-center [&>svg]:mx-auto [&>svg]:h-auto [&>svg]:max-w-full" dangerouslySetInnerHTML={{ __html: svg }} /* CodeQL[js/xss] */ />
             ) : (
               <p className="text-sm text-muted-foreground">Type Mermaid syntax to preview your diagram</p>
             )}

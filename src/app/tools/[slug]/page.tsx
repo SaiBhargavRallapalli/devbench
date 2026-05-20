@@ -12,6 +12,8 @@ import {
   Sparkles,
   Share2,
   Code2,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { getToolBySlug, CATEGORIES, TOOLS } from "@/lib/tools-registry";
 import { publicHrefForToolSlug } from "@/lib/devbench-workspaces";
@@ -81,6 +83,46 @@ function CopyBtn({ text, toolSlug }: { text: string; toolSlug?: string }) {
     >
       {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
       {copied ? "Copied!" : "Copy"}
+    </button>
+  );
+}
+
+function passwordStrength(pw: string): { label: string; color: string; pct: number; bits: number } {
+  if (!pw) return { label: "", color: "", pct: 0, bits: 0 };
+  let cs = 0;
+  if (/[a-z]/.test(pw)) cs += 26;
+  if (/[A-Z]/.test(pw)) cs += 26;
+  if (/[0-9]/.test(pw)) cs += 10;
+  if (/[^a-zA-Z0-9]/.test(pw)) cs += 32;
+  const bits = cs > 0 ? Math.floor(pw.length * Math.log2(cs)) : 0;
+  if (bits < 28) return { label: "Weak", color: "bg-destructive", pct: Math.max(8, Math.round((bits / 28) * 25)), bits };
+  if (bits < 40) return { label: "Fair", color: "bg-warning", pct: 25 + Math.round(((bits - 28) / 12) * 25), bits };
+  if (bits < 60) return { label: "Strong", color: "bg-blue-500", pct: 50 + Math.round(((bits - 40) / 20) * 25), bits };
+  return { label: "Very strong", color: "bg-success", pct: 100, bits };
+}
+
+function AesCopyAsJsonBtn({ ciphertext }: { ciphertext: string }) {
+  const [copied, setCopied] = useState(false);
+  const copy = () => {
+    const payload = JSON.stringify({
+      algorithm: "AES-256-GCM",
+      kdf: "PBKDF2-SHA256",
+      iterations: 100000,
+      ciphertext,
+    }, null, 2);
+    navigator.clipboard.writeText(payload).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }).catch(() => {});
+  };
+  return (
+    <button
+      onClick={copy}
+      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-accent/10 text-accent hover:bg-accent/20 transition-colors"
+      title="Copy as self-describing JSON envelope"
+    >
+      {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+      {copied ? "Copied!" : "Copy as JSON"}
     </button>
   );
 }
@@ -291,7 +333,7 @@ export default function ToolPage() {
         </div>
 
         {/* Tool options */}
-        {renderOptions(slug, state.options, setOption)}
+        {renderOptions(slug, state.options, setOption, setInput)}
 
         {/* Input / Output */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 animate-slide-up">
@@ -389,6 +431,27 @@ export default function ToolPage() {
                 className="flex-1 min-h-[300px] p-4 rounded-xl border border-border bg-muted/50 font-mono text-sm resize-none focus:outline-none placeholder:text-muted-foreground/50 scrollbar-thin"
                 spellCheck={false}
               />
+              {slug === "aes-encrypt-decrypt" && state.output && ((state.options.mode as string) || "encrypt") === "encrypt" && (
+                <div className="mt-2 flex flex-wrap gap-2 items-center">
+                  <AesCopyAsJsonBtn ciphertext={state.output} />
+                  <button
+                    onClick={() => {
+                      const blob = new Blob([state.output], { type: "application/octet-stream" });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement("a");
+                      a.href = url;
+                      a.download = "encrypted.enc";
+                      a.click();
+                      URL.revokeObjectURL(url);
+                    }}
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-border hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+                    title="Download as .enc file"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    Download .enc
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -487,7 +550,8 @@ export default function ToolPage() {
 function renderOptions(
   slug: string,
   options: Record<string, string | number | boolean>,
-  setOption: (key: string, value: string | number | boolean) => void
+  setOption: (key: string, value: string | number | boolean) => void,
+  setMainInput?: (value: string) => void
 ) {
   const selectClass =
     "px-3 py-1.5 text-sm rounded-lg border border-border bg-card focus:outline-none focus:ring-2 focus:ring-ring/40";
@@ -862,19 +926,48 @@ function renderOptions(
             </div>
             <div className="min-w-[12rem] flex-1 max-w-md">
               <label htmlFor="opt-aes-pw" className="text-sm font-medium block mb-1">Password:</label>
-              <input
-                id="opt-aes-pw"
-                type="password"
-                value={(options.password as string) || ""}
-                onChange={(e) => setOption("password", e.target.value)}
-                placeholder="Enter password…"
-                autoComplete="off"
-                className={selectClass + " w-full"}
-              />
+              <div className="relative">
+                <input
+                  id="opt-aes-pw"
+                  type={options.aesShowPw ? "text" : "password"}
+                  value={(options.password as string) || ""}
+                  onChange={(e) => setOption("password", e.target.value)}
+                  placeholder="Enter password…"
+                  autoComplete="off"
+                  className={selectClass + " w-full pr-9"}
+                />
+                <button
+                  type="button"
+                  onClick={() => setOption("aesShowPw", !options.aesShowPw)}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  title={options.aesShowPw ? "Hide password" : "Show password"}
+                  tabIndex={-1}
+                >
+                  {options.aesShowPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
             </div>
-            <p className="text-xs text-muted-foreground py-1.5 max-w-xs">
-              AES-256-GCM · PBKDF2 key derivation · client-side only
-            </p>
+            <div className="py-1.5 space-y-1.5">
+              {(() => {
+                const pw = (options.password as string) || "";
+                const s = passwordStrength(pw);
+                return pw ? (
+                  <>
+                    <div className="w-32 h-1.5 rounded-full bg-muted overflow-hidden">
+                      <div
+                        className={`h-full rounded-full transition-all ${s.color}`}
+                        style={{ width: `${s.pct}%` }}
+                      />
+                    </div>
+                    <p className="text-[10px] text-muted-foreground">
+                      <span className="font-medium">{s.label}</span> — ~{s.bits} bits entropy
+                    </p>
+                  </>
+                ) : (
+                  <p className="text-xs text-muted-foreground">AES-256-GCM · PBKDF2 · client-side only</p>
+                );
+              })()}
+            </div>
           </div>
 
           <div className="rounded-xl border border-border bg-muted/25 p-3">
@@ -926,6 +1019,38 @@ function renderOptions(
           </div>
 
           <AesWebCryptoUnavailableHint />
+
+          {setMainInput && (
+            <div className="rounded-xl border border-border bg-muted/25 p-3">
+              <p className="text-xs font-medium text-muted-foreground mb-2">
+                Load from file <span className="font-normal opacity-70">— JSON, TXT, or any text file</span>
+              </p>
+              <label className="inline-flex items-center gap-2 cursor-pointer px-3 py-1.5 text-xs font-medium rounded-lg border border-border bg-card hover:bg-accent/10 hover:border-accent/40 hover:text-accent transition-colors">
+                <Download className="w-3.5 h-3.5 rotate-180" />
+                Choose file
+                <input
+                  type="file"
+                  accept=".json,.txt,.aes,.enc,text/*"
+                  className="sr-only"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = (ev) => {
+                      const content = ev.target?.result;
+                      if (typeof content === "string") setMainInput(content);
+                    };
+                    reader.readAsText(file);
+                    e.target.value = "";
+                  }}
+                />
+              </label>
+              <p className="text-[10px] text-muted-foreground mt-2 leading-relaxed">
+                For <strong>Encrypt</strong>: load a JSON or text file — its content becomes the plaintext.<br />
+                For <strong>Decrypt</strong>: load a file containing the Base64 ciphertext (or a JSON object with a <code className="font-mono">ciphertext</code> field).
+              </p>
+            </div>
+          )}
         </div>
       );
     }

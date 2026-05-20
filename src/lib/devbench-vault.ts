@@ -42,7 +42,7 @@ function openDb(): Promise<IDBDatabase> {
 }
 
 function uid(): string {
-  return `v_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 9)}`;
+  return `v_${Date.now().toString(36)}_${crypto.randomUUID().replace(/-/g, "").slice(0, 12)}`;
 }
 
 export async function vaultList(): Promise<VaultEntry[]> {

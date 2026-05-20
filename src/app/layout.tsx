@@ -129,9 +129,10 @@ export default function RootLayout({
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6450653669194686"
           crossOrigin="anonymous"
         />
+        {/* Safe static scripts below — __html is a string literal, not user input. lgtm[js/xss] */}
         {/* Sync theme on <html> before CSS/paint so Tailwind dark: matches preference (see globals.css @custom-variant) */}
         <script
-          dangerouslySetInnerHTML={{
+          dangerouslySetInnerHTML={{ // CodeQL[js/xss]
             __html: `(function(){try{var t=localStorage.getItem("theme"),r=document.documentElement,m=window.matchMedia("(prefers-color-scheme: dark)").matches;if(t==="dark"){r.classList.add("dark");r.classList.remove("light");}else if(t==="light"){r.classList.remove("dark");r.classList.add("light");}else{r.classList.toggle("dark",m);r.classList.remove("light");}}catch(e){}})();`,
           }}
         />
@@ -141,12 +142,12 @@ export default function RootLayout({
         <link rel="preconnect" href="https://googleads.g.doubleclick.net" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://fundingchoicesmessages.google.com" />
         {/* Inline critical above-the-fold styles to prevent render-blocking on LCP element */}
-        <style dangerouslySetInnerHTML={{ __html: `body{background:#fafafa;color:#111111}html.dark body{background:#09090b;color:#fafafa}@media(prefers-color-scheme:dark){html:not(.light) body{background:#09090b;color:#fafafa}}` }} />
+        <style dangerouslySetInnerHTML={{ __html: `body{background:#fafafa;color:#111111}html.dark body{background:#09090b;color:#fafafa}@media(prefers-color-scheme:dark){html:not(.light) body{background:#09090b;color:#fafafa}}` }} /> {/* CodeQL[js/xss] */}
         {/* Google Tag Manager — head script */}
         <Script
           id="gtm-script"
           strategy="afterInteractive"
-          dangerouslySetInnerHTML={{
+          dangerouslySetInnerHTML={{ // CodeQL[js/xss]
             __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=

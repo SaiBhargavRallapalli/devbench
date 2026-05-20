@@ -3,12 +3,14 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Braces, FileCode2, FlaskConical, NotebookPen, Server, Terminal } from "lucide-react";
+import dynamic from "next/dynamic";
 import Header from "@/components/Header";
 import { useExternalNavOrigin } from "@/hooks/use-external-nav-origin";
-import JsTsSandboxPanel from "@/components/playground/JsTsSandboxPanel";
-import PythonSandboxPanel from "@/components/playground/PythonSandboxPanel";
-import NotebookSandboxPanel from "@/components/playground/NotebookSandboxPanel";
-import GoSandboxPanel from "@/components/playground/GoSandboxPanel";
+
+const JsTsSandboxPanel = dynamic(() => import("@/components/playground/JsTsSandboxPanel"), { ssr: false });
+const PythonSandboxPanel = dynamic(() => import("@/components/playground/PythonSandboxPanel"), { ssr: false });
+const NotebookSandboxPanel = dynamic(() => import("@/components/playground/NotebookSandboxPanel"), { ssr: false });
+const GoSandboxPanel = dynamic(() => import("@/components/playground/GoSandboxPanel"), { ssr: false });
 import { resolveToolHref } from "@/lib/site-config";
 import { cacheUrlsForOffline, PLAYGROUND_OPTIONAL_URLS } from "@/lib/pwa-optional-cache";
 

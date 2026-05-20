@@ -13,13 +13,14 @@ export function isPrivateAddress(hostname: string): boolean {
   if (parts.length === 4 && parts.every((n) => !isNaN(n) && n >= 0 && n <= 255)) {
     const [a, b] = parts;
     return (
-      a === 10 ||
-      (a === 172 && b >= 16 && b <= 31) ||
-      (a === 192 && b === 168) ||
-      (a === 169 && b === 254) ||
-      (a === 100 && b >= 64 && b <= 127) || // CGNAT (RFC 6598)
-      a === 127 ||
-      a === 0
+      a === 10 ||                             // RFC 1918 class A
+      (a === 172 && b >= 16 && b <= 31) ||   // RFC 1918 class B
+      (a === 192 && b === 168) ||            // RFC 1918 class C
+      (a === 169 && b === 254) ||            // Link-local — includes 169.254.169.254 (AWS/GCP/Azure IMDS)
+      (a === 100 && b >= 64 && b <= 127) ||  // CGNAT (RFC 6598)
+      a === 127 ||                            // Loopback
+      a === 0 ||                              // "This" network
+      a === 255                               // Broadcast
     );
   }
   const h = hostname.replace(/^\[|\]$/g, "").toLowerCase();

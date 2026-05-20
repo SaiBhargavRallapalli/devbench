@@ -584,6 +584,9 @@ export function tomlToJson(input: string): Result {
 // ── AES-256-GCM Encrypt/Decrypt ─────────────────────────────────────────
 
 export async function aesEncrypt(plaintext: string, password: string): Promise<string> {
+  if (plaintext.length > 10 * 1024 * 1024) {
+    throw new Error("Input too large. Maximum supported size is 10 MB.");
+  }
   const subtle = requireSubtleCrypto();
   const enc = new TextEncoder();
   const keyMaterial = await subtle.importKey("raw", enc.encode(password), "PBKDF2", false, ["deriveKey"]);
@@ -601,13 +604,44 @@ export async function aesEncrypt(plaintext: string, password: string): Promise<s
   combined.set(salt, 0);
   combined.set(iv, salt.length);
   combined.set(new Uint8Array(encrypted), salt.length + iv.length);
-  return btoa(String.fromCharCode(...combined));
+  let binary = "";
+  for (let i = 0; i < combined.length; i++) binary += String.fromCharCode(combined[i]);
+  return btoa(binary);
 }
 
 export async function aesDecrypt(ciphertext: string, password: string): Promise<string> {
   const subtle = requireSubtleCrypto();
   const enc = new TextEncoder();
-  const raw = Uint8Array.from(atob(ciphertext.trim()), (c) => c.charCodeAt(0));
+
+  // Allow JSON input: {"ciphertext":"...", ...} or {"data":"...", "encrypted":"..."}
+  let ct = ciphertext.trim();
+  if (ct.startsWith("{")) {
+    try {
+      const parsed = JSON.parse(ct) as Record<string, unknown>;
+      const field = parsed["ciphertext"] ?? parsed["encrypted"] ?? parsed["data"] ?? parsed["ct"];
+      if (typeof field === "string") ct = field.trim();
+    } catch { /* not JSON, use as-is */ }
+  }
+
+  // Normalise base64: strip whitespace, convert base64url → standard, fix padding
+  ct = ct.replace(/\s/g, "");
+  ct = ct.replace(/-/g, "+").replace(/_/g, "/");
+  const pad = ct.length % 4;
+  if (pad === 2) ct += "==";
+  else if (pad === 3) ct += "=";
+
+  let rawBytes: Uint8Array;
+  try {
+    rawBytes = Uint8Array.from(atob(ct), (c) => c.charCodeAt(0));
+  } catch {
+    throw new Error("Ciphertext is not valid Base64. Make sure you paste the exact output from the Encrypt step.");
+  }
+  if (rawBytes.length < 28) {
+    throw new Error(
+      `Ciphertext is too short (${rawBytes.length} bytes decoded). Expected at least 28 bytes (16-byte salt + 12-byte IV + ciphertext). The data may be truncated or corrupted.`
+    );
+  }
+  const raw = rawBytes;
   const salt = raw.slice(0, 16);
   const iv = raw.slice(16, 28);
   const data = raw.slice(28);

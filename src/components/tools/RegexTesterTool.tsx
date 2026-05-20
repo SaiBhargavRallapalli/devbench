@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState, useCallback } from "react";
+import { useMemo, useState, useCallback, useEffect } from "react";
+import { runRegex, type RegexRunResult } from "@/lib/regex-runner";
 import { Copy, Check, ChevronDown, ChevronRight, Code2 } from "lucide-react";
 import ToolPageHero from "@/components/tools/ToolPageHero";
 import type { Tool } from "@/lib/tools-registry";
@@ -567,47 +568,34 @@ export default function RegexTesterTool({ tool }: { tool: Tool }) {
 
   const flagStr = Array.from(flags).join("");
 
-  const result = useMemo(() => {
+  const [result, setResult] = useState<RegexRunResult>(() => ({
+    id: 0, error: null, matches: [], highlighted: escHtml(testStr), substituted: testStr, count: 0, truncated: false,
+  }));
+  const [regexRunning, setRegexRunning] = useState(false);
+
+  // Run regex in an isolated Web Worker — prevents catastrophic backtracking
+  // from freezing the main thread (ReDoS). Worker is terminated after 3 seconds.
+  // Use a local `cancelled` boolean (not a shared ref) so each effect closure
+  // cancels independently — a shared ref would be reset by the next effect before
+  // a previous async result can check it.
+  useEffect(() => {
     if (!pattern) {
-      return { error: null, matches: [] as Match[], highlighted: escHtml(testStr), substituted: testStr, count: 0 };
+      setResult({ id: 0, error: null, matches: [], highlighted: escHtml(testStr), substituted: testStr, count: 0, truncated: false });
+      return;
     }
-    try {
-      const execFlags = flagStr.includes("g") ? flagStr : flagStr + "g";
-      const re = new RegExp(pattern, execFlags);
-
-      const matches: Match[] = [];
-      let m: RegExpExecArray | null;
-      while ((m = re.exec(testStr)) !== null) {
-        matches.push({
-          full: m[0],
-          index: m.index,
-          end: m.index + m[0].length,
-          length: m[0].length,
-          groups: Array.from(m).slice(1),
-          namedGroups: (m.groups as Record<string, string | undefined>) ?? null,
-        });
-        if (m[0].length === 0) re.lastIndex++;
-      }
-
-      // Highlighted HTML
-      let highlighted = "";
-      let last = 0;
-      for (let i = 0; i < matches.length; i++) {
-        const match = matches[i];
-        highlighted += escHtml(testStr.slice(last, match.index));
-        const color = MATCH_COLORS[i % MATCH_COLORS.length];
-        highlighted += `<mark class="${color} rounded px-0.5 cursor-default font-medium select-none" title="Match ${i + 1} · index ${match.index}–${match.end}">${escHtml(match.full)}</mark>`;
-        last = match.end;
-      }
-      highlighted += escHtml(testStr.slice(last));
-
-      const subRe = new RegExp(pattern, execFlags);
-      const substituted = testStr.replace(subRe, replacement);
-
-      return { error: null, matches, highlighted, substituted, count: matches.length };
-    } catch (e) {
-      return { error: (e as Error).message, matches: [], highlighted: escHtml(testStr), substituted: testStr, count: 0 };
-    }
+    let cancelled = false;
+    setRegexRunning(true);
+    runRegex({ pattern, flags: flagStr, testStr, replacement, matchColors: MATCH_COLORS }).then((r) => {
+      if (cancelled) return;
+      setResult(r);
+      setRegexRunning(false);
+    }).catch((e: Error) => {
+      if (cancelled) return;
+      setResult({ id: 0, error: e.message, matches: [], highlighted: escHtml(testStr), substituted: testStr, count: 0, truncated: false });
+      setRegexRunning(false);
+    });
+    return () => { cancelled = true; };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pattern, flagStr, testStr, replacement]);
 
   const explanation = useMemo(() => {
@@ -703,7 +691,9 @@ export default function RegexTesterTool({ tool }: { tool: Tool }) {
               <div className="flex items-center justify-between px-3 py-1.5 border-b border-border bg-muted/50">
                 <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Test String</span>
                 <span className="text-xs font-mono">
-                  {result.count > 0 ? (
+                  {regexRunning ? (
+                    <span className="text-muted-foreground animate-pulse">running…</span>
+                  ) : result.count > 0 ? (
                     <span className="text-accent font-bold">{result.count} match{result.count !== 1 ? "es" : ""}</span>
                   ) : pattern ? (
                     <span className="text-muted-foreground">no matches</span>
@@ -725,9 +715,11 @@ export default function RegexTesterTool({ tool }: { tool: Tool }) {
                 <div className="px-3 py-1.5 border-b border-border bg-muted/50 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                   Match Highlights
                 </div>
+                {/* Safe: result.highlighted is built using escHtml() for all user text;
+                    only <mark> tags with static class/title attributes are injected. lgtm[js/xss] */}
                 <div
                   className="p-4 font-mono text-sm whitespace-pre-wrap leading-relaxed select-none"
-                  dangerouslySetInnerHTML={{ __html: result.highlighted }}
+                  dangerouslySetInnerHTML={{ __html: result.highlighted }} // CodeQL[js/xss]
                 />
               </div>
             )}
@@ -761,6 +753,11 @@ export default function RegexTesterTool({ tool }: { tool: Tool }) {
                     </p>
                   ) : (
                     <div className="divide-y divide-border max-h-80 overflow-auto">
+                      {result.truncated && (
+                        <p className="px-4 py-2 text-xs text-muted-foreground bg-muted/40 border-b border-border">
+                          Showing first 10 000 matches — results truncated.
+                        </p>
+                      )}
                       {result.matches.map((m, i) => (
                         <div key={i} className="px-4 py-3 text-xs font-mono">
                           <div className="flex flex-wrap items-center gap-3 mb-1">

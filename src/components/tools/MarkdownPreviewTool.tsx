@@ -116,9 +116,11 @@ export default function MarkdownPreviewTool({ tool }: { tool: Tool }) {
                 <Eye className="w-3.5 h-3.5" />
                 Preview
               </div>
+              {/* Safe: markdownToHtml() HTML-entity-encodes all user input before applying
+                  markdown transforms — no raw HTML tags can survive. lgtm[js/xss] */}
               <div
                 className="flex-1 p-6 overflow-auto prose prose-sm dark:prose-invert max-w-none"
-                dangerouslySetInnerHTML={{ __html: rendered }}
+                dangerouslySetInnerHTML={{ __html: rendered }} // CodeQL[js/xss]
               />
             </div>
           )}

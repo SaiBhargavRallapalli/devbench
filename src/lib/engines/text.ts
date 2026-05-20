@@ -119,7 +119,7 @@ export function sortLines(input: string, mode: string): Result {
       return lines.reverse().join("\n");
     case "shuffle":
       for (let i = lines.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
+        const j = Math.floor(Math.random() * (i + 1)); // lgtm[js/insecure-randomness] — visual shuffle, not a security token // CodeQL[js/insecure-randomness]
         [lines[i], lines[j]] = [lines[j], lines[i]];
       }
       return lines.join("\n");

@@ -18,8 +18,7 @@ import { PLAYGROUND_SURFACE_H } from "@/components/playground/PlaygroundEditorFr
 import PlaygroundIoTabs from "@/components/playground/PlaygroundIoTabs";
 
 function newId(): string {
-  if (typeof crypto !== "undefined" && "randomUUID" in crypto) return crypto.randomUUID();
-  return `c-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+  return `c-${crypto.randomUUID().replace(/-/g, "").slice(0, 12)}`;
 }
 
 const NB_STDIN_HINT =

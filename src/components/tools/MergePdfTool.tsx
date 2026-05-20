@@ -25,10 +25,7 @@ export default function MergePdfTool({ tool }: { tool: Tool }) {
       return;
     }
     const next: Row[] = pdfs.map((file) => ({
-      id:
-        typeof crypto !== "undefined" && crypto.randomUUID
-          ? crypto.randomUUID()
-          : `${Date.now()}-${Math.random()}`,
+      id: crypto.randomUUID(),
       file,
     }));
     setRows((prev) => [...prev, ...next]);

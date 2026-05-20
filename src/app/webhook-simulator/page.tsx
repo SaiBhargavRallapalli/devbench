@@ -50,7 +50,7 @@ type Mode = "generate" | "send" | "verify";
 type HeaderRow = { id: string; key: string; value: string };
 
 function uid(): string {
-  return Math.random().toString(36).slice(2, 9);
+  return crypto.randomUUID().replace(/-/g, "").slice(0, 12);
 }
 
 function emptyHeader(): HeaderRow {

@@ -61,6 +61,7 @@ import {
   encodeJsonWorkspaceState,
   jsonWorkspaceShareTooLong,
 } from "@/lib/json-workspace-share";
+import { runTransformQuery } from "@/lib/transform-runner";
 import {
   deleteJsonPreset,
   loadJsonPresets,
@@ -86,6 +87,7 @@ type ConvertTarget = "yaml" | "csv" | "typescript" | "env" | "base64" | "xml" | 
 interface FixResult {
   text: string;
   fixes: string[];
+  original?: string;
   /** True when the fixed text parses as valid JSON */
   success?: boolean;
 }
@@ -246,14 +248,124 @@ function stripJsonComments(raw: string): { text: string; fixed: boolean } {
   return { text: out, fixed };
 }
 
+/** Replace Python True/False/None with JSON true/false/null, skipping inside strings. */
+function replacePythonLiterals(raw: string): string {
+  let out = "";
+  let i = 0;
+  let inString = false;
+  let escape = false;
+  while (i < raw.length) {
+    const ch = raw[i];
+    if (inString) {
+      out += ch;
+      if (escape) { escape = false; }
+      else if (ch === "\\") { escape = true; }
+      else if (ch === '"') { inString = false; }
+      i++;
+      continue;
+    }
+    if (ch === '"') { inString = true; out += ch; i++; continue; }
+    const rest = raw.slice(i);
+    if (rest.startsWith("True") && !/[a-zA-Z0-9_]/.test(raw[i + 4] ?? "")) {
+      out += "true"; i += 4;
+    } else if (rest.startsWith("False") && !/[a-zA-Z0-9_]/.test(raw[i + 5] ?? "")) {
+      out += "false"; i += 5;
+    } else if (rest.startsWith("None") && !/[a-zA-Z0-9_]/.test(raw[i + 4] ?? "")) {
+      out += "null"; i += 4;
+    } else { out += ch; i++; }
+  }
+  return out;
+}
+
+/** Escape literal newlines/tabs/control chars that appear raw inside JSON strings. */
+function fixLiteralControlChars(raw: string): { text: string; fixed: boolean } {
+  let out = "";
+  let i = 0;
+  let inString = false;
+  let escape = false;
+  let fixed = false;
+  while (i < raw.length) {
+    const ch = raw[i];
+    const code = raw.charCodeAt(i);
+    if (inString) {
+      if (escape) {
+        escape = false; out += ch;
+      } else if (ch === "\\") {
+        escape = true; out += ch;
+      } else if (ch === '"') {
+        inString = false; out += ch;
+      } else if (ch === "\n") {
+        out += "\\n"; fixed = true;
+      } else if (ch === "\r") {
+        if (i + 1 < raw.length && raw[i + 1] === "\n") { i++; }
+        out += "\\n"; fixed = true;
+      } else if (ch === "\t") {
+        out += "\\t"; fixed = true;
+      } else if (code < 0x20) {
+        out += `\\u${code.toString(16).padStart(4, "0")}`; fixed = true;
+      } else {
+        out += ch;
+      }
+    } else if (ch === '"') {
+      inString = true; out += ch;
+    } else {
+      out += ch;
+    }
+    i++;
+  }
+  return { text: out, fixed };
+}
+
 function fixCommonMistakes(input: string): FixResult {
   const fixes: string[] = [];
   let text = input;
+
+  // Strip markdown code fences (```json ... ``` or ``` ... ```)
+  const codeFenceBefore = text;
+  text = text.replace(/^\s*```(?:json)?\s*\r?\n?([\s\S]*?)\r?\n?\s*```\s*$/i, "$1").trim();
+  if (text !== codeFenceBefore) {
+    fixes.push("Stripped markdown code fence");
+  }
+
+  // Replace curly/smart quotes with straight ASCII quotes (common when pasting from word
+  // processors, Slack, Notion, etc.) — must run before escape normalization.
+  const curlyQuoteBefore = text;
+  text = text.replace(/[“”]/g, '"');
+  text = text.replace(/[‘’]/g, "'");
+  if (text !== curlyQuoteBefore) {
+    fixes.push("Replaced curly/smart quotes (“”‘’) with straight ASCII quotes");
+  }
+
+  // Fix escape sequences FIRST so that stringified-JSON layers can be parsed below.
+  // Order matters: \x → \u00xx, \u{xxxx} → \uXXXX, partial \u → escaped, then any
+  // remaining bad backslash (e.g. \— \★ \₹) → doubled.
+  const escapeBefore = text;
+  text = text.replace(/\\x([0-9a-fA-F]{2})/g, (_, h) => `\\u00${h}`);
+  text = text.replace(/\\u\{([0-9a-fA-F]{1,5})\}/g, (_, hex) => {
+    const code = parseInt(hex, 16);
+    if (code <= 0xffff) return `\\u${code.toString(16).padStart(4, "0")}`;
+    const shifted = code - 0x10000;
+    const high = 0xd800 + (shifted >> 10);
+    const low = 0xdc00 + (shifted & 0x3ff);
+    return `\\u${high.toString(16)}\\u${low.toString(16)}`;
+  });
+  text = text.replace(/\\u(?![0-9a-fA-F]{4})/g, "\\\\u");
+  text = text.replace(/\\(?!["\\/bfnrtu])/g, "\\\\");
+  if (text !== escapeBefore) {
+    fixes.push("Fixed invalid escape sequences (\\x, \\u{}, partial \\u, non-standard backslash)");
+  }
 
   const unwrap = unwrapStringifiedJsonLayers(text);
   if (unwrap.fixes.length) {
     fixes.push(...unwrap.fixes);
     text = unwrap.text;
+  }
+
+  // Replace Python literals (True/False/None) outside string values
+  const pythonBefore = text;
+  text = replacePythonLiterals(text);
+  if (text !== pythonBefore) {
+    fixes.push("Replaced Python literals (True → true, False → false, None → null)");
   }
 
   const mistakenKeySlash = text;
@@ -281,11 +393,8 @@ function fixCommonMistakes(input: string): FixResult {
   }
 
   // Quote unquoted {{template}} variables used as values
-  // e.g. "key": {{device_type}} → "key": "{{device_type}}"
-  // JSON sees {{ as a nested object and immediately errors on the inner {
   const templateVarBefore = text;
   text = text.replace(/([:\[,]\s*)\{\{([^{}]*)\}\}(?=\s*[,\]}\r\n])/g, '$1"{{$2}}"');
-  // Also handle at end of object/array with closing brace on same token
   text = text.replace(/([:\[,]\s*)\{\{([^{}]*)\}\}(\s*[}\]])/g, (_, pre, name, post) =>
     `${pre}"{{${name}}}"${post}`
   );
@@ -317,12 +426,6 @@ function fixCommonMistakes(input: string): FixResult {
     fixes.push("Removed trailing commas");
   }
 
-  const escapeBefore = text;
-  text = text.replace(/\\(?!["\\/bfnrtu])/g, "\\\\");
-  if (text !== escapeBefore) {
-    fixes.push("Fixed invalid escape sequences");
-  }
-
   const jsLiteralBefore = text;
   text = text
     .replace(/\bNaN\b/g, "null")
@@ -333,14 +436,26 @@ function fixCommonMistakes(input: string): FixResult {
     fixes.push("Replaced JavaScript-only literals (NaN, undefined, Infinity) with JSON null");
   }
 
+  // Escape literal newlines/tabs that appear raw inside JSON strings
+  const ctrlResult = fixLiteralControlChars(text);
+  if (ctrlResult.fixed) {
+    fixes.push("Escaped literal newlines/tabs inside string values");
+    text = ctrlResult.text;
+  }
+
+  // Remove leading + from numbers (e.g. +5 → 5)
+  const plusNumBefore = text;
+  text = text.replace(/(?<=[:\[,]\s*)\+(\d)/g, "$1");
+  if (text !== plusNumBefore) {
+    fixes.push("Removed leading + from numbers");
+  }
+
   // Deep-parse string values that are themselves valid JSON objects/arrays
-  // e.g. location_info: "{\"city\":\"NYC\"}" → location_info: { city: "NYC" }
   try {
     const parsed = JSON.parse(text) as unknown;
     let expandCount = 0;
     function deepParseStrings(val: unknown): unknown {
       if (typeof val === "string") {
-        // Attempt 1: val is already clean JSON, e.g. {"key":"val"}
         try {
           const inner = JSON.parse(val) as unknown;
           if (inner !== null && typeof inner === "object") {
@@ -348,9 +463,6 @@ function fixCommonMistakes(input: string): FixResult {
             return deepParseStrings(inner);
           }
         } catch {
-          // Attempt 2: val has backslash-escaped quotes, e.g. {\"key\":\"val\"}
-          // (happens when a JSON string was encoded twice: \\\" in raw text → \" in val)
-          // Wrapping in quotes lets JSON.parse unescape it, then we parse the result.
           try {
             const unescaped = JSON.parse('"' + val + '"') as unknown;
             if (typeof unescaped === "string") {
@@ -379,6 +491,20 @@ function fixCommonMistakes(input: string): FixResult {
       fixes.push(`Expanded ${expandCount} embedded JSON string${expandCount > 1 ? "s" : ""} into nested objects`);
     }
   } catch { /* outer JSON still invalid — skip */ }
+
+  // Last resort: NDJSON / JSON Lines → wrap in array
+  try {
+    JSON.parse(text);
+  } catch {
+    const lines = text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+    if (lines.length > 1) {
+      try {
+        const parsed = lines.map((l) => JSON.parse(l));
+        text = JSON.stringify(parsed, null, 2);
+        fixes.push(`Detected ${lines.length} JSON Lines (NDJSON) and wrapped them in an array`);
+      } catch { /* not NDJSON */ }
+    }
+  }
 
   return { text, fixes };
 }
@@ -744,8 +870,9 @@ function generateMockData(data: unknown, count = 5): unknown[] {
     const item: Record<string, unknown> = {};
     for (const [k, v] of Object.entries(template as Record<string, unknown>)) {
       if (typeof v === "string") item[k] = randomString(k, i);
-      else if (typeof v === "number") item[k] = Number.isInteger(v) ? Math.floor(Math.random() * 1000) : +(Math.random() * 100).toFixed(2);
-      else if (typeof v === "boolean") item[k] = Math.random() > 0.5;
+      // lgtm[js/insecure-randomness] — generating fake preview data, not a security token
+      else if (typeof v === "number") item[k] = Number.isInteger(v) ? Math.floor(Math.random() * 1000) : +(Math.random() * 100).toFixed(2); // CodeQL[js/insecure-randomness]
+      else if (typeof v === "boolean") item[k] = Math.random() > 0.5; // CodeQL[js/insecure-randomness]
       else if (v === null) item[k] = null;
       else item[k] = v;
     }
@@ -1112,11 +1239,6 @@ function buildQueryFromWizard(wizard: WizardState): string {
   return parts.join("\n  ");
 }
 
-function executeTransformQuery(data: unknown, query: string): unknown {
-  if (!Array.isArray(data)) throw new Error("Transform requires an array as input");
-  const fn = new Function("data", `"use strict"; return ${query};`);
-  return fn(data);
-}
 
 // ── Helpers to deep-get/set/delete by path ───────────────────────────────
 
@@ -1198,6 +1320,99 @@ function getFieldsFromData(data: unknown): string[] {
 
 const MAX_TREE_NODES = 10000;
 
+function nodeMatchesSearch(key: string, val: unknown, term: string): boolean {
+  const t = term.toLowerCase();
+  if (key.toLowerCase().includes(t)) return true;
+  if (typeof val === "string" && val.toLowerCase().includes(t)) return true;
+  if ((typeof val === "number" || typeof val === "boolean") && String(val).includes(t)) return true;
+  return false;
+}
+
+function subtreeMatchesSearch(val: unknown, key: string, term: string): boolean {
+  if (!term) return true;
+  if (nodeMatchesSearch(key, val, term)) return true;
+  if (Array.isArray(val)) return val.some((item, i) => subtreeMatchesSearch(item, String(i), term));
+  if (val !== null && typeof val === "object")
+    return Object.entries(val as Record<string, unknown>).some(([k, v]) => subtreeMatchesSearch(v, k, term));
+  return false;
+}
+
+function highlightMatch(text: string, term: string): React.ReactNode {
+  if (!term) return text;
+  const idx = text.toLowerCase().indexOf(term.toLowerCase());
+  if (idx === -1) return text;
+  return (
+    <>
+      {text.slice(0, idx)}
+      <mark className="bg-warning/40 text-foreground not-italic rounded-sm px-px">{text.slice(idx, idx + term.length)}</mark>
+      {text.slice(idx + term.length)}
+    </>
+  );
+}
+
+function countTreeMatches(val: unknown, key: string, term: string): number {
+  if (!term) return 0;
+  let n = nodeMatchesSearch(key, val, term) ? 1 : 0;
+  if (Array.isArray(val)) val.forEach((item, i) => { n += countTreeMatches(item, String(i), term); });
+  else if (val !== null && typeof val === "object")
+    Object.entries(val as Record<string, unknown>).forEach(([k, v]) => { n += countTreeMatches(v, k, term); });
+  return n;
+}
+
+type DiffLine = { type: "same" | "add" | "remove"; text: string };
+
+function computeLineDiff(before: string, after: string): DiffLine[] {
+  const a = before.split("\n");
+  const b = after.split("\n");
+  const MAX = 300;
+  if (a.length > MAX || b.length > MAX) {
+    return [
+      ...a.map((t) => ({ type: "remove" as const, text: t })),
+      ...b.map((t) => ({ type: "add" as const, text: t })),
+    ];
+  }
+  const m = a.length, n = b.length;
+  const dp: number[][] = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
+  for (let i = m - 1; i >= 0; i--)
+    for (let j = n - 1; j >= 0; j--)
+      dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+  const result: DiffLine[] = [];
+  let i = 0, j = 0;
+  while (i < m || j < n) {
+    if (i < m && j < n && a[i] === b[j]) { result.push({ type: "same", text: a[i++] }); j++; }
+    else if (j < n && (i >= m || dp[i][j + 1] >= dp[i + 1][j])) result.push({ type: "add", text: b[j++] });
+    else result.push({ type: "remove", text: a[i++] });
+  }
+  return result;
+}
+
+// Collapses long runs of unchanged lines, keeping CTX context lines around each change hunk.
+// Inserts a synthetic { type: "same", text: "···" } separator between collapsed sections.
+function diffWithContext(lines: DiffLine[], ctx = 2): DiffLine[] {
+  const shown = new Set<number>();
+  lines.forEach((l, i) => {
+    if (l.type !== "same") {
+      for (let d = -ctx; d <= ctx; d++) {
+        const idx = i + d;
+        if (idx >= 0 && idx < lines.length) shown.add(idx);
+      }
+    }
+  });
+  if (!shown.size) return [];
+  const result: DiffLine[] = [];
+  let gap = false;
+  for (let i = 0; i < lines.length; i++) {
+    if (shown.has(i)) {
+      if (gap) result.push({ type: "same", text: "···" });
+      gap = false;
+      result.push(lines[i]);
+    } else {
+      gap = true;
+    }
+  }
+  return result;
+}
+
 function InteractiveTreeNode({
   nodeKey,
   value,
@@ -1210,6 +1425,7 @@ function InteractiveTreeNode({
   collapseAllSignal,
   onContextMenu,
   onSelect,
+  searchTerm = "",
 }: {
   nodeKey: string;
   value: unknown;
@@ -1222,6 +1438,7 @@ function InteractiveTreeNode({
   collapseAllSignal: number;
   onContextMenu: (e: React.MouseEvent, ctx: ContextMenuState) => void;
   onSelect?: (path: (string | number)[]) => void;
+  searchTerm?: string;
 }) {
   const [expanded, setExpanded] = useState(defaultExpanded);
 
@@ -1237,6 +1454,36 @@ function InteractiveTreeNode({
 
   // Must be declared before any early returns to satisfy Rules of Hooks.
   const [nodeCopied, setNodeCopied] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [editValue, setEditValue] = useState("");
+
+  // Search match state — computed before early return to keep hook order stable.
+  const hasMatch = !searchTerm || subtreeMatchesSearch(value, nodeKey, searchTerm);
+  const directMatch = Boolean(searchTerm) && nodeMatchesSearch(nodeKey, value, searchTerm);
+
+  useEffect(() => {
+    // Auto-expand when a descendant matches the search term.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (searchTerm && hasMatch) setExpanded(true);
+  }, [searchTerm, hasMatch]);
+
+  function startEdit(e: React.MouseEvent) {
+    e.stopPropagation();
+    const raw = value === null ? "null" : typeof value === "string" ? value : String(value);
+    setEditValue(raw);
+    setEditing(true);
+  }
+
+  function commitEdit() {
+    setEditing(false);
+    if (editValue.trim() === "") return; // blank → cancel, restore original
+    let parsed: unknown = editValue;
+    if (editValue === "null") parsed = null;
+    else if (editValue === "true") parsed = true;
+    else if (editValue === "false") parsed = false;
+    else if (!isNaN(Number(editValue))) parsed = Number(editValue);
+    onUpdate(path, parsed);
+  }
 
   if (nodeCount.current > MAX_TREE_NODES) {
     return depth === 0 ? (
@@ -1268,7 +1515,7 @@ function InteractiveTreeNode({
     return "text-foreground";
   })();
 
-  const preview = (() => {
+  const previewRaw = (() => {
     if (typeof value === "string") return `"${value.length > 60 ? value.slice(0, 60) + "..." : value}"`;
     if (typeof value === "number" || typeof value === "boolean") return String(value);
     if (value === null) return "null";
@@ -1301,9 +1548,11 @@ function InteractiveTreeNode({
   }
 
   return (
-    <div>
+    <div className={searchTerm && !hasMatch ? "opacity-20 pointer-events-none" : undefined}>
       <div
-        className="flex items-center gap-1 py-0.5 px-2 hover:bg-accent/5 rounded cursor-pointer select-none group"
+        className={`flex items-center gap-1 py-0.5 px-2 rounded cursor-pointer select-none group transition-colors ${
+          directMatch ? "bg-warning/10 hover:bg-warning/15" : "hover:bg-accent/5"
+        }`}
         style={{ paddingLeft: `${depth * 20 + 8}px` }}
         onClick={() => { if (isExpandable) setExpanded(!expanded); onSelect?.(path); }}
         onContextMenu={handleRightClick}
@@ -1315,23 +1564,59 @@ function InteractiveTreeNode({
         ) : (
           <span className="w-4 shrink-0" />
         )}
-        <span className="font-mono text-sm text-accent font-medium">{nodeKey}</span>
+        <span className="font-mono text-sm text-accent font-medium">
+          {highlightMatch(nodeKey, searchTerm)}
+        </span>
         <span className="text-muted-foreground text-xs ml-1">{typeLabel}</span>
-        {preview && (
-          <span className={`font-mono text-sm ml-2 truncate flex-1 ${typeColor}`}>{preview}</span>
+        {!isExpandable && editing ? (
+          <input
+            autoFocus
+            value={editValue}
+            onChange={(e) => setEditValue(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") { e.preventDefault(); commitEdit(); }
+              if (e.key === "Escape") { e.stopPropagation(); setEditing(false); }
+              e.stopPropagation();
+            }}
+            onBlur={commitEdit}
+            onClick={(e) => e.stopPropagation()}
+            className={`flex-1 font-mono text-sm bg-card border border-accent/50 rounded px-1.5 outline-none min-w-0 ${typeColor}`}
+          />
+        ) : previewRaw ? (
+          <span
+            className={`font-mono text-sm ml-2 truncate flex-1 ${typeColor} ${!isExpandable ? "group-hover:underline-offset-2" : ""}`}
+            title={typeof value === "string" ? value : undefined}
+            onDoubleClick={!isExpandable ? startEdit : undefined}
+          >
+            {highlightMatch(previewRaw, searchTerm)}
+          </span>
+        ) : !isExpandable ? (
+          <span className="flex-1" />
+        ) : null}
+        {!editing && (
+          <button
+            onClick={copyNodePath}
+            aria-label="Copy JSONPath"
+            title="Copy JSONPath"
+            className={`ml-auto shrink-0 flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-mono border transition-all ${
+              nodeCopied
+                ? "border-success/40 bg-success/10 text-success"
+                : "border-transparent text-muted-foreground/40 group-hover:border-border group-hover:bg-card group-hover:text-muted-foreground hover:!text-accent hover:!border-accent/40"
+            }`}
+          >
+            {nodeCopied ? "✓ copied" : "⎘ path"}
+          </button>
         )}
-        <button
-          onClick={copyNodePath}
-          aria-label="Copy JSONPath"
-          title="Copy JSONPath"
-          className={`ml-auto shrink-0 flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-mono border transition-all ${
-            nodeCopied
-              ? "border-success/40 bg-success/10 text-success"
-              : "border-transparent text-muted-foreground/40 group-hover:border-border group-hover:bg-card group-hover:text-muted-foreground hover:!text-accent hover:!border-accent/40"
-          }`}
-        >
-          {nodeCopied ? "✓ copied" : "⎘ path"}
-        </button>
+        {!isExpandable && !editing && (
+          <button
+            onClick={startEdit}
+            aria-label="Edit value"
+            title="Edit value (or double-click)"
+            className="shrink-0 opacity-0 group-hover:opacity-100 p-0.5 rounded text-muted-foreground hover:text-accent transition-all"
+          >
+            <Pencil size={11} />
+          </button>
+        )}
       </div>
       {expanded && isExpandable && (
         <div>
@@ -1349,6 +1634,7 @@ function InteractiveTreeNode({
                   collapseAllSignal={collapseAllSignal}
                   onContextMenu={onContextMenu}
                   onSelect={onSelect}
+                  searchTerm={searchTerm}
                 />
               ))
             : Object.entries(value as Record<string, unknown>).map(([k, v]) => (
@@ -1364,6 +1650,7 @@ function InteractiveTreeNode({
                   collapseAllSignal={collapseAllSignal}
                   onContextMenu={onContextMenu}
                   onSelect={onSelect}
+                  searchTerm={searchTerm}
                 />
               ))}
         </div>
@@ -1518,6 +1805,7 @@ export default function JsonToolkitPage() {
   const [autoFormat, setAutoFormat] = useState(false);
   const [error, setError] = useState<JsonError | null>(null);
   const [fixResult, setFixResult] = useState<FixResult | null>(null);
+  const [showFixDiff, setShowFixDiff] = useState(false);
   const [diffLeft, setDiffLeft] = useState("");
   const [diffRight, setDiffRight] = useState("");
   const [showErrorPanel, setShowErrorPanel] = useState(false);
@@ -1795,6 +2083,7 @@ export default function JsonToolkitPage() {
   const [editingCellValue, setEditingCellValue] = useState("");
 
   const [selectedTreePath, setSelectedTreePath] = useState<(string | number)[] | null>(null);
+  const [treeSearchTerm, setTreeSearchTerm] = useState("");
   const [pathCopied, setPathCopied] = useState<"jsonpath" | "pointer" | "bracket" | null>(null);
   const [splitView, setSplitView] = useState(false);
   const [bracketHighlight, setBracketHighlight] = useState<{ open: number; close: number } | null>(null);
@@ -1897,22 +2186,29 @@ export default function JsonToolkitPage() {
     setTransformQuery(q);
   }, [wizard]);
 
-  // Auto-run transform preview
+  // Auto-run transform preview — executes inside a Web Worker for DOM isolation.
   useEffect(() => {
     if (activeTab !== "transform" || !input) return;
-    try {
-      const data = JSON.parse(input);
-      const result = executeTransformQuery(data, transformQuery);
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setTransformPreview(result);
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setTransformError(null);
-    } catch (e) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setTransformError((e as Error).message);
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setTransformPreview(null);
-    }
+    let cancelled = false;
+    (async () => {
+      try {
+        const data = JSON.parse(input);
+        if (!Array.isArray(data)) throw new Error("Transform requires an array as input");
+        const result = await runTransformQuery(data, transformQuery);
+        if (cancelled) return;
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setTransformPreview(result);
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setTransformError(null);
+      } catch (e) {
+        if (cancelled) return;
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setTransformError((e as Error).message);
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setTransformPreview(null);
+      }
+    })();
+    return () => { cancelled = true; };
   }, [activeTab, input, transformQuery]);
 
   const handleFormat = useCallback(async () => {
@@ -1961,15 +2257,16 @@ export default function JsonToolkitPage() {
 
   const handleFix = useCallback(() => {
     clearError();
+    const original = input;
     const result = fixCommonMistakes(input);
     setInputWithHistory(result.text);
     try {
       const parsed = JSON.parse(result.text);
       setOutput(JSON.stringify(parsed, null, 2));
-      setFixResult({ ...result, success: true });
+      setFixResult({ ...result, original, success: true });
       trackToolSuccess(TOOL_SLUG, "auto_fix", { fixes: result.fixes.length });
     } catch {
-      setFixResult({ ...result, success: false });
+      setFixResult({ ...result, original, success: false });
       const err = parseJsonError(result.text);
       if (err) {
         setError(err);
@@ -2298,6 +2595,28 @@ export default function JsonToolkitPage() {
     }
   }, [input]);
 
+  const selectedNodeValue = useMemo(() => {
+    if (selectedTreePath === null || parsedForTree === undefined) return undefined;
+    let v: unknown = parsedForTree;
+    for (const key of selectedTreePath) {
+      if (v === null || typeof v !== "object") return undefined;
+      v = (v as Record<string | number, unknown>)[key];
+    }
+    return v;
+  }, [selectedTreePath, parsedForTree]);
+
+  const treeMatchCount = useMemo(() => {
+    if (!treeSearchTerm || parsedForTree === undefined) return 0;
+    // Pass empty string as root key so the virtual "root" label never produces a false match.
+    if (Array.isArray(parsedForTree))
+      return parsedForTree.reduce((n: number, item, i) => n + countTreeMatches(item, String(i), treeSearchTerm), 0);
+    if (parsedForTree !== null && typeof parsedForTree === "object")
+      return Object.entries(parsedForTree as Record<string, unknown>).reduce(
+        (n: number, [k, v]) => n + countTreeMatches(v, k, treeSearchTerm), 0
+      );
+    return countTreeMatches(parsedForTree, "", treeSearchTerm);
+  }, [treeSearchTerm, parsedForTree]);
+
   // Context menu actions
   const handleContextAction = useCallback((action: string, ctx: ContextMenuState) => {
     if (!parsedForTree) return;
@@ -2491,9 +2810,11 @@ export default function JsonToolkitPage() {
 
   const nodeCounter = useRef({ current: 0 });
 
-  const handleTreeUpdate = useCallback((_path: (string | number)[], _newValue: unknown) => {
-    // handled via context menu actions
-  }, []);
+  const handleTreeUpdate = useCallback((path: (string | number)[], newValue: unknown) => {
+    if (!parsedForTree || path.length === 0) return;
+    const updated = deepSet(parsedForTree, path, newValue);
+    setInputWithHistory(JSON.stringify(updated, null, 2));
+  }, [parsedForTree, setInputWithHistory]);
 
   const handleTreeContextMenu = useCallback((e: React.MouseEvent, ctx: ContextMenuState) => {
     setContextMenu(ctx);
@@ -2907,44 +3228,77 @@ export default function JsonToolkitPage() {
 
       {/* Fix result banner */}
       {fixResult && (fixResult.fixes.length > 0 || fixResult.success) && (
-        <div
-          className={`border-b px-4 py-2.5 flex items-start gap-2 shrink-0 animate-fade-in ${
-            fixResult.success
-              ? "bg-success/10 border-success/30"
-              : "bg-warning/10 border-warning/30"
-          }`}
-        >
-          {fixResult.success ? (
-            <Check size={16} className="text-success shrink-0 mt-0.5" />
-          ) : (
-            <AlertTriangle size={16} className="text-warning shrink-0 mt-0.5" />
-          )}
-          <div className="text-sm flex-1 min-w-0">
+        <div className={`border-b shrink-0 animate-fade-in ${fixResult.success ? "border-success/30" : "border-warning/30"}`}>
+          <div className={`px-4 py-2.5 flex items-start gap-2 ${fixResult.success ? "bg-success/10" : "bg-warning/10"}`}>
             {fixResult.success ? (
-              <p className="font-medium text-success">
-                JSON is valid now{fixResult.fixes.length > 0 ? " — fixes applied" : ""}.
-              </p>
+              <Check size={16} className="text-success shrink-0 mt-0.5" />
             ) : (
-              <p className="font-medium text-warning">
-                Auto-fix ran but JSON is still invalid — see error panel below.
-              </p>
+              <AlertTriangle size={16} className="text-warning shrink-0 mt-0.5" />
             )}
-            {fixResult.fixes.length > 0 && (
-              <ul className="mt-1 text-muted-foreground space-y-0.5 text-xs">
-                {fixResult.fixes.map((f, i) => (
-                  <li key={i}>- {f}</li>
-                ))}
-              </ul>
-            )}
+            <div className="text-sm flex-1 min-w-0">
+              {fixResult.success ? (
+                <p className="font-medium text-success">
+                  JSON is valid now{fixResult.fixes.length > 0 ? " — fixes applied" : ""}.
+                </p>
+              ) : (
+                <p className="font-medium text-warning">
+                  Auto-fix ran but JSON is still invalid — see error panel below.
+                </p>
+              )}
+              {fixResult.fixes.length > 0 && (
+                <ul className="mt-1 text-muted-foreground space-y-0.5 text-xs">
+                  {fixResult.fixes.map((f, i) => (
+                    <li key={i}>- {f}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
+            <div className="flex items-center gap-1 shrink-0">
+              {fixResult.original !== undefined && fixResult.original !== fixResult.text && (
+                <button
+                  type="button"
+                  onClick={() => setShowFixDiff((v) => !v)}
+                  className={`text-xs px-2 py-0.5 rounded border transition-colors font-mono ${
+                    showFixDiff
+                      ? "border-accent/40 bg-accent/10 text-accent"
+                      : "border-border bg-muted text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {showFixDiff ? "Hide diff" : "Show diff"}
+                </button>
+              )}
+              <button
+                type="button"
+                aria-label="Dismiss fix result"
+                onClick={() => { setFixResult(null); setShowFixDiff(false); }}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <X size={14} />
+              </button>
+            </div>
           </div>
-          <button
-            type="button"
-            aria-label="Dismiss fix result"
-            onClick={() => setFixResult(null)}
-            className="text-muted-foreground hover:text-foreground shrink-0"
-          >
-            <X size={14} />
-          </button>
+          {showFixDiff && fixResult.original !== undefined && fixResult.original !== fixResult.text && (
+            <div className="max-h-52 overflow-auto scrollbar-thin font-mono text-xs bg-card border-t border-border/50">
+              {diffWithContext(computeLineDiff(fixResult.original, fixResult.text)).map((line, i) =>
+                line.type === "same" ? (
+                  <div key={i} className="px-4 py-px text-muted-foreground/50 whitespace-pre select-none">
+                    {line.text === "···" ? "  ···" : `  ${line.text}`}
+                  </div>
+                ) : (
+                  <div
+                    key={i}
+                    className={`px-4 py-px whitespace-pre ${
+                      line.type === "add"
+                        ? "bg-success/10 text-success"
+                        : "bg-destructive/10 text-destructive"
+                    }`}
+                  >
+                    {line.type === "add" ? "+" : "-"} {line.text}
+                  </div>
+                )
+              )}
+            </div>
+          )}
         </div>
       )}
 
@@ -3051,6 +3405,35 @@ export default function JsonToolkitPage() {
                   </>
                 )}
               </div>
+              {selectedNodeValue !== undefined && typeof selectedNodeValue === "string" && selectedNodeValue.length > 60 && (
+                <div className="shrink-0 border-b border-border bg-muted/30 px-3 py-2 max-h-32 overflow-auto scrollbar-thin">
+                  <p className="text-[10px] font-medium text-muted-foreground mb-1">FULL VALUE</p>
+                  <pre className="font-mono text-xs text-success whitespace-pre-wrap break-all select-text">{selectedNodeValue}</pre>
+                </div>
+              )}
+
+              {/* Tree filter */}
+              <div className="shrink-0 border-b border-border bg-card px-2 py-1.5 flex items-center gap-1.5">
+                <Search size={12} className="text-muted-foreground shrink-0" />
+                <input
+                  type="text"
+                  value={treeSearchTerm}
+                  onChange={(e) => setTreeSearchTerm(e.target.value)}
+                  placeholder="Filter keys or values…"
+                  className="flex-1 bg-transparent text-xs outline-none placeholder:text-muted-foreground/50 font-mono"
+                />
+                {treeSearchTerm && treeMatchCount > 0 && (
+                  <span className="text-[10px] font-mono text-accent shrink-0">{treeMatchCount} match{treeMatchCount !== 1 ? "es" : ""}</span>
+                )}
+                {treeSearchTerm && treeMatchCount === 0 && (
+                  <span className="text-[10px] font-mono text-destructive shrink-0">no matches</span>
+                )}
+                {treeSearchTerm && (
+                  <button onClick={() => setTreeSearchTerm("")} className="text-muted-foreground hover:text-foreground shrink-0">
+                    <X size={12} />
+                  </button>
+                )}
+              </div>
 
               <div className="flex-1 overflow-auto p-2 scrollbar-thin">
                 {!input.trim() ? (
@@ -3079,6 +3462,7 @@ export default function JsonToolkitPage() {
                         collapseAllSignal={collapseAllSignal}
                         onContextMenu={handleTreeContextMenu}
                         onSelect={setSelectedTreePath}
+                        searchTerm={treeSearchTerm}
                       />
                     );
                   })()
@@ -3235,6 +3619,35 @@ export default function JsonToolkitPage() {
                 </>
               )}
             </div>
+            {selectedNodeValue !== undefined && typeof selectedNodeValue === "string" && selectedNodeValue.length > 60 && (
+              <div className="shrink-0 border-b border-border bg-muted/30 px-3 py-2 max-h-40 overflow-auto scrollbar-thin">
+                <p className="text-[10px] font-medium text-muted-foreground mb-1">FULL VALUE</p>
+                <pre className="font-mono text-xs text-success whitespace-pre-wrap break-all select-text">{selectedNodeValue}</pre>
+              </div>
+            )}
+
+            {/* Tree filter */}
+            <div className="shrink-0 border-b border-border bg-card px-2 py-1.5 flex items-center gap-1.5">
+              <Search size={12} className="text-muted-foreground shrink-0" />
+              <input
+                type="text"
+                value={treeSearchTerm}
+                onChange={(e) => setTreeSearchTerm(e.target.value)}
+                placeholder="Filter keys or values…"
+                className="flex-1 bg-transparent text-xs outline-none placeholder:text-muted-foreground/50 font-mono"
+              />
+              {treeSearchTerm && treeMatchCount > 0 && (
+                <span className="text-[10px] font-mono text-accent shrink-0">{treeMatchCount} match{treeMatchCount !== 1 ? "es" : ""}</span>
+              )}
+              {treeSearchTerm && treeMatchCount === 0 && (
+                <span className="text-[10px] font-mono text-destructive shrink-0">no matches</span>
+              )}
+              {treeSearchTerm && (
+                <button onClick={() => setTreeSearchTerm("")} className="text-muted-foreground hover:text-foreground shrink-0">
+                  <X size={12} />
+                </button>
+              )}
+            </div>
 
             <div className="flex-1 overflow-auto p-2 scrollbar-thin">
               {!input.trim() ? (
@@ -3258,6 +3671,7 @@ export default function JsonToolkitPage() {
                       collapseAllSignal={collapseAllSignal}
                       onContextMenu={handleTreeContextMenu}
                       onSelect={setSelectedTreePath}
+                      searchTerm={treeSearchTerm}
                     />
                   );
                 })()

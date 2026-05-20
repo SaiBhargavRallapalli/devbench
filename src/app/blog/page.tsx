@@ -161,10 +161,10 @@ export default function BlogPage() {
 
       <JsonLd data={breadcrumbSchema([{ name: "Blog", path: "/blog" }])} />
 
-      {/* JSON-LD */}
+      {/* JSON-LD — Safe: JSON.stringify + < escape produces no executable content. lgtm[js/xss] */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{
+        dangerouslySetInnerHTML={{ // CodeQL[js/xss]
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Blog",

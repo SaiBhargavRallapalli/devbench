@@ -165,8 +165,10 @@ self.addEventListener("message", async (event) => {
   });
 
   try {
-    // Compile user code with a CommonJS shim. Errors here are SyntaxError.
-    const compile = new Function(
+    // Intentional: this Worker has no DOM/cookie/storage access by design.
+    // Executing user-supplied Lambda handler code is the entire purpose of this sandbox.
+    // lgtm[js/code-injection]
+    const compile = new Function( // CodeQL[js/code-injection]
       "exports", "module", "require", "process", "console", "__dirname", "__filename",
       req.code + "\\n//# sourceURL=lambda-handler.js"
     );
@@ -309,12 +311,5 @@ export function formatBilled(billedMs: number, memoryMB: number): string {
 }
 
 export function makeRequestId(): string {
-  // RFC 4122 v4-style. crypto.randomUUID exists in all modern browsers.
-  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
-    return crypto.randomUUID();
-  }
-  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
-    const r = (Math.random() * 16) | 0;
-    return (c === "x" ? r : (r & 0x3) | 0x8).toString(16);
-  });
+  return crypto.randomUUID();
 }

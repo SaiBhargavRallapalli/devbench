@@ -27,7 +27,7 @@ import {
   Workflow,
   FileUp,
 } from "lucide-react";
-import { io, type Socket as IoSocket } from "socket.io-client";
+import type { Socket as IoSocket } from "socket.io-client";
 import Header from "@/components/Header";
 import ApiImportPanel, { type ApiImportApply } from "@/components/ApiImportPanel";
 import type { ImportedRequest } from "@/lib/api-import";
@@ -99,8 +99,8 @@ const METHOD_BG: Record<HttpMethod, string> = {
   OPTIONS: "bg-pink-500",
 };
 
-function uid() {
-  return Math.random().toString(36).slice(2, 9);
+function uid(): string {
+  return crypto.randomUUID().replace(/-/g, "").slice(0, 12);
 }
 
 function emptyKV(): KVPair {
@@ -633,7 +633,7 @@ export default function ApiTesterPage() {
     }
   }, [finalUrl, grpcJsonBody, buildHeaders]);
 
-  const connectSocketIo = useCallback(() => {
+  const connectSocketIo = useCallback(async () => {
     if (!finalUrl.trim()) return;
     socketIoRef.current?.disconnect();
     setSocketIoLog([]);
@@ -651,6 +651,7 @@ export default function ApiTesterPage() {
     }
 
     try {
+      const { io } = await import("socket.io-client");
       const path = socketIoPath.startsWith("/") ? socketIoPath : `/${socketIoPath}`;
       const socket = io(finalUrl, {
         path,
