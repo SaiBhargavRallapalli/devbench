@@ -31,7 +31,6 @@ import {
   Download,
   Search,
   Replace,
-  Route,
   Undo2,
   Redo2,
   ChevronsUpDown,
@@ -88,7 +87,6 @@ import {
   readTabFromSearch,
 } from "@/lib/json-workspace-bootstrap";
 import JsonLoadUrlPanel from "@/components/json-workspace/JsonLoadUrlPanel";
-import JsonPathTab from "@/components/json-workspace/JsonPathTab";
 import JsonQuickNav from "@/components/json-workspace/JsonQuickNav";
 import JsonRepairExamples from "@/components/json-workspace/JsonRepairExamples";
 import ToolPageActions from "@/components/ToolPageActions";
@@ -1276,7 +1274,6 @@ export default function JsonToolkitPage({
     { id: "format", label: "Format", icon: <Braces size={16} /> },
     { id: "tree", label: "Tree View", icon: <TreePine size={16} /> },
     { id: "diff", label: "Diff", icon: <GitCompareArrows size={16} /> },
-    { id: "path", label: "JSONPath", icon: <Route size={16} /> },
     { id: "convert", label: "Convert", icon: <ArrowRightLeft size={16} /> },
     { id: "generate", label: "Generate", icon: <Sparkles size={16} /> },
     { id: "transform", label: "Transform", icon: <Filter size={16} /> },
@@ -2199,10 +2196,6 @@ export default function JsonToolkitPage({
               )}
             </div>
           </div>
-        )}
-
-        {!splitView && activeTab === "path" && (
-          <JsonPathTab input={input} onSwitchToFormat={() => setActiveTab("format")} />
         )}
 
         {!splitView && activeTab === "diff" && (

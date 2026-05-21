@@ -9,7 +9,6 @@ const TAB_IDS = new Set<string>([
   "format",
   "tree",
   "diff",
-  "path",
   "convert",
   "generate",
   "transform",

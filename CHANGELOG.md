@@ -10,7 +10,8 @@
 - add JSONC and JWT decoding, enhance JSON export options (`41635fd`)
 
 ### Changed
-- enhance JSON toolkit and workspace components (`68d7ed2`)
+- remove JSONPath support from JSON toolkit (`2160b3f`)
+- enhance JSON toolkit and workspace components (`aa321c3`)
 - Update CHANGELOG.md to reflect the correct commit hash for jsonrepair library integration (`f68e403`)
 
 ### Chore

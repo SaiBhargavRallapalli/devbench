@@ -1,7 +1,7 @@
 "use client";
 
 import type { JsonWorkspaceTab } from "@/lib/json-workspace-types";
-import { Braces, GitCompareArrows, Minimize2, Route, TreePine, Wrench } from "lucide-react";
+import { Braces, GitCompareArrows, Minimize2, TreePine, Wrench } from "lucide-react";
 
 type QuickAction = "validate" | "repair" | "minify";
 
@@ -22,7 +22,6 @@ const LINKS: {
   { action: "repair", tab: "format", label: "Repair", icon: <Wrench size={14} />, title: "Auto-fix broken JSON" },
   { action: "minify", tab: "format", label: "Minify", icon: <Minimize2 size={14} />, title: "Compress to one line" },
   { tab: "diff", label: "Diff", icon: <GitCompareArrows size={14} />, title: "Compare two JSON documents" },
-  { tab: "path", label: "Path", icon: <Route size={14} />, title: "JSONPath query" },
   { tab: "tree", label: "Tree", icon: <TreePine size={14} />, title: "Interactive tree view" },
 ];
 

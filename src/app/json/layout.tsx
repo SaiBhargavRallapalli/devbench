@@ -123,12 +123,6 @@ export default function JsonToolkitLayout({
             <code className="font-mono text-xs">?json=…</code>
           </li>
           <li>
-            <strong>JSONPath</strong> — dedicated page at{" "}
-            <a href="/json/path" className="text-accent hover:underline">
-              /json/path
-            </a>
-          </li>
-          <li>
             <strong>Tree view</strong> — collapse and expand nested objects and
             arrays; copy any subtree as JSON
           </li>

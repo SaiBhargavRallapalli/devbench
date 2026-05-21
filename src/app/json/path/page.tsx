@@ -1,5 +1,5 @@
-import JsonToolkitPage from "@/components/json-workspace/JsonToolkitPage";
+import { redirect } from "next/navigation";
 
 export default function JsonPathPage() {
-  return <JsonToolkitPage initialTab="path" />;
+  redirect("/json?tab=tree");
 }
