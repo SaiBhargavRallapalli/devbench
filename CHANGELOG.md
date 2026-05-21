@@ -5,11 +5,12 @@
 ## 2026-05-21
 
 ### Added
+- integrate JSONPath support and enhance JSON handling capabilities (`d579621`)
 - add jsonrepair library for enhanced JSON handling (`d67b2ec`)
 - add JSONC and JWT decoding, enhance JSON export options (`41635fd`)
 
 ### Changed
-- Update CHANGELOG.md to reflect the correct commit hash for jsonrepair library integration (`6f60cf9`)
+- Update CHANGELOG.md to reflect the correct commit hash for jsonrepair library integration (`f68e403`)
 
 ### Chore
 - bump react and @types/react (`79a5346`)

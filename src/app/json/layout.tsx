@@ -53,9 +53,10 @@ const webAppSchema = {
   ...webApplicationEnrichment({
     screenshotUrl: `${SITE_URL}/json/opengraph-image`,
     featureList: [
-      "Format, validate, minify, and diff JSON with live error highlighting",
-      "Tree view, JSON Schema validation, export to YAML, CSV, TOML, and TypeScript",
-      "Runs entirely in your browser — no server uploads",
+      "Format, validate, minify, repair, and diff JSON with live error highlighting",
+      "JSONPath queries, tree view, schema validation, and JSONLint-style ?json= / ?url= links",
+      "Export to YAML, CSV, TOML, TypeScript; import JWT, JSONC, and more",
+      "Runs in your browser — optional URL fetch uses a secure same-origin proxy",
       "Free — no account required",
     ],
   }),
@@ -109,8 +110,25 @@ export default function JsonToolkitLayout({
             configurable indent (2 or 4 spaces) or minify to a single line
           </li>
           <li>
-            <strong>Validate</strong> — syntax errors reported with line and
-            column numbers; common mistakes auto-fixed on request
+            <strong>Validate &amp; repair</strong> — line/column errors, one-click
+            auto-fix (trailing commas, missing commas, truncated JSON, LLM markdown,
+            over-escaped quotes) with try-an-example chips like{" "}
+            <a
+              href="https://jsonlint.com/json-repair"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-accent hover:underline"
+            >
+              JSONLint Repair
+            </a>
+          </li>
+          <li>
+            <strong>Load from URL</strong> — paste a link or open{" "}
+            <code className="font-mono text-xs">/json?url=…</code> /{" "}
+            <code className="font-mono text-xs">?json=…</code> (JSONLint-compatible)
+          </li>
+          <li>
+            <strong>JSONPath</strong> — query documents with expressions; copy results
           </li>
           <li>
             <strong>Tree view</strong> — collapse and expand nested objects and

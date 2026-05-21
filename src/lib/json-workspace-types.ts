@@ -5,6 +5,7 @@ export type JsonWorkspaceTab =
   | "format"
   | "tree"
   | "diff"
+  | "path"
   | "convert"
   | "generate"
   | "transform"

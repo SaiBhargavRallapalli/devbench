@@ -31,6 +31,7 @@ import {
   Download,
   Search,
   Replace,
+  Route,
   Undo2,
   Redo2,
   ChevronsUpDown,
@@ -80,6 +81,15 @@ import {
   stripJsonComments,
   type FixResult,
 } from "@/lib/json-repair";
+import {
+  buildJsonQueryShareUrl,
+  fetchRemoteJsonForWorkspace,
+  readJsonBootstrapFromSearch,
+} from "@/lib/json-workspace-bootstrap";
+import JsonLoadUrlPanel from "@/components/json-workspace/JsonLoadUrlPanel";
+import JsonPathTab from "@/components/json-workspace/JsonPathTab";
+import JsonQuickNav from "@/components/json-workspace/JsonQuickNav";
+import JsonRepairExamples from "@/components/json-workspace/JsonRepairExamples";
 import ToolPageActions from "@/components/ToolPageActions";
 
 const TOOL_SLUG = "json";
@@ -1682,6 +1692,10 @@ export default function JsonToolkitPage() {
   const [shareCopied, setShareCopied] = useState(false);
   const [jsonPresets, setJsonPresets] = useState<JsonWorkspacePreset[]>([]);
   const [presetsRevision, setPresetsRevision] = useState(0);
+  const [showLoadUrl, setShowLoadUrl] = useState(false);
+  const [loadUrlInput, setLoadUrlInput] = useState("");
+  const [loadUrlBusy, setLoadUrlBusy] = useState(false);
+  const [loadUrlError, setLoadUrlError] = useState("");
   const jwHydrated = useRef(false);
 
   const handleSchemaValidate = useCallback(() => {
@@ -1748,23 +1762,63 @@ export default function JsonToolkitPage() {
   useEffect(() => {
     if (jwHydrated.current) return;
     if (typeof window === "undefined") return;
+
     const d = decodeJsonWorkspaceState(window.location.hash);
-    if (!d) return;
+    if (d) {
+      jwHydrated.current = true;
+      skipHistoryRef.current = true;
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setInput(d.input);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setSchemaText(d.schemaText);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setActiveTab(d.activeTab);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setDiffLeft(d.diffLeft);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setDiffRight(d.diffRight);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      if (d.schemaText.trim()) setShowSchemaPanel(true);
+      return;
+    }
+
+    const bootstrap = readJsonBootstrapFromSearch(window.location.search);
+    if (!bootstrap) return;
     jwHydrated.current = true;
     skipHistoryRef.current = true;
+
+    if (bootstrap.kind === "inline") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setInput(bootstrap.text);
+      return;
+    }
+
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setInput(d.input);
+    setShowLoadUrl(true);
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setSchemaText(d.schemaText);
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setActiveTab(d.activeTab);
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setDiffLeft(d.diffLeft);
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setDiffRight(d.diffRight);
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (d.schemaText.trim()) setShowSchemaPanel(true);
-  }, []);
+    setLoadUrlInput(bootstrap.url);
+    let cancelled = false;
+    (async () => {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setLoadUrlBusy(true);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setLoadUrlError("");
+      const result = await fetchRemoteJsonForWorkspace(bootstrap.url);
+      if (cancelled) return;
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setLoadUrlBusy(false);
+      if (result.ok) {
+        setInputWithHistory(result.text);
+        trackToolSuccess(TOOL_SLUG, "load_url", { via: "query" });
+      } else {
+        setLoadUrlError(result.error);
+        trackToolError(TOOL_SLUG, "load_url", result.error);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [setInputWithHistory]);
 
   useEffect(() => {
     if (!showSchemaPanel) return;
@@ -2038,6 +2092,41 @@ export default function JsonToolkitPage() {
     }
   }, [input, clearError, setInputWithHistory]);
 
+  const handleLoadFromUrl = useCallback(async () => {
+    setLoadUrlBusy(true);
+    setLoadUrlError("");
+    const result = await fetchRemoteJsonForWorkspace(loadUrlInput);
+    setLoadUrlBusy(false);
+    if (result.ok) {
+      setInputWithHistory(result.text);
+      setShowLoadUrl(false);
+      trackToolSuccess(TOOL_SLUG, "load_url", { via: "panel" });
+    } else {
+      setLoadUrlError(result.error);
+      trackToolError(TOOL_SLUG, "load_url", result.error);
+    }
+  }, [loadUrlInput, setInputWithHistory]);
+
+  const handleTryRepairExample = useCallback(
+    (broken: string) => {
+      setActiveTab("format");
+      setInputWithHistory(broken);
+      setFixResult(null);
+      clearError();
+    },
+    [setInputWithHistory, clearError],
+  );
+
+  const handleJsonQuickAction = useCallback(
+    (action: "validate" | "repair" | "minify") => {
+      setActiveTab("format");
+      if (action === "validate") void handleFormat();
+      else if (action === "repair") handleFix();
+      else void handleMinify();
+    },
+    [handleFormat, handleFix, handleMinify],
+  );
+
   const handleCopy = useCallback(async () => {
     const textToCopy = activeTab === "convert" || activeTab === "format" || activeTab === "generate" ? output : input;
     try {
@@ -2049,6 +2138,14 @@ export default function JsonToolkitPage() {
   }, [output, input, activeTab]);
 
   const copyJsonWorkspaceShareLink = useCallback(async () => {
+    const origin = window.location.origin;
+    const pathname = window.location.pathname;
+    const simpleShare =
+      activeTab === "format" &&
+      !schemaText.trim() &&
+      !diffLeft.trim() &&
+      !diffRight.trim();
+    const queryUrl = simpleShare ? buildJsonQueryShareUrl(origin, pathname, input) : null;
     const fragment = encodeJsonWorkspaceState({
       v: 2,
       input,
@@ -2057,13 +2154,13 @@ export default function JsonToolkitPage() {
       diffLeft,
       diffRight,
     });
-    if (jsonWorkspaceShareTooLong(fragment)) {
+    if (!queryUrl && jsonWorkspaceShareTooLong(fragment)) {
       window.alert(
         "This workspace is too large to pack into a URL. Shorten the JSON or copy sections manually.",
       );
       return;
     }
-    const url = `${window.location.origin}${window.location.pathname}${fragment}`;
+    const url = queryUrl ?? `${origin}${pathname}${fragment}`;
     try {
       await navigator.clipboard.writeText(url);
       setShareCopied(true);
@@ -2569,6 +2666,7 @@ export default function JsonToolkitPage() {
     { id: "format", label: "Format", icon: <Braces size={16} /> },
     { id: "tree", label: "Tree View", icon: <TreePine size={16} /> },
     { id: "diff", label: "Diff", icon: <GitCompareArrows size={16} /> },
+    { id: "path", label: "JSONPath", icon: <Route size={16} /> },
     { id: "convert", label: "Convert", icon: <ArrowRightLeft size={16} /> },
     { id: "generate", label: "Generate", icon: <Sparkles size={16} /> },
     { id: "transform", label: "Transform", icon: <Filter size={16} /> },
@@ -2657,6 +2755,12 @@ export default function JsonToolkitPage() {
         </nav>
       </div>
 
+      <JsonQuickNav
+        activeTab={activeTab}
+        onSelectTab={setActiveTab}
+        onQuickAction={handleJsonQuickAction}
+      />
+
       {/* Toolbar */}
       <div className="border-b border-border bg-card px-4 py-2 flex flex-wrap items-center gap-1.5 shrink-0">
         {activeTab === "format" && (
@@ -2743,6 +2847,7 @@ export default function JsonToolkitPage() {
         <ToolButton onClick={handleUndo} icon={<Undo2 size={15} />} label="Undo" />
         <ToolButton onClick={handleRedo} icon={<Redo2 size={15} />} label="Redo" />
         <div className="w-px h-5 bg-border mx-0.5" />
+        <ToolButton onClick={() => setShowLoadUrl(!showLoadUrl)} icon={<Upload size={15} />} label="Load URL" />
         <ToolButton onClick={() => setShowSearch(!showSearch)} icon={<Search size={15} />} label="Find" />
         <ToolButton onClick={() => setShowSchemaPanel(!showSchemaPanel)} icon={<ShieldCheck size={15} />} label="Validate Schema" />
         <ToolButton
@@ -2974,6 +3079,17 @@ export default function JsonToolkitPage() {
           <span className="text-xs text-muted-foreground">AES-256-GCM - client-side only</span>
           <button aria-label="Close encrypt panel" onClick={() => setShowEncrypt(false)} className="ml-auto text-muted-foreground hover:text-foreground"><X size={14} /></button>
         </div>
+      )}
+
+      {showLoadUrl && (
+        <JsonLoadUrlPanel
+          url={loadUrlInput}
+          busy={loadUrlBusy}
+          error={loadUrlError}
+          onUrlChange={setLoadUrlInput}
+          onLoad={() => void handleLoadFromUrl()}
+          onClose={() => setShowLoadUrl(false)}
+        />
       )}
 
       {/* Import panel */}
@@ -3469,6 +3585,10 @@ export default function JsonToolkitPage() {
           </div>
         )}
 
+        {!splitView && activeTab === "path" && (
+          <JsonPathTab input={input} />
+        )}
+
         {!splitView && activeTab === "diff" && (
           <div className="h-full flex flex-col">
             <div className="flex flex-col md:flex-row flex-1 min-h-0">
@@ -3938,16 +4058,19 @@ export default function JsonToolkitPage() {
                     <span className="text-destructive">{inputLines[errorLine - 1]}</span>
                   </pre>
                 )}
-                <div className="mt-3 flex flex-wrap items-center gap-2">
-                  <span className="text-xs text-muted-foreground">Try automatic repair (trailing commas, missing commas, truncated JSON, LLM markdown, …):</span>
-                  <button
-                    type="button"
-                    onClick={handleFix}
-                    className="inline-flex items-center gap-1.5 rounded-lg border border-warning/40 bg-warning/15 px-3 py-1.5 text-xs font-semibold text-amber-950 dark:text-amber-50 hover:bg-warning/25 transition-colors"
-                  >
-                    <Wrench size={14} />
-                    Auto-fix JSON
-                  </button>
+                <div className="mt-3 space-y-2">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-xs text-muted-foreground">Try automatic repair:</span>
+                    <button
+                      type="button"
+                      onClick={handleFix}
+                      className="inline-flex items-center gap-1.5 rounded-lg border border-warning/40 bg-warning/15 px-3 py-1.5 text-xs font-semibold text-amber-950 dark:text-amber-50 hover:bg-warning/25 transition-colors"
+                    >
+                      <Wrench size={14} />
+                      Auto-fix JSON
+                    </button>
+                  </div>
+                  <JsonRepairExamples onTryExample={handleTryRepairExample} />
                 </div>
               </div>
             </div>

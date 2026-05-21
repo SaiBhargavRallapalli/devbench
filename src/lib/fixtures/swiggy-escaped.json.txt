@@ -1,0 +1,1 @@
+{\"responses\": [{\"type\": \"text\", \"text\": \"Place this order with Cash?\"}, {\"card\": \"swiggy_response\", \"type\": \"direct_query\"}, {\"type\": \"info\", \"query\": \"select 1\"}]}

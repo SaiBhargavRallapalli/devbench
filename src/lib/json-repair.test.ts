@@ -1,3 +1,5 @@
+import { readFileSync } from "fs";
+import { join } from "path";
 import { describe, expect, it } from "vitest";
 import { fixCommonMistakes } from "./json-repair";
 
@@ -24,5 +26,28 @@ describe("fixCommonMistakes", () => {
     const result = fixCommonMistakes('{"ok": true}');
     expect(result.success).toBe(true);
     expect(JSON.parse(result.text)).toEqual({ ok: true });
+  });
+
+  it("fixes over-escaped quotes (Swiggy-style API dump)", () => {
+    const broken = String.raw`{\"responses\": [{\"type\": \"text\", \"text\": \"Place this order with Cash?\"}]}`;
+    const result = fixCommonMistakes(broken);
+    expect(result.success).toBe(true);
+    const parsed = JSON.parse(result.text) as { responses: { type: string }[] };
+    expect(parsed.responses[0].type).toBe("text");
+  });
+
+  it("fixes full Swiggy cart response with over-escaped quotes", () => {
+    const broken = readFileSync(
+      join(__dirname, "fixtures/swiggy-escaped.json.txt"),
+      "utf8",
+    );
+    const result = fixCommonMistakes(broken);
+    expect(result.success).toBe(true);
+    const parsed = JSON.parse(result.text) as {
+      responses: { type: string; card?: string }[];
+    };
+    expect(parsed.responses).toHaveLength(3);
+    expect(parsed.responses[0].type).toBe("text");
+    expect(parsed.responses[1].card).toBe("swiggy_response");
   });
 });
