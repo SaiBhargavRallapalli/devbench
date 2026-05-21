@@ -135,12 +135,21 @@ export default function Footer() {
               Privacy
             </Link>
             <a
-              href="https://github.com/sai-bhargav/devbench/issues/new?template=tool-request.md&title=Tool+request%3A+"
+              href="https://github.com/saibhargavrallapalli/devbench/issues/new?template=tool-request.md&title=Tool+request%3A+"
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm text-muted-foreground transition-colors hover:text-foreground inline-flex items-center gap-1"
             >
               Request a tool
+              <ExternalLink aria-hidden="true" className="h-3 w-3 opacity-50" />
+            </a>
+            <a
+              href="https://github.com/saibhargavrallapalli/devbench/issues/new"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-muted-foreground transition-colors hover:text-foreground inline-flex items-center gap-1"
+            >
+              Raise an issue
               <ExternalLink aria-hidden="true" className="h-3 w-3 opacity-50" />
             </a>
           </div>

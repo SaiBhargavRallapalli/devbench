@@ -5,6 +5,7 @@
 ## 2026-05-21
 
 ### Added
+- add PortholePromo component and update footer links (`b55edcd`)
 - integrate JSONPath support and enhance JSON handling capabilities (`3d668c1`)
 - add jsonrepair library for enhanced JSON handling (`d67b2ec`)
 - add JSONC and JWT decoding, enhance JSON export options (`41635fd`)
@@ -15,7 +16,7 @@
 - Update CHANGELOG.md to reflect the correct commit hash for jsonrepair library integration (`f68e403`)
 
 ### Chore
-- update CHANGELOG.md to correct JSONPath removal commit hash (`7d55925`)
+- update CHANGELOG.md to correct JSONPath removal commit hash (`b386e40`)
 - bump react and @types/react (`6601a07`)
 - bump jsdom from 26.1.0 to 29.1.1 (`24d2e52`)
 

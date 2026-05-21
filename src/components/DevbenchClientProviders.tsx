@@ -3,6 +3,7 @@
 
 import { useDevbenchShortcuts } from "@/hooks/use-devbench-shortcuts";
 import PwaInstallPrompt from "@/components/PwaInstallPrompt";
+import PortholePromo from "@/components/PortholePromo";
 
 /** Client-only globals: keyboard shortcuts, PWA install banner. */
 export default function DevbenchClientProviders({ children }: { children: React.ReactNode }) {
@@ -11,6 +12,7 @@ export default function DevbenchClientProviders({ children }: { children: React.
     <>
       {children}
       <PwaInstallPrompt />
+      <PortholePromo />
     </>
   );
 }
