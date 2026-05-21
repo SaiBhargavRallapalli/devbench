@@ -10,11 +10,12 @@
 - add JSONC and JWT decoding, enhance JSON export options (`41635fd`)
 
 ### Changed
-- remove JSONPath support from JSON toolkit (`2160b3f`)
+- remove JSONPath support from JSON toolkit (`fbcb987`)
 - enhance JSON toolkit and workspace components (`aa321c3`)
 - Update CHANGELOG.md to reflect the correct commit hash for jsonrepair library integration (`f68e403`)
 
 ### Chore
+- update CHANGELOG.md to correct JSONPath removal commit hash (`7d55925`)
 - bump react and @types/react (`6601a07`)
 - bump jsdom from 26.1.0 to 29.1.1 (`24d2e52`)
 
