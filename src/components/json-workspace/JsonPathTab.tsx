@@ -10,26 +10,33 @@ import {
 
 type Props = {
   input: string;
+  onSwitchToFormat?: () => void;
 };
 
-export default function JsonPathTab({ input }: Props) {
+export default function JsonPathTab({ input, onSwitchToFormat }: Props) {
   const [pathExpr, setPathExpr] = useState("$.responses[0].type");
   const [copied, setCopied] = useState(false);
 
+  const isEmpty = input.trim() === "";
+
   const parsed = useMemo(() => {
+    if (isEmpty) return { data: null, error: null as string | null };
     try {
       return { data: JSON.parse(input) as unknown, error: null as string | null };
     } catch (e) {
       return { data: null, error: (e as Error).message };
     }
-  }, [input]);
+  }, [input, isEmpty]);
 
   const result: JsonPathQueryResult = useMemo(() => {
+    if (isEmpty) {
+      return { matches: [], matchCount: 0, error: "" };
+    }
     if (parsed.error || parsed.data === null) {
-      return { matches: [], matchCount: 0, error: "Fix or format the main JSON first — Path runs on valid JSON." };
+      return { matches: [], matchCount: 0, error: "Fix JSON errors in the Format tab first — Path runs on valid JSON." };
     }
     return queryJsonPath(parsed.data, pathExpr);
-  }, [parsed.data, parsed.error, pathExpr]);
+  }, [parsed.data, parsed.error, pathExpr, isEmpty]);
 
   const outputText = useMemo(() => {
     if (result.error) return "";
@@ -56,16 +63,7 @@ export default function JsonPathTab({ input }: Props) {
         <div>
           <h2 className="text-sm font-semibold text-foreground">JSONPath Query</h2>
           <p className="text-xs text-muted-foreground mt-0.5">
-            Query the document in the main editor — same idea as{" "}
-            <a
-              href="https://jsonlint.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-accent hover:underline"
-            >
-              JSONLint Path
-            </a>
-            , with RFC 9535 expressions and live results.
+            Query the document in the main editor with RFC 9535 JSONPath expressions and live results.
           </p>
         </div>
       </div>
@@ -94,29 +92,49 @@ export default function JsonPathTab({ input }: Props) {
         ))}
       </div>
 
-      <div className="flex items-center justify-between gap-2 shrink-0 text-xs">
-        {result.error ? (
-          <span className="text-destructive font-mono">{result.error}</span>
-        ) : (
-          <span className="text-muted-foreground">
-            <span className="text-success font-medium">{result.matchCount}</span> match
-            {result.matchCount === 1 ? "" : "es"}
-          </span>
-        )}
-        <button
-          type="button"
-          disabled={!outputText}
-          onClick={() => void copyOutput()}
-          className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-1 text-muted-foreground hover:text-foreground disabled:opacity-40"
-        >
-          {copied ? <Check size={12} className="text-success" /> : <ClipboardCopy size={12} />}
-          Copy result
-        </button>
-      </div>
+      {isEmpty ? (
+        <div className="flex-1 flex flex-col items-center justify-center gap-3 text-center text-muted-foreground min-h-[8rem]">
+          <Route size={28} className="opacity-30" />
+          <p className="text-sm">No JSON to query yet.</p>
+          {onSwitchToFormat ? (
+            <button
+              type="button"
+              onClick={onSwitchToFormat}
+              className="text-xs px-3 py-1.5 rounded-md bg-accent text-accent-foreground hover:opacity-90 transition-opacity"
+            >
+              Paste JSON in the Format tab
+            </button>
+          ) : (
+            <p className="text-xs">Paste your JSON in the Format tab, then run queries here.</p>
+          )}
+        </div>
+      ) : (
+        <>
+          <div className="flex items-center justify-between gap-2 shrink-0 text-xs">
+            {result.error ? (
+              <span className="text-destructive font-mono">{result.error}</span>
+            ) : (
+              <span className="text-muted-foreground">
+                <span className="text-success font-medium">{result.matchCount}</span> match
+                {result.matchCount === 1 ? "" : "es"}
+              </span>
+            )}
+            <button
+              type="button"
+              disabled={!outputText}
+              onClick={() => void copyOutput()}
+              className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-1 text-muted-foreground hover:text-foreground disabled:opacity-40"
+            >
+              {copied ? <Check size={12} className="text-success" /> : <ClipboardCopy size={12} />}
+              Copy result
+            </button>
+          </div>
 
-      <pre className="flex-1 min-h-[8rem] overflow-auto scrollbar-thin rounded-lg border border-border bg-muted/40 p-3 text-xs font-mono text-foreground whitespace-pre-wrap break-words">
-        {outputText || (parsed.error ? `Main JSON invalid:\n${parsed.error}` : "—")}
-      </pre>
+          <pre className="flex-1 min-h-[8rem] overflow-auto scrollbar-thin rounded-lg border border-border bg-muted/40 p-3 text-xs font-mono text-foreground whitespace-pre-wrap break-words">
+            {outputText || (parsed.error ? `JSON error:\n${parsed.error}` : "[]")}
+          </pre>
+        </>
+      )}
     </div>
   );
 }

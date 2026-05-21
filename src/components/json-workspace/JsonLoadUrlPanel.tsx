@@ -18,7 +18,7 @@ export default function JsonLoadUrlPanel({ url, busy, error, onUrlChange, onLoad
         <Link2 size={14} className="text-muted-foreground shrink-0" />
         <span className="text-xs font-medium">Load JSON from URL</span>
         <span className="text-[10px] text-muted-foreground hidden sm:inline">
-          (JSONLint <code className="font-mono">?url=</code> — fetched via secure proxy)
+          (also <code className="font-mono">/json?url=…</code> — fetched via secure proxy)
         </span>
         <button
           type="button"

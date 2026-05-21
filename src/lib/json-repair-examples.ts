@@ -1,5 +1,5 @@
 // Copyright (c) 2026 DevBench contributors. MIT License.
-/** Sample broken JSON — mirrors https://jsonlint.com/json-repair “Try an example”. */
+/** Sample broken JSON for the repair UI (“Try an example” chips). */
 
 export type JsonRepairExample = {
   id: string;

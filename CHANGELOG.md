@@ -5,15 +5,17 @@
 ## 2026-05-21
 
 ### Added
-- integrate JSONPath support and enhance JSON handling capabilities (`d579621`)
+- integrate JSONPath support and enhance JSON handling capabilities (`3d668c1`)
 - add jsonrepair library for enhanced JSON handling (`d67b2ec`)
 - add JSONC and JWT decoding, enhance JSON export options (`41635fd`)
 
 ### Changed
+- enhance JSON toolkit and workspace components (`68d7ed2`)
 - Update CHANGELOG.md to reflect the correct commit hash for jsonrepair library integration (`f68e403`)
 
 ### Chore
-- bump react and @types/react (`79a5346`)
+- bump react and @types/react (`6601a07`)
+- bump jsdom from 26.1.0 to 29.1.1 (`24d2e52`)
 
 ## 2026-05-20
 
@@ -36,7 +38,6 @@
 ### Chore
 - bump @types/jszip from 3.4.0 to 3.4.1 (`9234a64`)
 - bump @tailwindcss/postcss from 4.2.4 to 4.3.0 (`9deeccd`)
-- bump jsdom from 26.1.0 to 29.1.1 (`62e02a8`)
 - bump tailwindcss from 4.2.4 to 4.3.0 (`ca2bed7`)
 
 ## 2026-05-19

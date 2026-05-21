@@ -3,8 +3,7 @@ import { join } from "path";
 import { describe, expect, it } from "vitest";
 import { fixCommonMistakes } from "./json-repair";
 
-/** JSONLint repair examples: https://jsonlint.com/json-repair */
-const JSONLINT_EXAMPLES: [string, string][] = [
+const REPAIR_EXAMPLES: [string, string][] = [
   ["trailing commas", '{"a": 1,}'],
   ["single quotes", "{'a': 1}"],
   ["unquoted keys", "{a: 1}"],
@@ -15,7 +14,7 @@ const JSONLINT_EXAMPLES: [string, string][] = [
 ];
 
 describe("fixCommonMistakes", () => {
-  it.each(JSONLINT_EXAMPLES)("fixes %s", (_label, broken) => {
+  it.each(REPAIR_EXAMPLES)("fixes %s", (_label, broken) => {
     const result = fixCommonMistakes(broken);
     expect(result.success).toBe(true);
     expect(() => JSON.parse(result.text)).not.toThrow();

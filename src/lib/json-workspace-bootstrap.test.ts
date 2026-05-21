@@ -3,6 +3,7 @@ import {
   buildJsonQueryShareUrl,
   fetchRemoteJsonForWorkspace,
   readJsonBootstrapFromSearch,
+  readTabFromSearch,
 } from "./json-workspace-bootstrap";
 
 describe("readJsonBootstrapFromSearch", () => {
@@ -15,10 +16,15 @@ describe("readJsonBootstrapFromSearch", () => {
     const src = readJsonBootstrapFromSearch("?url=https://example.com/data.json");
     expect(src).toEqual({ kind: "url", url: "https://example.com/data.json" });
   });
+
+  it("reads ?tab= parameter", () => {
+    expect(readTabFromSearch("?tab=path")).toBe("path");
+    expect(readTabFromSearch("?tab=invalid")).toBeNull();
+  });
 });
 
 describe("buildJsonQueryShareUrl", () => {
-  it("builds JSONLint-style link for small JSON", () => {
+  it("builds ?json= share link for small JSON", () => {
     const url = buildJsonQueryShareUrl("https://devbench.test", "/json", '{"hi":1}');
     expect(url).toBe("https://devbench.test/json?json=%7B%22hi%22%3A1%7D");
   });

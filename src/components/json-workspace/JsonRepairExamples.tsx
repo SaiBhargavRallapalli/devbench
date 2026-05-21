@@ -11,18 +11,7 @@ export default function JsonRepairExamples({ onTryExample, compact }: Props) {
   return (
     <div className={compact ? "flex flex-wrap items-center gap-1.5" : "space-y-2"}>
       {!compact && (
-        <p className="text-xs text-muted-foreground">
-          Try an example (like{" "}
-          <a
-            href="https://jsonlint.com/json-repair"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-accent hover:underline"
-          >
-            JSONLint Repair
-          </a>
-          ):
-        </p>
+        <p className="text-xs text-muted-foreground">Try an example of broken JSON:</p>
       )}
       <div className="flex flex-wrap gap-1.5">
         {JSON_REPAIR_EXAMPLES.map((ex) => (

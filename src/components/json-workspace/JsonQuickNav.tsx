@@ -30,7 +30,7 @@ export default function JsonQuickNav({ activeTab, onSelectTab, onQuickAction }: 
   return (
     <nav
       className="border-b border-border bg-muted/30 px-4 py-1.5 flex flex-wrap items-center gap-1 shrink-0"
-      aria-label="JSON tools (JSONLint-style shortcuts)"
+      aria-label="JSON tool shortcuts"
     >
       <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mr-1 hidden sm:inline">
         Tools

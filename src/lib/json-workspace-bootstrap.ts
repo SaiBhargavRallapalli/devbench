@@ -1,7 +1,20 @@
 // Copyright (c) 2026 DevBench contributors. MIT License.
 /**
- * JSONLint-compatible URL bootstrap: ?json=… and ?url=… (see https://jsonlint.com/)
+ * URL bootstrap: ?json=…, ?url=…, and ?tab=… for deep links into the JSON workspace.
  */
+
+import type { JsonWorkspaceTab } from "@/lib/json-workspace-types";
+
+const TAB_IDS = new Set<string>([
+  "format",
+  "tree",
+  "diff",
+  "path",
+  "convert",
+  "generate",
+  "transform",
+  "table",
+]);
 
 const MAX_INLINE_JSON_CHARS = 32_000;
 const MAX_FETCH_BODY_CHARS = 2_000_000;
@@ -27,7 +40,14 @@ export function readJsonBootstrapFromSearch(search: string): JsonBootstrapSource
   return null;
 }
 
-/** Build a shareable ?json= link (JSONLint-style) for small payloads. */
+/** Read ?tab= from search params (e.g. ?tab=path). */
+export function readTabFromSearch(search: string): JsonWorkspaceTab | null {
+  const q = search.startsWith("?") ? search.slice(1) : search;
+  const tab = new URLSearchParams(q).get("tab");
+  return tab && TAB_IDS.has(tab) ? (tab as JsonWorkspaceTab) : null;
+}
+
+/** Build a shareable ?json= link for small payloads. */
 export function buildJsonQueryShareUrl(origin: string, pathname: string, jsonText: string): string | null {
   if (jsonText.length > MAX_INLINE_JSON_CHARS) return null;
   const params = new URLSearchParams({ json: jsonText });

@@ -541,7 +541,7 @@ export function fixCommonMistakes(input: string): FixResult {
     }
   }
 
-  // Advanced repair (missing commas, truncated brackets, etc.) — same engine as jsonlint.com/json-repair
+  // Advanced repair (missing commas, truncated brackets, etc.) via jsonrepair
   if (!tryParseJson(text)) {
     for (const [source, label] of [
       [text, "Applied advanced repair (missing commas, truncated brackets, …)"],
