@@ -5,8 +5,14 @@
 ## 2026-05-21
 
 ### Added
-- add jsonrepair library for enhanced JSON handling (`0fe24fb`)
+- add jsonrepair library for enhanced JSON handling (`d67b2ec`)
 - add JSONC and JWT decoding, enhance JSON export options (`41635fd`)
+
+### Changed
+- Update CHANGELOG.md to reflect the correct commit hash for jsonrepair library integration (`6f60cf9`)
+
+### Chore
+- bump react and @types/react (`79a5346`)
 
 ## 2026-05-20
 
