@@ -82,7 +82,7 @@ const TOOL_SLUG = "json";
 // ── Types ────────────────────────────────────────────────────────────────
 
 import type { JsonWorkspaceTab as Tab } from "@/lib/json-workspace-types";
-type ConvertTarget = "yaml" | "csv" | "typescript" | "env" | "base64" | "xml" | "toml" | "urlencoded" | "schema" | "htmlform" | "tableview" | "mockdata";
+type ConvertTarget = "yaml" | "csv" | "typescript" | "env" | "base64" | "xml" | "toml" | "urlencoded" | "schema" | "htmlform" | "tableview" | "mockdata" | "sql" | "python" | "stringify";
 
 interface FixResult {
   text: string;
@@ -685,6 +685,130 @@ function fixCommonMistakes(input: string): FixResult {
   }
 
   return { text, fixes };
+}
+
+// ── JSONC / JSON5 → JSON ─────────────────────────────────────────────────
+
+function jsoncToJson(input: string, minify = false): string {
+  const { text: commentStripped } = stripJsonComments(input);
+  const noTrailing = commentStripped.replace(/,(\s*[}\]])/g, "$1");
+  const withQuotedKeys = noTrailing.replace(
+    /(?<=[\{,]\s*)([a-zA-Z_$][a-zA-Z0-9_$]*)(\s*:\s*)/g,
+    '"$1"$2'
+  );
+  const parsed = JSON.parse(withQuotedKeys);
+  return minify ? JSON.stringify(parsed) : JSON.stringify(parsed, null, 2);
+}
+
+// ── JWT Decoder ──────────────────────────────────────────────────────────
+
+function decodeJwt(token: string): unknown {
+  const trimmed = token.trim();
+  const parts = trimmed.split(".");
+  if (parts.length !== 3) {
+    throw new Error(`Invalid JWT: expected 3 dot-separated parts, got ${parts.length}`);
+  }
+
+  function decodeBase64Url(str: string): unknown {
+    const base64 = str.replace(/-/g, "+").replace(/_/g, "/");
+    const padLen = (4 - (base64.length % 4)) % 4;
+    const padded = base64 + "=".repeat(padLen);
+    try {
+      return JSON.parse(atob(padded));
+    } catch {
+      return atob(padded);
+    }
+  }
+
+  const header = decodeBase64Url(parts[0]);
+  const payload = decodeBase64Url(parts[1]);
+
+  const result: Record<string, unknown> = { header, payload, signature: parts[2] };
+
+  if (typeof payload === "object" && payload !== null) {
+    const p = payload as Record<string, unknown>;
+    if (typeof p.iat === "number") result.issuedAt = new Date(p.iat * 1000).toISOString();
+    if (typeof p.exp === "number") result.expiresAt = new Date(p.exp * 1000).toISOString();
+    if (typeof p.nbf === "number") result.notBefore = new Date(p.nbf * 1000).toISOString();
+    const now = Math.floor(Date.now() / 1000);
+    if (typeof p.exp === "number") result.expired = now > p.exp;
+  }
+
+  return result;
+}
+
+// ── JSON → SQL ───────────────────────────────────────────────────────────
+
+function jsonToSql(data: unknown, tableName = "records"): string {
+  if (!Array.isArray(data) || data.length === 0) {
+    throw new Error("SQL export requires a non-empty array of objects");
+  }
+  const headers = [...new Set(data.flatMap((item: unknown) =>
+    typeof item === "object" && item !== null ? Object.keys(item as Record<string, unknown>) : []
+  ))];
+  if (!headers.length) throw new Error("SQL export requires objects with at least one key");
+
+  const escId = (s: string) => `\`${s.replace(/`/g, "``")}\``;
+  const escVal = (v: unknown): string => {
+    if (v === null || v === undefined) return "NULL";
+    if (typeof v === "boolean") return v ? "TRUE" : "FALSE";
+    if (typeof v === "number") return String(v);
+    if (typeof v === "object") return `'${JSON.stringify(v).replace(/'/g, "''")}'`;
+    return `'${String(v).replace(/'/g, "''")}'`;
+  };
+
+  const cols = headers.map(escId).join(", ");
+  const rows = data.map((item: unknown) => {
+    const obj = item as Record<string, unknown>;
+    const vals = headers.map((h) => escVal(obj[h]));
+    return `  (${vals.join(", ")})`;
+  });
+
+  const createTable = `CREATE TABLE IF NOT EXISTS ${escId(tableName)} (\n${headers.map((h) => `  ${escId(h)} TEXT`).join(",\n")}\n);\n\n`;
+  return createTable + `INSERT INTO ${escId(tableName)} (${cols})\nVALUES\n${rows.join(",\n")};`;
+}
+
+// ── JSON → Python ────────────────────────────────────────────────────────
+
+function jsonToPython(data: unknown, indent = 0): string {
+  const pad = "    ".repeat(indent);
+  const innerPad = "    ".repeat(indent + 1);
+
+  if (data === null) return "None";
+  if (typeof data === "boolean") return data ? "True" : "False";
+  if (typeof data === "number") return String(data);
+  if (typeof data === "string") {
+    const esc = data
+      .replace(/\\/g, "\\\\")
+      .replace(/"/g, '\\"')
+      .replace(/\n/g, "\\n")
+      .replace(/\r/g, "\\r")
+      .replace(/\t/g, "\\t");
+    return `"${esc}"`;
+  }
+  if (Array.isArray(data)) {
+    if (data.length === 0) return "[]";
+    const items = data.map((item) => `${innerPad}${jsonToPython(item, indent + 1)}`);
+    return `[\n${items.join(",\n")}\n${pad}]`;
+  }
+  if (typeof data === "object" && data !== null) {
+    const entries = Object.entries(data as Record<string, unknown>);
+    if (entries.length === 0) return "{}";
+    const items = entries.map(([k, v]) => {
+      const escapedKey = k.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+      return `${innerPad}"${escapedKey}": ${jsonToPython(v, indent + 1)}`;
+    });
+    return `{\n${items.join(",\n")}\n${pad}}`;
+  }
+  return String(data);
+}
+
+// ── JSON Stringify ───────────────────────────────────────────────────────
+
+function jsonToStringify(input: string): string {
+  const parsed = JSON.parse(input);
+  const minified = JSON.stringify(parsed);
+  return JSON.stringify(minified);
 }
 
 // ── Bracket-pair matching helpers ─────────────────────────────────────────
@@ -1990,7 +2114,7 @@ export default function JsonToolkitPage() {
   const [encryptPassword, setEncryptPassword] = useState("");
   const [showEncrypt, setShowEncrypt] = useState(false);
   const [showImport, setShowImport] = useState(false);
-  const [importType, setImportType] = useState<"yaml" | "csv" | "env" | "base64">("yaml");
+  const [importType, setImportType] = useState<"yaml" | "csv" | "env" | "base64" | "jsonc" | "jwt">("yaml");
   const [importText, setImportText] = useState("");
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -2684,6 +2808,18 @@ export default function JsonToolkitPage() {
           result = JSON.parse(decoded);
           break;
         }
+        case "jsonc": {
+          const json = jsoncToJson(importText);
+          setInputWithHistory(json);
+          setOutput(json);
+          setShowImport(false);
+          setImportText("");
+          return;
+        }
+        case "jwt": {
+          result = decodeJwt(importText);
+          break;
+        }
       }
       const json = JSON.stringify(result, null, 2);
       setInputWithHistory(json);
@@ -2739,6 +2875,9 @@ export default function JsonToolkitPage() {
         case "htmlform": setOutput(generateHtmlForm(parsed)); break;
         case "tableview": setOutput(generateTableView(parsed)); break;
         case "mockdata": setOutput(JSON.stringify(generateMockData(parsed), null, 2)); break;
+        case "sql": setOutput(jsonToSql(parsed)); break;
+        case "python": setOutput(jsonToPython(parsed)); break;
+        case "stringify": setOutput(jsonToStringify(input)); break;
       }
     } catch {
       const err = parseJsonError(input);
@@ -3107,12 +3246,15 @@ export default function JsonToolkitPage() {
                 <option value="csv">CSV</option>
                 <option value="xml">XML</option>
                 <option value="toml">TOML</option>
+                <option value="sql">SQL</option>
                 <option value="env">.env</option>
                 <option value="base64">Base64</option>
                 <option value="urlencoded">URL-encoded</option>
               </optgroup>
               <optgroup label="Code">
                 <option value="typescript">TypeScript</option>
+                <option value="python">Python</option>
+                <option value="stringify">JSON Stringify</option>
               </optgroup>
             </select>
             <ToolButton onClick={handleConvert} icon={<ArrowRightLeft size={15} />} label="Convert" />
@@ -3389,6 +3531,8 @@ export default function JsonToolkitPage() {
               <option value="csv">CSV</option>
               <option value="env">.env</option>
               <option value="base64">Base64</option>
+              <option value="jsonc">JSONC / JSON5</option>
+              <option value="jwt">JWT Token</option>
             </select>
             <ToolButton onClick={handleImportConvert} icon={<ArrowRightLeft size={14} />} label="Convert to JSON" />
             <button aria-label="Close import panel" onClick={() => setShowImport(false)} className="ml-auto text-muted-foreground hover:text-foreground"><X size={14} /></button>
@@ -3396,7 +3540,14 @@ export default function JsonToolkitPage() {
           <textarea
             value={importText}
             onChange={(e) => setImportText(e.target.value)}
-            placeholder={importType === "yaml" ? "key: value\nnested:\n  child: 1" : importType === "csv" ? "name,age\nAlice,30\nBob,25" : importType === "env" ? "DB_HOST=localhost\nDB_PORT=5432" : "eyJrZXkiOiJ2YWx1ZSJ9"}
+            placeholder={
+              importType === "yaml" ? "key: value\nnested:\n  child: 1"
+              : importType === "csv" ? "name,age\nAlice,30\nBob,25"
+              : importType === "env" ? "DB_HOST=localhost\nDB_PORT=5432"
+              : importType === "jsonc" ? '// JSON with Comments (JSONC / JSON5)\n{\n  "name": "Alice", // trailing comma ok\n  "scores": [1, 2, 3,]\n}'
+              : importType === "jwt" ? "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+              : "eyJrZXkiOiJ2YWx1ZSJ9"
+            }
             rows={4}
             spellCheck={false}
             className="w-full px-3 py-2 text-xs rounded-md border border-border bg-background font-mono resize-none focus:outline-none focus:ring-1 focus:ring-ring/40 placeholder:text-muted-foreground/40 scrollbar-thin"
@@ -3948,7 +4099,7 @@ export default function JsonToolkitPage() {
                       const url = URL.createObjectURL(blob);
                       const a = document.createElement("a");
                       a.href = url;
-                      const ext = convertTarget === "yaml" ? "yaml" : convertTarget === "csv" ? "csv" : convertTarget === "xml" ? "xml" : convertTarget === "toml" ? "toml" : convertTarget === "env" ? "env" : convertTarget === "typescript" ? "ts" : convertTarget === "htmlform" ? "html" : convertTarget === "schema" ? "json" : "txt";
+                      const ext = convertTarget === "yaml" ? "yaml" : convertTarget === "csv" ? "csv" : convertTarget === "xml" ? "xml" : convertTarget === "toml" ? "toml" : convertTarget === "env" ? "env" : convertTarget === "typescript" ? "ts" : convertTarget === "htmlform" ? "html" : convertTarget === "schema" ? "json" : convertTarget === "sql" ? "sql" : convertTarget === "python" ? "py" : convertTarget === "stringify" ? "js" : "txt";
                       a.download = `output.${ext}`;
                       a.click();
                       URL.revokeObjectURL(url);

@@ -2,12 +2,23 @@
 
 > Auto-generated from git log. Run `npm run changelog` to refresh.
 
+## 2026-05-21
+
+### Added
+- add JSONC and JWT decoding, enhance JSON export options (`c46c39f`)
+
 ## 2026-05-20
 
 ### Added
-- Add functions to handle invalid JSON escape sequences and JavaScript string concatenation (`9d26b2a`)
+- Add functions to handle invalid JSON escape sequences and JavaScript string concatenation (`5405fd3`)
+
+### Fixed
+- improve CI workflow with proper server startup and Lighthouse handling (`0bf61b6`)
+- improve lighthouserc.json with better server handling and more realistic thresholds (`30a425f`)
+- add lighthouserc.json with relaxed Lighthouse assertions to fix CI failures (`81e0ed5`)
 
 ### Changed
+- Fix Lighthouse CI assertions by disabling strict optimization checks (`33df4d6`)
 - Refactor RegexTesterTool to improve result handling and performance (`83c1d47`)
 - Enhance performance metrics and accessibility checks in Lighthouse configuration (`53cc767`)
 - Refactor form components to improve accessibility and usability (`d7c47ce`)
