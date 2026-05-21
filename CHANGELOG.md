@@ -5,7 +5,8 @@
 ## 2026-05-21
 
 ### Added
-- add JSONC and JWT decoding, enhance JSON export options (`c46c39f`)
+- add jsonrepair library for enhanced JSON handling (`0fe24fb`)
+- add JSONC and JWT decoding, enhance JSON export options (`41635fd`)
 
 ## 2026-05-20
 
