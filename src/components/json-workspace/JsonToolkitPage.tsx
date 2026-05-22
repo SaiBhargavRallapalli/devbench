@@ -149,7 +149,7 @@ export default function JsonToolkitPage({
   const [input, setInput] = useState(initialInput);
   const [jsonFormatBusy, setJsonFormatBusy] = useState(false);
   const [jsonWorkspaceBusy, setJsonWorkspaceBusy] = useState(false);
-  const [parsedForTree, setParsedForTree] = useState<unknown>(undefined);
+  const [workerParsedForTree, setWorkerParsedForTree] = useState<unknown>(undefined);
   const [output, setOutput] = useState("");
   const [activeTab, setActiveTab] = useState<Tab>(initialTab);
   const [convertTarget, setConvertTarget] = useState<ConvertTarget>("yaml");
@@ -1057,30 +1057,29 @@ export default function JsonToolkitPage({
     }
   }, [diffLeft, diffRight]);
 
-  useEffect(() => {
-    if (!input.trim()) {
-      setParsedForTree(undefined);
-      return;
-    }
-    let cancelled = false;
-    if (shouldUseJsonWorker(input)) {
-      void runJsonWorkspaceOp({ op: "parse", input }).then((r) => {
-        if (cancelled) return;
-        setParsedForTree(r.ok ? r.parsed : undefined);
-      });
-      return () => {
-        cancelled = true;
-      };
-    }
+  const syncParsedForTree = useMemo(() => {
+    if (!input.trim()) return undefined;
+    if (shouldUseJsonWorker(input)) return null;
     try {
-      setParsedForTree(JSON.parse(input));
+      return JSON.parse(input) as unknown;
     } catch {
-      setParsedForTree(undefined);
+      return undefined;
     }
+  }, [input]);
+
+  useEffect(() => {
+    if (!shouldUseJsonWorker(input) || !input.trim()) return;
+    let cancelled = false;
+    void runJsonWorkspaceOp({ op: "parse", input }).then((r) => {
+      if (!cancelled) setWorkerParsedForTree(r.ok ? r.parsed : undefined);
+    });
     return () => {
       cancelled = true;
     };
   }, [input]);
+
+  const parsedForTree =
+    syncParsedForTree === null ? workerParsedForTree : syncParsedForTree;
 
   const selectedNodeValue = useMemo(() => {
     if (selectedTreePath === null || parsedForTree === undefined) return undefined;
