@@ -5,7 +5,10 @@
 ## 2026-05-22
 
 ### Added
-- enhance ESLint and Lighthouse configurations, add test coverage (`2aac5dd`)
+- enhance ESLint and Lighthouse configurations, add test coverage (`93ed65e`)
+
+### Chore
+- update CHANGELOG.md to reflect correct commit hash for ESLint and Lighthouse enhancements (`faf865a`)
 
 ## 2026-05-21
 
