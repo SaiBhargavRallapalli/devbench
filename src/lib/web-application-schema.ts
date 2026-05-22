@@ -13,12 +13,6 @@ export function webApplicationEnrichment(opts: {
     isAccessibleForFree: true,
     screenshot: opts.screenshotUrl,
     softwareVersion: SOFTWARE_VERSION,
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "4.8",
-      bestRating: "5",
-      ratingCount: "1024",
-    },
   };
 }
 

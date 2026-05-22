@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import Link from "next/link";
 import { ArrowLeft, Play, Trash2, Copy, Check, GripVertical, Save } from "lucide-react";
 import Header from "@/components/Header";

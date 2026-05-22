@@ -376,9 +376,9 @@ export default function ApiTesterPage() {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     if (transportMode === "graphql") setReqTab("graphqlOp");
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+     
     else if (transportMode === "grpc") setReqTab("grpcJson");
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+     
     else setReqTab("params");
   }, [transportMode]);
 

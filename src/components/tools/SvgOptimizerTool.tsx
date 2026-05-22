@@ -149,7 +149,6 @@ export default function SvgOptimizerTool({ tool }: { tool: Tool }) {
     return () => URL.revokeObjectURL(url);
   }, [result]);
 
-  const inputRef = (node: HTMLInputElement | null) => { /* file input ref */ };
 
   function optimize() {
     if (!input.trim()) return;

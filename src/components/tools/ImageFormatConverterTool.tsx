@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback } from "react";
-import { Upload, Download, RefreshCw, ImageIcon } from "lucide-react";
+import { Upload, Download, RefreshCw, Image as ImageIcon } from "lucide-react";
 import ToolPageHero from "@/components/tools/ToolPageHero";
 import type { Tool } from "@/lib/tools-registry";
 import { trackToolDownload } from "@/lib/analytics-events";

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef } from "react";
-import { Upload, Copy, Check, ImageIcon } from "lucide-react";
+import { Upload, Copy, Check } from "lucide-react";
 import ToolPageHero from "@/components/tools/ToolPageHero";
 import type { Tool } from "@/lib/tools-registry";
 

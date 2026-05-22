@@ -20,14 +20,6 @@ const FLAG_LABELS: Record<Flag, { title: string; desc: string }> = {
   d: { title: "indices",       desc: "Return start/end indices for groups" },
 };
 
-interface Match {
-  full: string;
-  index: number;
-  end: number;
-  length: number;
-  groups: (string | undefined)[];
-  namedGroups: Record<string, string | undefined> | null;
-}
 
 const MATCH_COLORS = [
   "bg-yellow-300/70 dark:bg-yellow-600/50",

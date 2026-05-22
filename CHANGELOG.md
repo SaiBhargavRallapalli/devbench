@@ -2,10 +2,15 @@
 
 > Auto-generated from git log. Run `npm run changelog` to refresh.
 
+## 2026-05-22
+
+### Added
+- enhance ESLint and Lighthouse configurations, add test coverage (`2aac5dd`)
+
 ## 2026-05-21
 
 ### Added
-- add PortholePromo component and update footer links (`b55edcd`)
+- add PortholePromo component and update footer links (`ca8b847`)
 - integrate JSONPath support and enhance JSON handling capabilities (`3d668c1`)
 - add jsonrepair library for enhanced JSON handling (`d67b2ec`)
 - add JSONC and JWT decoding, enhance JSON export options (`41635fd`)

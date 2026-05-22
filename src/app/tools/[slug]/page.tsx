@@ -151,6 +151,48 @@ function AesWebCryptoUnavailableHint() {
 }
 
 
+const RECOVERY_HINTS: Record<string, string> = {
+  "json-formatter": "Make sure your JSON uses double-quoted keys and values, and all brackets are matched.",
+  "json-to-yaml": "Paste valid JSON — keys must be double-quoted and the structure must be a valid object or array.",
+  "yaml-to-json": "Check for tab characters (YAML requires spaces), consistent indentation, and correct colon spacing.",
+  "json-to-csv": "Input must be a JSON array of objects with consistent keys across rows.",
+  "csv-to-json": "Check that your CSV has a header row and no unescaped commas inside fields.",
+  "json-to-typescript": "Input must be a valid JSON object or array — not a string or primitive value.",
+  "json-to-xml": "Input must be a JSON object (not an array) with a single root key.",
+  "xml-to-json": "Make sure your XML is well-formed: all tags are closed and attribute values are quoted.",
+  "base64-decode": "Input must be a valid Base64 string. Characters outside A–Z, a–z, 0–9, +, /, = are not allowed.",
+  "hex-to-text": "Input must contain pairs of hex digits (0–9, A–F). Spaces between bytes are fine.",
+  "binary-to-text": "Input must be groups of 8 bits (0s and 1s). Spaces between bytes are fine.",
+  "url-decode": "Some malformed percent-encoded sequences cannot be decoded. Check for incomplete % sequences.",
+  "html-entity-decode": "Unrecognised named entities will pass through unchanged. Only valid HTML5 entities are decoded.",
+  "aes-encrypt-decrypt": "For decryption, make sure you are using the exact same password used to encrypt. The ciphertext must be the unmodified Base64 output.",
+  "hash-generator": "The SHA-1 algorithm is available but deprecated for security use. Choose SHA-256 or higher for new work.",
+  "semver-compare": "Both inputs must be valid semantic version strings like 1.2.3 or 2.0.0-rc.1.",
+  "cron-parser": "Cron expressions need 5 fields: minute, hour, day-of-month, month, day-of-week.",
+  "chmod-calculator": "Enter an octal permission like 755 or rwxr-xr-x notation.",
+  "url-parser": "Enter a complete URL including the protocol (https:// or http://).",
+  "color-converter": "Supported formats: #hex, rgb(), hsl(), named colors (e.g. 'red'), or HSL/HSV values.",
+  "temperature-converter": "Enter a plain number (decimals allowed). Select the source unit from the dropdown.",
+  "unit-converter": "Enter a plain number. Select the source and target units from the dropdowns.",
+  "base-converter": "Enter a valid integer in the selected source base. For hex, only 0–9 and A–F are valid.",
+  "quadratic-solver": "Enter coefficients as 'a b c' on one line (e.g. '1 -5 6' for x²−5x+6=0).",
+  "aspect-ratio": "Enter dimensions as WxH, W:H, or 'W H' (e.g. 1920x1080).",
+  "days-between-dates": "Enter dates in ISO format (YYYY-MM-DD) or common formats like DD/MM/YYYY.",
+  "sql-formatter": "Paste a complete SQL statement. Incomplete fragments (e.g. just a WHERE clause) may not parse correctly.",
+  "curl-formatter": "Paste a complete curl command starting with 'curl'. Options must use the standard -X, -H, -d flags.",
+  "toml-to-json": "Check for unquoted strings, invalid date formats, or duplicate keys in your TOML.",
+  "dotenv-parser": "Each line must be KEY=value format. Multi-line values need quotes. Lines starting with # are comments.",
+  "find-replace": "If using Regex mode, make sure your pattern is a valid regular expression.",
+};
+
+function getRecoveryHint(slug: string, error: string): string | null {
+  if (RECOVERY_HINTS[slug]) return RECOVERY_HINTS[slug];
+  if (error.toLowerCase().includes("json")) return "Check that your input is valid JSON — missing brackets, trailing commas, and unquoted keys are common mistakes.";
+  if (error.toLowerCase().includes("yaml")) return "YAML requires consistent indentation with spaces (not tabs). Colons must be followed by a space.";
+  if (error.toLowerCase().includes("xml")) return "XML requires all tags to be properly closed and attribute values to be quoted.";
+  return null;
+}
+
 export default function ToolPage() {
   const { slug: slugParam } = useParams<{ slug: string }>();
   const slug = slugParam ?? "";
@@ -355,6 +397,7 @@ export default function ToolPage() {
                   }
                   className="p-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground"
                   title="Clear"
+                  aria-label="Clear input"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>
@@ -380,6 +423,8 @@ export default function ToolPage() {
                 <button
                   onClick={() => setInput2("")}
                   className="p-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground"
+                  title="Clear"
+                  aria-label="Clear second input"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>
@@ -416,7 +461,8 @@ export default function ToolPage() {
                         URL.revokeObjectURL(url);
                       }}
                       className="p-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground"
-                      title="Download"
+                      title="Download output"
+                      aria-label="Download output"
                     >
                       <Download className="w-3.5 h-3.5" />
                     </button>
@@ -460,7 +506,7 @@ export default function ToolPage() {
         {needsDualInput(slug) && state.output && (
           <div className="mt-4">
             <div className="flex items-center justify-between mb-2">
-              <label className="text-sm font-medium">Diff Result</label>
+              <p className="text-sm font-medium">Diff Result</p>
               <CopyBtn text={state.output} toolSlug={slug} />
             </div>
             <pre className="p-4 rounded-xl border border-border bg-card font-mono text-sm overflow-auto max-h-[400px] scrollbar-thin whitespace-pre-wrap">
@@ -486,10 +532,14 @@ export default function ToolPage() {
 
         {/* Error */}
         {state.error && (
-          <div className="mt-4 p-4 rounded-xl border border-destructive/30 bg-destructive/5 animate-fade-in">
-            <p className="text-sm text-destructive font-medium">
-              {state.error}
-            </p>
+          <div role="alert" aria-live="assertive" className="mt-4 p-4 rounded-xl border border-destructive/30 bg-destructive/5 animate-fade-in">
+            <p className="text-sm text-destructive font-medium">{state.error}</p>
+            {(() => {
+              const hint = getRecoveryHint(slug, state.error);
+              return hint ? (
+                <p className="mt-1.5 text-xs text-muted-foreground">{hint}</p>
+              ) : null;
+            })()}
           </div>
         )}
 

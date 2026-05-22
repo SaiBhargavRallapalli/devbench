@@ -439,7 +439,6 @@ export function fixCommonMistakes(input: string): FixResult {
     fixes.push('Quoted unquoted template variables ({{variable}} → "{{variable}}")');
   }
 
-  const singleQuoteBefore = text;
   const singleQuoteResult = replaceSingleQuotesOutsideStrings(text);
   if (singleQuoteResult.fixed) {
     fixes.push("Replaced single quotes with double quotes (outside string values only)");

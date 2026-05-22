@@ -463,7 +463,7 @@ function drawGraph(
   const toCanvasX = (x: number) => ((x - view.xMin) / (view.xMax - view.xMin)) * w;
   const toCanvasY = (y: number) => ((view.yMax - y) / (view.yMax - view.yMin)) * h;
   const toMathX = (px: number) => view.xMin + (px / w) * (view.xMax - view.xMin);
-  const toMathY = (py: number) => view.yMax - (py / h) * (view.yMax - view.yMin);
+  const _toMathY = (py: number) => view.yMax - (py / h) * (view.yMax - view.yMin);
 
   if (showGrid) {
     const xRange = view.xMax - view.xMin;

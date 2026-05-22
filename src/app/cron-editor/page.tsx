@@ -267,13 +267,15 @@ export default function CronEditorPage() {
   const [expression, setExpression] = useState("* * * * *");
   const [activeField, setActiveField] = useState<number | null>(null);
 
-  const parts = expression.trim().split(/\s+/);
-  const hasFiveParts = parts.length === 5;
-
   const fields: ParsedField[] = useMemo(() => {
+    const parts = expression.trim().split(/\s+/);
+    const hasFiveParts = parts.length === 5;
     if (!hasFiveParts) return FIELD_META.map((_, i) => ({ raw: parts[i] || "", values: [], description: "", error: i < parts.length ? undefined : "Missing field" }));
     return parts.map((p, i) => parseField(p, i));
   }, [expression]);
+
+  const parts = expression.trim().split(/\s+/);
+  const hasFiveParts = parts.length === 5;
 
   const hasError = !hasFiveParts || fields.some((f) => f.error);
   const description = useMemo(() => describeCron(fields), [fields]);
@@ -585,7 +587,7 @@ export default function CronEditorPage() {
 
 // ─── sub-components ───────────────────────────────────────────────────
 
-function QuickBtn({ label, value, onClick }: { label: string; value: string; onClick: () => void }) {
+function QuickBtn({ label, value: _value, onClick }: { label: string; value: string; onClick: () => void }) {
   return (
     <button
       onClick={onClick}

@@ -15,8 +15,6 @@ import {
   BarChart3,
   AlignJustify,
   Strikethrough,
-  Eye,
-  EyeOff,
 } from "lucide-react";
 import Header from "@/components/Header";
 import { trackToolSuccess } from "@/lib/analytics-events";
@@ -83,11 +81,8 @@ function backtrackDiff(
   a: string[],
   b: string[]
 ): DiffLine[] {
-  const result: DiffLine[] = [];
   let i = a.length;
   let j = b.length;
-  const leftNum = a.length;
-  const rightNum = b.length;
 
   const lines: DiffLine[] = [];
 
@@ -150,8 +145,6 @@ function computeLineDiff(
   const rawDiff = backtrackDiff(dp, processedLeft, processedRight);
 
   const result: DiffLine[] = [];
-  const li = 0;
-  const ri = 0;
   for (const line of rawDiff) {
     if (line.type === "unchanged") {
       result.push({
@@ -196,8 +189,6 @@ function computeCharDiff(oldStr: string, newStr: string): { left: CharDiff[]; ri
     }
   }
 
-  const left: CharDiff[] = [];
-  const right: CharDiff[] = [];
   let i = m;
   let j = n;
 
@@ -913,7 +904,7 @@ function ToggleSwitch({
 // ─── Side-by-side view ──────────────────────────────────────────────────
 
 function SideBySideView({
-  lines,
+  lines: _lines,
   groups,
 }: {
   lines: DiffLine[];
@@ -1039,7 +1030,7 @@ function SideBySideChangedRow({
 // ─── Unified view ───────────────────────────────────────────────────────
 
 function UnifiedView({
-  lines,
+  lines: _lines,
   groups,
 }: {
   lines: DiffLine[];
@@ -1126,7 +1117,7 @@ function UnifiedView({
 // ─── Inline view ────────────────────────────────────────────────────────
 
 function InlineView({
-  lines,
+  lines: _lines,
   groups,
 }: {
   lines: DiffLine[];

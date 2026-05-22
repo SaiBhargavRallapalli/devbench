@@ -11,5 +11,5 @@ export function cacheUrlsForOffline(urls: string[]): void {
 
 export const PLAYGROUND_OPTIONAL_URLS = [
   "https://cdn.jsdelivr.net/npm/monaco-editor@0.53.0/min/vs/loader.js",
-  "/workers/json-format-worker.js",
+  "/workers/json-workspace-worker.js",
 ];

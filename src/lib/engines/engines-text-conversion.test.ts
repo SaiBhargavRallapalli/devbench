@@ -11,7 +11,6 @@ import {
   normalizeWhitespace,
   reverseString,
   markdownToHtml,
-  htmlToMarkdown,
   htmlToText,
   stripMarkdown,
   textDiff,

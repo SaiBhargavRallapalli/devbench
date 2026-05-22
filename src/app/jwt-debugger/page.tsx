@@ -59,12 +59,6 @@ function base64urlDecode(str: string): string {
   }
 }
 
-function base64urlToUint8Array(str: string): Uint8Array {
-  const raw = base64urlDecode(str);
-  const arr = new Uint8Array(raw.length);
-  for (let i = 0; i < raw.length; i++) arr[i] = raw.charCodeAt(i);
-  return arr;
-}
 
 function textToUint8Array(str: string): Uint8Array {
   return new TextEncoder().encode(str);
@@ -362,7 +356,7 @@ export default function JWTDebuggerPage() {
     if (!decoded || !decodedAlg) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setVerifyResult(null);
-      // eslint-disable-next-line react-hooks/set-state-in-effect
+       
       setVerifyError(null);
       return;
     }
@@ -452,7 +446,7 @@ export default function JWTDebuggerPage() {
     } else {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setEncodedToken("");
-      // eslint-disable-next-line react-hooks/set-state-in-effect
+       
       setEncodeError("");
     }
 

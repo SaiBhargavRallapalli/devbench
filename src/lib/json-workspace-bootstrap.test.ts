@@ -18,7 +18,8 @@ describe("readJsonBootstrapFromSearch", () => {
   });
 
   it("reads ?tab= parameter", () => {
-    expect(readTabFromSearch("?tab=path")).toBe("path");
+    expect(readTabFromSearch("?tab=format")).toBe("format");
+    expect(readTabFromSearch("?tab=tree")).toBe("tree");
     expect(readTabFromSearch("?tab=invalid")).toBeNull();
   });
 });

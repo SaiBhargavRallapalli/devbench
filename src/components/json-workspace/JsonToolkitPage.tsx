@@ -1,11 +1,10 @@
 "use client";
 
-import { useState, useCallback, useMemo, useRef, useEffect, type RefObject } from "react";
+import { useState, useCallback, useMemo, useRef, useEffect } from "react";
 import yaml from "js-yaml";
 import {
   Copy,
   Check,
-  ChevronDown,
   ChevronRight,
   Braces,
   Minimize2,
@@ -40,14 +39,6 @@ import {
   Table2,
   Plus,
   Minus,
-  MoreHorizontal,
-  Pencil,
-  ClipboardCopy,
-  ClipboardPaste as ClipboardPasteIcon,
-  CopyPlus,
-  Scissors,
-  ArrowDownAZ,
-  PlusCircle,
   GripVertical,
   ChevronLeft,
   Columns2,
@@ -74,12 +65,8 @@ import {
   trackToolCopy,
 } from "@/lib/analytics-events";
 import { formatJsonWorkspace } from "@/lib/format-json-workspace";
-import { shouldUseJsonWorker } from "@/lib/json-worker";
-import {
-  fixCommonMistakes,
-  stripJsonComments,
-  type FixResult,
-} from "@/lib/json-repair";
+import { runJsonWorkspaceOp, shouldUseJsonWorker } from "@/lib/json-workspace-worker-client";
+import type { FixResult } from "@/lib/json-repair";
 import {
   buildJsonQueryShareUrl,
   fetchRemoteJsonForWorkspace,
@@ -95,11 +82,6 @@ import {
   getJsonStats,
   computeDiff,
   sortKeysDeep,
-  removeNullsDeep,
-  flattenObject,
-  unflattenObject,
-  toNdjson,
-  fromNdjson,
   jsonToEnv,
   envToJson,
   jsonToUrlEncoded,
@@ -166,6 +148,8 @@ export default function JsonToolkitPage({
 }: JsonToolkitPageProps) {
   const [input, setInput] = useState(initialInput);
   const [jsonFormatBusy, setJsonFormatBusy] = useState(false);
+  const [jsonWorkspaceBusy, setJsonWorkspaceBusy] = useState(false);
+  const [parsedForTree, setParsedForTree] = useState<unknown>(undefined);
   const [output, setOutput] = useState("");
   const [activeTab, setActiveTab] = useState<Tab>(initialTab);
   const [convertTarget, setConvertTarget] = useState<ConvertTarget>("yaml");
@@ -187,7 +171,7 @@ export default function JsonToolkitPage({
 
   // Undo/Redo
   const [undoStack, setUndoStack] = useState<string[]>([]);
-  const [redoStack, setRedoStack] = useState<string[]>([]);
+  const [_redoStack, setRedoStack] = useState<string[]>([]);
   const skipHistoryRef = useRef(false);
 
   const pushHistory = useCallback((prev: string) => {
@@ -365,15 +349,15 @@ export default function JsonToolkitPage({
       skipHistoryRef.current = true;
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setInput(d.input);
-      // eslint-disable-next-line react-hooks/set-state-in-effect
+       
       setSchemaText(d.schemaText);
-      // eslint-disable-next-line react-hooks/set-state-in-effect
+       
       setActiveTab(tabParam ?? d.activeTab);
-      // eslint-disable-next-line react-hooks/set-state-in-effect
+       
       setDiffLeft(d.diffLeft);
-      // eslint-disable-next-line react-hooks/set-state-in-effect
+       
       setDiffRight(d.diffRight);
-      // eslint-disable-next-line react-hooks/set-state-in-effect
+       
       if (d.schemaText.trim()) setShowSchemaPanel(true);
       return;
     }
@@ -382,7 +366,7 @@ export default function JsonToolkitPage({
     if (!bootstrap) {
       if (tabParam) {
         jwHydrated.current = true;
-        // eslint-disable-next-line react-hooks/set-state-in-effect
+         
         setActiveTab(tabParam);
       }
       return;
@@ -391,28 +375,28 @@ export default function JsonToolkitPage({
     skipHistoryRef.current = true;
 
     if (bootstrap.kind === "inline") {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
+       
       setInput(bootstrap.text);
       if (tabParam) {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
+         
         setActiveTab(tabParam);
       }
       return;
     }
 
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+     
     setShowLoadUrl(true);
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+     
     setLoadUrlInput(bootstrap.url);
     let cancelled = false;
     (async () => {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
+       
       setLoadUrlBusy(true);
-      // eslint-disable-next-line react-hooks/set-state-in-effect
+       
       setLoadUrlError("");
       const result = await fetchRemoteJsonForWorkspace(bootstrap.url);
       if (cancelled) return;
-      // eslint-disable-next-line react-hooks/set-state-in-effect
+       
       setLoadUrlBusy(false);
       if (result.ok) {
         setInputWithHistory(result.text);
@@ -597,7 +581,7 @@ export default function JsonToolkitPage({
           // eslint-disable-next-line react-hooks/set-state-in-effect
           setTableData(items);
           const hdrs = [...new Set(items.flatMap((item) => Object.keys(item)))];
-          // eslint-disable-next-line react-hooks/set-state-in-effect
+           
           setTableHeaders(hdrs);
         }
       } catch { /* ignore */ }
@@ -621,15 +605,15 @@ export default function JsonToolkitPage({
         if (!Array.isArray(data)) throw new Error("Transform requires an array as input");
         const result = await runTransformQuery(data, transformQuery);
         if (cancelled) return;
-        // eslint-disable-next-line react-hooks/set-state-in-effect
+         
         setTransformPreview(result);
-        // eslint-disable-next-line react-hooks/set-state-in-effect
+         
         setTransformError(null);
       } catch (e) {
         if (cancelled) return;
-        // eslint-disable-next-line react-hooks/set-state-in-effect
+         
         setTransformError((e as Error).message);
-        // eslint-disable-next-line react-hooks/set-state-in-effect
+         
         setTransformPreview(null);
       }
     })();
@@ -680,23 +664,39 @@ export default function JsonToolkitPage({
     }
   }, [input, clearError]);
 
-  const handleFix = useCallback(() => {
+  const handleFix = useCallback(async () => {
     clearError();
     const original = input;
-    const result = fixCommonMistakes(input);
-    setInputWithHistory(result.text);
-    if (result.success) {
-      setOutput(JSON.stringify(JSON.parse(result.text), null, 2));
-      setFixResult({ ...result, original });
-      trackToolSuccess(TOOL_SLUG, "auto_fix", { fixes: result.fixes.length });
-    } else {
-      setFixResult({ ...result, original, success: false });
-      const err = parseJsonError(result.text);
-      if (err) {
-        setError(err);
+    setJsonWorkspaceBusy(true);
+    try {
+      const r = await runJsonWorkspaceOp({ op: "repair", input });
+      if (!r.ok || !r.fixResult) {
+        setError({ message: r.ok ? "Repair failed" : r.error, line: 1, column: 1 });
         setShowErrorPanel(true);
-        trackToolError(TOOL_SLUG, "auto_fix", err.message);
+        trackToolError(TOOL_SLUG, "auto_fix", r.ok ? "Repair failed" : r.error);
+        return;
       }
+      const result = r.fixResult;
+      setInputWithHistory(result.text);
+      if (result.success) {
+        const pretty = await runJsonWorkspaceOp({ op: "format", input: result.text });
+        if (pretty.ok && pretty.output) setOutput(pretty.output);
+        setFixResult({ ...result, original });
+        trackToolSuccess(TOOL_SLUG, "auto_fix", {
+          fixes: result.fixes.length,
+          worker: r.usedWorker,
+        });
+      } else {
+        setFixResult({ ...result, original, success: false });
+        const err = parseJsonError(result.text);
+        if (err) {
+          setError(err);
+          setShowErrorPanel(true);
+          trackToolError(TOOL_SLUG, "auto_fix", err.message);
+        }
+      }
+    } finally {
+      setJsonWorkspaceBusy(false);
     }
   }, [input, clearError, setInputWithHistory]);
 
@@ -729,7 +729,7 @@ export default function JsonToolkitPage({
     (action: "validate" | "repair" | "minify") => {
       setActiveTab("format");
       if (action === "validate") void handleFormat();
-      else if (action === "repair") handleFix();
+      else if (action === "repair") void handleFix();
       else void handleMinify();
     },
     [handleFormat, handleFix, handleMinify],
@@ -820,73 +820,52 @@ export default function JsonToolkitPage({
     setSchemaValidatedAt(null);
   }, [clearError, setInputWithHistory]);
 
+  const applyJsonWorkspaceOutput = useCallback(
+    async (op: Parameters<typeof runJsonWorkspaceOp>[0], updateInput: boolean) => {
+      clearError();
+      setJsonWorkspaceBusy(true);
+      try {
+        const r = await runJsonWorkspaceOp(op);
+        if (r.ok && r.output !== undefined) {
+          if (updateInput) setInputWithHistory(r.output);
+          setOutput(r.output);
+        } else {
+          const err = parseJsonError(input);
+          if (err) {
+            setError(err);
+            setShowErrorPanel(true);
+          } else if (!r.ok) {
+            setError({ message: r.error, line: 1, column: 1 });
+            setShowErrorPanel(true);
+          }
+        }
+      } finally {
+        setJsonWorkspaceBusy(false);
+      }
+    },
+    [input, clearError, setInputWithHistory],
+  );
+
   const handleSortKeys = useCallback(() => {
-    clearError();
-    try {
-      const parsed = JSON.parse(input);
-      const sorted = sortKeysDeep(parsed);
-      const result = JSON.stringify(sorted, null, 2);
-      setInputWithHistory(result);
-      setOutput(result);
-    } catch {
-      const err = parseJsonError(input);
-      if (err) { setError(err); setShowErrorPanel(true); }
-    }
-  }, [input, clearError, setInputWithHistory]);
+    void applyJsonWorkspaceOutput({ op: "sortKeys", input }, true);
+  }, [applyJsonWorkspaceOutput, input]);
 
   const handleRemoveNulls = useCallback(() => {
-    clearError();
-    try {
-      const parsed = JSON.parse(input);
-      const cleaned = removeNullsDeep(parsed);
-      const result = JSON.stringify(cleaned, null, 2);
-      setInputWithHistory(result);
-      setOutput(result);
-    } catch {
-      const err = parseJsonError(input);
-      if (err) { setError(err); setShowErrorPanel(true); }
-    }
-  }, [input, clearError, setInputWithHistory]);
+    void applyJsonWorkspaceOutput({ op: "removeNulls", input }, true);
+  }, [applyJsonWorkspaceOutput, input]);
 
   const handleFlatten = useCallback(() => {
-    clearError();
-    try {
-      const parsed = JSON.parse(input);
-      const flat = flattenObject(parsed);
-      setOutput(JSON.stringify(flat, null, 2));
-    } catch {
-      const err = parseJsonError(input);
-      if (err) { setError(err); setShowErrorPanel(true); }
-    }
-  }, [input, clearError]);
+    void applyJsonWorkspaceOutput({ op: "flatten", input }, false);
+  }, [applyJsonWorkspaceOutput, input]);
 
   const handleUnflatten = useCallback(() => {
-    clearError();
-    try {
-      const parsed = JSON.parse(input);
-      const unflat = unflattenObject(parsed as Record<string, unknown>);
-      setOutput(JSON.stringify(unflat, null, 2));
-    } catch {
-      const err = parseJsonError(input);
-      if (err) { setError(err); setShowErrorPanel(true); }
-    }
-  }, [input, clearError]);
+    void applyJsonWorkspaceOutput({ op: "unflatten", input }, false);
+  }, [applyJsonWorkspaceOutput, input]);
 
   const handleNdjson = useCallback(() => {
-    clearError();
-    try {
-      if (input.trim().startsWith("[")) {
-        const parsed = JSON.parse(input);
-        setOutput(toNdjson(parsed));
-      } else {
-        const parsed = fromNdjson(input);
-        setOutput(JSON.stringify(parsed, null, 2));
-      }
-    } catch {
-      const err = parseJsonError(input);
-      if (err) { setError(err); setShowErrorPanel(true); }
-    }
-  }, [input, clearError]);
+    const mode = input.trim().startsWith("[") ? "to" : "from";
+    void applyJsonWorkspaceOutput({ op: "ndjson", input, mode }, false);
+  }, [applyJsonWorkspaceOutput, input]);
 
   const handleEncrypt = useCallback(async () => {
     if (!encryptPassword) return;
@@ -997,30 +976,39 @@ export default function JsonToolkitPage({
     }
   }, [importType, importText, clearError, setInputWithHistory]);
 
+  const formatPastedJson = useCallback(async (raw: string) => {
+    const r = await runJsonWorkspaceOp({ op: "format", input: raw });
+    if (r.ok && r.output) return r.output;
+    throw new Error(r.ok ? "Invalid JSON" : r.error);
+  }, []);
+
   const handlePaste = useCallback(
     (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
       if (autoFormat) {
         const text = e.clipboardData.getData("text");
         e.preventDefault();
-        setInputWithHistory(text);
-        try {
-          const parsed = JSON.parse(text);
-          setOutput(JSON.stringify(parsed, null, 2));
-          clearError();
-        } catch {
-          const err = parseJsonError(text);
-          if (err) {
-            setError(err);
-            setShowErrorPanel(true);
+        void (async () => {
+          try {
+            const pretty = await formatPastedJson(text);
+            setInputWithHistory(pretty);
+            setOutput(pretty);
+            clearError();
+          } catch {
+            setInputWithHistory(text);
+            const err = parseJsonError(text);
+            if (err) {
+              setError(err);
+              setShowErrorPanel(true);
+            }
           }
-        }
-        requestAnimationFrame(() => {
-          const ta = inputRef.current;
-          if (ta) syncInputEditorOverlays({ value: ta.value, selectionStart: ta.selectionStart });
-        });
+          requestAnimationFrame(() => {
+            const ta = inputRef.current;
+            if (ta) syncInputEditorOverlays({ value: ta.value, selectionStart: ta.selectionStart });
+          });
+        })();
       }
     },
-    [autoFormat, clearError, setInputWithHistory, syncInputEditorOverlays]
+    [autoFormat, clearError, setInputWithHistory, syncInputEditorOverlays, formatPastedJson],
   );
 
   const handleConvert = useCallback(() => {
@@ -1069,12 +1057,29 @@ export default function JsonToolkitPage({
     }
   }, [diffLeft, diffRight]);
 
-  const parsedForTree = useMemo(() => {
-    try {
-      return JSON.parse(input);
-    } catch {
-      return undefined;
+  useEffect(() => {
+    if (!input.trim()) {
+      setParsedForTree(undefined);
+      return;
     }
+    let cancelled = false;
+    if (shouldUseJsonWorker(input)) {
+      void runJsonWorkspaceOp({ op: "parse", input }).then((r) => {
+        if (cancelled) return;
+        setParsedForTree(r.ok ? r.parsed : undefined);
+      });
+      return () => {
+        cancelled = true;
+      };
+    }
+    try {
+      setParsedForTree(JSON.parse(input));
+    } catch {
+      setParsedForTree(undefined);
+    }
+    return () => {
+      cancelled = true;
+    };
   }, [input]);
 
   const selectedNodeValue = useMemo(() => {
@@ -1102,7 +1107,7 @@ export default function JsonToolkitPage({
   // Context menu actions
   const handleContextAction = useCallback((action: string, ctx: ContextMenuState) => {
     if (!parsedForTree) return;
-    let newData = parsedForTree;
+    let newData: unknown = parsedForTree;
 
     switch (action) {
       case "copy": {
@@ -1383,11 +1388,19 @@ export default function JsonToolkitPage({
               label={jsonFormatBusy ? "Compacting…" : "Compact"}
             />
             {shouldUseJsonWorker(input) && (
-              <span className="text-[10px] text-muted-foreground px-1" title="Large payload — using background worker">
+              <span
+                className="text-[10px] text-muted-foreground px-1"
+                title="Large payload — CPU work runs in a background Web Worker so the UI stays responsive"
+              >
                 Worker
               </span>
             )}
-            <ToolButton onClick={handleFix} icon={<Wrench size={15} />} label="Fix" variant="warning" />
+            <ToolButton
+              onClick={() => void handleFix()}
+              icon={<Wrench size={15} />}
+              label={jsonWorkspaceBusy ? "Fixing…" : "Fix"}
+              variant="warning"
+            />
             <div className="w-px h-5 bg-border mx-0.5" />
             <ToolButton onClick={handleSortKeys} icon={<SortAsc size={15} />} label="Sort Keys" />
             <ToolButton onClick={handleRemoveNulls} icon={<Eraser size={15} />} label="Remove Nulls" />
@@ -1855,17 +1868,19 @@ export default function JsonToolkitPage({
                     if (!autoFormat) return;
                     const raw = e.clipboardData.getData("text");
                     e.preventDefault();
-                    try {
-                      const pretty = JSON.stringify(JSON.parse(raw), null, 2);
-                      setInputWithHistory(pretty);
-                      clearError();
-                    } catch {
-                      setInputWithHistory(raw);
-                    }
-                    requestAnimationFrame(() => {
-                      const ta = inputRef.current;
-                      if (ta) syncInputEditorOverlays({ value: ta.value, selectionStart: ta.selectionStart });
-                    });
+                    void (async () => {
+                      try {
+                        const pretty = await formatPastedJson(raw);
+                        setInputWithHistory(pretty);
+                        clearError();
+                      } catch {
+                        setInputWithHistory(raw);
+                      }
+                      requestAnimationFrame(() => {
+                        const ta = inputRef.current;
+                        if (ta) syncInputEditorOverlays({ value: ta.value, selectionStart: ta.selectionStart });
+                      });
+                    })();
                   }}
                   onFocus={() => syncInputEditorOverlays()}
                   onClick={() => syncInputEditorOverlays()}
@@ -1896,7 +1911,11 @@ export default function JsonToolkitPage({
                 <span className="font-semibold text-foreground/80">TREE VIEW</span>
                 {parsedForTree !== undefined && (
                   <span className="text-accent text-xs">
-                    {Array.isArray(parsedForTree) ? `Array[${parsedForTree.length}]` : `Object{${Object.keys(parsedForTree).length}}`}
+                    {Array.isArray(parsedForTree)
+                      ? `Array[${parsedForTree.length}]`
+                      : parsedForTree !== null && typeof parsedForTree === "object"
+                        ? `Object{${Object.keys(parsedForTree as Record<string, unknown>).length}}`
+                        : String(parsedForTree)}
                   </span>
                 )}
               </div>
@@ -2090,7 +2109,11 @@ export default function JsonToolkitPage({
               <span className="font-semibold text-foreground/80">TREE EXPLORER</span>
               {parsedForTree !== undefined && (
                 <span className="text-accent">
-                  ({Array.isArray(parsedForTree) ? `Array[${parsedForTree.length}]` : `Object{${Object.keys(parsedForTree).length}}`})
+                  ({Array.isArray(parsedForTree)
+                    ? `Array[${parsedForTree.length}]`
+                    : parsedForTree !== null && typeof parsedForTree === "object"
+                      ? `Object{${Object.keys(parsedForTree as Record<string, unknown>).length}}`
+                      : String(parsedForTree)})
                 </span>
               )}
             </div>
@@ -2543,7 +2566,7 @@ export default function JsonToolkitPage({
                       </tr>
                     </thead>
                     <tbody>
-                      {sortedFilteredTable.map((row, rowIdx) => {
+                      {sortedFilteredTable.map((row, _rowIdx) => {
                         const realIdx = tableData.indexOf(row);
                         return (
                           <tr key={realIdx} className="hover:bg-muted/30 transition-colors">
@@ -2617,7 +2640,7 @@ export default function JsonToolkitPage({
             {!stats.valid && input.trim() && (
               <button
                 type="button"
-                onClick={handleFix}
+                onClick={() => void handleFix()}
                 className="inline-flex items-center gap-1 rounded-md border border-warning/50 bg-warning/15 px-2 py-0.5 text-[11px] font-semibold text-amber-950 dark:text-amber-50 hover:bg-warning/25 transition-colors"
                 title="Trailing commas, single quotes, comments, missing commas, truncated JSON, …"
               >
@@ -2672,7 +2695,7 @@ export default function JsonToolkitPage({
                     <span className="text-xs text-muted-foreground">Try automatic repair:</span>
                     <button
                       type="button"
-                      onClick={handleFix}
+                      onClick={() => void handleFix()}
                       className="inline-flex items-center gap-1.5 rounded-lg border border-warning/40 bg-warning/15 px-3 py-1.5 text-xs font-semibold text-amber-950 dark:text-amber-50 hover:bg-warning/25 transition-colors"
                     >
                       <Wrench size={14} />

@@ -19,6 +19,16 @@ const eslintConfig = defineConfig([
       // Content-heavy site: apostrophes and quotes in copy are expected.
       // Enforcing &apos; / &quot; everywhere creates noisy, unreadable JSX.
       "react/no-unescaped-entities": "warn",
+      // Standard TS convention: prefix unused-but-required params/vars with _.
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          destructuredArrayIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
+        },
+      ],
     },
   },
 ]);

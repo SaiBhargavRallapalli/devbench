@@ -1,5 +1,5 @@
-/* eslint-disable no-restricted-globals */
-/** Format or minify large JSON off the main thread. */
+// Copyright (c) 2026 DevBench contributors. MIT License.
+/** @deprecated Prefer bundled module worker; kept for older cached service workers. */
 self.addEventListener("message", (ev) => {
   const { id, input, mode, indent } = ev.data ?? {};
   try {

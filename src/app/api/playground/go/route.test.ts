@@ -9,24 +9,6 @@ function makeRequest(body: unknown) {
   });
 }
 
-function mockUpstream(opts: {
-  ok?: boolean;
-  status?: number;
-  json?: object;
-  throws?: Error;
-}) {
-  if (opts.throws) {
-    return vi.fn().mockRejectedValue(opts.throws);
-  }
-  const jsonFn = opts.json
-    ? vi.fn().mockResolvedValue(opts.json)
-    : vi.fn().mockRejectedValue(new SyntaxError("bad json"));
-  return vi.fn().mockResolvedValue({
-    ok: opts.ok ?? true,
-    status: opts.status ?? 200,
-    json: jsonFn,
-  } as unknown as Response);
-}
 
 describe("POST /api/playground/go", () => {
   beforeEach(() => {

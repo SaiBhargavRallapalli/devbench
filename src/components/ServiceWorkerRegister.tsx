@@ -14,7 +14,6 @@ export default function ServiceWorkerRegister() {
     if (process.env.NODE_ENV !== "production") return;
 
     const ctrl = new AbortController();
-    const { signal } = ctrl;
 
     void navigator.serviceWorker
       .register("/sw.js", { scope: "/", updateViaCache: "none" })

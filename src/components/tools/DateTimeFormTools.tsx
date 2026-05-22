@@ -6,8 +6,6 @@ import ToolPageHero from "@/components/tools/ToolPageHero";
 
 const inp =
   "w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring/40";
-const sel =
-  "w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring/40";
 
 function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
   const id = useId();

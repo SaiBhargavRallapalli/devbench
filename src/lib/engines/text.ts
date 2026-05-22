@@ -257,7 +257,7 @@ export function stripMarkdown(input: string): Result {
   return text.trim();
 }
 
-export function regexTest(input: string, _pattern: string): Result {
+export function regexTest(_input: string, _pattern: string): Result {
   return { output: "", error: "Use the pattern option field above" };
 }
 

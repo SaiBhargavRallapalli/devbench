@@ -142,7 +142,8 @@ export default function RootLayout({
         <link rel="preconnect" href="https://googleads.g.doubleclick.net" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://fundingchoicesmessages.google.com" />
         {/* Inline critical above-the-fold styles to prevent render-blocking on LCP element */}
-        <style dangerouslySetInnerHTML={{ __html: `body{background:#fafafa;color:#111111}html.dark body{background:#09090b;color:#fafafa}@media(prefers-color-scheme:dark){html:not(.light) body{background:#09090b;color:#fafafa}}` }} /> {/* CodeQL[js/xss] */}
+        {/* CodeQL[js/xss] */}
+        <style dangerouslySetInnerHTML={{ __html: `body{background:#fafafa;color:#111111}html.dark body{background:#09090b;color:#fafafa}@media(prefers-color-scheme:dark){html:not(.light) body{background:#09090b;color:#fafafa}}` }} />
         {/* Google Tag Manager — head script */}
         <Script
           id="gtm-script"

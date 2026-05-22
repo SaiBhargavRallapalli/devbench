@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo } from "react";
-import Link from "next/link";
 import {
   Clock,
   ArrowRightLeft,
@@ -278,9 +277,6 @@ export default function EpochConverterPage() {
     if (!secInput.trim() || isNaN(n)) return null;
     return secondsToBreakdown(n);
   }, [secInput]);
-
-  // Code examples toggle
-  const [showCode, setShowCode] = useState(false);
 
   const inputClass =
     "px-3 py-2 rounded-lg border border-border bg-background text-foreground font-mono text-sm focus:outline-none focus:ring-2 focus:ring-ring/40 placeholder:text-muted-foreground/50 transition-shadow";

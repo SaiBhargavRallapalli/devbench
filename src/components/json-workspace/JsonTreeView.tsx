@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ChevronDown,
   ChevronRight,
@@ -10,8 +10,6 @@ import {
   Scissors,
   ArrowDownAZ,
   PlusCircle,
-  Minus,
-  Plus,
   Trash2,
   ClipboardPaste as ClipboardPasteIcon,
 } from "lucide-react";

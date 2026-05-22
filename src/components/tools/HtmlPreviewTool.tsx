@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { Monitor, Code2, AlertCircle, ArrowLeftRight } from "lucide-react";
 import ToolPageHero from "@/components/tools/ToolPageHero";
 import type { Tool } from "@/lib/tools-registry";
