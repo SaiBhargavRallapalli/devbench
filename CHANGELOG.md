@@ -8,7 +8,8 @@
 - enhance ESLint and Lighthouse configurations, add test coverage (`93ed65e`)
 
 ### Chore
-- update README and changelog script for clarity and usage instructions (`0708177`)
+- remove post-commit hook for changelog auto-update (`f97ea65`)
+- update README and changelog script for clarity and usage instructions (`622ad9c`)
 - update CHANGELOG.md to reflect correct commit hash for ESLint and Lighthouse enhancements (`24896bd`)
 
 ## 2026-05-21

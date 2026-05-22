@@ -1,12 +1,9 @@
 # Regenerate CHANGELOG.md without slowing down every local commit.
-# Triggers: manual (Actions tab) or when you push a version tag (e.g. v1.2.0).
+# Run from: GitHub → Actions → "Update changelog" → Run workflow
 name: Update changelog
 
 on:
   workflow_dispatch:
-  push:
-    tags:
-      - "v*"
 
 permissions:
   contents: write
@@ -37,4 +34,3 @@ jobs:
         with:
           commit_message: "chore: update CHANGELOG.md"
           file_pattern: CHANGELOG.md
-          branch: ${{ github.ref_name }}
