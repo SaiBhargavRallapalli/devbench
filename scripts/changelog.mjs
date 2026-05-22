@@ -1,8 +1,12 @@
 #!/usr/bin/env node
 /**
- * Auto-generates CHANGELOG.md from git log.
- * Run manually: npm run changelog
- * Runs automatically via .githooks/post-commit after every commit.
+ * Generates CHANGELOG.md from git log (current branch, newest first).
+ *
+ * Run locally:  npm run changelog
+ * Run in CI:    .github/workflows/changelog.yml (manual or on version tags)
+ *
+ * Env:
+ *   CHANGELOG_MAX_COMMITS — cap entries (default 400, set 0 for no limit)
  */
 
 import { execSync } from "child_process";
@@ -14,9 +18,14 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
 // ── Fetch git log ────────────────────────────────────────────────────────────
 
+const maxArg =
+  process.env.CHANGELOG_MAX_COMMITS === "0"
+    ? ""
+    : ` -n ${Number(process.env.CHANGELOG_MAX_COMMITS) || 400}`;
+
 const raw = execSync(
-  'git log --format="%H|%ad|%s" --date=short --all',
-  { cwd: ROOT, encoding: "utf8" }
+  `git log${maxArg} --format="%H|%ad|%s" --date=short`,
+  { cwd: ROOT, encoding: "utf8" },
 ).trim();
 
 if (!raw) {
@@ -65,7 +74,7 @@ function cleanMessage(msg) {
 const lines = [
   "# Changelog",
   "",
-  "> Auto-generated from git log. Run `npm run changelog` to refresh.",
+  "> Generated from git log. Refresh with `npm run changelog` or the **Update changelog** GitHub Action.",
   "",
 ];
 

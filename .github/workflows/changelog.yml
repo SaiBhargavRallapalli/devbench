@@ -1,0 +1,40 @@
+# Regenerate CHANGELOG.md without slowing down every local commit.
+# Triggers: manual (Actions tab) or when you push a version tag (e.g. v1.2.0).
+name: Update changelog
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  changelog:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate CHANGELOG.md
+        run: npm run changelog
+
+      - name: Commit changelog
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: update CHANGELOG.md"
+          file_pattern: CHANGELOG.md
+          branch: ${{ github.ref_name }}

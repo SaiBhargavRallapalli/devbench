@@ -53,7 +53,7 @@ Open [http://localhost:3000](http://localhost:3000).
 | `npm run start` | Serve the production build locally |
 | `npm run lint` | ESLint |
 | `npm run test:e2e` | Playwright smoke tests (see [`docs/RUNBOOK.md`](docs/RUNBOOK.md)) |
-| `npm run changelog` | Regenerate `CHANGELOG.md` from git (see script) |
+| `npm run changelog` | Regenerate `CHANGELOG.md` from git (on demand; not run on every commit) |
 
 ---
 

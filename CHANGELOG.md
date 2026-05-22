@@ -1,6 +1,6 @@
 # Changelog
 
-> Auto-generated from git log. Run `npm run changelog` to refresh.
+> Generated from git log. Refresh with `npm run changelog` or the **Update changelog** GitHub Action.
 
 ## 2026-05-22
 
@@ -8,7 +8,8 @@
 - enhance ESLint and Lighthouse configurations, add test coverage (`93ed65e`)
 
 ### Chore
-- update CHANGELOG.md to reflect correct commit hash for ESLint and Lighthouse enhancements (`faf865a`)
+- update README and changelog script for clarity and usage instructions (`0708177`)
+- update CHANGELOG.md to reflect correct commit hash for ESLint and Lighthouse enhancements (`24896bd`)
 
 ## 2026-05-21
 
@@ -25,8 +26,6 @@
 
 ### Chore
 - update CHANGELOG.md to correct JSONPath removal commit hash (`b386e40`)
-- bump react and @types/react (`6601a07`)
-- bump jsdom from 26.1.0 to 29.1.1 (`24d2e52`)
 
 ## 2026-05-20
 
@@ -46,11 +45,6 @@
 - Integrate bundle analyzer and enhance build scripts (`859d7f4`)
 - Enhance sitemap and blog metadata handling (`5dc4d1b`)
 
-### Chore
-- bump @types/jszip from 3.4.0 to 3.4.1 (`9234a64`)
-- bump @tailwindcss/postcss from 4.2.4 to 4.3.0 (`9deeccd`)
-- bump tailwindcss from 4.2.4 to 4.3.0 (`ca2bed7`)
-
 ## 2026-05-19
 
 ### Added
@@ -67,9 +61,6 @@
 - Implement bracket matching and deep JSON parsing enhancements (`96bab77`)
 - Enhance ESLint configuration and update dependencies (`70ec28b`)
 
-### Chore
-- bump sql-formatter from 15.7.3 to 15.8.0 (`f92de89`)
-
 ## 2026-05-18
 
 ### Added
@@ -80,10 +71,6 @@
 - Enhance image processing tools with dimension validation and error handling (`ac95993`)
 - Refactor color tools and enhance clipboard functionality (`15b879e`)
 - Update Go playground API endpoint to use new URL (`eac9bcb`)
-
-### Chore
-- bump @codemirror/view from 6.41.1 to 6.43.0 (`2c6a2c5`)
-- bump react from 19.2.4 to 19.2.6 (`6cf7550`)
 
 ## 2026-05-16
 
@@ -149,11 +136,6 @@
 - Enhance README with additional badges (`4bfb0fe`)
 - Merge pull request #1 from SaiBhargavRallapalli/main (`eb53707`)
 - AWS lambda sandbox module (`76da173`)
-
-### Chore
-- bump react-dom from 19.2.4 to 19.2.6 (`731c8f1`)
-- bump semver from 7.7.4 to 7.8.0 (`ba36bb4`)
-- bump @types/diff from 7.0.2 to 8.0.0 (`3d0003f`)
 
 ### Docs
 - update contributing guidelines and project documentation (`30dcd98`)
@@ -248,7 +230,6 @@
 - add JSON-LD structured data for homepage and tool pages to improve SEO and metadata representation (`013ed96`)
 - integrate Google Tag Manager for enhanced tracking and analytics (`461cd0b`)
 - add Google AdSense account information to metadata in layout (`9a326e1`)
-- Add Vercel Web Analytics integration (`68b0dac`)
 - update privacy policy content and layout, including advertising disclosures and cookie usage information (`9707121`)
 
 ## 2026-05-05
