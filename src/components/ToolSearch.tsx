@@ -72,7 +72,7 @@ const ToolCard = memo(function ToolCard({
     <div className="relative group">
       <Link
         href={toolHref(tool.slug)}
-        className="flex items-center gap-3 p-4 pr-10 rounded-xl border border-border bg-card hover:border-accent/40 hover:bg-muted/30 transition-colors"
+        className="flex items-center gap-3 p-4 pr-10 rounded-xl border border-border bg-card hover:border-accent/40 hover:bg-muted/30 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       >
         <div
           className={`shrink-0 w-9 h-9 rounded-lg flex items-center justify-center text-xs font-bold font-mono ${CATEGORIES[tool.category].color}`}

@@ -163,7 +163,8 @@ export default function CommandPalette({ tools }: { tools: Tool[] }) {
           )}
           {rows.length === 0 ? (
             <li className="px-4 py-10 text-center text-sm text-muted-foreground">
-              No results for &ldquo;{query}&rdquo;
+              <p>No results for &ldquo;{query}&rdquo;</p>
+              <p className="mt-1 text-xs">Try a shorter keyword, or press <kbd className="font-mono px-1 rounded border border-border bg-muted">Esc</kbd> to browse all tools.</p>
             </li>
           ) : (
             rows.map((row, i) =>

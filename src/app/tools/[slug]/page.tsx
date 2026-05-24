@@ -7,6 +7,7 @@ import {
   ArrowLeft,
   Copy,
   Check,
+  X,
   Trash2,
   Download,
   Sparkles,
@@ -42,13 +43,16 @@ import {
 } from "@/lib/tool-runner";
 
 function EmbedButton({ slug }: { slug: string }) {
-  const [copied, setCopied] = useState(false);
+  const [state, setState] = useState<"idle" | "copied" | "error">("idle");
   const copy = () => {
     const code = `<iframe src="https://www.devbench.co.in/embed/${slug}" width="100%" height="500" style="border:none;border-radius:12px;" title="${slug}" loading="lazy"></iframe>`;
     navigator.clipboard.writeText(code).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }).catch(() => {});
+      setState("copied");
+      setTimeout(() => setState("idle"), 2000);
+    }).catch(() => {
+      setState("error");
+      setTimeout(() => setState("idle"), 2000);
+    });
   };
   return (
     <button
@@ -56,33 +60,42 @@ function EmbedButton({ slug }: { slug: string }) {
       onClick={copy}
       className="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
     >
-      {copied ? (
+      {state === "copied" ? (
         <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+      ) : state === "error" ? (
+        <X className="w-3.5 h-3.5 text-destructive" />
       ) : (
         <Code2 className="w-3.5 h-3.5" />
       )}
-      {copied ? "Embed code copied" : "Get embed code"}
+      {state === "copied" ? "Embed code copied" : state === "error" ? "Copy failed" : "Get embed code"}
     </button>
   );
 }
 
 function CopyBtn({ text, toolSlug }: { text: string; toolSlug?: string }) {
-  const [copied, setCopied] = useState(false);
+  const [state, setState] = useState<"idle" | "copied" | "error">("idle");
   const copy = () => {
     navigator.clipboard.writeText(text).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      setState("copied");
+      setTimeout(() => setState("idle"), 2000);
       if (toolSlug) trackToolCopy(toolSlug, "output");
-    }).catch(() => {});
+    }).catch(() => {
+      setState("error");
+      setTimeout(() => setState("idle"), 2000);
+    });
   };
   return (
     <button
       onClick={copy}
       disabled={!text}
-      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-accent/10 text-accent hover:bg-accent/20 disabled:opacity-40 transition-colors"
+      className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors disabled:opacity-40 ${
+        state === "error"
+          ? "bg-destructive/10 text-destructive"
+          : "bg-accent/10 text-accent hover:bg-accent/20"
+      }`}
     >
-      {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-      {copied ? "Copied!" : "Copy"}
+      {state === "copied" ? <Check className="w-3.5 h-3.5" /> : state === "error" ? <X className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+      {state === "copied" ? "Copied!" : state === "error" ? "Copy failed" : "Copy"}
     </button>
   );
 }
@@ -102,7 +115,7 @@ function passwordStrength(pw: string): { label: string; color: string; pct: numb
 }
 
 function AesCopyAsJsonBtn({ ciphertext }: { ciphertext: string }) {
-  const [copied, setCopied] = useState(false);
+  const [state, setState] = useState<"idle" | "copied" | "error">("idle");
   const copy = () => {
     const payload = JSON.stringify({
       algorithm: "AES-256-GCM",
@@ -111,18 +124,23 @@ function AesCopyAsJsonBtn({ ciphertext }: { ciphertext: string }) {
       ciphertext,
     }, null, 2);
     navigator.clipboard.writeText(payload).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }).catch(() => {});
+      setState("copied");
+      setTimeout(() => setState("idle"), 2000);
+    }).catch(() => {
+      setState("error");
+      setTimeout(() => setState("idle"), 2000);
+    });
   };
   return (
     <button
       onClick={copy}
-      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-accent/10 text-accent hover:bg-accent/20 transition-colors"
+      className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
+        state === "error" ? "bg-destructive/10 text-destructive" : "bg-accent/10 text-accent hover:bg-accent/20"
+      }`}
       title="Copy as self-describing JSON envelope"
     >
-      {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-      {copied ? "Copied!" : "Copy as JSON"}
+      {state === "copied" ? <Check className="w-3.5 h-3.5" /> : state === "error" ? <X className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+      {state === "copied" ? "Copied!" : state === "error" ? "Copy failed" : "Copy as JSON"}
     </button>
   );
 }
@@ -208,6 +226,7 @@ export default function ToolPage() {
   });
 
   const [shareCopied, setShareCopied] = useState(false);
+  const [shareError, setShareError] = useState(false);
   const shareHydrated = useRef(false);
   const persistKey = `devbench:input:${slug}`;
 
@@ -253,7 +272,10 @@ export default function ToolPage() {
       setShareCopied(true);
       setTimeout(() => setShareCopied(false), 2000);
       trackToolShareLink(slug);
-    }).catch(() => {});
+    }).catch(() => {
+      setShareError(true);
+      setTimeout(() => setShareError(false), 2000);
+    });
   }, [slug, state.input, state.input2]);
 
   const setInput = (input: string) => setState((s) => ({ ...s, input }));
@@ -360,10 +382,12 @@ export default function ToolPage() {
                 >
                   {shareCopied ? (
                     <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                  ) : shareError ? (
+                    <X className="w-3.5 h-3.5 text-destructive" />
                   ) : (
                     <Share2 className="w-3.5 h-3.5" />
                   )}
-                  {shareCopied ? "Link copied" : "Copy share link"}
+                  {shareCopied ? "Link copied" : shareError ? "Copy failed" : "Copy share link"}
                 </button>
                 <EmbedButton slug={slug} />
               </div>

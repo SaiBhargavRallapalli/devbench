@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Sun, Moon, Menu, X } from "lucide-react";
+import { Sun, Moon, Menu, X, Search } from "lucide-react";
 import DevBenchMark from "@/components/DevBenchMark";
 import { useExternalNavOrigin } from "@/hooks/use-external-nav-origin";
 import { resolveToolHref } from "@/lib/site-config";
@@ -109,10 +109,12 @@ export default function Header() {
           <button
             type="button"
             onClick={() => window.dispatchEvent(new Event("devbench:open-palette"))}
-            className="hidden sm:inline-flex items-center gap-1.5 h-8 px-3 rounded-lg border border-border text-muted-foreground text-sm transition-colors hover:bg-muted hover:text-foreground"
+            aria-label="Search tools"
+            className="inline-flex items-center justify-center h-8 w-8 sm:w-auto sm:gap-1.5 sm:px-3 rounded-lg border border-border text-muted-foreground text-sm transition-colors hover:bg-muted hover:text-foreground"
           >
-            <span>Search</span>
-            <kbd aria-label="keyboard shortcut Command K" className="text-[10px] font-mono text-muted-foreground">⌘K</kbd>
+            <Search aria-hidden="true" className="h-4 w-4 shrink-0" />
+            <span className="hidden sm:inline">Search</span>
+            <kbd aria-label="keyboard shortcut Command K" className="hidden sm:inline text-[10px] font-mono text-muted-foreground">⌘K</kbd>
           </button>
 
           <button

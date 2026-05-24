@@ -262,6 +262,16 @@ export default function JsonToolkitPage({
     } catch { /* ignore */ }
   }, [searchMatches.length, searchCaseSensitive, searchRegex, searchTerm, input, replaceTerm, setInputWithHistory]);
 
+  // Scroll textarea to current search match and select it so the match is visually highlighted.
+  useEffect(() => {
+    if (!searchTerm || searchMatches.length === 0) return;
+    const m = searchMatches[currentMatchIndex % searchMatches.length];
+    const ta = inputRef.current;
+    if (!ta) return;
+    ta.focus();
+    ta.setSelectionRange(m.start, m.end);
+  }, [currentMatchIndex, searchMatches, searchTerm]);
+
   // Schema validation
   const [showSchemaPanel, setShowSchemaPanel] = useState(false);
   const [schemaText, setSchemaText] = useState("");
