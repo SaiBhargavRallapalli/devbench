@@ -193,11 +193,16 @@ export function InteractiveTreeNode({
   return (
     <div className={searchTerm && !hasMatch ? "opacity-20 pointer-events-none" : undefined}>
       <div
+        role={isExpandable ? "button" : undefined}
+        aria-expanded={isExpandable ? expanded : undefined}
+        aria-label={isExpandable ? `${nodeKey} (${typeLabel})` : undefined}
+        tabIndex={isExpandable ? 0 : undefined}
         className={`flex items-center gap-1 py-0.5 px-2 rounded cursor-pointer select-none group transition-colors ${
           directMatch ? "bg-warning/10 hover:bg-warning/15" : "hover:bg-accent/5"
         }`}
         style={{ paddingLeft: `${depth * 20 + 8}px` }}
         onClick={() => { if (isExpandable) setExpanded(!expanded); onSelect?.(path); }}
+        onKeyDown={(e) => { if (isExpandable && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); setExpanded(!expanded); } }}
         onContextMenu={handleRightClick}
       >
         {isExpandable ? (
