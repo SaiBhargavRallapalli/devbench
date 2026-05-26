@@ -2,6 +2,7 @@
 
 import {
   useState,
+  useRef,
   useMemo,
   useEffect,
   useCallback,
@@ -259,6 +260,12 @@ function ToolSearchInner({ tools }: { tools: Tool[] }) {
 
   const favouriteSet = useMemo(() => new Set(favourites), [favourites]);
 
+  // Always-fresh refs so the searchParams effect below never reads stale state.
+  const searchRef = useRef(search);
+  const activeCategoryRef = useRef(activeCategory);
+  searchRef.current = search;
+  activeCategoryRef.current = activeCategory;
+
   // When the page loads with a category/query param (e.g. from footer links or category cards),
   // scroll the tools section into view so the user sees the filtered results, not the hero.
   useEffect(() => {
@@ -270,6 +277,28 @@ function ToolSearchInner({ tools }: { tools: Tool[] }) {
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Sync state when the URL params change externally — e.g. clicking "Explore by category"
+  // in the footer, or a category hero card, while filters are already active.
+  // useState(initialValue) only sets state on mount; this effect handles soft-navigations.
+  useEffect(() => {
+    const urlQ = searchParams.get("q") ?? "";
+    const urlCatRaw = searchParams.get("category");
+    const urlCat: ToolCategory | "all" =
+      urlCatRaw && isToolCategory(urlCatRaw) ? urlCatRaw : "all";
+
+    // Only update when the incoming URL differs from the current state (external nav).
+    // Using refs so this check is never stale without making the effect re-register on every render.
+    if (urlQ !== searchRef.current || urlCat !== activeCategoryRef.current) {
+      setSearch(urlQ);
+      setActiveCategory(urlCat);
+      setPreviewTool(null);
+      setTimeout(() => {
+        document.getElementById("tools")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 120);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   const syncUrl = useCallback(
     (q: string, cat: ToolCategory | "all") => {
