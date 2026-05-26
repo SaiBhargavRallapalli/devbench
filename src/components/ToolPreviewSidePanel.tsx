@@ -258,7 +258,7 @@ export default function ToolPreviewSidePanel({
           onDragOver={onDragOver}
           onDragLeave={onDragLeave}
           onDrop={onDrop}
-          className={`sticky top-24 hidden xl:flex xl:flex-col w-full max-w-xs shrink-0 rounded-2xl border transition-all ${
+          className={`sticky top-24 self-start hidden xl:flex xl:flex-col w-full max-w-xs shrink-0 rounded-2xl border transition-all ${
             dropActive
               ? "border-accent bg-accent/10 ring-2 ring-accent/30"
               : tool

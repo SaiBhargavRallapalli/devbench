@@ -242,7 +242,7 @@ function ToolSearchInner({ tools }: { tools: Tool[] }) {
       if (q.trim()) params.set("q", q.trim());
       if (cat !== "all") params.set("category", cat);
       const qs = params.toString();
-      router.replace(qs ? `/?${qs}#tools` : "/#tools", { scroll: false });
+      router.replace(qs ? `/?${qs}` : "/", { scroll: false });
     },
     [router],
   );
@@ -267,7 +267,7 @@ function ToolSearchInner({ tools }: { tools: Tool[] }) {
     setSearch("");
     setActiveCategory("all");
     setPreviewTool(null);
-    router.replace("/#tools", { scroll: false });
+    router.replace("/", { scroll: false });
   }, [router]);
 
   const hasActiveFilters = search.trim().length > 0 || activeCategory !== "all";
