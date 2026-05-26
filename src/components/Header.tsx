@@ -112,37 +112,34 @@ export default function Header() {
 
               {moreOpen && (
                 <div
-                  className="absolute left-0 top-full mt-1 z-50 w-64 rounded-xl border border-border bg-popover shadow-lg p-2"
+                  className="absolute left-0 top-full mt-1 z-50 w-44 rounded-xl border border-border bg-popover shadow-lg py-1.5"
                   role="menu"
                 >
-                  <div className="grid grid-cols-2 gap-0.5">
-                    {MORE_TOOLS.map((link) => (
-                      <Link
-                        key={link.href}
-                        href={resolveToolHref(link.href, navOrigin, homePath)}
-                        aria-label={link.ariaLabel}
-                        role="menuitem"
-                        onClick={() => setMoreOpen(false)}
-                        className="rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                      >
-                        {link.label}
-                      </Link>
-                    ))}
-                  </div>
-                  <div className="mt-1.5 border-t border-border pt-1.5">
-                    {SITE_LINKS.map((link) => (
-                      <Link
-                        key={link.href}
-                        href={resolveToolHref(link.href, navOrigin, homePath)}
-                        aria-label={link.ariaLabel}
-                        role="menuitem"
-                        onClick={() => setMoreOpen(false)}
-                        className="block rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                      >
-                        {link.label}
-                      </Link>
-                    ))}
-                  </div>
+                  {MORE_TOOLS.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={resolveToolHref(link.href, navOrigin, homePath)}
+                      aria-label={link.ariaLabel}
+                      role="menuitem"
+                      onClick={() => setMoreOpen(false)}
+                      className="block px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                  <div className="my-1 mx-2 border-t border-border" />
+                  {SITE_LINKS.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={resolveToolHref(link.href, navOrigin, homePath)}
+                      aria-label={link.ariaLabel}
+                      role="menuitem"
+                      onClick={() => setMoreOpen(false)}
+                      className="block px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
                 </div>
               )}
             </li>

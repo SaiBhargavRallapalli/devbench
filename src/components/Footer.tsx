@@ -99,6 +99,43 @@ export default function Footer() {
         </div>
 
         <div className="mb-6 pb-6 border-b border-border">
+          <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-3 text-center sm:text-left">
+            Also from DevBench
+          </p>
+          <div className="flex flex-wrap gap-2 justify-center sm:justify-start">
+            <a
+              href="https://porthole.devbench.co.in"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-3 py-2 rounded-xl border border-accent/40 bg-accent/5 text-xs font-semibold text-foreground hover:bg-accent/10 transition-colors"
+            >
+              <img src="https://porthole.devbench.co.in/favicon.ico" alt="" width={14} height={14} className="rounded-sm" />
+              Porthole
+              <span className="text-[9px] font-bold bg-accent text-accent-foreground px-1.5 py-0.5 rounded-full uppercase tracking-wide">New</span>
+            </a>
+            {[
+              { name: "Bank Tools", href: "https://bank.devbench.co.in" },
+              { name: "Form 16", href: "https://form16.devbench.co.in" },
+              { name: "ITR Helper", href: "https://itr.devbench.co.in" },
+              { name: "Resume", href: "https://resume.devbench.co.in" },
+              { name: "Receipts", href: "https://receipts.devbench.co.in" },
+              { name: "Quick Commerce", href: "https://quick-commerce-compare.devbench.co.in" },
+            ].map((app) => (
+              <a
+                key={app.href}
+                href={app.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-3 py-2 rounded-xl border border-border bg-card text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+              >
+                <img src={`${app.href}/favicon.ico`} alt="" width={14} height={14} className="rounded-sm" />
+                {app.name}
+              </a>
+            ))}
+          </div>
+        </div>
+
+        <div className="mb-6 pb-6 border-b border-border">
           <div className="flex flex-col items-center justify-center gap-6 sm:flex-row sm:flex-wrap sm:gap-8">
             <a
               href="https://www.producthunt.com/products/devbench-2/reviews/new?utm_source=badge-product_review&utm_medium=badge"

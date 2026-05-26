@@ -27,12 +27,8 @@ import {
   Pin,
   FileStack,
   ExternalLink,
-  Copy,
-  Check,
-  Download,
   Eye,
   RotateCcw,
-  GripVertical,
 } from "lucide-react";
 import { CATEGORIES, type Tool, type ToolCategory } from "@/lib/tools-registry";
 import { publicHrefForToolSlug } from "@/lib/devbench-workspaces";
@@ -43,13 +39,9 @@ import {
   getToolHistory,
 } from "@/lib/devbench-preferences";
 import { CATEGORY_CTA_LABELS, allToolsCategoryLabel } from "@/lib/category-cta-labels";
-import { getToolCardDepth } from "@/lib/tool-card-depth";
 import CategoryContentDepthHub from "@/components/CategoryContentDepthHub";
 import CategoryShareBar from "@/components/CategoryShareBar";
-import ToolCardDepthPanel from "@/components/ToolCardDepthPanel";
 import ToolPreviewSidePanel from "@/components/ToolPreviewSidePanel";
-import ShareToolButton from "@/components/ShareToolButton";
-import HoverTooltip from "@/components/HoverTooltip";
 
 const CATEGORY_ICONS: Record<ToolCategory, React.ElementType> = {
   json: Braces,
@@ -117,29 +109,6 @@ const ExplorerToolCard = memo(function ExplorerToolCard({
   onPreview: (tool: Tool) => void;
   isPreviewTarget: boolean;
 }) {
-  const depth = getToolCardDepth(tool);
-  const benefit = depth.steps[0] ?? tool.description;
-  const [feedback, setFeedback] = useState<string | null>(null);
-  const [hoverQuick, setHoverQuick] = useState(false);
-
-  const copyPayload = useCallback(async () => {
-    const text = depth.examplePayload ?? tool.description;
-    try {
-      await navigator.clipboard.writeText(text);
-      setFeedback("Copied to clipboard");
-      setTimeout(() => setFeedback(null), 2200);
-    } catch {
-      setFeedback("Copy failed — check browser permissions");
-      setTimeout(() => setFeedback(null), 3000);
-    }
-  }, [depth.examplePayload, tool.description]);
-
-  const copyLabel = depth.exportLabel?.startsWith("Copy")
-    ? "Copy to Clipboard"
-    : depth.examplePayload
-      ? "Copy to Clipboard"
-      : null;
-
   return (
     <div
       draggable
@@ -147,32 +116,37 @@ const ExplorerToolCard = memo(function ExplorerToolCard({
         e.dataTransfer.setData("text/devbench-tool-slug", tool.slug);
         e.dataTransfer.effectAllowed = "copy";
       }}
-      onMouseEnter={() => {
-        setHoverQuick(true);
-        onPreview(tool);
-      }}
-      onMouseLeave={() => setHoverQuick(false)}
+      onMouseEnter={() => onPreview(tool)}
       onFocus={() => onPreview(tool)}
-      className={`group flex flex-col rounded-xl border bg-card transition-all duration-200 overflow-hidden ${
+      className={`group flex flex-col rounded-xl border bg-card transition-all duration-200 ${
         isPreviewTarget
           ? "border-accent ring-2 ring-accent/25 shadow-md"
           : "border-border hover:border-accent/40"
       }`}
     >
-      <div className="p-4 flex flex-col gap-3">
-        <div className="flex items-start gap-3">
+      <div className="p-3 flex flex-col gap-2">
+        <div className="flex items-start gap-2.5">
           <div
-            className={`shrink-0 w-9 h-9 rounded-lg flex items-center justify-center text-xs font-bold font-mono ${CATEGORIES[tool.category].color}`}
+            className={`shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold font-mono ${CATEGORIES[tool.category].color}`}
           >
             {tool.icon}
           </div>
           <div className="min-w-0 flex-1">
-            <div className="flex items-start justify-between gap-2">
-              <p className="text-sm font-semibold text-foreground">{tool.name}</p>
-              <GripVertical
-                className="h-4 w-4 shrink-0 text-muted-foreground/50 cursor-grab active:cursor-grabbing"
-                aria-hidden
-              />
+            <div className="flex items-start justify-between gap-1">
+              <p className="text-sm font-semibold text-foreground leading-tight">{tool.name}</p>
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); onToggleFavourite(tool.slug); }}
+                aria-pressed={isFavourite}
+                aria-label={isFavourite ? "Remove from saved" : "Save tool"}
+                className={`shrink-0 rounded p-0.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+                  isFavourite
+                    ? "text-amber-500"
+                    : "text-muted-foreground/40 opacity-0 group-hover:opacity-100 hover:text-amber-500"
+                }`}
+              >
+                <Star className={`h-3.5 w-3.5 ${isFavourite ? "fill-amber-500" : ""}`} aria-hidden />
+              </button>
             </div>
             <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2 leading-relaxed">
               {tool.description}
@@ -180,90 +154,24 @@ const ExplorerToolCard = memo(function ExplorerToolCard({
           </div>
         </div>
 
-        {(hoverQuick || isPreviewTarget) && (
-          <p className="text-xs text-accent font-medium leading-snug">
-            {benefit}
-          </p>
-        )}
-
-        {feedback && (
-          <p
-            role="status"
-            className="flex items-center gap-1.5 text-xs font-medium text-emerald-600 dark:text-emerald-400"
+        <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
+          <button
+            type="button"
+            onClick={() => onPreview(tool)}
+            className="inline-flex items-center gap-1 rounded-lg border border-border bg-muted/50 px-2.5 py-1.5 text-xs font-semibold transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
-            <Check className="h-3.5 w-3.5 shrink-0" aria-hidden />
-            {feedback}
-          </p>
-        )}
-
-        <div
-          className={`flex flex-wrap items-center gap-2 transition-opacity ${
-            hoverQuick || isPreviewTarget ? "opacity-100" : "opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100"
-          }`}
-        >
-          <HoverTooltip label="Quick preview in side panel">
-            <button
-              type="button"
-              onClick={() => onPreview(tool)}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-muted/50 px-3 py-1.5 text-xs font-semibold transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              <Eye className="h-3 w-3 shrink-0" aria-hidden />
-              Preview
-            </button>
-          </HoverTooltip>
-
-          <HoverTooltip label="Runs in your browser instantly — no signup or upload">
-            <Link
-              href={toolHref(tool.slug)}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-accent px-3 py-1.5 text-xs font-semibold text-accent-foreground transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              Open
-              <ExternalLink className="h-3 w-3 shrink-0" aria-hidden />
-            </Link>
-          </HoverTooltip>
-
-          <HoverTooltip
-            label={
-              isFavourite
-                ? "Remove from your shortcuts bar at the top of the page"
-                : "Save to your shortcuts for quick access"
-            }
+            <Eye className="h-3 w-3 shrink-0" aria-hidden />
+            Preview
+          </button>
+          <Link
+            href={toolHref(tool.slug)}
+            className="inline-flex items-center gap-1 rounded-lg bg-accent px-2.5 py-1.5 text-xs font-semibold text-accent-foreground transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
-            <button
-              type="button"
-              onClick={() => onToggleFavourite(tool.slug)}
-              aria-pressed={isFavourite}
-              className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
-                isFavourite
-                  ? "border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-300"
-                  : "border-border bg-muted/50 text-foreground hover:bg-muted"
-              }`}
-            >
-              <Star
-                className={`h-3 w-3 shrink-0 ${isFavourite ? "fill-amber-500 text-amber-500" : ""}`}
-                aria-hidden
-              />
-              Save
-            </button>
-          </HoverTooltip>
-
-          {copyLabel && (
-            <HoverTooltip label="Copy example or description text to your clipboard">
-              <button
-                type="button"
-                onClick={copyPayload}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              >
-                <Copy className="h-3 w-3 shrink-0" aria-hidden />
-                {copyLabel}
-              </button>
-            </HoverTooltip>
-          )}
-
-          <ShareToolButton tool={tool} compact />
+            Open
+            <ExternalLink className="h-3 w-3 shrink-0" aria-hidden />
+          </Link>
         </div>
       </div>
-      <ToolCardDepthPanel tool={tool} />
     </div>
   );
 });
@@ -321,6 +229,7 @@ function ToolSearchInner({ tools }: { tools: Tool[] }) {
   const [activeCategory, setActiveCategory] = useState<ToolCategory | "all">(initialCategory);
   const [previewTool, setPreviewTool] = useState<Tool | null>(null);
   const [dropActive, setDropActive] = useState(false);
+  const [panelCollapsed, setPanelCollapsed] = useState(false);
 
   const { slugs: favourites, toggle: toggleFavourite } = useFavoriteSlugs();
   const recent = useRecentSlugs();
@@ -682,6 +591,9 @@ function ToolSearchInner({ tools }: { tools: Tool[] }) {
           onDragOver={handlePanelDragOver}
           onDragLeave={() => setDropActive(false)}
           onDrop={handlePanelDrop}
+          collapsed={panelCollapsed}
+          onCollapse={() => setPanelCollapsed(true)}
+          onExpand={() => setPanelCollapsed(false)}
         />
       </div>
     </section>

@@ -88,13 +88,13 @@ export default function HomePage() {
                 Start using tools now
                 <ArrowRight className="h-4 w-4 shrink-0" aria-hidden />
               </Link>
-              <Link
+              <a
                 href="#tools"
                 className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-xl border border-border bg-card px-6 py-3.5 text-base font-semibold text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 title="Browse the full catalog of free in-browser tools"
               >
                 Browse all tools
-              </Link>
+              </a>
             </div>
 
             <div className="max-w-5xl mx-auto space-y-10 text-left md:text-center">
