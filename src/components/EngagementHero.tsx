@@ -73,11 +73,22 @@ function CategoryTile({
         <p className="mt-1 text-xs text-muted-foreground">{count} tools</p>
       </Link>
 
-      {sample && (
-        <div
-          className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-background/92 opacity-0 backdrop-blur-sm transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100"
-        >
-          <div className="flex flex-wrap justify-center gap-2 px-3">
+      <div
+        className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-background/92 opacity-0 backdrop-blur-sm transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100 px-4"
+      >
+        <p className="text-xs font-semibold text-foreground text-center">
+          {count} tools — pick one below
+        </p>
+        <div className="flex flex-col w-full gap-1.5">
+          <Link
+            href={categoryBrowseHref(category)}
+            onClick={(e) => e.stopPropagation()}
+            className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-accent px-3 py-2 text-xs font-semibold text-accent-foreground hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <ExternalLink className="h-3.5 w-3.5" aria-hidden />
+            Browse &amp; choose
+          </Link>
+          {sample && (
             <button
               type="button"
               onClick={(e) => {
@@ -85,23 +96,14 @@ function CategoryTile({
                 onPreview(sample);
                 document.getElementById("tools")?.scrollIntoView({ behavior: "smooth" });
               }}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-muted px-3 py-2 text-xs font-semibold text-foreground hover:bg-muted/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-muted px-3 py-2 text-xs font-semibold text-foreground hover:bg-muted/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               <Eye className="h-3.5 w-3.5" aria-hidden />
-              Preview
+              Quick preview
             </button>
-            <Link
-              href={publicHrefForToolSlug(sample.slug)}
-              onClick={(e) => e.stopPropagation()}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-accent px-3 py-2 text-xs font-semibold text-accent-foreground hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              <ExternalLink className="h-3.5 w-3.5" aria-hidden />
-              Open
-            </Link>
-            <SaveQuickAction slug={sample.slug} />
-          </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 }
