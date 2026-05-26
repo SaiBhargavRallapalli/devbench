@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { getToolBySlug, getToolsByCategory, CATEGORIES } from "@/lib/tools-registry";
+import { getToolBySlug } from "@/lib/tools-registry";
 import { TOOL_FAQS } from "@/lib/tool-faqs";
 import { TOOL_PAGE_CONTENT } from "@/lib/tool-page-content";
 import ToolSeoContent from "@/components/tools/ToolSeoContent";
@@ -8,8 +7,13 @@ import ToolFaqSection from "@/components/tools/ToolFaqSection";
 import TrackToolVisit from "@/components/TrackToolVisit";
 import Footer from "@/components/Footer";
 import JsonLd from "@/components/JsonLd";
+import CategoryBrowseMore from "@/components/CategoryBrowseMore";
 import { socialMetadata, SITE_URL } from "@/lib/social-metadata";
 import { webApplicationEnrichment, toolScreenshotUrl } from "@/lib/web-application-schema";
+import { breadcrumbSchema } from "@/lib/breadcrumb-schema";
+import { categoryBrowseHref, categoryLabel } from "@/lib/category-navigation";
+import { toolPageStructuredGraph } from "@/lib/tool-structured-data";
+import { publicHrefForToolSlug } from "@/lib/devbench-workspaces";
 
 export async function generateMetadata({
   params,
@@ -86,17 +90,11 @@ export default async function ToolSlugLayout({
             tool.description,
             "Runs entirely in your browser — no uploads to a server",
             "Free to use — no account required",
-            `${CATEGORIES[tool.category].label} tool on DevBench`,
+            `${categoryLabel(tool.category)} tool on DevBench`,
           ],
         }),
       },
-      {
-        "@type": "BreadcrumbList",
-        itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
-          { "@type": "ListItem", position: 2, name: tool.name, item: `${SITE_URL}/tools/${slug}` },
-        ],
-      }
+      ...toolPageStructuredGraph(tool, slug),
     );
   }
 
@@ -118,40 +116,34 @@ export default async function ToolSlugLayout({
     ? { "@context": "https://schema.org", "@graph": graph }
     : null;
 
-  const relatedTools = tool
-    ? getToolsByCategory(tool.category)
-        .filter((t) => t.slug !== slug)
-        .slice(0, 6)
-    : [];
-  const categoryMeta = tool ? CATEGORIES[tool.category] : null;
-
   return (
     <>
       <TrackToolVisit slug={slug} />
       {jsonLd && <JsonLd data={jsonLd} />}
+      {tool && (
+        <JsonLd
+          data={breadcrumbSchema([
+            {
+              name: categoryLabel(tool.category),
+              path: categoryBrowseHref(tool.category),
+            },
+            { name: tool.name, path: publicHrefForToolSlug(tool.slug) },
+          ])}
+        />
+      )}
       {children}
+      {tool && (
+        <div className="max-w-6xl mx-auto px-4 pb-6 w-full space-y-6 border-t border-border pt-8 mt-2">
+          <CategoryBrowseMore
+            category={tool.category}
+            mode="next"
+            afterSlug={slug}
+            count={5}
+          />
+        </div>
+      )}
       <ToolSeoContent slug={slug} />
       <ToolFaqSection slug={slug} />
-      {relatedTools.length > 0 && categoryMeta && (
-        <aside className="max-w-6xl mx-auto px-4 pb-10 w-full">
-          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">
-            More {categoryMeta.label} tools
-          </h2>
-          <ul className="flex flex-wrap gap-2">
-            {relatedTools.map((t) => (
-              <li key={t.slug}>
-                <Link
-                  href={`/tools/${t.slug}`}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-card text-sm hover:bg-muted transition-colors"
-                >
-                  <span className="font-mono text-xs opacity-70">{t.icon}</span>
-                  {t.shortName}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </aside>
-      )}
       <Footer />
     </>
   );

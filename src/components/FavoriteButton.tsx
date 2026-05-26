@@ -30,10 +30,14 @@ export default function FavoriteButton({
         active ? "text-amber-600 dark:text-amber-400" : "text-muted-foreground hover:text-foreground"
       } ${className}`}
       aria-pressed={active}
-      title={active ? "Remove from favorites" : "Add to favorites"}
+      title={
+        active
+          ? "Remove from your shortcuts bar"
+          : "Save to your shortcuts for quick access"
+      }
     >
       <Star className={`w-3.5 h-3.5 ${active ? "fill-current" : ""}`} aria-hidden />
-      {active ? "Favorited" : "Favorite"}
+      {active ? "Saved to Shortcuts" : "Save to Shortcuts"}
     </button>
   );
 }

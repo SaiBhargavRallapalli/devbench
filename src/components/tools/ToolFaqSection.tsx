@@ -9,7 +9,7 @@ export default function ToolFaqSection({ slug }: { slug: string }) {
   if (!faqs?.length) return null;
 
   return (
-    <aside className="max-w-6xl mx-auto px-4 pb-10 w-full">
+    <aside id="tool-faq" className="max-w-6xl mx-auto px-4 pb-10 w-full scroll-mt-24">
       <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">
         Frequently Asked Questions
       </h2>

@@ -13,7 +13,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "DevBench — Free Online Developer Tools",
     short_name: "DevBench",
     description:
-      "100+ free browser-based developer tools — JSON, Base64, Regex, JWT, Diff, UUID, YAML, CSV, and more. No signup, runs entirely in your browser.",
+      "Free online developer tools — JSON formatter, Base64 encoder, regex tester, JWT debugger, UUID generator & more. No login or signup; runs in your browser.",
     start_url: "/",
     scope: "/",
     display: "standalone",

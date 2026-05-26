@@ -3,6 +3,12 @@ import Link from "next/link";
 import { Shield, ExternalLink } from "lucide-react";
 import DevBenchMark from "@/components/DevBenchMark";
 import TrackedAffiliateLink from "@/components/TrackedAffiliateLink";
+import {
+  footerCategoryLinks,
+  getPopularTools,
+  toolNavHref,
+} from "@/lib/site-navigation";
+import { relatedToolLinkLabel } from "@/lib/related-tools";
 
 const AFFILIATE_LINKS = [
   {
@@ -26,9 +32,49 @@ const AFFILIATE_LINKS = [
 ];
 
 export default function Footer() {
+  const popularTools = getPopularTools();
+  const categoryLinks = footerCategoryLinks();
+
   return (
     <footer className="border-t border-border bg-background">
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+
+        <div className="mb-6 pb-6 border-b border-border grid gap-8 sm:grid-cols-2">
+          <div>
+            <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2.5">
+              Explore by category
+            </p>
+            <ul className="flex flex-wrap gap-x-4 gap-y-2 text-sm">
+              {categoryLinks.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {link.label} tools
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2.5">
+              Popular tools
+            </p>
+            <ul className="flex flex-wrap gap-x-4 gap-y-2 text-sm">
+              {popularTools.map((tool) => (
+                <li key={tool.slug}>
+                  <Link
+                    href={toolNavHref(tool.slug)}
+                    className="text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {relatedToolLinkLabel(tool)}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
 
         <div className="mb-6 pb-6 border-b border-border">
           <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2.5 text-center sm:text-left">

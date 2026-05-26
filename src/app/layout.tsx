@@ -31,11 +31,11 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.devbench.co.in"),
   title: {
-    default: "DevBench — Free Online Developer Tools, No Account Needed",
+    default: "DevBench - Free Online Developer Tools for Developers",
     template: "%s | DevBench",
   },
   description:
-    "100+ free browser-based developer tools — format JSON, encode Base64, test regex, debug JWT, generate UUID, and more. No account, runs in your browser.",
+    "Explore 100+ free online developer tools for JSON formatting, encoding, and more—no signup required!",
   authors: [{ name: "DevBench", url: "https://www.devbench.co.in" }],
   creator: "DevBench IN — With ❤️ from India",
   publisher: "DevBench IN — With ❤️ from India",
@@ -68,15 +68,15 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://www.devbench.co.in",
     siteName: "DevBench",
-    title: "DevBench — Free Online Developer Tools, No Account Needed",
+    title: "DevBench - Free Online Developer Tools for Developers",
     description:
-      "100+ free browser-based developer tools — format JSON, encode Base64, debug JWT, generate UUID, and more. No account, runs in your browser.",
+      "Explore 100+ free online developer tools for JSON formatting, encoding, and more—no signup required!",
   },
   twitter: {
     card: "summary_large_image",
-    title: "DevBench — Free Online Developer Tools, No Account Needed",
+    title: "DevBench - Free Online Developer Tools for Developers",
     description:
-      "100+ free browser-based developer tools — format JSON, encode Base64, debug JWT, generate UUID, and more. No account required.",
+      "Explore 100+ free online developer tools for JSON formatting, encoding, and more—no signup required!",
     site: "@devbench",
     creator: "@devbench",
   },
@@ -98,7 +98,8 @@ const websiteSchema = {
   "@type": "WebSite",
   name: "DevBench",
   url: "https://www.devbench.co.in",
-  description: "100+ free browser-based developer tools for developers.",
+  description:
+    "Free online developer tools — JSON, Base64, regex, JWT, UUID & 100+ more. No login; runs in your browser.",
 };
 
 const organizationSchema = {
@@ -108,7 +109,7 @@ const organizationSchema = {
   url: "https://www.devbench.co.in",
   logo: "https://www.devbench.co.in/icon.svg",
   description:
-    "100+ free browser-based developer tools — JSON, Base64, JWT, Regex, Diff, UUID, YAML, and more.",
+    "Free online developer tools — JSON formatter, Base64 encoder, regex tester, JWT debugger, UUID generator & more. No login required.",
 };
 
 export default function RootLayout({
@@ -148,12 +149,12 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <JsonLd data={websiteSchema} />
         <JsonLd data={organizationSchema} />
-        {/* Skip to content — visible only when focused; first-tab-stop for keyboard users */}
+        {/* Skip link — visible only when focused; first tab stop for keyboard users */}
         <a
           href="#main"
           className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:rounded-md focus:bg-accent focus:px-3 focus:py-2 focus:text-sm focus:font-medium focus:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
         >
-          Skip to content
+          Skip to main content
         </a>
         {/* Google Tag Manager — noscript fallback */}
         <noscript>

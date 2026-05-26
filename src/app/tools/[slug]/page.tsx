@@ -16,10 +16,14 @@ import {
   Eye,
   EyeOff,
 } from "lucide-react";
-import { getToolBySlug, CATEGORIES, TOOLS } from "@/lib/tools-registry";
-import { publicHrefForToolSlug } from "@/lib/devbench-workspaces";
+import { getToolBySlug, CATEGORIES } from "@/lib/tools-registry";
 import { TOOL_PAGE_CONTENT } from "@/lib/tool-page-content";
+import { categoryBrowseHref } from "@/lib/category-navigation";
 import Header from "@/components/Header";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import ToolPageNav from "@/components/ToolPageNav";
+import RelatedToolsSection from "@/components/RelatedToolsSection";
+import ToolContextualLinks from "@/components/ToolContextualLinks";
 import * as engines from "@/lib/tool-engines";
 import {
   trackToolSuccess,
@@ -334,7 +338,14 @@ export default function ToolPage() {
     return (
       <>
         <Header />
-        <CustomToolOutlet slug={slug} tool={tool} />
+        <main id="tool-main" className="flex-1 max-w-6xl mx-auto px-4 py-8 w-full scroll-mt-20">
+          <CustomToolOutlet slug={slug} tool={tool} />
+          <RelatedToolsSection
+            slug={slug}
+            variant="cards"
+            className="mt-10 border-t border-border pt-8 scroll-mt-24"
+          />
+        </main>
       </>
     );
   }
@@ -344,16 +355,35 @@ export default function ToolPage() {
   return (
     <>
       <Header />
-      <main className="flex-1 max-w-6xl mx-auto px-4 py-8 w-full">
+      <main id="tool-main" className="flex-1 max-w-6xl mx-auto px-4 py-8 w-full scroll-mt-20">
         {/* Header */}
         <div className="mb-6 animate-fade-in">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            All Tools
-          </Link>
+          <Breadcrumbs
+            className="mb-4"
+            items={[
+              {
+                label: category.label,
+                href: categoryBrowseHref(tool.category),
+              },
+              { label: tool.name },
+            ]}
+          />
+          <div className="flex flex-wrap items-center gap-3 mb-4">
+            <Link
+              href={categoryBrowseHref(tool.category)}
+              className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back to {category.label}
+            </Link>
+            <Link
+              href="/#tools"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              All tools
+            </Link>
+          </div>
+          <ToolPageNav className="mb-4" />
           <div className="flex items-start gap-4">
             <div
               className={`shrink-0 w-12 h-12 rounded-xl flex items-center justify-center text-sm font-bold font-mono ${category.color}`}
@@ -363,11 +393,12 @@ export default function ToolPage() {
             <div>
               <h1 className="text-2xl font-bold">{tool.name}</h1>
               <div className="flex flex-wrap items-center gap-2 mt-2">
-                <span
-                  className={`text-xs px-2 py-0.5 rounded-full font-medium ${category.color}`}
+                <Link
+                  href={categoryBrowseHref(tool.category)}
+                  className={`text-xs px-2 py-0.5 rounded-full font-medium transition-opacity hover:opacity-80 ${category.color}`}
                 >
                   {category.label}
-                </span>
+                </Link>
                 <ToolConnectivityBadge slug={slug} />
                 <ToolPageActions
                   slug={slug}
@@ -394,6 +425,7 @@ export default function ToolPage() {
               <p className="mt-3 text-sm text-muted-foreground leading-relaxed max-w-2xl">
                 {TOOL_PAGE_CONTENT[slug]?.openingParagraph ?? tool.description}
               </p>
+              <ToolContextualLinks slug={slug} className="mt-3 max-w-2xl" />
             </div>
           </div>
         </div>
@@ -581,41 +613,11 @@ export default function ToolPage() {
           </div>
         )}
 
-        {/* Related tools */}
-        {(() => {
-          const related = TOOLS.filter(
-            (t) => t.category === tool.category && t.slug !== slug,
-          ).slice(0, 6);
-          if (related.length === 0) return null;
-          return (
-            <div className="mt-10 border-t border-border pt-8">
-              <h2 className="text-sm font-semibold mb-4 text-muted-foreground uppercase tracking-wide">
-                More {category.label} tools
-              </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                {related.map((t) => (
-                  <Link
-                    key={t.slug}
-                    href={publicHrefForToolSlug(t.slug)}
-                    className="flex items-center gap-3 p-4 rounded-xl border border-border bg-card hover:border-accent/40 hover:bg-muted/30 transition-colors"
-                  >
-                    <div
-                      className={`shrink-0 w-9 h-9 rounded-lg flex items-center justify-center text-xs font-bold font-mono ${CATEGORIES[t.category].color}`}
-                    >
-                      {t.icon}
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-sm font-semibold truncate">{t.name}</p>
-                      <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">
-                        {t.description}
-                      </p>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          );
-        })()}
+        <RelatedToolsSection
+          slug={slug}
+          variant="cards"
+          className="mt-10 border-t border-border pt-8 scroll-mt-24"
+        />
       </main>
     </>
   );

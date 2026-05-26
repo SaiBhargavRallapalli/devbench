@@ -29,7 +29,7 @@ export default function FavoritesBar() {
         {favSlugs.length > 0 && (
           <div className="flex items-center gap-1.5 flex-wrap">
             <Star className="w-3 h-3 text-amber-500 shrink-0" aria-hidden />
-            <span className="text-muted-foreground font-medium">Favorites:</span>
+            <span className="text-muted-foreground font-medium">Shortcuts:</span>
             {favSlugs.map((slug) => {
               const t = getToolBySlug(slug);
               if (!t) return null;

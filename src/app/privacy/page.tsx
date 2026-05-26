@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import PrivacyRetentionFaq from "@/components/PrivacyRetentionFaq";
 
 export default function PrivacyPage() {
   return (
@@ -54,6 +55,129 @@ export default function PrivacyPage() {
               before transmission; your signing secret is never sent to our servers.
             </li>
           </ul>
+
+          <h2 className="text-lg font-semibold text-foreground pt-2">
+            1a. Data flow (how information moves)
+          </h2>
+          <p>
+            The diagram below describes the path your data takes when you use DevBench.
+            It is a logical flow — not a network capture of every byte — but it reflects
+            how the product is built today.
+          </p>
+          <div className="rounded-xl border border-border bg-muted/30 p-4 text-sm font-mono leading-relaxed space-y-1 text-foreground/90">
+            <p>[You] paste / upload / type</p>
+            <p className="pl-4">↓</p>
+            <p>[Browser tab] DevBench JavaScript parses &amp; transforms locally</p>
+            <p className="pl-4">↓</p>
+            <p>[Browser tab] Result rendered + optional download blob</p>
+            <p className="pl-4">↳ (not sent) DevBench application servers — no tool-input API</p>
+            <p className="pl-8 pt-2 text-muted-foreground font-sans text-xs">
+              Exceptions branch sideways:
+            </p>
+            <p className="pl-8">→ API Tester → CORS proxy → your target API</p>
+            <p className="pl-8">→ Webhook Simulator → destination URL you enter</p>
+            <p className="pl-8">→ Page load → CDN (Vercel) serves static assets only</p>
+            <p className="pl-8">→ Analytics / ads → coarse visit metadata (no tool bodies)</p>
+          </div>
+          <ol className="list-decimal list-inside space-y-2 text-sm mt-4">
+            <li>
+              <strong className="text-foreground">Input capture</strong> — Keyboard and
+              file-picker data stay inside the rendering engine for that tab.
+            </li>
+            <li>
+              <strong className="text-foreground">Processing</strong> — Libraries (JSON,
+              PDF, crypto, etc.) run synchronously or via Web Workers in the same origin
+              as the page; output is written to the DOM or a temporary object URL for
+              download.
+            </li>
+            <li>
+              <strong className="text-foreground">Persistence</strong> — DevBench does not
+              write tool payloads to disk on our infrastructure. Only your browser may
+              cache static files or store theme/shortcut preferences in{" "}
+              <code className="text-xs bg-muted px-1 py-0.5 rounded">localStorage</code>.
+            </li>
+            <li>
+              <strong className="text-foreground">Egress</strong> — Data leaves the tab
+              only when you use an explicit network feature (API call, webhook) or when
+              third-party scripts record a page view.
+            </li>
+          </ol>
+
+          <h2 className="text-lg font-semibold text-foreground pt-2">
+            1b. Data retention FAQ
+          </h2>
+          <p className="text-sm">
+            Quick answers about how long different categories of data exist. Expand each
+            question for detail.
+          </p>
+          <PrivacyRetentionFaq />
+
+          <h2 className="text-lg font-semibold text-foreground pt-2">
+            1c. Sensitive data — examples and risk reduction
+          </h2>
+          <p>
+            Many visitors use DevBench with credentials, customer data, or regulated
+            information. The table below lists common sensitive inputs and practical ways
+            to minimize exposure.
+          </p>
+          <div className="overflow-x-auto rounded-xl border border-border">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-border bg-muted/40 text-left">
+                  <th className="px-3 py-2 font-semibold text-foreground">Data type</th>
+                  <th className="px-3 py-2 font-semibold text-foreground">Example</th>
+                  <th className="px-3 py-2 font-semibold text-foreground">How to minimize risk</th>
+                </tr>
+              </thead>
+              <tbody className="text-muted-foreground divide-y divide-border">
+                <tr>
+                  <td className="px-3 py-2">JWT / API keys</td>
+                  <td className="px-3 py-2 font-mono text-xs">Bearer eyJhbG…</td>
+                  <td className="px-3 py-2">
+                    Use expiring test tokens; redact before screenshots; prefer JWT Debugger
+                    over pasting into chat or ticket systems.
+                  </td>
+                </tr>
+                <tr>
+                  <td className="px-3 py-2">Passwords &amp; hashes</td>
+                  <td className="px-3 py-2">Production bcrypt hashes</td>
+                  <td className="px-3 py-2">
+                    Use synthetic samples for format checks; never reuse real passwords
+                    across environments.
+                  </td>
+                </tr>
+                <tr>
+                  <td className="px-3 py-2">PII in JSON/CSV</td>
+                  <td className="px-3 py-2">Customer export with emails</td>
+                  <td className="px-3 py-2">
+                    Anonymize columns first; work on a copy; close the tab when finished.
+                  </td>
+                </tr>
+                <tr>
+                  <td className="px-3 py-2">PDF contracts</td>
+                  <td className="px-3 py-2">Signed legal PDF</td>
+                  <td className="px-3 py-2">
+                    Processing stays local, but clear downloads from shared machines and
+                    avoid browser extensions that scan downloads.
+                  </td>
+                </tr>
+                <tr>
+                  <td className="px-3 py-2">Health / finance figures</td>
+                  <td className="px-3 py-2">Loan or BMI inputs</td>
+                  <td className="px-3 py-2">
+                    Treat calculators as estimates only; do not enter real account numbers
+                    or medical record IDs.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p className="text-sm">
+            When in doubt, assume anything visible on screen could be captured by screen
+            recording, shoulder surfing, or a compromised browser extension. DevBench’s
+            client-side model removes server-side storage risk but does not replace your
+            organisation&apos;s data-handling policies.
+          </p>
 
           <h2 className="text-lg font-semibold text-foreground pt-2">2. Analytics</h2>
           <p>

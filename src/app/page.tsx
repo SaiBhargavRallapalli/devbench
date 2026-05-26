@@ -1,11 +1,16 @@
-import { Shield, Zap, Globe, Sparkles } from "lucide-react";
+import Link from "next/link";
+import { Shield, Zap, Globe, Sparkles, ArrowRight } from "lucide-react";
 import { TOOLS } from "@/lib/tools-registry";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FavoritesBar from "@/components/FavoritesBar";
-import ToolSearch from "@/components/ToolSearch";
+import EngagementHome from "@/components/EngagementHome";
 import JsonLd from "@/components/JsonLd";
+import { FOOTER_CATEGORY_ORDER } from "@/lib/site-navigation";
+import { getCategoryHighlightTools } from "@/lib/category-navigation";
+import { toolGroupSchema } from "@/lib/tool-structured-data";
 import TrackedAffiliateLink from "@/components/TrackedAffiliateLink";
+import EngagementFloatingCta from "@/components/EngagementFloatingCta";
 
 const websiteSchema = {
   "@context": "https://schema.org",
@@ -24,7 +29,14 @@ const websiteSchema = {
   },
 };
 
-const HERO_FEATURES = [
+const homepageToolGroupsSchema = {
+  "@context": "https://schema.org",
+  "@graph": FOOTER_CATEGORY_ORDER.map((category) =>
+    toolGroupSchema(category, getCategoryHighlightTools(category, 5)),
+  ),
+};
+
+const WHY_DEVBENCH_FEATURES = [
   {
     icon: Shield,
     title: "Private on your device",
@@ -35,12 +47,7 @@ const HERO_FEATURES = [
     title: "Ready when you are",
     desc: "No account, no queue. Pick a tool and use it in one click.",
   },
-  {
-    icon: Globe,
-    title: `${TOOLS.length}+ tools in one place`,
-    desc: "From JSON and PDFs to money, health, and date helpers — free forever.",
-  },
-];
+] as const;
 
 export default function HomePage() {
   return (
@@ -62,36 +69,78 @@ export default function HomePage() {
                 {TOOLS.length} free tools · no signup · runs in your browser
               </span>
             </div>
-            <h1 className="text-4xl sm:text-6xl font-bold tracking-tight mb-4">
-              Your Developer
-              <br />
+            <h1 className="text-4xl sm:text-6xl font-bold tracking-tight mb-4 text-balance">
+              Your Developer{" "}
               <span className="text-accent">Workbench</span>
             </h1>
-            <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
+            <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-8 leading-relaxed">
               Whether you ship code, study, or just need to fix a file fast — format JSON, work with
-              PDFs, tweak images, or run a calculator in one place. It all runs on{" "}
-              <span className="text-foreground/90">your device</span>. Free, no install.
+              PDFs, tweak images, or run a calculator in one place. It runs directly in your browser.
+              Free, no install.
             </p>
 
-            {/* Trust strip — one row from md (grid avoids awkward 2+1 wrapping) */}
-            <h2 className="sr-only">Why DevBench</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 max-w-5xl mx-auto">
-              {HERO_FEATURES.map((f) => (
-                <div
-                  key={f.title}
-                  className="flex flex-row md:flex-col md:items-center gap-3 md:gap-4 rounded-2xl border border-border/70 bg-card/50 px-4 py-5 text-left md:text-center shadow-sm shadow-black/[0.03]"
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-10">
+              <Link
+                href="/json"
+                className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-xl bg-accent px-6 py-3.5 text-base font-semibold text-accent-foreground shadow-md transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                title="Open the JSON formatter — runs entirely in your browser"
+              >
+                Start using tools now
+                <ArrowRight className="h-4 w-4 shrink-0" aria-hidden />
+              </Link>
+              <Link
+                href="#tools"
+                className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-xl border border-border bg-card px-6 py-3.5 text-base font-semibold text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                title="Browse the full catalog of free in-browser tools"
+              >
+                Browse all tools
+              </Link>
+            </div>
+
+            <div className="max-w-5xl mx-auto space-y-10 text-left md:text-center">
+              <section aria-labelledby="why-devbench-heading">
+                <h2
+                  id="why-devbench-heading"
+                  className="text-lg font-semibold tracking-tight text-foreground sm:text-xl"
                 >
-                  <div className="shrink-0 rounded-xl bg-accent/10 p-2.5 md:p-3">
-                    <f.icon className="h-5 w-5 text-accent md:h-6 md:w-6" aria-hidden />
-                  </div>
-                  <div className="min-w-0 flex-1 md:flex-none">
-                    <h3 className="text-sm font-semibold text-foreground">{f.title}</h3>
-                    <p className="mt-1 text-xs leading-relaxed text-muted-foreground md:mx-auto md:max-w-[18rem]">
-                      {f.desc}
-                    </p>
-                  </div>
+                  Why DevBench for free online developer tools
+                </h2>
+                <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+                  {WHY_DEVBENCH_FEATURES.map((f) => (
+                    <div
+                      key={f.title}
+                      className="flex flex-row md:flex-col md:items-center gap-3 md:gap-4 rounded-2xl border border-border/70 bg-card/50 px-4 py-5 md:text-center shadow-sm shadow-black/[0.03]"
+                    >
+                      <div className="shrink-0 rounded-xl bg-accent/10 p-2.5 md:p-3">
+                        <f.icon className="h-5 w-5 text-accent md:h-6 md:w-6" aria-hidden />
+                      </div>
+                      <div className="min-w-0 flex-1 md:flex-none">
+                        <h3 className="text-sm font-semibold text-foreground">{f.title}</h3>
+                        <p className="mt-1 text-xs leading-relaxed text-muted-foreground md:mx-auto md:max-w-[18rem]">
+                          {f.desc}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              </section>
+
+              <section aria-labelledby="tool-count-heading">
+                <h2
+                  id="tool-count-heading"
+                  className="text-lg font-semibold tracking-tight text-foreground sm:text-xl"
+                >
+                  {TOOLS.length}+ free online developer tools in one place
+                </h2>
+                <div className="mt-6 flex flex-row md:flex-col md:items-center gap-3 md:gap-4 rounded-2xl border border-border/70 bg-card/50 px-4 py-5 md:mx-auto md:max-w-md shadow-sm shadow-black/[0.03]">
+                  <div className="shrink-0 rounded-xl bg-accent/10 p-2.5 md:p-3">
+                    <Globe className="h-5 w-5 text-accent md:h-6 md:w-6" aria-hidden />
+                  </div>
+                  <p className="min-w-0 flex-1 text-xs leading-relaxed text-muted-foreground md:max-w-[18rem]">
+                    From JSON and PDFs to money, health, and date helpers — free forever.
+                  </p>
+                </div>
+              </section>
             </div>
           </div>
         </section>
@@ -133,12 +182,13 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Interactive search + tool grid — client component, tools passed as prop to keep registry out of client bundle */}
-        <ToolSearch tools={TOOLS} />
+        <EngagementHome tools={TOOLS} />
       </main>
+      <EngagementFloatingCta />
       <Footer />
 
       <JsonLd data={websiteSchema} />
+      <JsonLd data={homepageToolGroupsSchema} />
     </>
   );
 }

@@ -3,33 +3,11 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Sun, Moon, Menu, X, Search } from "lucide-react";
+import { Sun, Moon, Menu, X, Search, Wrench } from "lucide-react";
 import DevBenchMark from "@/components/DevBenchMark";
 import { useExternalNavOrigin } from "@/hooks/use-external-nav-origin";
 import { resolveToolHref } from "@/lib/site-config";
-
-const NAV_LINKS = [
-  { href: "/json",             label: "JSON"      },
-  { href: "/yaml",             label: "YAML"      },
-  { href: "/pdf",              label: "PDF"       },
-  { href: "/api-tester",       label: "API"       },
-  { href: "/lambda-sandbox",   label: "Lambda"    },
-  { href: "/webhook-simulator", label: "Webhook"   },
-  { href: "/jwt-debugger",     label: "JWT"       },
-  { href: "/diff-checker",     label: "Diff"      },
-  { href: "/code-beautify",    label: "Beautify"  },
-  { href: "/epoch",            label: "Epoch"     },
-  { href: "/linux-cheatsheet", label: "CLI"       },
-  { href: "/date-calculator",  label: "Date +"    },
-  { href: "/astronomy",        label: "Sun/Moon"  },
-  { href: "/cron-editor",      label: "Cron"      },
-  { href: "/graph-calculator", label: "Math"      },
-  { href: "/playground",       label: "Playground"},
-  { href: "/workflows",        label: "Pipelines" },
-  { href: "/vault",            label: "Vault"     },
-  { href: "/blog",             label: "Blog"      },
-  { href: "/contact",          label: "Contact"   },
-];
+import { HEADER_NAV_LINKS } from "@/lib/header-navigation";
 
 export default function Header() {
   const [dark, setDark]         = useState(false);
@@ -92,24 +70,40 @@ export default function Header() {
         </Link>
 
         {/* Nav — all items visible on desktop */}
-        <nav className="hidden items-center lg:flex flex-1">
-          {NAV_LINKS.map((link) => (
-            <Link
-              key={link.href}
-              href={resolveToolHref(link.href, navOrigin, homePath)}
-              className="rounded-md px-2.5 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground whitespace-nowrap"
-            >
-              {link.label}
-            </Link>
-          ))}
+        <nav
+          className="hidden flex-1 items-center lg:flex"
+          aria-label="Main navigation"
+        >
+          <ul className="flex flex-wrap items-center">
+            {HEADER_NAV_LINKS.map((link) => (
+              <li key={link.href}>
+                <Link
+                  href={resolveToolHref(link.href, navOrigin, homePath)}
+                  aria-label={link.ariaLabel}
+                  className="rounded-md px-2.5 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground whitespace-nowrap"
+                >
+                  {link.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
         </nav>
 
         {/* Right actions */}
         <div className="flex items-center gap-1.5 ml-auto">
+          <Link
+            href={resolveToolHref("/#tools", navOrigin, homePath)}
+            className="hidden sm:inline-flex items-center gap-1.5 rounded-lg bg-accent px-3.5 py-1.5 text-sm font-semibold text-accent-foreground shadow-sm transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            title="Jump to the tool grid — pick any tool and run it in your browser"
+          >
+            <Wrench className="h-4 w-4 shrink-0" aria-hidden />
+            Open a Tool
+          </Link>
+
           <button
             type="button"
             onClick={() => window.dispatchEvent(new Event("devbench:open-palette"))}
-            aria-label="Search tools"
+            aria-label="Search tools — open command palette"
             className="inline-flex items-center justify-center h-8 w-8 sm:w-auto sm:gap-1.5 sm:px-3 rounded-lg border border-border text-muted-foreground text-sm transition-colors hover:bg-muted hover:text-foreground"
           >
             <Search aria-hidden="true" className="h-4 w-4 shrink-0" />
@@ -131,10 +125,11 @@ export default function Header() {
           {/* Mobile hamburger */}
           <button
             type="button"
-            onClick={() => setMenuOpen(!menuOpen)}
+            onClick={() => setMenuOpen((open) => !open)}
             className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border text-muted-foreground transition-colors hover:bg-muted hover:text-foreground lg:hidden"
             aria-label={menuOpen ? "Close menu" : "Open menu"}
-            aria-expanded={menuOpen}
+            aria-expanded={menuOpen ? "true" : "false"}
+            aria-haspopup="true"
             aria-controls="mobile-nav"
           >
             {menuOpen ? <X aria-hidden="true" className="h-4 w-4" /> : <Menu aria-hidden="true" className="h-4 w-4" />}
@@ -142,21 +137,37 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Mobile nav */}
-      {menuOpen && (
-        <nav id="mobile-nav" className="border-t border-border bg-background px-4 pb-3 pt-2 lg:hidden grid grid-cols-3 gap-1">
-          {NAV_LINKS.map((link) => (
-            <Link
-              key={link.href}
-              href={resolveToolHref(link.href, navOrigin, homePath)}
-              onClick={() => setMenuOpen(false)}
-              className="rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground text-center"
-            >
-              {link.label}
-            </Link>
-          ))}
+      {/* Mobile nav — mount only when open so hidden content is not in the accessibility tree */}
+      {menuOpen ? (
+        <nav
+          id="mobile-nav"
+          className="border-t border-border bg-background px-4 pb-3 pt-2 lg:hidden"
+          aria-label="Main navigation"
+        >
+          <Link
+            href={resolveToolHref("/#tools", navOrigin, homePath)}
+            onClick={() => setMenuOpen(false)}
+            className="mb-2 flex w-full items-center justify-center gap-2 rounded-xl bg-accent px-4 py-2.5 text-sm font-semibold text-accent-foreground"
+          >
+            <Wrench className="h-4 w-4 shrink-0" aria-hidden="true" />
+            Open a Tool
+          </Link>
+          <ul className="grid grid-cols-3 gap-1">
+            {HEADER_NAV_LINKS.map((link) => (
+              <li key={link.href}>
+                <Link
+                  href={resolveToolHref(link.href, navOrigin, homePath)}
+                  aria-label={link.ariaLabel}
+                  onClick={() => setMenuOpen(false)}
+                  className="block rounded-lg px-3 py-2 text-center text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                >
+                  {link.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
         </nav>
-      )}
+      ) : null}
     </header>
   );
 }

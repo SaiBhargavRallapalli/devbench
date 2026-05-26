@@ -1,117 +1,289 @@
 "use client";
 
-import { useState, useMemo, useEffect, useCallback, memo } from "react";
+import {
+  useState,
+  useMemo,
+  useEffect,
+  useCallback,
+  memo,
+  Suspense,
+} from "react";
 import Link from "next/link";
-import { Star, Search, Braces, Code2, Type, Wrench, ArrowRightLeft, Sparkles, DollarSign, Heart, Sigma, CalendarDays, Clock, Pin, FileStack } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import {
+  Star,
+  Search,
+  Braces,
+  Code2,
+  Type,
+  Wrench,
+  ArrowRightLeft,
+  Sparkles,
+  DollarSign,
+  Heart,
+  Sigma,
+  CalendarDays,
+  Clock,
+  Pin,
+  FileStack,
+  ExternalLink,
+  Copy,
+  Check,
+  Download,
+  Eye,
+  RotateCcw,
+  GripVertical,
+} from "lucide-react";
 import { CATEGORIES, type Tool, type ToolCategory } from "@/lib/tools-registry";
 import { publicHrefForToolSlug } from "@/lib/devbench-workspaces";
+import { isToolCategory } from "@/lib/category-navigation";
+import {
+  getFavoriteSlugs,
+  toggleFavorite,
+  getToolHistory,
+} from "@/lib/devbench-preferences";
+import { CATEGORY_CTA_LABELS, allToolsCategoryLabel } from "@/lib/category-cta-labels";
+import { getToolCardDepth } from "@/lib/tool-card-depth";
+import CategoryContentDepthHub from "@/components/CategoryContentDepthHub";
+import CategoryShareBar from "@/components/CategoryShareBar";
+import ToolCardDepthPanel from "@/components/ToolCardDepthPanel";
+import ToolPreviewSidePanel from "@/components/ToolPreviewSidePanel";
+import ShareToolButton from "@/components/ShareToolButton";
+import HoverTooltip from "@/components/HoverTooltip";
 
 const CATEGORY_ICONS: Record<ToolCategory, React.ElementType> = {
-  json:       Braces,
-  encoding:   Code2,
-  text:       Type,
-  dev:        Wrench,
-  image:      Sparkles,
-  pdf:        FileStack,
+  json: Braces,
+  encoding: Code2,
+  text: Type,
+  dev: Wrench,
+  image: Sparkles,
+  pdf: FileStack,
   conversion: ArrowRightLeft,
-  finance:    DollarSign,
-  health:     Heart,
-  math:       Sigma,
-  datetime:   CalendarDays,
+  finance: DollarSign,
+  health: Heart,
+  math: Sigma,
+  datetime: CalendarDays,
 };
 
 function toolHref(slug: string): string {
   return publicHrefForToolSlug(slug);
 }
 
-const RECENT_KEY = "devbench:recent";
-const FAV_KEY    = "devbench:favourites";
-
-function useLocalList(key: string) {
-  const [list, setList] = useState<string[] | null>(null);
+function useFavoriteSlugs() {
+  const [slugs, setSlugs] = useState<string[]>([]);
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(key);
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setList(raw ? JSON.parse(raw) : []);
-    } catch {
-       
-      setList([]);
+    function sync() {
+      setSlugs(getFavoriteSlugs());
     }
-  }, [key]);
+    sync();
+    window.addEventListener("devbench:prefs-changed", sync);
+    return () => window.removeEventListener("devbench:prefs-changed", sync);
+  }, []);
 
-  const toggle = useCallback(
-    (slug: string) => {
-      setList((prev) => {
-        const current = prev ?? [];
-        const next = current.includes(slug)
-          ? current.filter((s) => s !== slug)
-          : [...current, slug];
-        localStorage.setItem(key, JSON.stringify(next));
-        return next;
-      });
-    },
-    [key],
-  );
+  const toggle = useCallback((slug: string) => {
+    toggleFavorite(slug);
+    setSlugs(getFavoriteSlugs());
+  }, []);
 
-  return { list, toggle };
+  return { slugs, toggle };
 }
 
-// Memoised card — only re-renders when isFavourite or the tool itself changes
-const ToolCard = memo(function ToolCard({
+function useRecentSlugs() {
+  const [slugs, setSlugs] = useState<string[]>([]);
+
+  useEffect(() => {
+    function sync() {
+      setSlugs(getToolHistory().map((h) => h.slug));
+    }
+    sync();
+    window.addEventListener("devbench:prefs-changed", sync);
+    return () => window.removeEventListener("devbench:prefs-changed", sync);
+  }, []);
+
+  return slugs;
+}
+
+const ExplorerToolCard = memo(function ExplorerToolCard({
   tool,
   isFavourite,
   onToggleFavourite,
+  onPreview,
+  isPreviewTarget,
 }: {
   tool: Tool;
   isFavourite: boolean;
   onToggleFavourite: (slug: string) => void;
+  onPreview: (tool: Tool) => void;
+  isPreviewTarget: boolean;
 }) {
+  const depth = getToolCardDepth(tool);
+  const benefit = depth.steps[0] ?? tool.description;
+  const [feedback, setFeedback] = useState<string | null>(null);
+  const [hoverQuick, setHoverQuick] = useState(false);
+
+  const copyPayload = useCallback(async () => {
+    const text = depth.examplePayload ?? tool.description;
+    try {
+      await navigator.clipboard.writeText(text);
+      setFeedback("Copied to clipboard");
+      setTimeout(() => setFeedback(null), 2200);
+    } catch {
+      setFeedback("Copy failed — check browser permissions");
+      setTimeout(() => setFeedback(null), 3000);
+    }
+  }, [depth.examplePayload, tool.description]);
+
+  const copyLabel = depth.exportLabel?.startsWith("Copy")
+    ? "Copy to Clipboard"
+    : depth.examplePayload
+      ? "Copy to Clipboard"
+      : null;
+
   return (
-    <div className="relative group">
-      <Link
-        href={toolHref(tool.slug)}
-        className="flex items-center gap-3 p-4 pr-10 rounded-xl border border-border bg-card hover:border-accent/40 hover:bg-muted/30 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-      >
+    <div
+      draggable
+      onDragStart={(e) => {
+        e.dataTransfer.setData("text/devbench-tool-slug", tool.slug);
+        e.dataTransfer.effectAllowed = "copy";
+      }}
+      onMouseEnter={() => {
+        setHoverQuick(true);
+        onPreview(tool);
+      }}
+      onMouseLeave={() => setHoverQuick(false)}
+      onFocus={() => onPreview(tool)}
+      className={`group flex flex-col rounded-xl border bg-card transition-all duration-200 overflow-hidden ${
+        isPreviewTarget
+          ? "border-accent ring-2 ring-accent/25 shadow-md"
+          : "border-border hover:border-accent/40"
+      }`}
+    >
+      <div className="p-4 flex flex-col gap-3">
+        <div className="flex items-start gap-3">
+          <div
+            className={`shrink-0 w-9 h-9 rounded-lg flex items-center justify-center text-xs font-bold font-mono ${CATEGORIES[tool.category].color}`}
+          >
+            {tool.icon}
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="flex items-start justify-between gap-2">
+              <p className="text-sm font-semibold text-foreground">{tool.name}</p>
+              <GripVertical
+                className="h-4 w-4 shrink-0 text-muted-foreground/50 cursor-grab active:cursor-grabbing"
+                aria-hidden
+              />
+            </div>
+            <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2 leading-relaxed">
+              {tool.description}
+            </p>
+          </div>
+        </div>
+
+        {(hoverQuick || isPreviewTarget) && (
+          <p className="text-xs text-accent font-medium leading-snug">
+            {benefit}
+          </p>
+        )}
+
+        {feedback && (
+          <p
+            role="status"
+            className="flex items-center gap-1.5 text-xs font-medium text-emerald-600 dark:text-emerald-400"
+          >
+            <Check className="h-3.5 w-3.5 shrink-0" aria-hidden />
+            {feedback}
+          </p>
+        )}
+
         <div
-          className={`shrink-0 w-9 h-9 rounded-lg flex items-center justify-center text-xs font-bold font-mono ${CATEGORIES[tool.category].color}`}
+          className={`flex flex-wrap items-center gap-2 transition-opacity ${
+            hoverQuick || isPreviewTarget ? "opacity-100" : "opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100"
+          }`}
         >
-          {tool.icon}
+          <HoverTooltip label="Quick preview in side panel">
+            <button
+              type="button"
+              onClick={() => onPreview(tool)}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-muted/50 px-3 py-1.5 text-xs font-semibold transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <Eye className="h-3 w-3 shrink-0" aria-hidden />
+              Preview
+            </button>
+          </HoverTooltip>
+
+          <HoverTooltip label="Runs in your browser instantly — no signup or upload">
+            <Link
+              href={toolHref(tool.slug)}
+              className="inline-flex items-center gap-1.5 rounded-lg bg-accent px-3 py-1.5 text-xs font-semibold text-accent-foreground transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              Open
+              <ExternalLink className="h-3 w-3 shrink-0" aria-hidden />
+            </Link>
+          </HoverTooltip>
+
+          <HoverTooltip
+            label={
+              isFavourite
+                ? "Remove from your shortcuts bar at the top of the page"
+                : "Save to your shortcuts for quick access"
+            }
+          >
+            <button
+              type="button"
+              onClick={() => onToggleFavourite(tool.slug)}
+              aria-pressed={isFavourite}
+              className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+                isFavourite
+                  ? "border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-300"
+                  : "border-border bg-muted/50 text-foreground hover:bg-muted"
+              }`}
+            >
+              <Star
+                className={`h-3 w-3 shrink-0 ${isFavourite ? "fill-amber-500 text-amber-500" : ""}`}
+                aria-hidden
+              />
+              Save
+            </button>
+          </HoverTooltip>
+
+          {copyLabel && (
+            <HoverTooltip label="Copy example or description text to your clipboard">
+              <button
+                type="button"
+                onClick={copyPayload}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <Copy className="h-3 w-3 shrink-0" aria-hidden />
+                {copyLabel}
+              </button>
+            </HoverTooltip>
+          )}
+
+          <ShareToolButton tool={tool} compact />
         </div>
-        <div className="min-w-0 flex-1">
-          <p className="text-sm font-semibold truncate group-hover:text-accent transition-colors">
-            {tool.name}
-          </p>
-          <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">
-            {tool.description}
-          </p>
-        </div>
-      </Link>
-      <button
-        onClick={() => onToggleFavourite(tool.slug)}
-        aria-label={
-          isFavourite ? "Remove from shortcuts" : "Save to shortcuts"
-        }
-        aria-pressed={isFavourite}
-        className={`absolute top-2 right-2 p-1.5 rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:opacity-100 ${
-          isFavourite
-            ? "text-amber-400 opacity-100"
-            : "text-muted-foreground opacity-0 group-hover:opacity-70 hover:!opacity-100 hover:text-amber-400"
-        }`}
-      >
-        <Star aria-hidden="true" className={`w-4 h-4 ${isFavourite ? "fill-amber-400" : ""}`} />
-      </button>
+      </div>
+      <ToolCardDepthPanel tool={tool} />
     </div>
   );
 });
 
-function MiniSection({ title, icon: Icon, tools, favouriteSet, onToggleFavourite }: {
+function MiniSection({
+  title,
+  icon: Icon,
+  tools,
+  favouriteSet,
+  onToggleFavourite,
+  onPreview,
+  previewSlug,
+}: {
   title: string;
   icon: React.ElementType;
   tools: Tool[];
   favouriteSet: Set<string>;
   onToggleFavourite: (slug: string) => void;
+  onPreview: (tool: Tool) => void;
+  previewSlug: string | null;
 }) {
   if (tools.length === 0) return null;
   return (
@@ -122,11 +294,13 @@ function MiniSection({ title, icon: Icon, tools, favouriteSet, onToggleFavourite
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {tools.map((tool) => (
-          <ToolCard
+          <ExplorerToolCard
             key={tool.slug}
             tool={tool}
             isFavourite={favouriteSet.has(tool.slug)}
             onToggleFavourite={onToggleFavourite}
+            onPreview={onPreview}
+            isPreviewTarget={previewSlug === tool.slug}
           />
         ))}
       </div>
@@ -134,19 +308,64 @@ function MiniSection({ title, icon: Icon, tools, favouriteSet, onToggleFavourite
   );
 }
 
-export default function ToolSearch({ tools }: { tools: Tool[] }) {
-  const [search, setSearch] = useState("");
-  const [activeCategory, setActiveCategory] = useState<ToolCategory | "all">("all");
+function ToolSearchInner({ tools }: { tools: Tool[] }) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
-  const { list: recent }                          = useLocalList(RECENT_KEY);
-  const { list: favourites, toggle: toggleFavourite } = useLocalList(FAV_KEY);
+  const initialQ = searchParams.get("q") ?? "";
+  const initialCat = searchParams.get("category");
+  const initialCategory: ToolCategory | "all" =
+    initialCat && isToolCategory(initialCat) ? initialCat : "all";
 
-  // O(1) lookup set — avoids .includes() on every card render
-  const favouriteSet = useMemo(() => new Set(favourites ?? []), [favourites]);
+  const [search, setSearch] = useState(initialQ);
+  const [activeCategory, setActiveCategory] = useState<ToolCategory | "all">(initialCategory);
+  const [previewTool, setPreviewTool] = useState<Tool | null>(null);
+  const [dropActive, setDropActive] = useState(false);
+
+  const { slugs: favourites, toggle: toggleFavourite } = useFavoriteSlugs();
+  const recent = useRecentSlugs();
+
+  const favouriteSet = useMemo(() => new Set(favourites), [favourites]);
+
+  const syncUrl = useCallback(
+    (q: string, cat: ToolCategory | "all") => {
+      const params = new URLSearchParams();
+      if (q.trim()) params.set("q", q.trim());
+      if (cat !== "all") params.set("category", cat);
+      const qs = params.toString();
+      router.replace(qs ? `/?${qs}#tools` : "/#tools", { scroll: false });
+    },
+    [router],
+  );
+
+  useEffect(() => {
+    const t = window.setTimeout(() => syncUrl(search, activeCategory), 280);
+    return () => window.clearTimeout(t);
+  }, [search, activeCategory, syncUrl]);
+
+  useEffect(() => {
+    function onPreviewEvent(e: Event) {
+      const slug = (e as CustomEvent<{ slug: string }>).detail?.slug;
+      if (!slug) return;
+      const tool = tools.find((t) => t.slug === slug);
+      if (tool) setPreviewTool(tool);
+    }
+    window.addEventListener("devbench:preview-tool", onPreviewEvent);
+    return () => window.removeEventListener("devbench:preview-tool", onPreviewEvent);
+  }, [tools]);
+
+  const resetFilters = useCallback(() => {
+    setSearch("");
+    setActiveCategory("all");
+    setPreviewTool(null);
+    router.replace("/#tools", { scroll: false });
+  }, [router]);
+
+  const hasActiveFilters = search.trim().length > 0 || activeCategory !== "all";
 
   const recentTools = useMemo(
     () =>
-      (recent ?? [])
+      recent
         .map((slug) => tools.find((t) => t.slug === slug))
         .filter((t): t is Tool => !!t),
     [recent, tools],
@@ -175,6 +394,24 @@ export default function ToolSearch({ tools }: { tools: Tool[] }) {
     return result;
   }, [tools, search, activeCategory]);
 
+  const categoryCounts = useMemo(() => {
+    const base = search.trim()
+      ? tools.filter((t) => {
+          const q = search.toLowerCase();
+          return (
+            t.name.toLowerCase().includes(q) ||
+            t.description.toLowerCase().includes(q) ||
+            t.shortName.toLowerCase().includes(q)
+          );
+        })
+      : tools;
+    const counts = {} as Record<ToolCategory, number>;
+    for (const cat of Object.keys(CATEGORIES) as ToolCategory[]) {
+      counts[cat] = base.filter((t) => t.category === cat).length;
+    }
+    return { all: base.length, ...counts };
+  }, [tools, search]);
+
   const grouped = useMemo(() => {
     if (activeCategory !== "all" || search.trim()) return null;
     const map = new Map<ToolCategory, Tool[]>();
@@ -186,140 +423,289 @@ export default function ToolSearch({ tools }: { tools: Tool[] }) {
     return map;
   }, [filtered, activeCategory, search]);
 
-  const showPersonalised = activeCategory === "all" && !search.trim() && (pinnedTools.length > 0 || recentTools.length > 0);
+  const showPersonalised =
+    activeCategory === "all" && !search.trim() && (pinnedTools.length > 0 || recentTools.length > 0);
+
+  const liveSummary = useMemo(() => {
+    const q = search.trim();
+    if (q) {
+      return filtered.length === 0
+        ? `No tools match "${q}". Clear search or try another category.`
+        : `${filtered.length} tool${filtered.length === 1 ? "" : "s"} match "${q}".`;
+    }
+    if (activeCategory !== "all") {
+      const label = CATEGORIES[activeCategory].label;
+      return `${filtered.length} ${label} tool${filtered.length === 1 ? "" : "s"} — ${CATEGORY_CTA_LABELS[activeCategory].benefit}.`;
+    }
+    return `Showing all ${filtered.length} tools. Browse by category or search above.`;
+  }, [search, activeCategory, filtered.length]);
+
+  const allLabel = allToolsCategoryLabel(tools.length);
+  const previewSlug = previewTool?.slug ?? null;
+
+  const handlePanelDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setDropActive(true);
+  }, []);
+
+  const handlePanelDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      setDropActive(false);
+      const slug = e.dataTransfer.getData("text/devbench-tool-slug");
+      const tool = tools.find((t) => t.slug === slug);
+      if (tool) setPreviewTool(tool);
+    },
+    [tools],
+  );
 
   return (
-    <section className="max-w-6xl mx-auto px-4 py-12 pb-20">
-      <header className="mb-10 max-w-2xl mx-auto text-center">
-        <h2 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
-          Find what you need
-        </h2>
-        <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
-          Search by keyword or browse by category below. Every tool opens instantly in your
-          browser — no account, no upload queue.
-        </p>
-      </header>
-
-      {/* Search */}
-      <div className="relative max-w-xl mx-auto mb-8">
-        <label htmlFor="tool-search" className="sr-only">
-          Search tools
-        </label>
-        <Search aria-hidden="true" className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-        <input
-          id="tool-search"
-          type="search"
-          placeholder="Try PDF, JSON, loan, hex, timezone…"
-          aria-label="Search tools"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-full pl-12 pr-4 py-3.5 rounded-xl border border-border bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/40 text-base shadow-sm"
-        />
+    <section id="tools" className="max-w-6xl mx-auto px-4 py-12 pb-24 sm:pb-20 scroll-mt-20">
+      <div aria-live="polite" aria-atomic="true" className="sr-only">
+        {liveSummary}
       </div>
 
-      {/* Category filter */}
-      <div className="flex flex-wrap gap-2 mb-8">
-        <button
-          onClick={() => setActiveCategory("all")}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-            activeCategory === "all"
-              ? "bg-accent text-accent-foreground"
-              : "bg-muted text-foreground/70 hover:text-foreground"
-          }`}
-        >
-          All ({tools.length})
-        </button>
-        {(Object.keys(CATEGORIES) as ToolCategory[]).map((cat) => {
-          const Icon  = CATEGORY_ICONS[cat];
-          const count = tools.filter((t) => t.category === cat).length;
-          return (
+      <header className="mb-8 max-w-2xl">
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-widest text-accent mb-1">
+              Tool explorer
+            </p>
+            <h2 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+              {filtered.length} tool{filtered.length === 1 ? "" : "s"} available
+            </h2>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              Live filtering as you type. Drag cards to the preview panel or hover for quick-views.
+            </p>
+          </div>
+          {hasActiveFilters && (
             <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                activeCategory === cat
+              type="button"
+              onClick={resetFilters}
+              className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <RotateCcw className="h-4 w-4" aria-hidden />
+              Reset filters
+            </button>
+          )}
+        </div>
+      </header>
+
+      <div className="flex flex-col xl:flex-row gap-8">
+        <div className="flex-1 min-w-0">
+          <div className="max-w-xl mb-6">
+            <label
+              htmlFor="tool-search"
+              className="mb-2 block text-sm font-medium text-foreground"
+            >
+              Search tools
+            </label>
+            <div className="relative">
+              <Search
+                aria-hidden="true"
+                className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground"
+              />
+              <input
+                id="tool-search"
+                type="search"
+                placeholder="Try PDF, JSON, loan, hex, timezone…"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full rounded-xl border border-border bg-card py-3.5 pl-12 pr-4 text-base text-foreground shadow-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/40"
+              />
+            </div>
+          </div>
+
+          <div
+            className="flex flex-wrap gap-2 mb-2"
+            role="group"
+            aria-label="Filter tools by category"
+          >
+            <button
+              type="button"
+              onClick={() => setActiveCategory("all")}
+              className={`flex flex-col items-start gap-0.5 px-4 py-2.5 rounded-lg text-left transition-colors min-w-[8.5rem] ${
+                activeCategory === "all"
                   ? "bg-accent text-accent-foreground"
                   : "bg-muted text-foreground/70 hover:text-foreground"
               }`}
             >
-              <Icon className="w-3.5 h-3.5" />
-              {CATEGORIES[cat].label} ({count})
+              <span className="text-sm font-semibold leading-tight">
+                {allLabel.headline}
+                <span className="font-normal opacity-80"> ({categoryCounts.all})</span>
+              </span>
+              <span
+                className={`text-[11px] leading-tight ${
+                  activeCategory === "all" ? "text-accent-foreground/85" : "text-muted-foreground"
+                }`}
+              >
+                {allLabel.benefit}
+              </span>
             </button>
-          );
-        })}
-      </div>
-
-      {/* Personalised sections — only on unfiltered "All" view */}
-      {showPersonalised && (
-        <div className="mb-4">
-          <MiniSection
-            title="Your shortcuts"
-            icon={Pin}
-            tools={pinnedTools}
-            favouriteSet={favouriteSet}
-            onToggleFavourite={toggleFavourite}
-          />
-          <MiniSection
-            title="Pick up where you left off"
-            icon={Clock}
-            tools={recentTools}
-            favouriteSet={favouriteSet}
-            onToggleFavourite={toggleFavourite}
-          />
-          <hr className="border-border mb-8" />
-        </div>
-      )}
-
-      {/* Tool grid */}
-      {filtered.length === 0 ? (
-        <div className="rounded-2xl border border-border bg-muted/30 px-6 py-16 text-center text-muted-foreground">
-          <p className="text-lg font-medium text-foreground">Nothing matched that search</p>
-          <p className="mt-2 text-sm">
-            Try a shorter word, clear the box to see everything, or switch category above.
-          </p>
-        </div>
-      ) : grouped ? (
-        <div className="space-y-12">
-          {(Object.keys(CATEGORIES) as ToolCategory[])
-            .filter((cat) => grouped.has(cat))
-            .map((cat) => {
-              const catTools = grouped.get(cat)!;
-              const Icon     = CATEGORY_ICONS[cat];
+            {(Object.keys(CATEGORIES) as ToolCategory[]).map((cat) => {
+              const Icon = CATEGORY_ICONS[cat];
+              const count = categoryCounts[cat];
+              const cta = CATEGORY_CTA_LABELS[cat];
+              const active = activeCategory === cat;
               return (
-                <div key={cat}>
-                  <div className="flex items-center gap-2 mb-4">
-                    <div className={`flex h-7 w-7 items-center justify-center rounded-lg ${CATEGORIES[cat].color}`}>
-                      <Icon className="h-3.5 w-3.5" />
-                    </div>
-                    <h2 className="text-base font-semibold">{CATEGORIES[cat].label}</h2>
-                    <span className="text-xs text-muted-foreground">({catTools.length})</span>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {catTools.map((tool) => (
-                      <ToolCard
-                        key={tool.slug}
-                        tool={tool}
-                        isFavourite={favouriteSet.has(tool.slug)}
-                        onToggleFavourite={toggleFavourite}
-                      />
-                    ))}
-                  </div>
-                </div>
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => setActiveCategory(cat)}
+                  disabled={count === 0 && search.trim().length > 0}
+                  className={`flex items-start gap-2 px-4 py-2.5 rounded-lg text-left transition-colors min-w-[8.5rem] disabled:opacity-40 ${
+                    active
+                      ? "bg-accent text-accent-foreground"
+                      : "bg-muted text-foreground/70 hover:text-foreground"
+                  }`}
+                >
+                  <Icon className="w-4 h-4 shrink-0 mt-0.5" aria-hidden />
+                  <span className="flex flex-col gap-0.5 min-w-0">
+                    <span className="text-sm font-semibold leading-tight">
+                      {cta.headline}
+                      <span className="font-normal opacity-80"> ({count})</span>
+                    </span>
+                    <span
+                      className={`text-[11px] leading-tight ${
+                        active ? "text-accent-foreground/85" : "text-muted-foreground"
+                      }`}
+                    >
+                      {cta.benefit}
+                    </span>
+                  </span>
+                </button>
               );
             })}
+          </div>
+          <p className="mb-6 text-xs text-muted-foreground">{liveSummary}</p>
+
+          {activeCategory !== "all" && !search.trim() && (
+            <>
+              <CategoryShareBar category={activeCategory} />
+              <CategoryContentDepthHub category={activeCategory} />
+            </>
+          )}
+
+          {showPersonalised && (
+            <div className="mb-4">
+              <MiniSection
+                title="Your shortcuts"
+                icon={Pin}
+                tools={pinnedTools}
+                favouriteSet={favouriteSet}
+                onToggleFavourite={toggleFavourite}
+                onPreview={setPreviewTool}
+                previewSlug={previewSlug}
+              />
+              <MiniSection
+                title="Pick up where you left off"
+                icon={Clock}
+                tools={recentTools}
+                favouriteSet={favouriteSet}
+                onToggleFavourite={toggleFavourite}
+                onPreview={setPreviewTool}
+                previewSlug={previewSlug}
+              />
+              <hr className="border-border mb-8" />
+            </div>
+          )}
+
+          {filtered.length === 0 ? (
+            <div className="rounded-2xl border border-border bg-muted/30 px-6 py-16 text-center text-muted-foreground">
+              <p className="text-lg font-medium text-foreground">Nothing matched that search</p>
+              <p className="mt-2 text-sm">
+                Try a shorter word, clear the box to see everything, or switch category above.
+              </p>
+              <button
+                type="button"
+                onClick={resetFilters}
+                className="mt-6 inline-flex items-center gap-2 rounded-xl bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground"
+              >
+                <RotateCcw className="h-4 w-4" />
+                Reset and explore all tools
+              </button>
+            </div>
+          ) : grouped ? (
+            <div className="space-y-12">
+              {(Object.keys(CATEGORIES) as ToolCategory[])
+                .filter((cat) => grouped.has(cat))
+                .map((cat) => {
+                  const catTools = grouped.get(cat)!;
+                  const Icon = CATEGORY_ICONS[cat];
+                  return (
+                    <div key={cat} id={`category-${cat}`}>
+                      <div className="flex items-center gap-2 mb-4">
+                        <div
+                          className={`flex h-7 w-7 items-center justify-center rounded-lg ${CATEGORIES[cat].color}`}
+                        >
+                          <Icon className="h-3.5 w-3.5" />
+                        </div>
+                        <h3 className="text-base font-semibold">{CATEGORIES[cat].label}</h3>
+                        <span className="text-xs text-muted-foreground">({catTools.length})</span>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                        {catTools.map((tool) => (
+                          <ExplorerToolCard
+                            key={tool.slug}
+                            tool={tool}
+                            isFavourite={favouriteSet.has(tool.slug)}
+                            onToggleFavourite={toggleFavourite}
+                            onPreview={setPreviewTool}
+                            isPreviewTarget={previewSlug === tool.slug}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {filtered.map((tool) => (
+                <ExplorerToolCard
+                  key={tool.slug}
+                  tool={tool}
+                  isFavourite={favouriteSet.has(tool.slug)}
+                  onToggleFavourite={toggleFavourite}
+                  onPreview={setPreviewTool}
+                  isPreviewTarget={previewSlug === tool.slug}
+                />
+              ))}
+            </div>
+          )}
         </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {filtered.map((tool) => (
-            <ToolCard
-              key={tool.slug}
-              tool={tool}
-              isFavourite={favouriteSet.has(tool.slug)}
-              onToggleFavourite={toggleFavourite}
-            />
-          ))}
-        </div>
-      )}
+
+        <ToolPreviewSidePanel
+          tool={previewTool}
+          onClose={() => setPreviewTool(null)}
+          dropActive={dropActive}
+          onDragOver={handlePanelDragOver}
+          onDragLeave={() => setDropActive(false)}
+          onDrop={handlePanelDrop}
+        />
+      </div>
     </section>
+  );
+}
+
+function ToolSearchFallback() {
+  return (
+    <section id="tools" className="max-w-6xl mx-auto px-4 py-12 scroll-mt-20">
+      <div className="h-10 w-48 rounded-lg bg-muted animate-pulse mb-6" />
+      <div className="h-12 max-w-xl rounded-xl bg-muted animate-pulse mb-8" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div key={i} className="h-40 rounded-xl bg-muted animate-pulse" />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+export default function ToolSearch({ tools }: { tools: Tool[] }) {
+  return (
+    <Suspense fallback={<ToolSearchFallback />}>
+      <ToolSearchInner tools={tools} />
+    </Suspense>
   );
 }

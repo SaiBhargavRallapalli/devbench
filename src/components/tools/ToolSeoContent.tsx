@@ -8,9 +8,18 @@ const h2 =
 const ul =
   "list-disc list-inside space-y-1 text-sm text-muted-foreground";
 
-function Section({ children }: { children: React.ReactNode }) {
+function Section({
+  children,
+  id = "tool-guide",
+}: {
+  children: React.ReactNode;
+  id?: string;
+}) {
   return (
-    <section className="max-w-6xl mx-auto px-4 pb-4 w-full border-t border-border pt-8 mt-2 space-y-3">
+    <section
+      id={id}
+      className="max-w-6xl mx-auto px-4 pb-4 w-full border-t border-border pt-8 mt-2 space-y-3 scroll-mt-24"
+    >
       {children}
     </section>
   );
