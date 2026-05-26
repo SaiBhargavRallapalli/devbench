@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Network, X, ArrowRight } from "lucide-react";
 
-const STORAGE_KEY = "devbench:porthole-promo-v1";
+const STORAGE_KEY = "devbench:porthole-promo-v2";
 
 export default function PortholePromo() {
   const [visible, setVisible] = useState(false);

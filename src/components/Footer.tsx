@@ -109,17 +109,16 @@ export default function Footer() {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-3 py-2 rounded-xl border border-accent/40 bg-accent/5 text-xs font-semibold text-foreground hover:bg-accent/10 transition-colors"
             >
-              <img src="https://porthole.devbench.co.in/favicon.ico" alt="" width={14} height={14} className="rounded-sm" />
+              <span className="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded bg-indigo-500 text-[9px] font-bold text-white">P</span>
               Porthole
               <span className="text-[9px] font-bold bg-accent text-accent-foreground px-1.5 py-0.5 rounded-full uppercase tracking-wide">New</span>
             </a>
             {[
-              { name: "Bank Tools", href: "https://bank.devbench.co.in" },
-              { name: "Form 16", href: "https://form16.devbench.co.in" },
-              { name: "ITR Helper", href: "https://itr.devbench.co.in" },
-              { name: "Resume", href: "https://resume.devbench.co.in" },
-              { name: "Receipts", href: "https://receipts.devbench.co.in" },
-              { name: "Quick Commerce", href: "https://quick-commerce-compare.devbench.co.in" },
+              { name: "Bank Tools", href: "https://bank.devbench.co.in", initial: "B", color: "bg-emerald-500" },
+              { name: "Form 16", href: "https://form16.devbench.co.in", initial: "F", color: "bg-orange-500" },
+              { name: "ITR Helper", href: "https://itr.devbench.co.in", initial: "I", color: "bg-blue-500" },
+              { name: "Resume", href: "https://resume.devbench.co.in", initial: "R", color: "bg-purple-500" },
+              { name: "Receipts", href: "https://receipts.devbench.co.in", initial: "Rc", color: "bg-rose-500" },
             ].map((app) => (
               <a
                 key={app.href}
@@ -128,7 +127,7 @@ export default function Footer() {
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-3 py-2 rounded-xl border border-border bg-card text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
               >
-                <img src={`${app.href}/favicon.ico`} alt="" width={14} height={14} className="rounded-sm" />
+                <span className={`inline-flex h-4 w-4 shrink-0 items-center justify-center rounded ${app.color} text-[9px] font-bold text-white`}>{app.initial}</span>
                 {app.name}
               </a>
             ))}

@@ -29,9 +29,12 @@ import {
   ExternalLink,
   Eye,
   RotateCcw,
+  Link2,
+  Check,
 } from "lucide-react";
 import { CATEGORIES, type Tool, type ToolCategory } from "@/lib/tools-registry";
 import { publicHrefForToolSlug } from "@/lib/devbench-workspaces";
+import { toolShareUrl } from "@/lib/social-share";
 import { isToolCategory } from "@/lib/category-navigation";
 import {
   getFavoriteSlugs,
@@ -109,6 +112,16 @@ const ExplorerToolCard = memo(function ExplorerToolCard({
   onPreview: (tool: Tool) => void;
   isPreviewTarget: boolean;
 }) {
+  const [copied, setCopied] = useState(false);
+
+  function handleCopyLink(e: React.MouseEvent) {
+    e.stopPropagation();
+    void navigator.clipboard.writeText(toolShareUrl(tool)).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  }
+
   return (
     <div
       draggable
@@ -154,22 +167,32 @@ const ExplorerToolCard = memo(function ExplorerToolCard({
           </div>
         </div>
 
-        <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
+        {/* Hover actions */}
+        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
           <button
             type="button"
-            onClick={() => onPreview(tool)}
-            className="inline-flex items-center gap-1 rounded-lg border border-border bg-muted/50 px-2.5 py-1.5 text-xs font-semibold transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            onClick={(e) => { e.stopPropagation(); onPreview(tool); }}
+            className="inline-flex items-center gap-1 rounded-lg border border-border bg-muted/50 px-2 py-1.5 text-xs font-semibold transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <Eye className="h-3 w-3 shrink-0" aria-hidden />
             Preview
           </button>
           <Link
             href={toolHref(tool.slug)}
-            className="inline-flex items-center gap-1 rounded-lg bg-accent px-2.5 py-1.5 text-xs font-semibold text-accent-foreground transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="inline-flex items-center gap-1 rounded-lg bg-accent px-2 py-1.5 text-xs font-semibold text-accent-foreground transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             Open
             <ExternalLink className="h-3 w-3 shrink-0" aria-hidden />
           </Link>
+          <button
+            type="button"
+            onClick={handleCopyLink}
+            aria-label="Copy tool link"
+            title={copied ? "Copied!" : "Copy link"}
+            className="ml-auto inline-flex items-center justify-center rounded-lg border border-border bg-muted/50 p-1.5 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            {copied ? <Check className="h-3 w-3 text-emerald-500" aria-hidden /> : <Link2 className="h-3 w-3" aria-hidden />}
+          </button>
         </div>
       </div>
     </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { X, ExternalLink, Sparkles, MousePointer, Star, ChevronRight, ChevronLeft } from "lucide-react";
+import { X, ExternalLink, Sparkles, MousePointer, Star, ChevronRight, ChevronLeft, ChevronDown } from "lucide-react";
 import type { Tool } from "@/lib/tools-registry";
 import { CATEGORIES } from "@/lib/tools-registry";
 import { publicHrefForToolSlug } from "@/lib/devbench-workspaces";
@@ -9,6 +9,15 @@ import { getToolCardDepth } from "@/lib/tool-card-depth";
 import ShareToolButton from "@/components/ShareToolButton";
 import { toggleFavorite, getFavoriteSlugs } from "@/lib/devbench-preferences";
 import { useState, useEffect } from "react";
+
+const DEVBENCH_APPS = [
+  { name: "Porthole", href: "https://porthole.devbench.co.in", initial: "P", color: "bg-indigo-500", featured: true },
+  { name: "Bank", href: "https://bank.devbench.co.in", initial: "B", color: "bg-emerald-500" },
+  { name: "Form 16", href: "https://form16.devbench.co.in", initial: "F", color: "bg-orange-500" },
+  { name: "ITR", href: "https://itr.devbench.co.in", initial: "I", color: "bg-blue-500" },
+  { name: "Resume", href: "https://resume.devbench.co.in", initial: "R", color: "bg-purple-500" },
+  { name: "Receipts", href: "https://receipts.devbench.co.in", initial: "Rc", color: "bg-rose-500" },
+];
 
 function SaveButton({ tool }: { tool: Tool }) {
   const [saved, setSaved] = useState(false);
@@ -33,6 +42,46 @@ function SaveButton({ tool }: { tool: Tool }) {
       <Star className={`h-4 w-4 shrink-0 ${saved ? "fill-amber-500 text-amber-500" : ""}`} aria-hidden />
       {saved ? "Saved" : "Save"}
     </button>
+  );
+}
+
+function AppsStrip() {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="border-t border-border px-3 py-2">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="flex w-full items-center justify-between text-[9px] font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors"
+        aria-expanded={open}
+      >
+        Also from DevBench
+        <ChevronDown className={`h-3 w-3 transition-transform ${open ? "rotate-180" : ""}`} aria-hidden />
+      </button>
+      {open && (
+        <div className="flex flex-wrap gap-1 mt-2">
+          {DEVBENCH_APPS.map((app) => (
+            <a
+              key={app.href}
+              href={app.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              title={app.name}
+              className={`inline-flex items-center gap-1 px-2 py-1 rounded-md border text-[10px] font-medium transition-colors ${
+                app.featured
+                  ? "border-accent/40 bg-accent/5 text-accent hover:bg-accent/10"
+                  : "border-border text-muted-foreground hover:bg-muted hover:text-foreground"
+              }`}
+            >
+              <span className={`inline-flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded ${app.color} text-[8px] font-bold text-white`}>
+                {app.initial}
+              </span>
+              {app.name}
+            </a>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -89,7 +138,7 @@ export default function ToolPreviewSidePanel({
   );
 
   const toolPanel = tool && depth && (
-    <div className="flex flex-1 flex-col p-4 gap-3">
+    <div className="flex flex-1 flex-col p-4 gap-3 overflow-y-auto">
       {/* Tool identity */}
       <div className="flex items-start gap-2.5">
         <div
@@ -118,12 +167,12 @@ export default function ToolPreviewSidePanel({
         </div>
       )}
 
-      {/* Steps — up to 2 */}
+      {/* All steps */}
       {depth.steps.length > 0 && (
         <div>
           <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground mb-1.5">How it works</p>
-          <ol className="space-y-1">
-            {depth.steps.slice(0, 2).map((step, i) => (
+          <ol className="space-y-1.5">
+            {depth.steps.map((step, i) => (
               <li key={i} className="flex gap-1.5 text-xs text-muted-foreground leading-relaxed">
                 <span className="shrink-0 flex h-4 w-4 mt-0.5 items-center justify-center rounded-full bg-accent/15 text-accent text-[10px] font-bold">
                   {i + 1}
@@ -132,6 +181,21 @@ export default function ToolPreviewSidePanel({
               </li>
             ))}
           </ol>
+        </div>
+      )}
+
+      {/* Pitfalls / tips */}
+      {depth.pitfalls.length > 0 && (
+        <div>
+          <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground mb-1.5">Watch out</p>
+          <ul className="space-y-1.5">
+            {depth.pitfalls.map((tip, i) => (
+              <li key={i} className="flex gap-1.5 text-xs text-muted-foreground leading-relaxed">
+                <span className="shrink-0 mt-1 h-1.5 w-1.5 rounded-full bg-amber-400" aria-hidden />
+                {tip}
+              </li>
+            ))}
+          </ul>
         </div>
       )}
 
@@ -157,7 +221,7 @@ export default function ToolPreviewSidePanel({
   const panelBody = (
     <>
       {/* Header */}
-      <div className="flex items-center justify-between gap-2 border-b border-border px-3 py-2.5">
+      <div className="flex items-center justify-between gap-2 border-b border-border px-3 py-2.5 shrink-0">
         <div className="flex items-center gap-2">
           <Sparkles className="h-3.5 w-3.5 text-accent" aria-hidden />
           <span className="text-sm font-semibold text-foreground">Tool Preview</span>
@@ -187,37 +251,8 @@ export default function ToolPreviewSidePanel({
 
       {tool && depth ? toolPanel : emptyState}
 
-      {/* Apps strip */}
-      <div className="border-t border-border px-3 py-2.5">
-        <p className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">Also from DevBench</p>
-        <div className="flex flex-wrap gap-1">
-          {[
-            { name: "Porthole", href: "https://porthole.devbench.co.in", featured: true },
-            { name: "Bank", href: "https://bank.devbench.co.in" },
-            { name: "Form 16", href: "https://form16.devbench.co.in" },
-            { name: "ITR", href: "https://itr.devbench.co.in" },
-            { name: "Resume", href: "https://resume.devbench.co.in" },
-            { name: "Receipts", href: "https://receipts.devbench.co.in" },
-            { name: "Q-Commerce", href: "https://quick-commerce-compare.devbench.co.in" },
-          ].map((app) => (
-            <a
-              key={app.href}
-              href={app.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              title={app.name}
-              className={`inline-flex items-center gap-1 px-2 py-1 rounded-md border text-[10px] font-medium transition-colors ${
-                app.featured
-                  ? "border-accent/40 bg-accent/5 text-accent hover:bg-accent/10"
-                  : "border-border text-muted-foreground hover:bg-muted hover:text-foreground"
-              }`}
-            >
-              <img src={`${app.href}/favicon.ico`} alt="" width={12} height={12} className="rounded-sm" />
-              {app.name}
-            </a>
-          ))}
-        </div>
-      </div>
+      {/* Apps strip — collapsible */}
+      <AppsStrip />
     </>
   );
 
@@ -240,7 +275,7 @@ export default function ToolPreviewSidePanel({
       {collapsed ? (
         <aside
           aria-label="Tool preview (hidden)"
-          className="sticky top-24 hidden xl:flex xl:flex-col items-center shrink-0 w-9 pt-2"
+          className="sticky top-24 self-start hidden xl:flex xl:flex-col items-center shrink-0 w-9 pt-2"
         >
           <button
             type="button"
