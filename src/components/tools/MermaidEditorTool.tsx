@@ -29,9 +29,9 @@ function sanitizeSvg(svg: string): string {
   return svg
     // Remove <script> blocks
     .replace(/<script[\s\S]*?<\/script>/gi, "")
-    // Remove <foreignObject> blocks (can embed arbitrary HTML)
-    .replace(/<foreignObject[\s\S]*?<\/foreignObject>/gi, "")
     // Strip inline event handlers (case-insensitive, any quote style)
+    // NOTE: do NOT strip <foreignObject> — Mermaid 11 renders node text labels inside
+    // <foreignObject> elements. Removing them makes all node labels invisible.
     .replace(/\s+on[a-z][a-z0-9]*\s*=\s*"[^"]*"/gi, "")
     .replace(/\s+on[a-z][a-z0-9]*\s*=\s*'[^']*'/gi, "")
     // Neutralise javascript: and data: URIs in href / xlink:href / src
@@ -141,8 +141,8 @@ export default function MermaidEditorTool({ tool }: { tool: Tool }) {
       mermaid.initialize({
         startOnLoad: false,
         theme: themeMode as "default" | "dark" | "neutral" | "forest",
-        securityLevel: "strict",
-        fontFamily: "var(--font-geist-sans), system-ui, sans-serif",
+        securityLevel: "antiscript",
+        fontFamily: "ui-sans-serif, system-ui, sans-serif",
       });
 
       // Mermaid 11 needs a unique id per render or it warns about reuse.

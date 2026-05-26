@@ -259,6 +259,18 @@ function ToolSearchInner({ tools }: { tools: Tool[] }) {
 
   const favouriteSet = useMemo(() => new Set(favourites), [favourites]);
 
+  // When the page loads with a category/query param (e.g. from footer links or category cards),
+  // scroll the tools section into view so the user sees the filtered results, not the hero.
+  useEffect(() => {
+    if (initialQ || initialCategory !== "all") {
+      const t = setTimeout(() => {
+        document.getElementById("tools")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 120);
+      return () => clearTimeout(t);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const syncUrl = useCallback(
     (q: string, cat: ToolCategory | "all") => {
       const params = new URLSearchParams();
