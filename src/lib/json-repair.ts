@@ -484,47 +484,61 @@ export function fixCommonMistakes(input: string): FixResult {
     fixes.push("Removed leading + from numbers");
   }
 
-  // Deep-parse string values that are themselves valid JSON objects/arrays
-  try {
-    const parsed = JSON.parse(text) as unknown;
-    let expandCount = 0;
-    function deepParseStrings(val: unknown): unknown {
-      if (typeof val === "string") {
+  // Deep-parse helper: expands string values that contain valid (or repairable) JSON objects/arrays.
+  // Defined here so it can be called both before and after the jsonrepair last-resort pass.
+  let deepExpandCount = 0;
+  function deepParseStrings(val: unknown): unknown {
+    if (typeof val === "string") {
+      // Build candidate list: try raw string first, then with invalid escapes fixed.
+      // This handles embedded JSON like `{"text": "Added 2\× Salt"}` where \× is an
+      // invalid escape sequence that only appears inside the nested string content.
+      const candidates: string[] = [val];
+      const reescaped = fixInvalidJsonEscapes(val);
+      if (reescaped !== val) candidates.push(reescaped);
+      for (const candidate of candidates) {
         try {
-          const inner = JSON.parse(val) as unknown;
+          const inner = JSON.parse(candidate) as unknown;
           if (inner !== null && typeof inner === "object") {
-            expandCount++;
+            deepExpandCount++;
             return deepParseStrings(inner);
           }
-        } catch {
-          try {
-            const unescaped = JSON.parse('"' + val + '"') as unknown;
-            if (typeof unescaped === "string") {
-              const inner = JSON.parse(unescaped) as unknown;
-              if (inner !== null && typeof inner === "object") {
-                expandCount++;
-                return deepParseStrings(inner);
-              }
-            }
-          } catch { /* not parseable either way */ }
+        } catch { /* try next candidate */ }
+      }
+      try {
+        const unescaped = JSON.parse('"' + val + '"') as unknown;
+        if (typeof unescaped === "string") {
+          const inner = JSON.parse(unescaped) as unknown;
+          if (inner !== null && typeof inner === "object") {
+            deepExpandCount++;
+            return deepParseStrings(inner);
+          }
         }
-        return val;
-      }
-      if (Array.isArray(val)) return val.map(deepParseStrings);
-      if (val !== null && typeof val === "object") {
-        const r: Record<string, unknown> = {};
-        for (const [k, v] of Object.entries(val as Record<string, unknown>)) r[k] = deepParseStrings(v);
-        return r;
-      }
+      } catch { /* not parseable either way */ }
       return val;
     }
-    const deep = deepParseStrings(parsed);
-    const deepText = JSON.stringify(deep, null, 2);
-    if (expandCount > 0) {
-      text = deepText;
-      fixes.push(`Expanded ${expandCount} embedded JSON string${expandCount > 1 ? "s" : ""} into nested objects`);
+    if (Array.isArray(val)) return val.map(deepParseStrings);
+    if (val !== null && typeof val === "object") {
+      const r: Record<string, unknown> = {};
+      for (const [k, v] of Object.entries(val as Record<string, unknown>)) r[k] = deepParseStrings(v);
+      return r;
     }
-  } catch { /* outer JSON still invalid — skip */ }
+    return val;
+  }
+
+  function tryDeepParse(): void {
+    try {
+      const parsed = JSON.parse(text) as unknown;
+      deepExpandCount = 0;
+      const deep = deepParseStrings(parsed);
+      if (deepExpandCount > 0) {
+        text = JSON.stringify(deep, null, 2);
+        fixes.push(`Expanded ${deepExpandCount} embedded JSON string${deepExpandCount > 1 ? "s" : ""} into nested objects`);
+      }
+    } catch { /* outer JSON still invalid — skip */ }
+  }
+
+  // Deep-parse string values that are themselves valid JSON objects/arrays
+  tryDeepParse();
 
   // Last resort: NDJSON / JSON Lines → wrap in array
   try {
@@ -557,6 +571,10 @@ export function fixCommonMistakes(input: string): FixResult {
         /* try next source */
       }
     }
+    // Retry deep-parse after jsonrepair: the outer structure may have been invalid
+    // when we first tried (e.g. missing wrapping braces), so embedded JSON strings
+    // inside the now-repaired document were never expanded.
+    tryDeepParse();
   }
 
   const success = tryParseJson(text);
