@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Shield, Zap, Globe, Sparkles, ArrowRight } from "lucide-react";
-import { TOOLS } from "@/lib/tools-registry";
+import { TOOLS, getToolBySlug } from "@/lib/tools-registry";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FavoritesBar from "@/components/FavoritesBar";
@@ -11,6 +11,7 @@ import { getCategoryHighlightTools } from "@/lib/category-navigation";
 import { toolGroupSchema } from "@/lib/tool-structured-data";
 import TrackedAffiliateLink from "@/components/TrackedAffiliateLink";
 import EngagementFloatingCta from "@/components/EngagementFloatingCta";
+import { publicHrefForToolSlug } from "@/lib/devbench-workspaces";
 
 const websiteSchema = {
   "@context": "https://schema.org",
@@ -35,6 +36,26 @@ const homepageToolGroupsSchema = {
     toolGroupSchema(category, getCategoryHighlightTools(category, 5)),
   ),
 };
+
+/**
+ * Curated cross-category tools shown as clickable pills in the server-rendered
+ * hero — gives Google diverse internal links from the most authoritative page.
+ */
+const FEATURED_TOOL_SLUGS = [
+  "jwt-debugger",
+  "password-generator",
+  "merge-pdf",
+  "regex-tester",
+  "hash-generator",
+  "loan-emi-calculator",
+  "base64-encode",
+  "uuid-generator",
+] as const;
+
+const featuredTools = FEATURED_TOOL_SLUGS.flatMap((slug) => {
+  const t = getToolBySlug(slug);
+  return t ? [t] : [];
+});
 
 const WHY_DEVBENCH_FEATURES = [
   {
@@ -74,27 +95,52 @@ export default function HomePage() {
               <span className="text-accent">Workbench</span>
             </h1>
             <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-8 leading-relaxed">
-              Whether you ship code, study, or just need to fix a file fast — format JSON, work with
-              PDFs, tweak images, or run a calculator in one place. It runs directly in your browser.
-              Free, no install.
+              Whether you ship code, study, or just need to fix a file — decode JWTs, merge PDFs,
+              convert images, test regex, generate UUIDs, calculate finances, and more. Everything
+              runs directly in your browser. Free, no install.
             </p>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-10">
-              <Link
-                href="/json"
-                className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-xl bg-accent px-6 py-3.5 text-base font-semibold text-accent-foreground shadow-md transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                title="Open the JSON formatter — runs entirely in your browser"
-              >
-                Start using tools now
-                <ArrowRight className="h-4 w-4 shrink-0" aria-hidden />
-              </Link>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-8">
               <a
                 href="#tools"
-                className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-xl border border-border bg-card px-6 py-3.5 text-base font-semibold text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                title="Browse the full catalog of free in-browser tools"
+                className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-xl bg-accent px-6 py-3.5 text-base font-semibold text-accent-foreground shadow-md transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                title="Browse all 100+ free in-browser tools"
               >
-                Browse all tools
+                Browse all {TOOLS.length} tools
+                <ArrowRight className="h-4 w-4 shrink-0" aria-hidden />
               </a>
+              <Link
+                href="/json"
+                className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-xl border border-border bg-card px-6 py-3.5 text-base font-semibold text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                title="Open the JSON toolkit — formatter, diff, converters and more"
+              >
+                JSON Toolkit
+              </Link>
+            </div>
+
+            {/* Popular tools strip — server-rendered so Google sees diverse tool links */}
+            <div className="mb-10">
+              <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-3">
+                Popular tools
+              </p>
+              <div className="flex flex-wrap justify-center gap-2">
+                {featuredTools.map((tool) => (
+                  <Link
+                    key={tool.slug}
+                    href={publicHrefForToolSlug(tool.slug)}
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card/80 px-3 py-2 text-xs font-medium text-foreground hover:bg-muted hover:border-accent/50 transition-colors"
+                    title={tool.description}
+                  >
+                    <span
+                      className="font-mono text-[10px] opacity-50 leading-none"
+                      aria-hidden
+                    >
+                      {tool.icon}
+                    </span>
+                    {tool.shortName}
+                  </Link>
+                ))}
+              </div>
             </div>
 
             <div className="max-w-5xl mx-auto space-y-10 text-left md:text-center">

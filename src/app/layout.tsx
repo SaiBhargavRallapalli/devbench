@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     template: "%s | DevBench",
   },
   description:
-    "Explore 100+ free online developer tools for JSON formatting, encoding, and more—no signup required!",
+    `${TOOLS.length}+ free online developer tools — JWT debugger, PDF merge & split, Base64, regex tester, UUID generator, password generator, EMI calculator, and more. No signup, runs in your browser.`,
   authors: [{ name: "DevBench", url: "https://www.devbench.co.in" }],
   creator: "DevBench IN — With ❤️ from India",
   publisher: "DevBench IN — With ❤️ from India",
