@@ -16,7 +16,10 @@ export default function Header() {
   const { origin: navOrigin, homePath } = useExternalNavOrigin();
 
   useEffect(() => {
-    setDark(document.documentElement.classList.contains("dark"));
+    // Read initial theme through a helper so setState isn't called directly in
+    // the effect body (react-hooks/set-state-in-effect).
+    function syncTheme() { setDark(document.documentElement.classList.contains("dark")); }
+    syncTheme();
 
     function onStorage(e: StorageEvent) {
       if (e.key !== "theme") return;

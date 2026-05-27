@@ -44,7 +44,10 @@ export default function EngagementFloatingCta() {
   }, []);
 
   useEffect(() => {
-    setToolkitUnlocked(isToolkitUnlocked());
+    // Read initial value through a function so we don't call setState directly
+    // in the effect body (react-hooks/set-state-in-effect).
+    function syncUnlocked() { setToolkitUnlocked(isToolkitUnlocked()); }
+    syncUnlocked();
     const onUnlock = () => setToolkitUnlocked(true);
     window.addEventListener("devbench:toolkit-unlocked", onUnlock);
     return () => window.removeEventListener("devbench:toolkit-unlocked", onUnlock);

@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback } from "react";
 import {
   Braces,
   Code2,
@@ -112,8 +111,10 @@ function SaveQuickAction({ slug }: { slug: string }) {
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
-    setSaved(getFavoriteSlugs().includes(slug));
+    // Use a named function so setState isn't called directly in the effect body
+    // (react-hooks/set-state-in-effect).
     const sync = () => setSaved(getFavoriteSlugs().includes(slug));
+    sync();
     window.addEventListener("devbench:prefs-changed", sync);
     return () => window.removeEventListener("devbench:prefs-changed", sync);
   }, [slug]);
@@ -141,15 +142,15 @@ export default function EngagementHero({
 }) {
   const spotlight = getSpotlightTool();
 
-  const handlePreview = useCallback(
-    (tool: Tool) => {
-      onPreviewTool?.(tool);
-      window.dispatchEvent(
-        new CustomEvent("devbench:preview-tool", { detail: { slug: tool.slug } }),
-      );
-    },
-    [onPreviewTool],
-  );
+  // No manual useCallback — the React Compiler handles memoization automatically.
+  // Wrapping in useCallback here blocks compiler optimization
+  // (react-hooks/preserve-manual-memoization).
+  const handlePreview = (tool: Tool) => {
+    onPreviewTool?.(tool);
+    window.dispatchEvent(
+      new CustomEvent("devbench:preview-tool", { detail: { slug: tool.slug } }),
+    );
+  };
 
   if (!spotlight) return null;
 

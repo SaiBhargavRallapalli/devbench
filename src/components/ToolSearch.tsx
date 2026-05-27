@@ -261,10 +261,15 @@ function ToolSearchInner({ tools }: { tools: Tool[] }) {
   const favouriteSet = useMemo(() => new Set(favourites), [favourites]);
 
   // Always-fresh refs so the searchParams effect below never reads stale state.
+  // Updated in a useEffect (declared first so it runs before the searchParams
+  // effect within the same commit) instead of during render to satisfy
+  // react-hooks/refs which prohibits mutating ref.current during render.
   const searchRef = useRef(search);
   const activeCategoryRef = useRef(activeCategory);
-  searchRef.current = search;
-  activeCategoryRef.current = activeCategory;
+  useEffect(() => {
+    searchRef.current = search;
+    activeCategoryRef.current = activeCategory;
+  });
 
   // When the page loads with a category/query param (e.g. from footer links or category cards),
   // scroll the tools section into view so the user sees the filtered results, not the hero.
@@ -297,7 +302,6 @@ function ToolSearchInner({ tools }: { tools: Tool[] }) {
         document.getElementById("tools")?.scrollIntoView({ behavior: "smooth", block: "start" });
       }, 120);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
   const syncUrl = useCallback(
