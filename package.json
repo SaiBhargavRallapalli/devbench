@@ -29,7 +29,7 @@
     "@codemirror/view": "^6.41.1",
     "@imgly/background-removal": "^1.7.0",
     "@monaco-editor/react": "^4.7.0",
-    "@types/diff": "^7.0.2",
+    "@types/diff": "^8.0.0",
     "@types/js-yaml": "^4.0.9",
     "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.0.0",
