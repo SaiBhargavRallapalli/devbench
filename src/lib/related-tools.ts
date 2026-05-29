@@ -77,7 +77,8 @@ const CURATED_RELATED: Partial<Record<string, readonly string[]>> = {
 
   "image-compressor": ["image-resizer", "svg-optimizer", "base64-image"],
   "image-resizer": ["image-compressor", "aspect-ratio", "color-converter"],
-  "svg-optimizer": ["image-compressor", "qr-code", "color-converter"],
+  "image-format-converter": ["image-compressor", "image-resizer", "svg-optimizer", "image-to-pdf"],
+  "svg-optimizer": ["image-format-converter", "image-compressor", "qr-code", "color-converter"],
   "color-converter": ["contrast-checker", "color-palette", "image-resizer"],
   "contrast-checker": ["color-converter", "color-palette", "markdown-preview"],
   "color-palette": ["color-converter", "contrast-checker", "qr-code"],

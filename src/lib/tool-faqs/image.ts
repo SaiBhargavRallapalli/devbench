@@ -47,10 +47,11 @@ export const faqsImage: Record<string, Faq[]> = {
   ],
 
   "image-format-converter": [
+    { q: "What image formats can I upload?", a: "HEIC/HEIF, SVG, PNG, JPEG, WebP, BMP, GIF, AVIF, and TIFF. Output formats are PNG, JPEG, WebP, and SVG (bitmap tracing). SVG input can be exported to any raster format; raster images can be traced to SVG." },
     { q: "What is the best format for web images?", a: "WebP is generally the best format for web — it provides smaller file sizes than JPEG and PNG at similar quality, supports transparency (like PNG), and is supported by all modern browsers. AVIF is even more efficient but has slower encoding and less universal browser support. PNG is best for screenshots, diagrams, and images with text." },
     { q: "When should I use SVG vs PNG?", a: "SVG (Scalable Vector Graphics) is ideal for logos, icons, illustrations, and anything with flat colour and geometric shapes — it scales without pixelation. PNG is better for photographs, complex gradients, and screenshots. SVG files can be very small for simple shapes; PNG can be smaller for complex photographic content." },
-    { q: "Can I convert HEIC photos from my iPhone?", a: "Yes. Upload .heic or .heif files from an iPhone or other Apple device and convert them to PNG, JPEG, or WebP. HEIC is decoded in your browser — nothing is uploaded to a server." },
-    { q: "Can I convert a PNG to SVG?", a: "A direct raster-to-vector conversion (PNG → SVG) requires tracing the bitmap into vector paths — this is called vectorisation and is not a simple format conversion. Use a dedicated vectorisation tool (Inkscape Trace Bitmap or Adobe Illustrator Live Trace). This converter handles raster-to-raster conversions (PNG ↔ JPEG ↔ WebP), HEIC to raster, and SVG to raster." },
+    { q: "Can I convert HEIC photos from my iPhone?", a: "Yes. Upload .heic or .heif files from an iPhone or other Apple device and convert them to PNG, JPEG, WebP, or SVG. HEIC is decoded in your browser — nothing is uploaded to a server." },
+    { q: "Can I convert a PNG to SVG?", a: "Yes. Choose SVG as the output format and the tool traces the bitmap into vector paths. This works best for logos, icons, and flat graphics with few colours. Photographs and complex gradients produce large SVGs with many paths — for those, PNG or WebP is usually a better choice." },
     { q: "Is my image safe here?", a: "Yes. Conversion runs in your browser. Your image is never uploaded to a server." },
   ],
 

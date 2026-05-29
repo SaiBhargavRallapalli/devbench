@@ -1,24 +1,33 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
-import { Upload, Download, RefreshCw, Image as ImageIcon } from "lucide-react";
+import { useState, useRef, useCallback, useEffect } from "react";
+import { Download, RefreshCw, Image as ImageIcon, Trash2 } from "lucide-react";
 import ToolPageHero from "@/components/tools/ToolPageHero";
 import type { Tool } from "@/lib/tools-registry";
 import { trackToolDownload } from "@/lib/analytics-events";
+import { IMAGE_WORKER_LIMITS_HELP, rejectInputImageDimensions } from "@/lib/image-worker-limits";
 
-type OutputFormat = "image/png" | "image/jpeg" | "image/webp";
+type OutputFormat = "image/png" | "image/jpeg" | "image/webp" | "image/svg+xml";
 
 const FORMAT_LABELS: Record<OutputFormat, string> = {
   "image/png":  "PNG",
   "image/jpeg": "JPEG",
   "image/webp": "WebP",
+  "image/svg+xml": "SVG",
 };
 
 const FORMAT_EXTS: Record<OutputFormat, string> = {
   "image/png":  "png",
   "image/jpeg": "jpg",
   "image/webp": "webp",
+  "image/svg+xml": "svg",
 };
+
+function tracePresetForQuality(quality: number): string {
+  if (quality >= 71) return "detailed";
+  if (quality >= 41) return "default";
+  return "posterized2";
+}
 
 const ACCEPTS =
   "image/png, image/jpeg, image/webp, image/bmp, image/gif, image/avif, image/tiff, image/svg+xml, image/heic, image/heif, .heic, .heif";
@@ -36,8 +45,17 @@ function isHeicFile(file: File): boolean {
   return HEIC_MIMES.has(file.type.toLowerCase());
 }
 
+function isSvgFile(file: File): boolean {
+  const ext = file.name.split(".").pop()?.toLowerCase();
+  return file.type === "image/svg+xml" || ext === "svg";
+}
+
 function isImageFile(file: File): boolean {
-  return file.type.startsWith("image/") || isHeicFile(file);
+  return file.type.startsWith("image/") || isHeicFile(file) || isSvgFile(file);
+}
+
+function revokeUrl(url: string | null) {
+  if (url) URL.revokeObjectURL(url);
 }
 
 async function decodeHeicToPng(file: File): Promise<Blob> {
@@ -90,49 +108,141 @@ export default function ImageFormatConverterTool({ tool }: { tool: Tool }) {
   const [quality, setQuality]     = useState(92);
   const [converting, setConverting] = useState(false);
   const [loading, setLoading]       = useState(false);
+  const [decodingHeic, setDecodingHeic] = useState(false);
   const [loadError, setLoadError]   = useState<string | null>(null);
+  const [convertError, setConvertError] = useState<string | null>(null);
   const [dims, setDims]           = useState<{ w: number; h: number } | null>(null);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const srcUrlRef = useRef<string | null>(null);
+  const outUrlRef = useRef<string | null>(null);
+
+  useEffect(() => { srcUrlRef.current = srcUrl; }, [srcUrl]);
+  useEffect(() => { outUrlRef.current = outUrl; }, [outUrl]);
+
+  useEffect(() => {
+    return () => {
+      revokeUrl(srcUrlRef.current);
+      revokeUrl(outUrlRef.current);
+    };
+  }, []);
+
+  const clearOutput = useCallback(() => {
+    setOutUrl((prev) => {
+      revokeUrl(prev);
+      return null;
+    });
+    setOutSize(0);
+    setConvertError(null);
+  }, []);
+
+  const clearAll = useCallback(() => {
+    setSrcUrl((prev) => {
+      revokeUrl(prev);
+      return null;
+    });
+    clearOutput();
+    setSrcName("");
+    setSrcSize(0);
+    setSrcType("");
+    setSvgDims(null);
+    setDims(null);
+    setLoadError(null);
+    if (inputRef.current) inputRef.current.value = "";
+  }, [clearOutput]);
+
+  function applyDimensionCheck(w: number, h: number, url: string): boolean {
+    const dimErr = rejectInputImageDimensions(w, h);
+    if (dimErr) {
+      revokeUrl(url);
+      setSrcUrl(null);
+      setLoadError(dimErr);
+      return false;
+    }
+    setDims({ w, h });
+    return true;
+  }
+
+  function probeRasterDimensions(url: string) {
+    const probe = new Image();
+    probe.onload = () => {
+      if (!applyDimensionCheck(probe.naturalWidth, probe.naturalHeight, url)) return;
+    };
+    probe.onerror = () => {
+      revokeUrl(url);
+      setSrcUrl(null);
+      setLoadError("Could not read this image.");
+    };
+    probe.src = url;
+  }
 
   const loadFile = useCallback(async (file: File) => {
     if (!isImageFile(file)) return;
 
     setLoading(true);
     setLoadError(null);
-    setOutUrl(null);
+    setConvertError(null);
+    clearOutput();
     setDims(null);
     setSvgDims(null);
     setSrcName(file.name);
     setSrcSize(file.size);
-    setSrcType(isHeicFile(file) ? "image/heic" : file.type);
+    setSrcType(
+      isHeicFile(file) ? "image/heic" : isSvgFile(file) ? "image/svg+xml" : file.type,
+    );
+    setSrcUrl((prev) => {
+      revokeUrl(prev);
+      return null;
+    });
+
+    const heic = isHeicFile(file);
+    setDecodingHeic(heic);
 
     try {
-      const displayBlob = isHeicFile(file) ? await decodeHeicToPng(file) : file;
+      const displayBlob = heic ? await decodeHeicToPng(file) : file;
       const url = URL.createObjectURL(displayBlob);
       setSrcUrl(url);
 
-      if (file.type === "image/svg+xml") {
+      if (isSvgFile(file)) {
+        setOutFormat((fmt) => (fmt === "image/svg+xml" ? "image/png" : fmt));
         const reader = new FileReader();
         reader.onload = (e) => {
           const text = e.target?.result as string;
-          setSvgDims(parseSvgDimensions(text));
+          const parsed = parseSvgDimensions(text);
+          setSvgDims(parsed);
+          applyDimensionCheck(parsed.w, parsed.h, url);
+        };
+        reader.onerror = () => {
+          revokeUrl(url);
+          setSrcUrl(null);
+          setLoadError("Could not read this SVG file.");
         };
         reader.readAsText(file);
+      } else {
+        probeRasterDimensions(url);
       }
     } catch {
-      setSrcUrl(null);
-      setLoadError("Could not read this HEIC file. It may be corrupted or use an unsupported codec.");
+      setLoadError(
+        heic
+          ? "Could not read this HEIC file. It may be corrupted or use an unsupported codec."
+          : "Could not read this image.",
+      );
     } finally {
       setLoading(false);
+      setDecodingHeic(false);
     }
-  }, []);
+  }, [clearOutput]);
 
   function onDrop(e: React.DragEvent) {
     e.preventDefault();
     const file = e.dataTransfer.files[0];
-    if (file) loadFile(file);
+    if (!file) return;
+    if (!isImageFile(file)) {
+      setLoadError("Unsupported file type. Upload an image file.");
+      return;
+    }
+    loadFile(file);
   }
 
   function onFileChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -143,18 +253,56 @@ export default function ImageFormatConverterTool({ tool }: { tool: Tool }) {
   function convert() {
     if (!srcUrl) return;
     setConverting(true);
+    setConvertError(null);
+    clearOutput();
+
     const img = new Image();
+    img.onerror = () => {
+      setConvertError("Could not decode the image for conversion.");
+      setConverting(false);
+    };
     img.onload = () => {
       const canvas = canvasRef.current!;
       // SVGs may report 0 natural dimensions — use parsed viewBox/width attrs instead
       const w = img.naturalWidth  || svgDims?.w || 800;
       const h = img.naturalHeight || svgDims?.h || 600;
+      const dimErr = rejectInputImageDimensions(w, h);
+      if (dimErr) {
+        setConvertError(dimErr);
+        setConverting(false);
+        return;
+      }
+
       canvas.width  = w;
       canvas.height = h;
       setDims({ w, h });
 
       const ctx = canvas.getContext("2d")!;
-      // Fill white background for JPEG (transparent → white), also good default for SVG
+
+      if (outFormat === "image/svg+xml") {
+        void (async () => {
+          try {
+            ctx.clearRect(0, 0, w, h);
+            ctx.drawImage(img, 0, 0, w, h);
+            const ImageTracer = (await import("imagetracerjs")).default;
+            const svg = ImageTracer.imagedataToSVG(
+              ctx.getImageData(0, 0, w, h),
+              tracePresetForQuality(quality),
+            );
+            const blob = new Blob([svg], { type: "image/svg+xml" });
+            const url = URL.createObjectURL(blob);
+            setOutUrl(url);
+            setOutSize(blob.size);
+          } catch {
+            setConvertError("SVG tracing failed. Try a simpler image or lower trace detail.");
+          } finally {
+            setConverting(false);
+          }
+        })();
+        return;
+      }
+
+      // Fill white background for JPEG (transparent → white), also good default for SVG source
       if (outFormat === "image/jpeg") {
         ctx.fillStyle = "#ffffff";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -166,7 +314,11 @@ export default function ImageFormatConverterTool({ tool }: { tool: Tool }) {
       const q = outFormat === "image/png" ? undefined : quality / 100;
       canvas.toBlob(
         (blob) => {
-          if (!blob) { setConverting(false); return; }
+          if (!blob) {
+            setConvertError("Conversion failed. Try a different output format.");
+            setConverting(false);
+            return;
+          }
           const url = URL.createObjectURL(blob);
           setOutUrl(url);
           setOutSize(blob.size);
@@ -178,6 +330,15 @@ export default function ImageFormatConverterTool({ tool }: { tool: Tool }) {
     };
     img.src = srcUrl;
   }
+
+  function onFormatChange(fmt: OutputFormat) {
+    setOutFormat(fmt);
+    clearOutput();
+  }
+
+  const outputFormats = (Object.keys(FORMAT_LABELS) as OutputFormat[]).filter(
+    (fmt) => !(srcType === "image/svg+xml" && fmt === "image/svg+xml"),
+  );
 
   function download() {
     if (!outUrl) return;
@@ -206,7 +367,7 @@ export default function ImageFormatConverterTool({ tool }: { tool: Tool }) {
           {loading ? (
             <>
               <RefreshCw className="mx-auto w-10 h-10 text-muted-foreground mb-3 animate-spin" />
-              <p className="text-sm font-medium">Decoding image…</p>
+              <p className="text-sm font-medium">{decodingHeic ? "Decoding HEIC…" : "Loading image…"}</p>
             </>
           ) : srcUrl ? (
             <img src={srcUrl} alt="Source" className="max-h-48 mx-auto rounded-xl object-contain" />
@@ -226,13 +387,21 @@ export default function ImageFormatConverterTool({ tool }: { tool: Tool }) {
         {srcUrl && (
           <>
             {/* Source info */}
-            <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
+            <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
               <span className="px-2.5 py-1 rounded-lg bg-muted font-mono">{srcName}</span>
               <span className="px-2.5 py-1 rounded-lg bg-muted">
                 {(srcType.split("/")[1] ?? "unknown").toUpperCase()}
               </span>
               <span className="px-2.5 py-1 rounded-lg bg-muted">{formatBytes(srcSize)}</span>
               {dims && <span className="px-2.5 py-1 rounded-lg bg-muted">{dims.w} × {dims.h}px</span>}
+              <button
+                type="button"
+                onClick={clearAll}
+                className="ml-auto flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                Clear
+              </button>
             </div>
 
             {/* Conversion controls */}
@@ -241,11 +410,11 @@ export default function ImageFormatConverterTool({ tool }: { tool: Tool }) {
                 {/* Output format */}
                 <div className="space-y-1.5">
                   <label className="text-xs text-muted-foreground font-medium">Output format</label>
-                  <div className="flex gap-2">
-                    {(Object.keys(FORMAT_LABELS) as OutputFormat[]).map((fmt) => (
+                  <div className="flex gap-2 flex-wrap">
+                    {outputFormats.map((fmt) => (
                       <button
                         key={fmt}
-                        onClick={() => setOutFormat(fmt)}
+                        onClick={() => onFormatChange(fmt)}
                         className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors border ${
                           outFormat === fmt
                             ? "bg-accent text-accent-foreground border-accent"
@@ -258,11 +427,11 @@ export default function ImageFormatConverterTool({ tool }: { tool: Tool }) {
                   </div>
                 </div>
 
-                {/* Quality — only for lossy formats */}
+                {/* Quality / trace detail — hidden for PNG output */}
                 {outFormat !== "image/png" && (
                   <div className="space-y-1.5 flex-1 min-w-[200px]">
                     <label className="text-xs text-muted-foreground font-medium">
-                      Quality — {quality}%
+                      {outFormat === "image/svg+xml" ? "Trace detail" : "Quality"} — {quality}%
                     </label>
                     <input
                       type="range"
@@ -272,18 +441,27 @@ export default function ImageFormatConverterTool({ tool }: { tool: Tool }) {
                       onChange={(e) => setQuality(Number(e.target.value))}
                       className="w-full accent-accent"
                     />
+                    {outFormat === "image/svg+xml" && (
+                      <p className="text-xs text-muted-foreground">
+                        Traces pixels into vector paths. Best for logos, icons, and flat graphics.
+                      </p>
+                    )}
                   </div>
                 )}
 
                 <button
                   onClick={convert}
-                  disabled={converting}
+                  disabled={converting || !dims}
                   className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-accent text-accent-foreground text-sm font-medium hover:opacity-90 disabled:opacity-50 transition-all"
                 >
                   <RefreshCw className={`w-4 h-4 ${converting ? "animate-spin" : ""}`} />
                   {converting ? "Converting…" : "Convert"}
                 </button>
               </div>
+              {convertError && (
+                <p className="text-xs text-destructive">{convertError}</p>
+              )}
+              <p className="text-xs text-muted-foreground">{IMAGE_WORKER_LIMITS_HELP}</p>
             </div>
 
             {/* Result */}
