@@ -42,11 +42,11 @@ export const pageContentImage: Record<string, ToolPageContent> = {
   },
 
   "image-format-converter": {
-    title: "Image Format Converter — SVG, PNG, JPG, WebP Online",
+    title: "Image Format Converter — HEIC, SVG, PNG, JPG, WebP Online",
     metaDescription:
-      "Convert images between SVG, PNG, JPEG, WebP, BMP, and GIF online. Quality slider, size comparison. No signup, 100% client-side in your browser.",
+      "Convert images between HEIC, SVG, PNG, JPEG, WebP, BMP, and GIF online. Quality slider, size comparison. No signup, 100% client-side in your browser.",
     openingParagraph:
-      "Image Format Converter converts between SVG, PNG, JPEG, WebP, BMP, and GIF formats in your browser. Adjust JPEG/WebP quality with a slider and compare original vs converted file sizes before downloading. Useful for optimising images for the web, converting SVG exports to raster formats, and preparing images for platforms with specific format requirements. No files are uploaded.",
+      "Image Format Converter converts between HEIC, SVG, PNG, JPEG, WebP, BMP, and GIF formats in your browser. Convert iPhone HEIC photos to PNG or JPEG, adjust JPEG/WebP quality with a slider, and compare original vs converted file sizes before downloading. Useful for optimising images for the web, converting SVG exports to raster formats, and preparing images for platforms with specific format requirements. No files are uploaded.",
   },
 
   "svg-optimizer": {

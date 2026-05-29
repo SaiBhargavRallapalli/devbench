@@ -20,7 +20,31 @@ const FORMAT_EXTS: Record<OutputFormat, string> = {
   "image/webp": "webp",
 };
 
-const ACCEPTS = "image/png, image/jpeg, image/webp, image/bmp, image/gif, image/avif, image/tiff, image/svg+xml";
+const ACCEPTS =
+  "image/png, image/jpeg, image/webp, image/bmp, image/gif, image/avif, image/tiff, image/svg+xml, image/heic, image/heif, .heic, .heif";
+
+const HEIC_MIMES = new Set([
+  "image/heic",
+  "image/heif",
+  "image/heic-sequence",
+  "image/heif-sequence",
+]);
+
+function isHeicFile(file: File): boolean {
+  const ext = file.name.split(".").pop()?.toLowerCase();
+  if (ext === "heic" || ext === "heif") return true;
+  return HEIC_MIMES.has(file.type.toLowerCase());
+}
+
+function isImageFile(file: File): boolean {
+  return file.type.startsWith("image/") || isHeicFile(file);
+}
+
+async function decodeHeicToPng(file: File): Promise<Blob> {
+  const heic2any = (await import("heic2any")).default;
+  const result = await heic2any({ blob: file, toType: "image/png" });
+  return Array.isArray(result) ? result[0] : result;
+}
 
 // Extract natural pixel dimensions from an SVG string (viewBox or width/height attrs)
 function parseSvgDimensions(svgText: string): { w: number; h: number } {
@@ -65,29 +89,43 @@ export default function ImageFormatConverterTool({ tool }: { tool: Tool }) {
   const [outFormat, setOutFormat] = useState<OutputFormat>("image/png");
   const [quality, setQuality]     = useState(92);
   const [converting, setConverting] = useState(false);
+  const [loading, setLoading]       = useState(false);
+  const [loadError, setLoadError]   = useState<string | null>(null);
   const [dims, setDims]           = useState<{ w: number; h: number } | null>(null);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const loadFile = useCallback((file: File) => {
-    if (!file.type.startsWith("image/")) return;
-    const url = URL.createObjectURL(file);
-    setSrcUrl(url);
-    setSrcName(file.name);
-    setSrcSize(file.size);
-    setSrcType(file.type);
+  const loadFile = useCallback(async (file: File) => {
+    if (!isImageFile(file)) return;
+
+    setLoading(true);
+    setLoadError(null);
     setOutUrl(null);
     setDims(null);
     setSvgDims(null);
+    setSrcName(file.name);
+    setSrcSize(file.size);
+    setSrcType(isHeicFile(file) ? "image/heic" : file.type);
 
-    if (file.type === "image/svg+xml") {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const text = e.target?.result as string;
-        setSvgDims(parseSvgDimensions(text));
-      };
-      reader.readAsText(file);
+    try {
+      const displayBlob = isHeicFile(file) ? await decodeHeicToPng(file) : file;
+      const url = URL.createObjectURL(displayBlob);
+      setSrcUrl(url);
+
+      if (file.type === "image/svg+xml") {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const text = e.target?.result as string;
+          setSvgDims(parseSvgDimensions(text));
+        };
+        reader.readAsText(file);
+      }
+    } catch {
+      setSrcUrl(null);
+      setLoadError("Could not read this HEIC file. It may be corrupted or use an unsupported codec.");
+    } finally {
+      setLoading(false);
     }
   }, []);
 
@@ -165,13 +203,21 @@ export default function ImageFormatConverterTool({ tool }: { tool: Tool }) {
           onDragOver={(e) => e.preventDefault()}
           className="border-2 border-dashed border-border rounded-2xl p-10 text-center cursor-pointer hover:border-accent/50 hover:bg-muted/30 transition-colors"
         >
-          {srcUrl ? (
+          {loading ? (
+            <>
+              <RefreshCw className="mx-auto w-10 h-10 text-muted-foreground mb-3 animate-spin" />
+              <p className="text-sm font-medium">Decoding image…</p>
+            </>
+          ) : srcUrl ? (
             <img src={srcUrl} alt="Source" className="max-h-48 mx-auto rounded-xl object-contain" />
           ) : (
             <>
               <ImageIcon className="mx-auto w-10 h-10 text-muted-foreground mb-3" />
               <p className="text-sm font-medium">Drop an image or click to upload</p>
-              <p className="text-xs text-muted-foreground mt-1">SVG · PNG · JPEG · WebP · BMP · GIF · AVIF · TIFF</p>
+              <p className="text-xs text-muted-foreground mt-1">HEIC · SVG · PNG · JPEG · WebP · BMP · GIF · AVIF · TIFF</p>
+              {loadError && (
+                <p className="text-xs text-destructive mt-2">{loadError}</p>
+              )}
             </>
           )}
           <input ref={inputRef} type="file" accept={ACCEPTS} className="hidden" onChange={onFileChange} />
@@ -182,7 +228,9 @@ export default function ImageFormatConverterTool({ tool }: { tool: Tool }) {
             {/* Source info */}
             <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
               <span className="px-2.5 py-1 rounded-lg bg-muted font-mono">{srcName}</span>
-              <span className="px-2.5 py-1 rounded-lg bg-muted">{srcType.split("/")[1].toUpperCase()}</span>
+              <span className="px-2.5 py-1 rounded-lg bg-muted">
+                {(srcType.split("/")[1] ?? "unknown").toUpperCase()}
+              </span>
               <span className="px-2.5 py-1 rounded-lg bg-muted">{formatBytes(srcSize)}</span>
               {dims && <span className="px-2.5 py-1 rounded-lg bg-muted">{dims.w} × {dims.h}px</span>}
             </div>
