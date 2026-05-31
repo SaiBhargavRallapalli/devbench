@@ -12,8 +12,6 @@ import {
   NOTEPAD_TOOL_SLUG,
   saveNotepadSession,
   type NotepadDocument,
-  type NotepadEol,
-  type NotepadEncoding,
   type NotepadSession,
   type NotepadSidePanel,
   type NotepadSplitMode,
@@ -32,7 +30,6 @@ import {
   saveNamedSession,
 } from "@/lib/notepad/named-sessions";
 import {
-  clearMacro,
   loadMacro,
   saveMacro,
   type MacroStep,
@@ -150,12 +147,14 @@ export function useNotepadController() {
     const shared = hash ? decodeSharedToolState(hash) : null;
     if (shared?.i) {
       const doc = createDocument({ name: "shared", content: shared.i, dirty: false });
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- hydrate session from localStorage / URL hash once on mount
       setSession({
         ...(saved ?? defaultSession()),
         docs: [...(saved?.docs ?? [createDocument()]), doc],
         activeId: doc.id,
       });
     } else if (saved) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- hydrate session from localStorage once on mount
       setSession(saved);
     }
     setHydrated(true);

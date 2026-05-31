@@ -93,7 +93,7 @@ export type NotepadAppProps = {
 };
 
 export default function NotepadApp({ mode = "workspace", tool }: NotepadAppProps) {
-  const c = useNotepadController();
+  const { fileInputRef, activeEditor, ...np } = useNotepadController();
   const dark = useIsDark();
   const [shareCopied, setShareCopied] = useState(false);
 
@@ -103,7 +103,7 @@ export default function NotepadApp({ mode = "workspace", tool }: NotepadAppProps
 
   const transformSelection = useCallback(
     (mode: "upper" | "lower" | "title") => {
-      const ed = c.activeEditor();
+      const ed = activeEditor();
       const sel = getSelectionText(ed);
       if (!sel) return;
       let next = sel;
@@ -112,31 +112,31 @@ export default function NotepadApp({ mode = "workspace", tool }: NotepadAppProps
       else next = sel.replace(/\b\w/g, (ch) => ch.toUpperCase());
       replaceSelection(ed, next);
     },
-    [c],
+    [activeEditor],
   );
 
   const menuItems = useMemo(() => {
     const file: MenuItem[] = [
-      { type: "item", label: "New", shortcut: "Ctrl+N", onClick: c.newDoc },
-      { type: "item", label: "Open…", shortcut: "Ctrl+O", onClick: () => c.fileInputRef.current?.click() },
+      { type: "item", label: "New", shortcut: "Ctrl+N", onClick: np.newDoc },
+      { type: "item", label: "Open…", shortcut: "Ctrl+O", onClick: () => fileInputRef.current?.click() },
       { type: "separator" },
       {
         type: "item",
         label: "Save / Download",
         shortcut: "Ctrl+S",
-        onClick: () => c.activeDoc && c.saveDoc(c.activeDoc),
+        onClick: () => np.activeDoc && np.saveDoc(np.activeDoc),
       },
       {
         type: "item",
         label: "Save As…",
         shortcut: "Ctrl+Shift+S",
-        onClick: () => c.activeDoc && c.saveDoc(c.activeDoc, true),
+        onClick: () => np.activeDoc && np.saveDoc(np.activeDoc, true),
       },
-      { type: "item", label: "Save All", onClick: c.saveAll },
+      { type: "item", label: "Save All", onClick: np.saveAll },
       { type: "item", label: "Rename…", onClick: () => {
-          if (c.activeDoc) {
-            c.setRenameValue(c.activeDoc.name);
-            c.setRenameOpen(true);
+          if (np.activeDoc) {
+            np.setRenameValue(np.activeDoc.name);
+            np.setRenameOpen(true);
           }
         }},
       { type: "separator" },
@@ -144,52 +144,52 @@ export default function NotepadApp({ mode = "workspace", tool }: NotepadAppProps
         type: "item",
         label: "Close",
         shortcut: "Ctrl+W",
-        onClick: () => c.activeDoc && c.closeDoc(c.activeDoc.id),
+        onClick: () => np.activeDoc && np.closeDoc(np.activeDoc.id),
       },
-      { type: "item", label: "Close Others", onClick: c.closeOthers },
-      { type: "item", label: "Close All", onClick: c.closeAll },
+      { type: "item", label: "Close Others", onClick: np.closeOthers },
+      { type: "item", label: "Close All", onClick: np.closeAll },
       { type: "separator" },
-      { type: "item", label: "Print", onClick: c.printActive },
+      { type: "item", label: "Print", onClick: np.printActive },
       { type: "separator" },
       {
         type: "submenu",
         label: "Recent files",
-        items: c.recentFiles.length
-          ? c.recentFiles.map((f) => ({
+        items: np.recentFiles.length
+          ? np.recentFiles.map((f) => ({
               type: "item" as const,
               label: f.name,
-              onClick: () => c.openRecent(f.name),
+              onClick: () => np.openRecent(f.name),
             }))
           : [{ type: "item" as const, label: "(empty)", disabled: true, onClick: () => {} }],
       },
-      { type: "item", label: "Clear recent list", onClick: c.clearRecentFiles },
+      { type: "item", label: "Clear recent list", onClick: np.clearRecentFiles },
     ];
 
     const edit: MenuItem[] = [
-      { type: "item", label: "Undo", shortcut: "Ctrl+Z", onClick: c.undo },
-      { type: "item", label: "Redo", shortcut: "Ctrl+Y", onClick: c.redo },
+      { type: "item", label: "Undo", shortcut: "Ctrl+Z", onClick: np.undo },
+      { type: "item", label: "Redo", shortcut: "Ctrl+Y", onClick: np.redo },
       { type: "separator" },
       { type: "item", label: "Cut", shortcut: "Ctrl+X", onClick: () => document.execCommand("cut") },
       { type: "item", label: "Copy", shortcut: "Ctrl+C", onClick: () => document.execCommand("copy") },
       { type: "item", label: "Paste", shortcut: "Ctrl+V", onClick: () => document.execCommand("paste") },
-      { type: "item", label: "Select All", shortcut: "Ctrl+A", onClick: c.selectAll },
+      { type: "item", label: "Select All", shortcut: "Ctrl+A", onClick: np.selectAll },
       { type: "separator" },
-      { type: "item", label: "Duplicate line", onClick: c.duplicateLine },
-      { type: "item", label: "Delete line", onClick: c.deleteLine },
-      { type: "item", label: "Move line up", onClick: c.moveLineUp },
-      { type: "item", label: "Move line down", onClick: c.moveLineDown },
-      { type: "item", label: "Join lines", onClick: c.joinLines },
-      { type: "item", label: "Transpose chars", onClick: c.transposeChars },
+      { type: "item", label: "Duplicate line", onClick: np.duplicateLine },
+      { type: "item", label: "Delete line", onClick: np.deleteLine },
+      { type: "item", label: "Move line up", onClick: np.moveLineUp },
+      { type: "item", label: "Move line down", onClick: np.moveLineDown },
+      { type: "item", label: "Join lines", onClick: np.joinLines },
+      { type: "item", label: "Transpose chars", onClick: np.transposeChars },
       { type: "separator" },
-      { type: "item", label: "Toggle comment", onClick: c.toggleComment },
-      { type: "item", label: "Increase indent", onClick: c.indent },
-      { type: "item", label: "Decrease indent", onClick: c.unindent },
+      { type: "item", label: "Toggle comment", onClick: np.toggleComment },
+      { type: "item", label: "Increase indent", onClick: np.indent },
+      { type: "item", label: "Decrease indent", onClick: np.unindent },
       { type: "separator" },
-      { type: "item", label: "Trim trailing space", onClick: c.trimTrailing },
-      { type: "item", label: "Trim leading space", onClick: c.trimLeading },
-      { type: "item", label: "Remove empty lines", onClick: c.removeEmpty },
-      { type: "item", label: "Sort lines", onClick: () => c.sortLines() },
-      { type: "item", label: "Reverse lines", onClick: c.reverseLines },
+      { type: "item", label: "Trim trailing space", onClick: np.trimTrailing },
+      { type: "item", label: "Trim leading space", onClick: np.trimLeading },
+      { type: "item", label: "Remove empty lines", onClick: np.removeEmpty },
+      { type: "item", label: "Sort lines", onClick: () => np.sortLines() },
+      { type: "item", label: "Reverse lines", onClick: np.reverseLines },
       { type: "separator" },
       { type: "item", label: "UPPERCASE", onClick: () => transformSelection("upper") },
       { type: "item", label: "lowercase", onClick: () => transformSelection("lower") },
@@ -197,136 +197,136 @@ export default function NotepadApp({ mode = "workspace", tool }: NotepadAppProps
     ];
 
     const search: MenuItem[] = [
-      { type: "item", label: "Find…", shortcut: "Ctrl+F", onClick: c.focusFind },
-      { type: "item", label: "Replace…", shortcut: "Ctrl+H", onClick: c.focusReplace },
-      { type: "item", label: "Go to line…", shortcut: "Ctrl+G", onClick: () => c.setGoToOpen(true) },
+      { type: "item", label: "Find…", shortcut: "Ctrl+F", onClick: np.focusFind },
+      { type: "item", label: "Replace…", shortcut: "Ctrl+H", onClick: np.focusReplace },
+      { type: "item", label: "Go to line…", shortcut: "Ctrl+G", onClick: () => np.setGoToOpen(true) },
       { type: "separator" },
-      { type: "item", label: "Toggle bookmark", onClick: c.toggleBookmarkAtCursor },
-      { type: "item", label: "Next bookmark", onClick: () => c.gotoBookmark("next") },
-      { type: "item", label: "Previous bookmark", onClick: () => c.gotoBookmark("prev") },
+      { type: "item", label: "Toggle bookmark", onClick: np.toggleBookmarkAtCursor },
+      { type: "item", label: "Next bookmark", onClick: () => np.gotoBookmark("next") },
+      { type: "item", label: "Previous bookmark", onClick: () => np.gotoBookmark("prev") },
     ];
 
     const view: MenuItem[] = [
       {
         type: "item",
-        label: c.session.wordWrap ? "Word wrap ✓" : "Word wrap",
-        onClick: () => c.patchSession({ wordWrap: !c.session.wordWrap }),
+        label: np.session.wordWrap ? "Word wrap ✓" : "Word wrap",
+        onClick: () => np.patchSession({ wordWrap: !np.session.wordWrap }),
       },
       {
         type: "item",
-        label: c.session.minimap ? "Minimap ✓" : "Minimap",
-        onClick: () => c.patchSession({ minimap: !c.session.minimap }),
+        label: np.session.minimap ? "Minimap ✓" : "Minimap",
+        onClick: () => np.patchSession({ minimap: !np.session.minimap }),
       },
       {
         type: "item",
-        label: c.session.lineNumbers ? "Line numbers ✓" : "Line numbers",
-        onClick: () => c.patchSession({ lineNumbers: !c.session.lineNumbers }),
+        label: np.session.lineNumbers ? "Line numbers ✓" : "Line numbers",
+        onClick: () => np.patchSession({ lineNumbers: !np.session.lineNumbers }),
       },
       {
         type: "submenu",
         label: "Show whitespace",
         items: (["none", "selection", "all"] as const).map((w) => ({
           type: "item" as const,
-          label: w === c.session.renderWhitespace ? `${w} ✓` : w,
-          onClick: () => c.patchSession({ renderWhitespace: w }),
+          label: w === np.session.renderWhitespace ? `${w} ✓` : w,
+          onClick: () => np.patchSession({ renderWhitespace: w }),
         })),
       },
       { type: "separator" },
-      { type: "item", label: "Split vertical", onClick: () => c.toggleSplit("vertical") },
-      { type: "item", label: "Split horizontal", onClick: () => c.toggleSplit("horizontal") },
-      { type: "item", label: "Close split", onClick: () => c.toggleSplit("none") },
-      { type: "item", label: "Clone to other view", onClick: c.cloneToOtherView },
+      { type: "item", label: "Split vertical", onClick: () => np.toggleSplit("vertical") },
+      { type: "item", label: "Split horizontal", onClick: () => np.toggleSplit("horizontal") },
+      { type: "item", label: "Close split", onClick: () => np.toggleSplit("none") },
+      { type: "item", label: "Clone to other view", onClick: np.cloneToOtherView },
       { type: "separator" },
       {
         type: "item",
-        label: c.session.showSidePanel ? "Hide side panel" : "Show side panel",
-        onClick: () => c.patchSession({ showSidePanel: !c.session.showSidePanel }),
+        label: np.session.showSidePanel ? "Hide side panel" : "Show side panel",
+        onClick: () => np.patchSession({ showSidePanel: !np.session.showSidePanel }),
       },
-      { type: "item", label: "Full screen", shortcut: "F11", onClick: () => c.patchSession({ fullScreen: !c.session.fullScreen }) },
+      { type: "item", label: "Full screen", shortcut: "F11", onClick: () => np.patchSession({ fullScreen: !np.session.fullScreen }) },
       { type: "separator" },
-      { type: "item", label: "Zoom in", onClick: () => c.patchSession({ fontSize: Math.min(28, c.session.fontSize + 1) }) },
-      { type: "item", label: "Zoom out", onClick: () => c.patchSession({ fontSize: Math.max(10, c.session.fontSize - 1) }) },
-      { type: "item", label: "Fold all", onClick: c.foldAll },
-      { type: "item", label: "Unfold all", onClick: c.unfoldAll },
+      { type: "item", label: "Zoom in", onClick: () => np.patchSession({ fontSize: Math.min(28, np.session.fontSize + 1) }) },
+      { type: "item", label: "Zoom out", onClick: () => np.patchSession({ fontSize: Math.max(10, np.session.fontSize - 1) }) },
+      { type: "item", label: "Fold all", onClick: np.foldAll },
+      { type: "item", label: "Unfold all", onClick: np.unfoldAll },
     ];
 
     const encoding: MenuItem[] = (["utf-8", "utf-8-bom", "utf-16le-bom"] as NotepadEncoding[]).map(
       (enc) => ({
         type: "item" as const,
         label:
-          c.activeDoc?.encoding === enc
-            ? `${c.encodingLabel(enc)} ✓`
-            : c.encodingLabel(enc),
+          np.activeDoc?.encoding === enc
+            ? `${np.encodingLabel(enc)} ✓`
+            : np.encodingLabel(enc),
         onClick: () =>
-          c.activeDoc && c.updateDoc(c.activeDoc.id, { encoding: enc, dirty: true }),
+          np.activeDoc && np.updateDoc(np.activeDoc.id, { encoding: enc, dirty: true }),
       }),
     );
 
     const language: MenuItem[] = NOTEPAD_LANGUAGES.map((l) => ({
       type: "item" as const,
-      label: c.activeDoc?.language === l.id ? `${l.label} ✓` : l.label,
+      label: np.activeDoc?.language === l.id ? `${l.label} ✓` : l.label,
       onClick: () =>
-        c.activeDoc && c.updateDoc(c.activeDoc.id, { language: l.id, dirty: true }),
+        np.activeDoc && np.updateDoc(np.activeDoc.id, { language: l.id, dirty: true }),
     }));
 
     const settings: MenuItem[] = [
       {
         type: "item",
         label: "Tab size: 2",
-        onClick: () => c.patchSession({ tabSize: 2 }),
+        onClick: () => np.patchSession({ tabSize: 2 }),
       },
       {
         type: "item",
         label: "Tab size: 4",
-        onClick: () => c.patchSession({ tabSize: 4 }),
+        onClick: () => np.patchSession({ tabSize: 4 }),
       },
       {
         type: "item",
-        label: c.session.insertSpaces ? "Insert spaces ✓" : "Insert spaces",
-        onClick: () => c.patchSession({ insertSpaces: !c.session.insertSpaces }),
+        label: np.session.insertSpaces ? "Insert spaces ✓" : "Insert spaces",
+        onClick: () => np.patchSession({ insertSpaces: !np.session.insertSpaces }),
       },
       {
         type: "item",
-        label: c.activeDoc?.readOnly ? "Read-only ✓" : "Read-only",
+        label: np.activeDoc?.readOnly ? "Read-only ✓" : "Read-only",
         onClick: () =>
-          c.activeDoc &&
-          c.updateDoc(c.activeDoc.id, { readOnly: !c.activeDoc.readOnly, dirty: true }),
+          np.activeDoc &&
+          np.updateDoc(np.activeDoc.id, { readOnly: !np.activeDoc.readOnly, dirty: true }),
       },
       { type: "separator" },
-      { type: "item", label: "Reset session", onClick: c.resetSession },
+      { type: "item", label: "Reset session", onClick: np.resetSession },
     ];
 
     const macro: MenuItem[] = [
       {
         type: "item",
-        label: c.macroRecording ? "Stop recording" : "Start recording",
+        label: np.macroRecording ? "Stop recording" : "Start recording",
         onClick: () => {
-          if (c.macroRecording) c.stopMacro();
+          if (np.macroRecording) np.stopMacro();
           else {
-            c.setMacroSteps([]);
-            c.setMacroRecording(true);
-            c.flash("Macro recording…");
+            np.setMacroSteps([]);
+            np.setMacroRecording(true);
+            np.flash("Macro recording…");
           }
         },
       },
-      { type: "item", label: "Playback", onClick: c.playMacro },
+      { type: "item", label: "Playback", onClick: np.playMacro },
       {
         type: "item",
         label: "Clear macro",
         onClick: () => {
           clearMacro();
-          c.setMacroSteps([]);
-          c.flash("Macro cleared");
+          np.setMacroSteps([]);
+          np.flash("Macro cleared");
         },
       },
     ];
 
     const tools: MenuItem[] = [
-      { type: "item", label: "Base64 encode selection", onClick: () => c.runPlugin("base64-encode") },
-      { type: "item", label: "Base64 decode selection", onClick: () => c.runPlugin("base64-decode") },
-      { type: "item", label: "SHA-256 hash", onClick: () => c.runPlugin("hash-sha256") },
-      { type: "item", label: "Format JSON", onClick: () => c.runPlugin("json-format") },
-      { type: "item", label: "Insert UUID", onClick: () => c.runPlugin("uuid") },
+      { type: "item", label: "Base64 encode selection", onClick: () => np.runPlugin("base64-encode") },
+      { type: "item", label: "Base64 decode selection", onClick: () => np.runPlugin("base64-decode") },
+      { type: "item", label: "SHA-256 hash", onClick: () => np.runPlugin("hash-sha256") },
+      { type: "item", label: "Format JSON", onClick: () => np.runPlugin("json-format") },
+      { type: "item", label: "Insert UUID", onClick: () => np.runPlugin("uuid") },
       { type: "separator" },
       {
         type: "submenu",
@@ -341,7 +341,7 @@ export default function NotepadApp({ mode = "workspace", tool }: NotepadAppProps
         ).map(([label, mode]) => ({
           type: "item" as const,
           label,
-          onClick: () => c.insertDateTime(mode),
+          onClick: () => np.insertDateTime(mode),
         })),
       },
       { type: "separator" },
@@ -349,9 +349,9 @@ export default function NotepadApp({ mode = "workspace", tool }: NotepadAppProps
         type: "item",
         label: "Text diff (compare tab)",
         onClick: () => {
-          const other = c.session.docs.find((d) => d.id !== c.activeDoc?.id);
-          if (other && c.activeDoc) c.compareWithTab(other.id);
-          else c.flash("Open a second tab to compare.");
+          const other = np.session.docs.find((d) => d.id !== np.activeDoc?.id);
+          if (other && np.activeDoc) np.compareWithTab(other.id);
+          else np.flash("Open a second tab to compare.");
         },
       },
       { type: "item", label: "Regex tester", onClick: () => window.open("/tools/regex-tester", "_blank") },
@@ -359,38 +359,38 @@ export default function NotepadApp({ mode = "workspace", tool }: NotepadAppProps
     ];
 
     const windowMenu: MenuItem[] = [
-      ...c.session.docs.map((d) => ({
+      ...np.session.docs.map((d) => ({
         type: "item" as const,
-        label: d.id === c.session.activeId ? `● ${d.name}` : d.name,
-        onClick: () => c.setActive(d.id),
+        label: d.id === np.session.activeId ? `● ${d.name}` : d.name,
+        onClick: () => np.setActive(d.id),
       })),
       { type: "separator" },
       {
         type: "submenu",
         label: "Compare with tab",
-        items: c.session.docs
-          .filter((d) => d.id !== c.activeDoc?.id)
+        items: np.session.docs
+          .filter((d) => d.id !== np.activeDoc?.id)
           .map((d) => ({
             type: "item" as const,
             label: d.name,
-            onClick: () => c.compareWithTab(d.id),
+            onClick: () => np.compareWithTab(d.id),
           })),
       },
       { type: "separator" },
       {
         type: "item",
         label: "Save session as…",
-        onClick: () => c.setSessionSaveOpen(true),
+        onClick: () => np.setSessionSaveOpen(true),
       },
-      ...c.namedSessions.map((s) => ({
+      ...np.namedSessions.map((s) => ({
         type: "item" as const,
         label: `Load: ${s.name}`,
-        onClick: () => c.loadNamedSession(s.name),
+        onClick: () => np.loadNamedSession(s.name),
       })),
     ];
 
     const help: MenuItem[] = [
-      { type: "item", label: "Keyboard shortcuts", onClick: () => c.flash("Ctrl+S save · Ctrl+N new · Ctrl+G go to · F11 full screen") },
+      { type: "item", label: "Keyboard shortcuts", onClick: () => np.flash("Ctrl+S save · Ctrl+N new · Ctrl+G go to · F11 full screen") },
       { type: "item", label: "Open full workspace", onClick: () => window.open("/notepad", "_blank") },
       { type: "item", label: "Project vault", onClick: () => window.open("/vault", "_blank") },
     ];
@@ -408,12 +408,12 @@ export default function NotepadApp({ mode = "workspace", tool }: NotepadAppProps
       { label: "Window", items: windowMenu },
       { label: "Help", items: help },
     ];
-  }, [c, transformSelection]);
+  }, [np, transformSelection]);
 
-  if (!c.activeDoc) return null;
+  if (!np.activeDoc) return null;
 
-  const outline = parseOutline(c.activeDoc.content);
-  const shellClass = c.session.fullScreen
+  const outline = parseOutline(np.activeDoc.content);
+  const shellClass = np.session.fullScreen
     ? "fixed inset-0 z-50 flex flex-col bg-background"
     : mode === "workspace"
       ? "flex h-[calc(100dvh-3.5rem)] flex-col bg-background"
@@ -441,21 +441,21 @@ export default function NotepadApp({ mode = "workspace", tool }: NotepadAppProps
           mode === "compact" ? "mx-auto w-full max-w-[1600px] px-4 pb-6" : ""
         }`}
       >
-        {c.session.showToolbar && (
+        {np.session.showToolbar && (
           <div className="flex flex-wrap items-center gap-1 border border-border bg-card px-2 py-1 text-xs">
-            <QuickBtn label="New" onClick={c.newDoc} />
-            <QuickBtn label="Open" onClick={() => c.fileInputRef.current?.click()} />
-            <QuickBtn label="Save" onClick={() => c.saveDoc(c.activeDoc!)} />
-            <QuickBtn label="Find" onClick={c.focusFind} />
+            <QuickBtn label="New" onClick={np.newDoc} />
+            <QuickBtn label="Open" onClick={() => fileInputRef.current?.click()} />
+            <QuickBtn label="Save" onClick={() => np.saveDoc(np.activeDoc!)} />
+            <QuickBtn label="Find" onClick={np.focusFind} />
             <QuickBtn
               label="Wrap"
-              active={c.session.wordWrap}
-              onClick={() => c.patchSession({ wordWrap: !c.session.wordWrap })}
+              active={np.session.wordWrap}
+              onClick={() => np.patchSession({ wordWrap: !np.session.wordWrap })}
             />
             <span className="mx-1 h-4 w-px bg-border" />
             <button
               type="button"
-              onClick={c.copyAll}
+              onClick={np.copyAll}
               className="inline-flex items-center gap-1 rounded px-2 py-0.5 text-muted-foreground hover:bg-muted"
             >
               <Copy className="h-3 w-3" /> Copy
@@ -463,7 +463,7 @@ export default function NotepadApp({ mode = "workspace", tool }: NotepadAppProps
             <button
               type="button"
               onClick={() => {
-                c.shareActive();
+                np.shareActive();
                 setShareCopied(true);
                 setTimeout(() => setShareCopied(false), 2000);
               }}
@@ -478,8 +478,8 @@ export default function NotepadApp({ mode = "workspace", tool }: NotepadAppProps
             </button>
             <VaultSaveButton
               toolSlug={NOTEPAD_TOOL_SLUG}
-              getContent={() => c.activeDoc!.content}
-              defaultTitle={`${c.activeDoc!.name} — ${new Date().toLocaleDateString()}`}
+              getContent={() => np.activeDoc!.content}
+              defaultTitle={`${np.activeDoc!.name} — ${new Date().toLocaleDateString()}`}
             />
             <Link
               href="/vault"
@@ -489,9 +489,9 @@ export default function NotepadApp({ mode = "workspace", tool }: NotepadAppProps
             </Link>
             <button
               type="button"
-              onClick={() => c.patchSession({ showSidePanel: !c.session.showSidePanel })}
+              onClick={() => np.patchSession({ showSidePanel: !np.session.showSidePanel })}
               className={`ml-auto inline-flex items-center gap-1 rounded px-2 py-0.5 ${
-                c.session.showSidePanel ? "bg-accent/15 text-accent" : "text-muted-foreground hover:bg-muted"
+                np.session.showSidePanel ? "bg-accent/15 text-accent" : "text-muted-foreground hover:bg-muted"
               }`}
               title="Toggle side panel"
             >
@@ -499,11 +499,11 @@ export default function NotepadApp({ mode = "workspace", tool }: NotepadAppProps
             </button>
             <button
               type="button"
-              onClick={() => c.patchSession({ fullScreen: !c.session.fullScreen })}
+              onClick={() => np.patchSession({ fullScreen: !np.session.fullScreen })}
               className="inline-flex items-center rounded px-2 py-0.5 text-muted-foreground hover:bg-muted"
               title="Full screen (F11)"
             >
-              {c.session.fullScreen ? (
+              {np.session.fullScreen ? (
                 <Minimize2 className="h-3 w-3" />
               ) : (
                 <Maximize2 className="h-3 w-3" />
@@ -516,18 +516,18 @@ export default function NotepadApp({ mode = "workspace", tool }: NotepadAppProps
           <NotepadMenuBar menus={menuItems} />
 
           <div className="flex items-center gap-0 overflow-x-auto border-b border-border bg-muted/40 px-1">
-            {c.session.docs.map((doc) => (
+            {np.session.docs.map((doc) => (
               <TabButton
                 key={doc.id}
                 doc={doc}
-                active={doc.id === c.session.activeId}
-                onSelect={() => c.setActive(doc.id)}
-                onClose={() => c.closeDoc(doc.id)}
+                active={doc.id === np.session.activeId}
+                onSelect={() => np.setActive(doc.id)}
+                onClose={() => np.closeDoc(doc.id)}
               />
             ))}
             <button
               type="button"
-              onClick={c.newDoc}
+              onClick={np.newDoc}
               className="shrink-0 px-2 py-1 text-muted-foreground hover:text-foreground"
               title="New tab"
             >
@@ -536,7 +536,7 @@ export default function NotepadApp({ mode = "workspace", tool }: NotepadAppProps
           </div>
 
           <div className="flex min-h-0 flex-1">
-            {c.session.showSidePanel && (
+            {np.session.showSidePanel && (
               <aside className="flex w-52 shrink-0 flex-col border-r border-border bg-muted/20 text-xs">
                 <div className="flex border-b border-border">
                   {(
@@ -551,9 +551,9 @@ export default function NotepadApp({ mode = "workspace", tool }: NotepadAppProps
                     <button
                       key={id}
                       type="button"
-                      onClick={() => c.setSidePanel(id)}
+                      onClick={() => np.setSidePanel(id)}
                       className={`flex-1 px-1 py-1.5 ${
-                        c.session.sidePanel === id
+                        np.session.sidePanel === id
                           ? "bg-card font-semibold text-foreground"
                           : "text-muted-foreground hover:bg-muted/50"
                       }`}
@@ -564,22 +564,22 @@ export default function NotepadApp({ mode = "workspace", tool }: NotepadAppProps
                 </div>
                 <div className="min-h-0 flex-1 overflow-y-auto p-2">
                   <SidePanelContent
-                    panel={c.session.sidePanel}
-                    docs={c.session.docs}
-                    activeId={c.session.activeId}
-                    bookmarks={c.activeDoc.bookmarks}
-                    recent={c.recentFiles}
+                    panel={np.session.sidePanel}
+                    docs={np.session.docs}
+                    activeId={np.session.activeId}
+                    bookmarks={np.activeDoc.bookmarks}
+                    recent={np.recentFiles}
                     outline={outline}
-                    onSelectDoc={c.setActive}
-                    onOpenRecent={c.openRecent}
+                    onSelectDoc={np.setActive}
+                    onOpenRecent={np.openRecent}
                     onGotoLine={(line) => {
-                      const ed = c.activeEditor();
+                      const ed = activeEditor();
                       ed?.revealLineInCenter(line);
                       ed?.setPosition({ lineNumber: line, column: 1 });
                       ed?.focus();
                     }}
                     onInsertChar={(ch) => {
-                      const ed = c.activeEditor();
+                      const ed = activeEditor();
                       if (ed) replaceSelection(ed, ch);
                     }}
                   />
@@ -589,88 +589,95 @@ export default function NotepadApp({ mode = "workspace", tool }: NotepadAppProps
 
             <div
               className={`grid min-h-0 flex-1 ${
-                c.session.splitMode === "vertical"
+                np.session.splitMode === "vertical"
                   ? "grid-cols-2"
-                  : c.session.splitMode === "horizontal"
+                  : np.session.splitMode === "horizontal"
                     ? "grid-rows-2"
                     : "grid-cols-1"
               }`}
             >
               <EditorPane
-                doc={c.activeDoc}
-                session={c.session}
+                doc={np.activeDoc}
+                session={np.session}
                 dark={dark}
                 label="Primary"
-                onChange={(v) => c.updateDoc(c.activeDoc!.id, { content: v ?? "", dirty: true })}
-                onMount={c.mountEditor("primary")}
+                onChange={(v) => np.updateDoc(np.activeDoc!.id, { content: v ?? "", dirty: true })}
+                onMount={np.mountEditor("primary")}
               />
-              {c.session.splitMode !== "none" && c.secondaryDoc && (
+              {np.session.splitMode !== "none" && np.secondaryDoc && (
                 <EditorPane
-                  doc={c.secondaryDoc}
-                  session={c.session}
+                  doc={np.secondaryDoc}
+                  session={np.session}
                   dark={dark}
-                  label={c.secondaryDoc.name}
+                  label={np.secondaryDoc.name}
                   onChange={(v) =>
-                    c.updateDoc(c.secondaryDoc!.id, { content: v ?? "", dirty: true })
+                    np.updateDoc(np.secondaryDoc!.id, { content: v ?? "", dirty: true })
                   }
-                  onMount={c.mountEditor("secondary")}
+                  onMount={np.mountEditor("secondary")}
                 />
               )}
             </div>
           </div>
 
-          {c.session.showStatusBar && (
+          {np.session.showStatusBar && (
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-border bg-muted/50 px-3 py-1 font-mono text-[11px] text-muted-foreground">
               <span>
-                Ln {c.cursor.line}, Col {c.cursor.column}
+                Ln {np.cursor.line}, Col {np.cursor.column}
               </span>
-              {c.selectionLen > 0 && <span>Sel {c.selectionLen}</span>}
-              <span>{countLines(c.activeDoc.content)} lines</span>
-              <span>{c.activeDoc.content.length} chars</span>
-              <span>{c.labelForLanguage(c.activeDoc.language)}</span>
-              <span>{c.activeDoc.eol}</span>
-              <span>{c.encodingLabel(c.activeDoc.encoding)}</span>
-              {c.activeDoc.readOnly && <span>RO</span>}
-              {c.activeDoc.dirty && (
+              {np.selectionLen > 0 && <span>Sel {np.selectionLen}</span>}
+              <span>{countLines(np.activeDoc.content)} lines</span>
+              <span>{np.activeDoc.content.length} chars</span>
+              <span>{np.labelForLanguage(np.activeDoc.language)}</span>
+              <span>{np.activeDoc.eol}</span>
+              <span>{np.encodingLabel(np.activeDoc.encoding)}</span>
+              {np.activeDoc.readOnly && <span>RO</span>}
+              {np.activeDoc.dirty && (
                 <span className="text-amber-600 dark:text-amber-400">Modified</span>
               )}
-              {c.macroRecording && (
+              {np.macroRecording && (
                 <span className="text-red-600 dark:text-red-400">REC</span>
               )}
-              {c.message && <span className="ml-auto text-foreground">{c.message}</span>}
+              {np.message && <span className="ml-auto text-foreground">{np.message}</span>}
             </div>
           )}
         </div>
       </div>
 
       <input
-        ref={c.fileInputRef}
+        ref={fileInputRef}
         type="file"
         multiple
         accept=".txt,.md,.json,.js,.ts,.jsx,.tsx,.html,.css,.xml,.yaml,.yml,.sql,.py,.java,.c,.cpp,.cs,.go,.rs,.php,.rb,.sh,.ps1,.ini,.lua,.kt,.swift,.r,.pl,.vb,.bat,.graphql,.hbs,.redis,text/*"
         className="hidden"
-        onChange={(e) => void c.onOpenFiles(e.target.files)}
+        onChange={(e) => void np.onOpenFiles(e.target.files)}
       />
 
-      {c.goToOpen && <GoToDialog c={c} />}
-      {c.sessionSaveOpen && (
-        <NameDialog
-          title="Save session as"
-          value={c.sessionName}
-          onChange={c.setSessionName}
-          onCancel={() => c.setSessionSaveOpen(false)}
-          onConfirm={() => c.saveNamedSession(c.sessionName.trim() || "session")}
+      {np.goToOpen && (
+        <GoToDialog
+          goToLine={np.goToLine}
+          setGoToLine={np.setGoToLine}
+          runGoToLine={np.runGoToLine}
+          onClose={() => np.setGoToOpen(false)}
         />
       )}
-      {c.renameOpen && c.activeDoc && (
+      {np.sessionSaveOpen && (
+        <NameDialog
+          title="Save session as"
+          value={np.sessionName}
+          onChange={np.setSessionName}
+          onCancel={() => np.setSessionSaveOpen(false)}
+          onConfirm={() => np.saveNamedSession(np.sessionName.trim() || "session")}
+        />
+      )}
+      {np.renameOpen && np.activeDoc && (
         <NameDialog
           title="Rename document"
-          value={c.renameValue}
-          onChange={c.setRenameValue}
-          onCancel={() => c.setRenameOpen(false)}
+          value={np.renameValue}
+          onChange={np.setRenameValue}
+          onCancel={() => np.setRenameOpen(false)}
           onConfirm={() => {
-            c.updateDoc(c.activeDoc!.id, { name: c.renameValue.trim() || c.activeDoc!.name });
-            c.setRenameOpen(false);
+            np.updateDoc(np.activeDoc!.id, { name: np.renameValue.trim() || np.activeDoc!.name });
+            np.setRenameOpen(false);
           }}
         />
       )}
@@ -836,7 +843,17 @@ function SidePanelContent({
   );
 }
 
-function GoToDialog({ c }: { c: ReturnType<typeof useNotepadController> }) {
+function GoToDialog({
+  goToLine,
+  setGoToLine,
+  runGoToLine,
+  onClose,
+}: {
+  goToLine: string;
+  setGoToLine: (v: string) => void;
+  runGoToLine: () => void;
+  onClose: () => void;
+}) {
   return (
     <div className="fixed inset-0 z-[60] flex items-start justify-center bg-black/40 pt-[20vh]">
       <div className="w-full max-w-sm rounded-xl border border-border bg-card p-4 shadow-lg">
@@ -845,11 +862,11 @@ function GoToDialog({ c }: { c: ReturnType<typeof useNotepadController> }) {
           autoFocus
           type="number"
           min={1}
-          value={c.goToLine}
-          onChange={(e) => c.setGoToLine(e.target.value)}
+          value={goToLine}
+          onChange={(e) => setGoToLine(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === "Enter") c.runGoToLine();
-            if (e.key === "Escape") c.setGoToOpen(false);
+            if (e.key === "Enter") runGoToLine();
+            if (e.key === "Escape") onClose();
           }}
           className="mt-3 w-full rounded-lg border border-border bg-background px-3 py-2 font-mono text-sm"
           placeholder="Line number"
@@ -857,14 +874,14 @@ function GoToDialog({ c }: { c: ReturnType<typeof useNotepadController> }) {
         <div className="mt-3 flex justify-end gap-2">
           <button
             type="button"
-            onClick={() => c.setGoToOpen(false)}
+            onClick={onClose}
             className="rounded-lg px-3 py-1.5 text-sm text-muted-foreground hover:bg-muted"
           >
             Cancel
           </button>
           <button
             type="button"
-            onClick={c.runGoToLine}
+            onClick={runGoToLine}
             className="rounded-lg bg-accent px-3 py-1.5 text-sm font-semibold text-accent-foreground"
           >
             Go
