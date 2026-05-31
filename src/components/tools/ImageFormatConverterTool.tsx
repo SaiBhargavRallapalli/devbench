@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback, useEffect } from "react";
+import Link from "next/link";
 import { Download, RefreshCw, Image as ImageIcon, Trash2 } from "lucide-react";
 import ToolPageHero from "@/components/tools/ToolPageHero";
 import type { Tool } from "@/lib/tools-registry";
@@ -356,6 +357,13 @@ export default function ImageFormatConverterTool({ tool }: { tool: Tool }) {
     <div className="flex flex-col min-h-screen bg-background">
       <ToolPageHero tool={tool} />
       <main className="flex-1 max-w-4xl mx-auto w-full px-4 py-8 space-y-6">
+        <p className="text-sm text-muted-foreground rounded-xl border border-border bg-muted/30 px-4 py-3">
+          Converting many files at once? Use{" "}
+          <Link href="/image" className="font-medium text-accent hover:underline">
+            batch image convert on the Image tools hub
+          </Link>
+          .
+        </p>
 
         {/* Upload zone */}
         <div

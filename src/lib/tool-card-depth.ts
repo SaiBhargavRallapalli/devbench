@@ -173,6 +173,86 @@ const TOOL_CARD_DEPTH_OVERRIDES: Record<string, ToolCardDepth> = {
     comparisonSnippet:
       "Excels over Text Diff for API payloads — key order changes do not look like rewrites.",
   },
+  "image-format-converter": {
+    steps: [
+      "Drop a HEIC, SVG, PNG, JPEG, or WebP file (or add several on /image batch).",
+      "Pick output format — PNG, JPEG, WebP, or SVG trace.",
+      "Adjust quality or trace detail if not exporting PNG.",
+      "Convert and download — ZIP when batching multiple files.",
+    ],
+    pitfalls: [
+      "SVG trace on photos produces huge files — use raster formats for photos.",
+      "Very large images may hit browser memory limits — resize first if needed.",
+    ],
+    expectedOutput: "Converted image file (or ZIP of files) at chosen format and quality.",
+    exportLabel: "Download converted image",
+    comparisonSnippet:
+      "Handles HEIC and SVG in-browser — no desktop app or cloud upload queue.",
+  },
+  "background-remover": {
+    steps: [
+      "Upload a PNG, JPEG, or WebP photo with a clear subject.",
+      "Wait for the in-browser model to segment the foreground.",
+      "Preview the transparent PNG result.",
+      "Download and optionally compress or resize on DevBench.",
+    ],
+    pitfalls: [
+      "Hair, fur, and busy backgrounds reduce edge quality.",
+      "First run downloads the ML model — requires network once.",
+    ],
+    expectedOutput: "PNG with transparent background (alpha channel).",
+    exportLabel: "Download cutout PNG",
+    comparisonSnippet:
+      "No upload to a server — segmentation runs locally after the model loads.",
+  },
+  "dns-lookup": {
+    steps: [
+      "Enter a domain name (e.g. example.com).",
+      "Select record types or query all common types.",
+      "Review A, AAAA, MX, TXT, CNAME, NS, and SOA answers.",
+      "Copy values for DNS migration or mail setup checks.",
+    ],
+    pitfalls: [
+      "Cached TTLs may lag recent DNS changes — wait for propagation.",
+      "Private or split-horizon DNS won't appear in public resolvers.",
+    ],
+    expectedOutput: "Structured DNS answers with TTL per record type.",
+    exportLabel: "Copy record values",
+    comparisonSnippet:
+      "Faster than dig for quick MX/TXT checks — no terminal required.",
+  },
+  "gitignore-generator": {
+    steps: [
+      "Select templates for your stack (Node, Python, macOS, etc.).",
+      "Combine multiple templates if needed.",
+      "Generate and review the merged .gitignore.",
+      "Copy or download into your repo root.",
+    ],
+    pitfalls: [
+      "Already-tracked files stay tracked — use git rm --cached after updating .gitignore.",
+      "Global ignores belong in ~/.gitignore_global, not always in the repo.",
+    ],
+    expectedOutput: "Single .gitignore file with deduplicated patterns.",
+    exportLabel: "Copy .gitignore",
+    comparisonSnippet:
+      "Covers 20+ stacks in one click — faster than stitching GitHub templates manually.",
+  },
+  "pdf-compare": {
+    steps: [
+      "Upload two PDF files (digital text, not scans).",
+      "Run compare to extract text from each.",
+      "Review unified diff of page text.",
+      "Use PDF Merge or Split if you need structural changes instead.",
+    ],
+    pitfalls: [
+      "Scanned PDFs without OCR produce empty or poor diffs.",
+      "Layout changes with identical text may not appear as differences.",
+    ],
+    expectedOutput: "Unified text diff between extracted page content.",
+    exportLabel: "Copy diff",
+    comparisonSnippet:
+      "Text-level compare — use Text Diff for plain exports, not binary PDF bytes.",
+  },
 };
 
 function fallbackDepth(tool: Tool): ToolCardDepth {

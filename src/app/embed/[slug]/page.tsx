@@ -4,7 +4,7 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import { useParams } from "next/navigation";
 import { Copy, Check, Trash2, ExternalLink } from "lucide-react";
 import { getToolBySlug } from "@/lib/tools-registry";
-import CustomToolOutlet from "@/components/tools/CustomToolOutlet";
+import CustomToolOutlet, { CUSTOM_TOOL_SLUGS } from "@/components/tools/CustomToolOutlet";
 import {
   type ToolState,
   runTool,
@@ -16,33 +16,6 @@ import {
   postEmbedEvent,
   type EmbedConfig,
 } from "@/lib/embed-api";
-
-const CUSTOM_TOOL_SLUGS = new Set([
-  "background-remover",
-  "image-resizer", "image-compressor",
-  "pdf-page-editor", "image-to-pdf",
-  "merge-pdf", "split-pdf", "compress-pdf", "pdf-to-jpg", "rotate-pdf",
-  "watermark-pdf", "organize-pdf", "pdf-page-numbers", "pdf-compare",
-  "text-to-pdf", "html-to-pdf",
-  "xml-suite",
-  "qr-code", "age-calculator", "bmi-calculator", "compound-interest",
-  "loan-emi-calculator", "contrast-checker", "gradient-generator", "currency-converter",
-  "html-preview", "base64-image", "string-inspector", "markdown-preview",
-  "regex-tester", "uuid-generator",
-  "http-status-reference", "css-box-shadow",
-  "image-format-converter", "svg-optimizer", "exif-viewer",
-  "unicode-checker",
-  "simple-interest", "gst-calculator", "discount-calculator",
-  "tip-calculator", "roi-calculator", "profit-loss-calculator",
-  "salary-hike-calculator",
-  "bmr-calculator", "calorie-calculator", "water-intake-calculator", "body-fat-calculator",
-  "quadratic-solver", "pythagorean-theorem", "gcd-lcm-calculator",
-  "days-between-dates", "countdown-calculator", "week-number-calculator", "due-date-calculator",
-  "timezone-converter",
-  "mermaid-editor",
-  "websocket-tester",
-  "ipynb-to-pdf",
-]);
 
 function CopyBtn({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);

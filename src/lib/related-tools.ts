@@ -20,7 +20,7 @@ const CURATED_RELATED: Partial<Record<string, readonly string[]>> = {
   "tsv-to-json": ["json-to-tsv", "json-to-csv", "csv-to-json"],
   "json-to-typescript": ["json-formatter", "json-to-csv", "json-to-xml", "xml-to-json"],
   "json-to-xml": ["xml-to-json", "json-formatter", "json-to-typescript"],
-  "xml-to-json": ["json-to-xml", "json-formatter", "xml-formatter"],
+  "xml-to-json": ["json-to-xml", "json-formatter", "xml-suite"],
 
   "base64-encode": ["base64-decode", "url-encode", "text-to-hex", "base64-image"],
   "base64-decode": ["base64-encode", "url-decode", "hex-to-text", "base64-image"],
@@ -68,7 +68,7 @@ const CURATED_RELATED: Partial<Record<string, readonly string[]>> = {
   "split-pdf": ["merge-pdf", "compress-pdf", "organize-pdf"],
   "compress-pdf": ["merge-pdf", "split-pdf", "pdf-to-jpg"],
   "pdf-to-jpg": ["image-to-pdf", "image-format-converter", "compress-pdf"],
-  "image-to-pdf": ["jpg-to-pdf", "html-to-pdf", "text-to-pdf"],
+  "image-to-pdf": ["pdf-to-jpg", "html-to-pdf", "text-to-pdf", "image-format-converter"],
   "html-to-pdf": ["markdown-preview", "text-to-pdf", "image-to-pdf"],
   "text-to-pdf": ["html-to-pdf", "markdown-preview", "merge-pdf"],
   "watermark-pdf": ["merge-pdf", "compress-pdf", "organize-pdf"],
@@ -88,7 +88,7 @@ const CURATED_RELATED: Partial<Record<string, readonly string[]>> = {
   "temperature-converter": ["unit-converter", "currency-converter", "base-converter"],
   "base-converter": ["unit-converter", "text-to-hex", "byte-converter"],
   "byte-converter": ["base-converter", "unit-converter", "text-to-hex"],
-  "currency-converter": ["tip-calculator", "loan-emi", "gst-calculator"],
+  "currency-converter": ["tip-calculator", "loan-emi-calculator", "gst-calculator"],
 
   "loan-emi-calculator": ["compound-interest", "gst-calculator", "percentage-calc"],
   "compound-interest": ["loan-emi-calculator", "percentage-calc", "gst-calculator"],
@@ -109,6 +109,39 @@ const CURATED_RELATED: Partial<Record<string, readonly string[]>> = {
 
   "days-between-dates": ["unix-timestamp", "timezone-converter", "date-calculator"],
   "date-calculator": ["days-between-dates", "unix-timestamp", "timezone-converter"],
+
+  "simple-interest": ["compound-interest", "loan-emi-calculator", "percentage-calc", "gst-calculator"],
+  "discount-calculator": ["tip-calculator", "gst-calculator", "percentage-calc"],
+  "roi-calculator": ["profit-loss-calculator", "compound-interest", "percentage-calc"],
+  "profit-loss-calculator": ["roi-calculator", "gst-calculator", "percentage-calc"],
+  "salary-hike-calculator": ["roi-calculator", "percentage-calc", "compound-interest"],
+
+  "bmr-calculator": ["calorie-calculator", "bmi-calculator", "water-intake-calculator"],
+  "countdown-calculator": ["days-between-dates", "date-calculator", "age-calculator"],
+  "week-number-calculator": ["days-between-dates", "date-calculator", "unix-timestamp"],
+  "due-date-calculator": ["days-between-dates", "date-calculator", "age-calculator"],
+
+  "background-remover": ["image-format-converter", "image-compressor", "image-resizer"],
+  "pdf-page-editor": ["split-pdf", "organize-pdf", "merge-pdf", "pdf-page-numbers"],
+  "pdf-page-numbers": ["watermark-pdf", "organize-pdf", "merge-pdf"],
+  "pdf-compare": ["text-diff", "merge-pdf", "split-pdf"],
+  "xml-suite": ["json-to-xml", "xml-to-json", "json-formatter", "regex-tester"],
+  "age-calculator": ["days-between-dates", "date-calculator", "due-date-calculator"],
+  "gradient-generator": ["color-palette", "color-converter", "contrast-checker"],
+  "html-preview": ["html-to-pdf", "markdown-preview", "html-minifier"],
+  "http-status-reference": ["url-parser", "curl-formatter", "webhook-simulator"],
+  "css-box-shadow": ["gradient-generator", "color-converter", "html-preview"],
+  "exif-viewer": ["image-format-converter", "image-resizer", "base64-image"],
+  "unicode-checker": ["string-inspector", "regex-tester", "text-to-hex"],
+  "mermaid-editor": ["markdown-preview", "svg-optimizer", "html-preview"],
+  "websocket-tester": ["curl-formatter", "url-parser", "webhook-simulator"],
+  "ipynb-to-pdf": ["markdown-preview", "text-to-pdf", "html-to-pdf"],
+  "gitignore-generator": ["license-generator", "env-validator", "dotenv-parser"],
+  "license-generator": ["gitignore-generator", "semver-compare", "uuid-generator"],
+  "env-validator": ["dotenv-parser", "gitignore-generator", "password-generator"],
+  "dns-lookup": ["ip-info", "url-parser", "curl-formatter"],
+  "ip-info": ["dns-lookup", "url-parser", "curl-formatter"],
+  "npm-compare": ["semver-compare", "hash-generator", "uuid-generator"],
 };
 
 export function getRelatedToolSlugs(slug: string, max = 5): string[] {

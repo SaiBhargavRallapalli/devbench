@@ -39,6 +39,14 @@ export const DEVBENCH_WORKSPACES: readonly WorkspaceShortcut[] = [
     keywords: ["merge", "split", "jpg", "compress", "watermark"],
   },
   {
+    id: "image",
+    href: "/image",
+    label: "Image tools hub",
+    shortLabel: "Image",
+    description: "Resize, compress, convert HEIC/SVG, remove backgrounds, read EXIF — browser-only",
+    keywords: ["resize", "compress", "heic", "webp", "background", "exif"],
+  },
+  {
     id: "diff",
     href: "/diff-checker",
     label: "Diff checker",

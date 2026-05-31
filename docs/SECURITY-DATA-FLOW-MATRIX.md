@@ -9,11 +9,13 @@ Legend: **Net** = network from user’s browser (or server via our API). **Store
 | Category / surface | Examples | Net to third party? | Net to DevBench origin? | Store (typical) |
 |--------------------|----------|----------------------|-------------------------|-----------------|
 | **Default tool** | Most `/tools/*` (formatters, encoders, PDF client, etc.) | No | Same-origin page assets only | Usually none; tool-specific |
-| **Workspace pages** | `/json`, `/yaml`, `/graph-calculator`, … | No (client compute) | Same-origin | JSON presets: `devbench:json-workspace-presets`; theme: `theme` |
+| **Workspace pages** | `/json`, `/yaml`, `/graph-calculator`, `/image`, … | No (client compute) | Same-origin | JSON presets: `devbench:json-workspace-presets`; theme: `theme` |
 | **API tester** | `/api-tester` | Yes — **target URL** (user-chosen) | **Yes** — `POST /api/proxy` forwards request from **our server** | None required |
 | **Currency converter** | `/tools/...` (Frankfurter) | Yes — `api.frankfurter.app` | No | None |
 | **WebSocket tester** | PDF hub / tools | Yes — **user-entered** WS/WSS URL | No | Optional URL in `localStorage` (see tool `STORAGE_KEY`) |
 | **Background remover** | `@imgly/background-removal` | Yes — model CDN (see package / CSP) | No | None |
+| **Mermaid editor** | `/tools/mermaid-editor` | Yes — Mermaid.js CDN (first load) | No | None |
+| **DNS / IP / npm tools** | `dns-lookup`, `ip-info`, `npm-compare` | Yes — Cloudflare DoH, ipapi.co, registry.npmjs.org | No | None |
 | **Site shell** | Header, analytics | Yes — GTM, AdSense, Vercel scripts (CSP allowlist) | Same-origin | `theme`; tool search `devbench:recent` / `devbench:favourites` |
 
 ## Server routes (inventory)

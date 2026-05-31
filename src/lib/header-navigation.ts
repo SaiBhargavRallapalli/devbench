@@ -13,6 +13,7 @@ export const HEADER_NAV_LINKS: HeaderNavLink[] = [
   { href: "/json", label: "JSON", ariaLabel: "Access JSON Formatter Tool" },
   { href: "/yaml", label: "YAML", ariaLabel: "Access YAML Formatter Tool" },
   { href: "/pdf", label: "PDF", ariaLabel: "Access PDF Tools" },
+  { href: "/image", label: "Image", ariaLabel: "Access Image Tools" },
   { href: "/api-tester", label: "API", ariaLabel: "Access API Tester Tool" },
   { href: "/lambda-sandbox", label: "Lambda", ariaLabel: "Access AWS Lambda Sandbox" },
   { href: "/webhook-simulator", label: "Webhook", ariaLabel: "Access Webhook Simulator" },

@@ -240,4 +240,108 @@ export const pageContentDev: Record<string, ToolPageContent> = {
     openingParagraph:
       "CSS Box Shadow Builder generates box-shadow CSS rules with a visual editor — sliders for x and y offset, blur radius, spread radius, and color. Add multiple shadow layers and copy the complete box-shadow property value ready to paste into your CSS or Tailwind config. The live preview updates as you drag. Runs entirely in your browser.",
   },
+
+  "lambda-sandbox": {
+    title: "AWS Lambda Sandbox — Test Handlers in Your Browser",
+    metaDescription:
+      "Run Node.js Lambda handlers against API Gateway, SQS, S3, and EventBridge events in a browser sandbox. No AWS account required for quick tests.",
+    openingParagraph:
+      "AWS Lambda Sandbox lets you paste a Node.js handler and invoke it against sample API Gateway, SQS, S3, or EventBridge payloads without deploying to AWS. Output and errors appear in the browser — useful for prototyping event shapes and debugging handler logic before CI. AWS SDK calls are stubbed; mock or patch them in your handler for local testing.",
+  },
+
+  "webhook-simulator": {
+    title: "Webhook Payload Simulator — Sign & Verify HMAC",
+    metaDescription:
+      "Generate, send, and verify signed webhook payloads for GitHub, Stripe, Slack, Shopify, or generic HMAC. Test receivers locally. No signup.",
+    openingParagraph:
+      "Webhook Payload Simulator builds realistic webhook JSON bodies with correct headers and HMAC signatures for GitHub, Stripe, Slack, Shopify, or a generic shared secret. Send test POSTs to your local endpoint or verify an incoming signature against your secret — essential for debugging webhook receivers before production traffic.",
+  },
+
+  "gitignore-generator": {
+    title: "Gitignore Generator — .gitignore for 20+ Stacks",
+    metaDescription:
+      "Generate .gitignore files for Node, Python, Go, Rust, Java, macOS, VS Code, and more. Combine templates. Copy or download. Free, browser-only.",
+    openingParagraph:
+      "Gitignore Generator produces merged .gitignore files from 20+ language, framework, editor, and OS templates — Node.js, Python, Go, Rust, macOS, VS Code, JetBrains, and more. Select multiple templates, deduplicate entries, and copy or download a ready-to-commit .gitignore for your repository.",
+  },
+
+  "license-generator": {
+    title: "Open Source License Generator — MIT, Apache, GPL & More",
+    metaDescription:
+      "Generate MIT, Apache 2.0, GPL 3.0, BSD, ISC, Unlicense, and MPL 2.0 license files with your name and year. Copy or download. Free.",
+    openingParagraph:
+      "License Generator creates standard open-source LICENSE files — MIT, Apache 2.0, GPL 3.0, BSD 2/3-Clause, ISC, Unlicense, and MPL 2.0 — with your name, organization, and copyright year filled in. Copy the text or download LICENSE for your repo. Not legal advice; review with counsel for commercial or dual-licensing needs.",
+  },
+
+  "env-validator": {
+    title: ".env Validator — Catch Duplicates & Weak Secrets",
+    metaDescription:
+      "Validate .env files online — duplicate keys, empty values, invalid names, weak secrets. Parse to JSON. No upload, browser-only.",
+    openingParagraph:
+      "Env Validator parses .env files and flags duplicate keys, empty values, invalid variable names, and weak secrets assigned to sensitive keys like PASSWORD or API_KEY. Export a clean JSON view for Docker Compose or CI. Your file stays in the browser — nothing is uploaded.",
+  },
+
+  "dns-lookup": {
+    title: "DNS Lookup — Query A, MX, TXT, CNAME Records Online",
+    metaDescription:
+      "Query DNS records (A, AAAA, MX, TXT, CNAME, NS, SOA) for any domain via Cloudflare DoH. Free, instant results. No signup.",
+    openingParagraph:
+      "DNS Lookup queries public DNS records for any domain — A, AAAA, MX, TXT, CNAME, NS, and SOA — using Cloudflare DNS-over-HTTPS. Useful for verifying mail setup, CDN cutovers, SPF/DKIM TXT records, and nameserver delegation. Results appear in a structured table with TTL values.",
+  },
+
+  "ip-info": {
+    title: "IP Info Lookup — Geolocation, ISP & ASN Online",
+    metaDescription:
+      "Look up geolocation, ISP, timezone, ASN, and currency for any IP address — or check your own public IP. Free, browser-based.",
+    openingParagraph:
+      "IP Info resolves any IPv4 or IPv6 address to country, region, city, ISP, timezone, ASN, and currency using ipapi.co. Click to check your own public IP or paste an address from server logs. Useful for fraud review, CDN debugging, and understanding where traffic originates.",
+  },
+
+  "npm-compare": {
+    title: "npm Package Compare — Downloads, Size & License",
+    metaDescription:
+      "Compare up to 3 npm packages side-by-side: weekly downloads, bundle size, dependencies, license, last publish. Free, live registry data.",
+    openingParagraph:
+      "npm Package Compare loads metadata from the npm registry for up to three packages — weekly download counts, approximate bundle size, dependency counts, license, and last publish date — in one table. Pick between similar libraries before adding a dependency to your project.",
+  },
+
+  "epoch": {
+    title: "Unix Timestamp Converter — Epoch to Date & Live Clock",
+    metaDescription:
+      "Convert Unix timestamps (seconds or milliseconds) to human-readable dates with timezone support. Live clock. Free, browser-only.",
+    openingParagraph:
+      "Unix Timestamp Converter converts epoch seconds or milliseconds to local and UTC datetime strings, and converts dates back to epoch. A live clock shows the current Unix time. Supports millisecond precision and common timezone offsets — essential for debugging API timestamps and log lines.",
+  },
+
+  "jwt-debugger": {
+    title: "JWT Debugger — Decode & Verify JSON Web Tokens",
+    metaDescription:
+      "Decode JWT header and payload, check expiry, and verify HMAC signatures locally. No token sent to a server. Free JWT inspector.",
+    openingParagraph:
+      "JWT Debugger splits a JSON Web Token into header, payload, and signature — pretty-prints claims, highlights expiry, and optionally verifies HMAC signatures with your secret locally. Nothing is uploaded; ideal for OAuth, session tokens, and API debugging.",
+  },
+
+  "graph-calculator": {
+    title: "Graph Calculator — Plot Functions & Matrix Math",
+    metaDescription:
+      "Plot math functions interactively, use a scientific calculator, and run matrix operations in your browser. Multi-function graphs. Free.",
+    openingParagraph:
+      "Graph Calculator plots one or more functions y = f(x) with pan and zoom, evaluates expressions with a scientific calculator, and supports matrix arithmetic. Useful for homework checks, visualizing curves, and exploring how parameter changes affect a graph — all client-side.",
+  },
+
+  "linux-cheatsheet": {
+    title: "Linux Cheatsheet — Searchable Command Reference",
+    metaDescription:
+      "Searchable Linux command reference — files, processes, networking, Docker, Kubernetes, permissions. Copy commands. Free, offline-ready.",
+    openingParagraph:
+      "Linux Cheatsheet is a searchable reference for everyday shell commands — file operations, permissions, processes, networking, Git, Docker, and Kubernetes snippets. Filter by topic and copy commands to your terminal. Handy when you know what you need but not the exact flags.",
+  },
+
+  "date-calculator": {
+    title: "Date Calculator — Add or Subtract Days, Months, Years",
+    metaDescription:
+      "Add or subtract years, months, weeks, and days from any date with calendar-safe arithmetic. Free online date calculator.",
+    openingParagraph:
+      "Date Calculator performs calendar-safe addition and subtraction — add or subtract years, months, weeks, and days from any start date and get the resulting ISO date. Handles month-end edge cases (e.g. Jan 31 + 1 month). Pair with Days Between Dates for project planning and deadlines.",
+  },
 };

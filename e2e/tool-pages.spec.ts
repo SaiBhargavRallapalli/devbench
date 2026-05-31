@@ -161,12 +161,11 @@ test.describe("tool pages", () => {
 
   // ── Dev tools ────────────────────────────────────────────────────────────────
 
-  test("uuid-generator produces UUIDs", async ({ page }) => {
+  test("uuid-generator loads and produces UUIDs on generate", async ({ page }) => {
     await page.goto("/tools/uuid-generator");
-    await page.waitForTimeout(300);
-    const output = await page.locator("textarea#tool-output").inputValue();
-    // UUID v4 pattern
-    expect(output).toMatch(
+    await expect(page.getByRole("heading", { name: /uuid/i })).toBeVisible();
+    await page.getByRole("button", { name: /generate/i }).click();
+    await expect(page.locator(".font-mono").first()).toHaveText(
       /[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/i,
     );
   });

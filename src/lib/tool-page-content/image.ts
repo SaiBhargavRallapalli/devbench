@@ -64,4 +64,12 @@ export const pageContentImage: Record<string, ToolPageContent> = {
     openingParagraph:
       "EXIF Viewer reads the embedded EXIF metadata from JPEG and TIFF photos — camera model, lens, focal length, aperture, shutter speed, ISO, exposure mode, GPS coordinates, and timestamp. Useful for checking photo provenance, reviewing geotag data, and understanding camera settings. Drop an image and all EXIF fields display instantly. Your photo stays on your device — nothing is uploaded.",
   },
+
+  "color-palette": {
+    title: "Color Palette Generator — Harmonies from One Seed Color",
+    metaDescription:
+      "Generate complementary, analogous, triadic, and monochromatic palettes from any seed color. Export CSS vars, Tailwind, or JSON. WCAG contrast hints.",
+    openingParagraph:
+      "Color Palette Generator builds harmonious color schemes from a single seed — complementary, analogous, triadic, tetradic, split-complementary, and monochromatic. Preview WCAG contrast on each swatch and export as CSS custom properties, Tailwind config, or a JSON array. Runs entirely in your browser.",
+  },
 };

@@ -47,11 +47,11 @@ export const CATEGORY_BROWSE_HIGHLIGHTS: Record<ToolCategory, readonly string[]>
     "cron-parser",
   ],
   image: [
+    "image-format-converter",
     "image-compressor",
     "image-resizer",
+    "background-remover",
     "svg-optimizer",
-    "color-converter",
-    "qr-code",
   ],
   pdf: [
     "merge-pdf",
