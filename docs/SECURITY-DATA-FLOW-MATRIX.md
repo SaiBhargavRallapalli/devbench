@@ -9,7 +9,7 @@ Legend: **Net** = network from user’s browser (or server via our API). **Store
 | Category / surface | Examples | Net to third party? | Net to DevBench origin? | Store (typical) |
 |--------------------|----------|----------------------|-------------------------|-----------------|
 | **Default tool** | Most `/tools/*` (formatters, encoders, PDF client, etc.) | No | Same-origin page assets only | Usually none; tool-specific |
-| **Workspace pages** | `/json`, `/yaml`, `/graph-calculator`, `/image`, … | No (client compute) | Same-origin | JSON presets: `devbench:json-workspace-presets`; theme: `theme` |
+| **Workspace pages** | `/json`, `/yaml`, `/graph-calculator`, `/image`, `/notepad`, … | No (client compute) | Same-origin | JSON presets: `devbench:json-workspace-presets`; Notepad: `devbench:notepad-session`, `devbench:notepad-recent`, `devbench:notepad-named-sessions`, `devbench:notepad-macro`; theme: `theme` |
 | **API tester** | `/api-tester` | Yes — **target URL** (user-chosen) | **Yes** — `POST /api/proxy` forwards request from **our server** | None required |
 | **Currency converter** | `/tools/...` (Frankfurter) | Yes — `api.frankfurter.app` | No | None |
 | **WebSocket tester** | PDF hub / tools | Yes — **user-entered** WS/WSS URL | No | Optional URL in `localStorage` (see tool `STORAGE_KEY`) |

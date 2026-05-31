@@ -345,7 +345,15 @@ export default function NotepadApp({ mode = "workspace", tool }: NotepadAppProps
         })),
       },
       { type: "separator" },
-      { type: "item", label: "Text diff (compare tab)", onClick: () => {} },
+      {
+        type: "item",
+        label: "Text diff (compare tab)",
+        onClick: () => {
+          const other = c.session.docs.find((d) => d.id !== c.activeDoc?.id);
+          if (other && c.activeDoc) c.compareWithTab(other.id);
+          else c.flash("Open a second tab to compare.");
+        },
+      },
       { type: "item", label: "Regex tester", onClick: () => window.open("/tools/regex-tester", "_blank") },
       { type: "item", label: "Find & replace tool", onClick: () => window.open("/tools/find-replace", "_blank") },
     ];
