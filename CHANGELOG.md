@@ -2,6 +2,11 @@
 
 > Generated from git log. Refresh with `npm run changelog` or the **Update changelog** GitHub Action.
 
+## 2026-05-30
+
+### Added
+- Notepad++ workspace at `/notepad` — multi-tab editor with split view, side panels, macros, named sessions, encoding options, and local session restore (`d792850`)
+
 ## 2026-05-22
 
 ### Added
