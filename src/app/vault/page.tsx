@@ -186,7 +186,7 @@ export default function VaultPage() {
                     </p>
                   </div>
                   <Link
-                    href={publicHrefForToolSlug(e.toolSlug)}
+                    href={`${publicHrefForToolSlug(e.toolSlug)}?vault=${e.id}`}
                     className="p-2 rounded-lg hover:bg-muted text-accent"
                     title="Open tool"
                   >

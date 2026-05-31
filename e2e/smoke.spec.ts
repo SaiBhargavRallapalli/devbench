@@ -20,4 +20,11 @@ test.describe("smoke", () => {
     await page.goto("/pdf");
     await expect(page.getByRole("heading", { name: /PDF tools/i })).toBeVisible();
   });
+
+  test("Notepad workspace loads editor chrome", async ({ page }) => {
+    await page.goto("/notepad");
+    await expect(page.getByRole("menubar")).toBeVisible();
+    await expect(page.getByRole("menuitem", { name: "File" })).toBeVisible();
+    await expect(page.getByText(/Ln 1, Col 1/)).toBeVisible({ timeout: 15_000 });
+  });
 });

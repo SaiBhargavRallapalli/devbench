@@ -38,7 +38,7 @@ const CURATED_RELATED: Partial<Record<string, readonly string[]>> = {
 
   "regex-tester": ["text-diff", "find-replace", "string-inspector", "markdown-preview"],
   "text-diff": ["json-diff", "regex-tester", "find-replace", "xml-suite"],
-  "markdown-preview": ["html-to-pdf", "regex-tester", "word-counter", "slug-generator"],
+  "markdown-preview": ["html-to-pdf", "regex-tester", "word-counter", "slug-generator", "notepad-plus-plus"],
   "case-converter": ["slug-generator", "find-replace", "word-counter"],
   "word-counter": ["case-converter", "markdown-preview", "lorem-ipsum"],
   "slug-generator": ["case-converter", "url-encode", "word-counter"],
@@ -142,6 +142,7 @@ const CURATED_RELATED: Partial<Record<string, readonly string[]>> = {
   "dns-lookup": ["ip-info", "url-parser", "curl-formatter"],
   "ip-info": ["dns-lookup", "url-parser", "curl-formatter"],
   "npm-compare": ["semver-compare", "hash-generator", "uuid-generator"],
+  "notepad-plus-plus": ["markdown-preview", "text-diff", "find-replace", "regex-tester", "line-sorter"],
 };
 
 export function getRelatedToolSlugs(slug: string, max = 5): string[] {

@@ -128,4 +128,12 @@ export const pageContentText: Record<string, ToolPageContent> = {
     openingParagraph:
       "Unicode Checker breaks any string into individual characters and shows each one's Unicode codepoint (U+xxxx), official name, general category, script, UTF-8 byte sequence, and HTML entity. It highlights invisible characters (zero-width space, soft hyphen, directional marks), homoglyph lookalikes, and unexpected scripts — essential for security auditing and debugging encoding issues.",
   },
+
+  "notepad-plus-plus": {
+    title: "Notepad++ Editor Online — Multi-Tab Text Editor Free",
+    metaDescription:
+      "Notepad++-style editor in your browser — multi-tab, syntax highlighting, find/replace, go to line, download, print, vault save, compare tabs. Session restore. No signup.",
+    openingParagraph:
+      "Notepad++ Editor replicates the core Notepad++ experience in your browser: multiple document tabs, 30+ syntax highlighting modes, split editor, side panels (documents, outline, bookmarks, character map), macro record/playback, named sessions, line numbers, minimap, word wrap, find and replace, go to line, UTF-8/UTF-16 encoding on save, EOL conversion (LF/CRLF), text transforms, download, print, share via URL, compare two tabs in Text Diff, and save drafts to your local DevBench vault. Open the full workspace at /notepad or use this compact tool page. Your session auto-restores from this device — nothing is uploaded to a server.",
+  },
 };

@@ -253,6 +253,22 @@ const TOOL_CARD_DEPTH_OVERRIDES: Record<string, ToolCardDepth> = {
     comparisonSnippet:
       "Text-level compare — use Text Diff for plain exports, not binary PDF bytes.",
   },
+  "notepad-plus-plus": {
+    steps: [
+      "Open /notepad (full workspace) or /tools/notepad-plus-plus from Text tools.",
+      "Create tabs with New or Open — syntax auto-detects from extension.",
+      "Edit with Find (Ctrl+F), Replace (Ctrl+H), and Go to line (Ctrl+G).",
+      "Download, save to vault, or share a link when done.",
+    ],
+    pitfalls: [
+      "Very large files (>5 MB) can slow Monaco — split or trim when possible.",
+      "Session restore is per-browser — clear site data removes saved tabs.",
+    ],
+    expectedOutput: "Edited text files with optional syntax highlighting and status bar stats.",
+    exportLabel: "Download file",
+    comparisonSnippet:
+      "Multi-tab Notepad++ layout in-browser — no install, with vault and diff integration.",
+  },
 };
 
 function fallbackDepth(tool: Tool): ToolCardDepth {

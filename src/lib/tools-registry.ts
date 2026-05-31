@@ -88,6 +88,15 @@ export const TOOLS: Tool[] = [
   { slug: "html-to-text", name: "HTML → Plain Text", shortName: "HTML → Text", description: "Strip all HTML tags and return plain text", category: "text", icon: "←H" },
   { slug: "strip-markdown", name: "Strip Markdown", shortName: "Strip MD", description: "Remove all Markdown formatting", category: "text", icon: "✕M" },
   { slug: "unicode-checker", name: "Unicode Checker", shortName: "Unicode", description: "Inspect every character: codepoint, name, category, script, UTF-8 bytes, HTML entity — highlights invisible and dangerous characters", category: "text", icon: "U+" },
+  {
+    slug: "notepad-plus-plus",
+    name: "Notepad++ Editor",
+    shortName: "Notepad++",
+    description:
+      "Full-featured text editor — multi-tab, syntax highlighting, find/replace, go to line, download, print, vault save, compare tabs, and session restore. 100% in your browser.",
+    category: "text",
+    icon: "NP++",
+  },
 
   // Dev Tools
   { slug: "aes-encrypt-decrypt", name: "AES-256-GCM Encryptor", shortName: "AES", description: "Encrypt and decrypt text with AES-256-GCM — password-based, client-side only", category: "dev", icon: "🔐" },

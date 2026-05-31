@@ -122,4 +122,13 @@ export const faqsText: Record<string, Faq[]> = {
     { q: "What does 'ignore whitespace' do?", a: "When enabled, whitespace-only differences (extra spaces, tab vs space, trailing spaces) are ignored and do not appear as changes. This is useful when comparing code that has been reformatted or when whitespace normalisation differences should not count as meaningful changes." },
     { q: "Is my text private?", a: "Yes. Comparison runs entirely in your browser using JavaScript. Neither the left nor the right text is sent to any server. You can use the diff checker with sensitive content such as config files, credentials, or proprietary code." },
   ],
+
+  "notepad-plus-plus": [
+    { q: "Is this the real Notepad++ application?", a: "No — this is a browser-based editor inspired by Notepad++'s layout and features (multi-tab, syntax highlighting, status bar, find/replace). It runs entirely in your browser without installing software. It is not affiliated with the Notepad++ project." },
+    { q: "Are my files uploaded to a server?", a: "No. All editing happens locally in your browser. Session state is stored in localStorage on your device. Download, print, and vault save also keep content on your machine — the vault uses IndexedDB and never syncs to DevBench servers." },
+    { q: "How do I save my work?", a: "Use Download to save the active tab as a file, Save to vault to store a draft in your local DevBench vault (IndexedDB), or rely on automatic session restore — tabs and content reload when you return on the same browser. Share copies a URL with the document encoded in the link fragment." },
+    { q: "Which languages support syntax highlighting?", a: "Over 30 modes including JavaScript, TypeScript, JSON, HTML, CSS, Python, Java, C/C++, Go, Rust, SQL, YAML, Markdown, Shell, PowerShell, and more. Language is auto-detected from the file extension when you open a file, or choose manually from the Language menu." },
+    { q: "How do I compare two open tabs?", a: "Open at least two tabs, then use Compare with in the toolbar to pick another tab. DevBench opens Text Diff in a new tab with both documents pre-filled. You can also copy either tab and use the dedicated Diff checker workspace at /diff-checker." },
+    { q: "Can I open a vault entry in the editor?", a: "Yes. From the vault page, open a notepad vault entry — it links to /notepad?vault=ENTRY_ID (or the compact tool page). Vault entries saved with tool slug notepad-plus-plus appear when you browse the vault." },
+  ],
 };

@@ -14,6 +14,7 @@ export const HEADER_NAV_LINKS: HeaderNavLink[] = [
   { href: "/yaml", label: "YAML", ariaLabel: "Access YAML Formatter Tool" },
   { href: "/pdf", label: "PDF", ariaLabel: "Access PDF Tools" },
   { href: "/image", label: "Image", ariaLabel: "Access Image Tools" },
+  { href: "/notepad", label: "Notepad", ariaLabel: "Access Notepad++ Editor" },
   { href: "/api-tester", label: "API", ariaLabel: "Access API Tester Tool" },
   { href: "/lambda-sandbox", label: "Lambda", ariaLabel: "Access AWS Lambda Sandbox" },
   { href: "/webhook-simulator", label: "Webhook", ariaLabel: "Access Webhook Simulator" },

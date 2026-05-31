@@ -43,6 +43,7 @@ const ImageFormatConverterTool = dynamic(() => import("@/components/tools/ImageF
 const SvgOptimizerTool        = dynamic(() => import("@/components/tools/SvgOptimizerTool"));
 const ExifViewerTool          = dynamic(() => import("@/components/tools/ExifViewerTool"));
 const UnicodeCheckerTool      = dynamic(() => import("@/components/tools/UnicodeCheckerTool"));
+const NotepadPlusPlusTool     = dynamic(() => import("@/components/tools/NotepadPlusPlusTool"));
 const MermaidEditorTool       = dynamic(() => import("@/components/tools/MermaidEditorTool"));
 const TimezoneConverterTool   = dynamic(() => import("@/components/tools/TimezoneConverterTool"));
 const WebSocketTesterTool     = dynamic(() => import("@/components/tools/WebSocketTesterTool"));
@@ -92,6 +93,7 @@ export const CUSTOM_TOOL_SLUGS: ReadonlySet<string> = new Set([
   "mermaid-editor", "timezone-converter", "websocket-tester", "ipynb-to-pdf",
   "gitignore-generator", "license-generator", "env-validator",
   "dns-lookup", "ip-info", "npm-compare", "color-converter", "color-palette",
+  "notepad-plus-plus",
 ]);
 
 export default function CustomToolOutlet({ slug, tool }: { slug: string; tool: Tool }) {
@@ -138,6 +140,7 @@ export default function CustomToolOutlet({ slug, tool }: { slug: string; tool: T
     case "svg-optimizer":            return <SvgOptimizerTool tool={tool} />;
     case "exif-viewer":              return <ExifViewerTool tool={tool} />;
     case "unicode-checker":          return <UnicodeCheckerTool tool={tool} />;
+    case "notepad-plus-plus":        return <NotepadPlusPlusTool tool={tool} />;
     case "mermaid-editor":           return <MermaidEditorTool tool={tool} />;
     case "timezone-converter":       return <TimezoneConverterTool tool={tool} />;
     case "websocket-tester":         return <WebSocketTesterTool tool={tool} />;

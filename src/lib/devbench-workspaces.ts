@@ -47,6 +47,14 @@ export const DEVBENCH_WORKSPACES: readonly WorkspaceShortcut[] = [
     keywords: ["resize", "compress", "heic", "webp", "background", "exif"],
   },
   {
+    id: "notepad",
+    href: "/notepad",
+    label: "Notepad++ workspace",
+    shortLabel: "Notepad",
+    description: "Multi-tab code editor with syntax highlighting, split view, macros, and session restore",
+    keywords: ["editor", "notepad", "tabs", "syntax", "markdown", "code"],
+  },
+  {
     id: "diff",
     href: "/diff-checker",
     label: "Diff checker",
@@ -142,6 +150,7 @@ export const TOOL_SLUG_TO_WORKSPACE: Readonly<Record<string, string>> = {
   "linux-cheatsheet": "/linux-cheatsheet",
   "date-calculator": "/date-calculator",
   "jwt-debugger": "/jwt-debugger",
+  "notepad-plus-plus": "/notepad",
 };
 
 export function workspaceHrefForToolSlug(slug: string): string | undefined {

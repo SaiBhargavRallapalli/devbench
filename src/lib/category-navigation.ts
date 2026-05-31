@@ -33,11 +33,11 @@ export const CATEGORY_BROWSE_HIGHLIGHTS: Record<ToolCategory, readonly string[]>
     "hex-to-text",
   ],
   text: [
+    "notepad-plus-plus",
     "regex-tester",
     "markdown-preview",
     "text-diff",
     "word-counter",
-    "case-converter",
   ],
   dev: [
     "hash-generator",
