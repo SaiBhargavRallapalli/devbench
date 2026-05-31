@@ -210,6 +210,14 @@ export const TOOLS: Tool[] = [
     icon: "🖼",
   },
   {
+    slug: "image-merger",
+    name: "Image Merger",
+    shortName: "Merge",
+    description: "Combine multiple images into one — side by side, stacked, or 2-column grid. Reorder, set gap & background, download PNG/JPEG/WebP",
+    category: "image",
+    icon: "🧩",
+  },
+  {
     slug: "image-compressor",
     name: "Image Compressor",
     shortName: "Compress",

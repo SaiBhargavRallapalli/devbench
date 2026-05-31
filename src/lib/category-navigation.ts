@@ -48,6 +48,7 @@ export const CATEGORY_BROWSE_HIGHLIGHTS: Record<ToolCategory, readonly string[]>
   ],
   image: [
     "image-format-converter",
+    "image-merger",
     "image-compressor",
     "image-resizer",
     "background-remover",

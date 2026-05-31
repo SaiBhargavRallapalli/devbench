@@ -33,6 +33,14 @@ export const pageContentImage: Record<string, ToolPageContent> = {
       "Image Resizer lets you set exact pixel dimensions for any JPEG, PNG, or WebP image directly in your browser. Lock the aspect ratio to scale proportionally, or set width and height independently. The resized image downloads instantly at the same file format as the input. Useful for social media sizing, thumbnail generation, and profile photo resizing. Runs entirely in your browser — no file is uploaded.",
   },
 
+  "image-merger": {
+    title: "Image Merger — Combine Multiple Images Online Free",
+    metaDescription:
+      "Merge multiple images into one — side by side, stacked, or 2-column grid. Reorder photos, set gap and background, download PNG/JPEG/WebP. 100% in your browser.",
+    openingParagraph:
+      "Image Merger stitches two or more photos into a single image entirely in your browser. Choose side-by-side, vertical stack, or a two-column grid layout; drag to reorder; adjust spacing and background color; then preview or download as PNG, JPEG, or WebP. Nothing is uploaded — ideal for before/after collages, social carousels flattened to one file, and screenshot strips.",
+  },
+
   "image-compressor": {
     title: "Image Compressor — Reduce Image File Size Online",
     metaDescription:

@@ -39,6 +39,14 @@ export const faqsImage: Record<string, Faq[]> = {
     { q: "Is my image safe here?", a: "Yes. Resizing runs in your browser using the Canvas API. Your image is never uploaded to a server." },
   ],
 
+  "image-merger": [
+    { q: "How many images can I merge?", a: "There is no fixed limit, but very large images or dozens of files may hit browser memory limits. For best results, use a handful of reasonably sized photos (under a few megabytes each). The tool shows an error if the combined output exceeds safe pixel dimensions." },
+    { q: "What layout options are available?", a: "Side by side aligns all images to the same height; stacked aligns them to the same width; grid arranges images in two columns left-to-right, top-to-bottom. Reorder thumbnails before merging to control the final sequence." },
+    { q: "Can I merge images with transparent backgrounds?", a: "Yes. PNG and WebP images with alpha channels keep transparency where pixels are transparent. The background color fills any gap between images and any letterboxing in grid mode — set it to white or match your design." },
+    { q: "What output formats can I download?", a: "PNG (lossless, supports transparency), JPEG (smaller files, no transparency), or WebP (good compression with optional transparency). Use PNG for graphics with transparency; JPEG for photo collages where file size matters." },
+    { q: "Is my image uploaded to a server?", a: "No. Merging uses the Canvas API entirely in your browser. Your images never leave your device." },
+  ],
+
   "image-compressor": [
     { q: "What quality level should I choose?", a: "For web images: 70–80% quality typically provides a good balance between visual quality and file size. JPEG at 80% is usually indistinguishable from 100% for most photos. For images with text or sharp lines, use higher quality (85–90%) as JPEG compression artefacts are more visible on edges." },
     { q: "Will I lose quality every time I compress?", a: "Yes. JPEG is a lossy format — each compression introduces artefacts. Never compress an already-compressed JPEG for distribution; always start from the original uncompressed source. Keep a TIFF or PNG master and compress from that for each use." },

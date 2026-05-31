@@ -5,6 +5,7 @@ import { getToolBySlug, type Tool } from "@/lib/tools-registry";
 export const IMAGE_HUB_ORDER = [
   "background-remover",
   "image-resizer",
+  "image-merger",
   "image-format-converter",
   "image-compressor",
   "image-to-pdf",
@@ -27,6 +28,7 @@ export type ImageHubFilter =
 const EDIT_SLUGS = new Set<string>([
   "background-remover",
   "image-resizer",
+  "image-merger",
   "color-converter",
   "contrast-checker",
   "color-palette",

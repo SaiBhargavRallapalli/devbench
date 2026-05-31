@@ -51,7 +51,7 @@ export default function AboutPage() {
             <li><strong className="text-foreground">Text Utilities</strong> — regex tester, case converter, diff checker, word counter, Markdown preview, string inspector, Unicode checker</li>
             <li><strong className="text-foreground">Developer Tools</strong> — JWT debugger, hash generator, UUID/ULID/Nano ID, cron editor, API tester, webhook simulator, AWS Lambda sandbox, colour converter, SQL formatter</li>
             <li><strong className="text-foreground">PDF Tools</strong> — merge, split, rotate, compress, watermark, page editor, image-to-PDF, PDF-to-JPG</li>
-            <li><strong className="text-foreground">Image Tools</strong> — background remover, image resizer, compressor, format converter, SVG optimizer, EXIF viewer</li>
+            <li><strong className="text-foreground">Image Tools</strong> — background remover, image resizer, image merger, compressor, format converter, SVG optimizer, EXIF viewer</li>
             <li><strong className="text-foreground">Math &amp; Science</strong> — graph calculator, quadratic solver, Pythagorean theorem, GCD &amp; LCM, astronomy tools</li>
             <li><strong className="text-foreground">Finance &amp; Health</strong> — compound interest, EMI calculator, GST/VAT, BMI, BMR, TDEE, body fat estimator</li>
             <li><strong className="text-foreground">Date &amp; Time</strong> — Unix timestamp converter, date calculator, age calculator, countdown, timezone converter, world clock</li>

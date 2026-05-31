@@ -125,6 +125,7 @@ Live site: https://www.devbench.co.in
 
 - [Background Remover](https://www.devbench.co.in/tools/background-remover): Remove image backgrounds in the browser
 - [Image Resizer](https://www.devbench.co.in/tools/image-resizer): Resize images to specific dimensions
+- [Image Merger](https://www.devbench.co.in/tools/image-merger): Combine multiple images side by side, stacked, or in a grid
 - [Image Compressor](https://www.devbench.co.in/tools/image-compressor): Compress images to reduce file size
 - [Image Format Converter](https://www.devbench.co.in/tools/image-format-converter): Convert HEIC, SVG, PNG, JPG, WebP to PNG, JPEG, WebP, or SVG (bitmap tracing)
 - [SVG Optimizer](https://www.devbench.co.in/tools/svg-optimizer): Optimize and minify SVG files

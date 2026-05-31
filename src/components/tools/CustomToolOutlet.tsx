@@ -40,6 +40,7 @@ const UuidGeneratorTool       = dynamic(() => import("@/components/tools/UuidGen
 const HttpStatusReferenceTool = dynamic(() => import("@/components/tools/HttpStatusReferenceTool"));
 const CssBoxShadowTool        = dynamic(() => import("@/components/tools/CssBoxShadowTool"));
 const ImageFormatConverterTool = dynamic(() => import("@/components/tools/ImageFormatConverterTool"));
+const ImageMergerTool           = dynamic(() => import("@/components/tools/ImageMergerTool"));
 const SvgOptimizerTool        = dynamic(() => import("@/components/tools/SvgOptimizerTool"));
 const ExifViewerTool          = dynamic(() => import("@/components/tools/ExifViewerTool"));
 const UnicodeCheckerTool      = dynamic(() => import("@/components/tools/UnicodeCheckerTool"));
@@ -80,7 +81,7 @@ export const CUSTOM_TOOL_SLUGS: ReadonlySet<string> = new Set([
   ...HEALTH_SLUGS,
   ...MATH_SLUGS,
   ...DATETIME_SLUGS,
-  "background-remover", "image-resizer", "image-compressor",
+  "background-remover", "image-resizer", "image-compressor", "image-merger",
   "pdf-page-editor", "merge-pdf", "split-pdf", "compress-pdf",
   "pdf-to-jpg", "rotate-pdf", "watermark-pdf", "organize-pdf",
   "pdf-page-numbers", "pdf-compare", "image-to-pdf", "text-to-pdf",
@@ -89,7 +90,7 @@ export const CUSTOM_TOOL_SLUGS: ReadonlySet<string> = new Set([
   "contrast-checker", "gradient-generator", "currency-converter",
   "html-preview", "base64-image", "string-inspector", "markdown-preview",
   "regex-tester", "uuid-generator", "http-status-reference", "css-box-shadow",
-  "image-format-converter", "svg-optimizer", "exif-viewer", "unicode-checker",
+  "image-format-converter", "image-merger", "svg-optimizer", "exif-viewer", "unicode-checker",
   "mermaid-editor", "timezone-converter", "websocket-tester", "ipynb-to-pdf",
   "gitignore-generator", "license-generator", "env-validator",
   "dns-lookup", "ip-info", "npm-compare", "color-converter", "color-palette",
@@ -105,6 +106,7 @@ export default function CustomToolOutlet({ slug, tool }: { slug: string; tool: T
   switch (slug) {
     case "background-remover":       return <BackgroundRemoverTool tool={tool} />;
     case "image-resizer":            return <ImageResizerTool tool={tool} />;
+    case "image-merger":             return <ImageMergerTool tool={tool} />;
     case "image-compressor":         return <ImageCompressorTool tool={tool} />;
     case "pdf-page-editor":          return <PdfPageEditorTool tool={tool} />;
     case "merge-pdf":                return <MergePdfTool tool={tool} />;

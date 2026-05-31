@@ -2846,6 +2846,18 @@ const CONTENT_MAP: Record<string, React.FC> = {
       </p>
     </Section>
   )) as React.FC,
+  "image-merger": (() => (
+    <Section>
+      <h2 className={h2}>Merge multiple images into one</h2>
+      <p className={prose}>
+        Combines two or more photos into a single PNG, JPEG, or WebP file
+        entirely in your browser. Choose side-by-side, vertical stack, or a
+        two-column grid; reorder thumbnails; adjust gap and background color;
+        preview before download. Ideal for before/after collages, comparison
+        shots, and flattening a sequence of screenshots into one shareable image.
+      </p>
+    </Section>
+  )) as React.FC,
   "image-compressor": (() => (
     <Section>
       <h2 className={h2}>Image compressor — reduce file size</h2>
