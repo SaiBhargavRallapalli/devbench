@@ -162,8 +162,11 @@ jobs:
             SRC=$(ls -1 *.dmg | grep -v blockmap | head -1)
           fi
           test -n "$SRC" && test -f "$SRC"
-          cp "$SRC" "DevBench-${VERSION}-${ARCH}.dmg"
-          cp "$SRC" "DevBench-${ARCH}.dmg"
+          for DEST in "DevBench-${VERSION}-${ARCH}.dmg" "DevBench-${ARCH}.dmg"; do
+            if [ "$SRC" != "$DEST" ]; then
+              cp "$SRC" "$DEST"
+            fi
+          done
           ls -la DevBench*.dmg
 
       - name: Upload DMG artifact
