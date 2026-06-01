@@ -116,6 +116,13 @@ export default function HomePage() {
               >
                 JSON Toolkit
               </Link>
+              <Link
+                href="/download"
+                className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-xl border border-border bg-card px-6 py-3.5 text-base font-semibold text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                title="Download macOS app or install via Homebrew"
+              >
+                Download app
+              </Link>
             </div>
 
             {/* Popular tools strip — server-rendered so Google sees diverse tool links */}

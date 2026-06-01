@@ -1,88 +1,106 @@
 # Packaging DevBench
 
-DevBench can be distributed in two useful ways:
+DevBench ships through three channels:
 
-- Homebrew formula for the existing `devbench-cli` command.
-- macOS `.dmg` app for users who want DevBench as a desktop application.
+| Channel | What users get |
+|---------|----------------|
+| **Web** | Full app at [devbench.co.in](https://www.devbench.co.in) |
+| **Homebrew formula** | Terminal CLI (`devbench`, `devbench-cli`) |
+| **Homebrew cask** | macOS desktop app (`DevBench.app`) |
+| **GitHub Release `.dmg`** | Direct download (same binaries as the cask) |
 
-The Homebrew path is ready to wire into a release. The `.dmg` path needs a desktop wrapper because this repository is currently a Next.js web app, not a native macOS app.
+## GitHub Actions release
 
-## Homebrew formula
+Pushing a version tag runs [`.github/workflows/release.yml`](../.github/workflows/release.yml):
 
-The formula template lives at [`packaging/homebrew/devbench.rb.template`](../packaging/homebrew/devbench.rb.template). It installs the existing Node CLI as both `devbench` and `devbench-cli`.
-
-Release flow:
-
-1. Tag and push a release:
-
-   ```bash
-   git tag v0.1.0
-   git push origin v0.1.0
-   ```
-
-2. Download the generated source archive and calculate its checksum:
-
-   ```bash
-   curl -L -o devbench-v0.1.0.tar.gz \
-     https://github.com/SaiBhargavRallapalli/devbench/archive/refs/tags/v0.1.0.tar.gz
-   shasum -a 256 devbench-v0.1.0.tar.gz
-   ```
-
-3. Copy the template into the separate Homebrew tap repository as `Formula/devbench.rb`, then replace:
-
-   - `vVERSION` with the release tag, for example `v0.1.0`.
-   - `REPLACE_WITH_RELEASE_TARBALL_SHA256` with the checksum from step 2.
-
-4. Test the formula locally from the tap:
-
-   ```bash
-   brew install --build-from-source ./Formula/devbench.rb
-   echo '{"ok":true}' | devbench json-format
-   brew test devbench
-   ```
-
-Recommended tap layout:
-
-```text
-homebrew-devbench/
-  Formula/
-    devbench.rb
+```bash
+git tag v0.1.0
+git push origin v0.1.0
 ```
 
-Users can install the stable release with:
+That workflow:
+
+1. Builds **arm64** and **x64** `.dmg` files on `macos-latest`.
+2. Creates a **GitHub Release** with both DMGs attached.
+3. Generates updated **Formula** and **Cask** files and pushes them to [`SaiBhargavRallapalli/homebrew-devbench`](https://github.com/SaiBhargavRallapalli/homebrew-devbench) when the `HOMEBREW_TAP_GITHUB_TOKEN` secret is set.
+
+Tap setup and secrets: [`packaging/homebrew/TAP.md`](../packaging/homebrew/TAP.md).
+
+Manual workflow run: **Actions → Release → Run workflow** (build DMGs; optionally publish release and update tap).
+
+## Homebrew (CLI + GUI)
+
+Templates:
+
+- CLI: [`packaging/homebrew/devbench.rb.template`](../packaging/homebrew/devbench.rb.template)
+- GUI: [`packaging/homebrew/Casks/devbench.rb.template`](../packaging/homebrew/Casks/devbench.rb.template)
+
+Users install from the tap:
 
 ```bash
 brew tap SaiBhargavRallapalli/devbench
-brew install devbench
+brew install devbench              # CLI only
+brew install --cask devbench       # desktop app (from release DMGs)
+```
+
+Generate tap files locally (after you have checksums):
+
+```bash
+export RELEASE_VERSION=0.1.0
+export GITHUB_REPOSITORY=SaiBhargavRallapalli/devbench
+export SHA256_SOURCE=...
+export SHA256_DMG_ARM64=...
+export SHA256_DMG_X64=...
+npm run release:homebrew
+# → dist/homebrew/Formula/devbench.rb and dist/homebrew/Casks/devbench.rb
+```
+
+Test the formula before publishing:
+
+```bash
+brew install --build-from-source ./dist/homebrew/Formula/devbench.rb
+echo '{"ok":true}' | devbench json-format
 ```
 
 ## `.dmg` desktop app
 
-A `.dmg` requires a macOS desktop shell. There are two viable approaches:
+The repository includes an **Electron** desktop shell under [`packaging/desktop/`](../packaging/desktop/). It bundles a local Next.js **standalone** server (started on `127.0.0.1`) so API routes and server features work offline without loading the public website.
 
-| Approach | Best for | Tradeoff |
-|----------|----------|----------|
-| Electron wrapper | Fastest `.dmg` path, mature signing/notarization tooling | Larger download size |
-| Tauri wrapper | Smaller app and native WebView | More Rust/macOS setup |
+### Build (macOS)
 
-Recommended implementation for DevBench:
+From the repo root on a Mac:
 
-1. Add a desktop wrapper that opens a bundled local Next.js server.
-2. Build the Next app for production.
-3. Package the wrapper into a signed `.app`.
-4. Create a signed and notarized `.dmg`.
+```bash
+npm run dist:mac
+```
 
-Bundling the local server preserves the privacy-first positioning better than a wrapper that only opens `https://www.devbench.co.in`.
+The installer is written to `packaging/desktop/dist/` (for example `DevBench-0.1.0.dmg`). Details, signing, and icons: [`packaging/desktop/README.md`](../packaging/desktop/README.md).
 
-Notes for the Next.js side:
+Manual steps (same as the script):
 
-- The app has Route Handlers under `src/app/api`, so a pure static export is not enough for every feature.
-- Next.js 16 supports production builds with `next build` and serving them with `next start`; use that as the baseline behavior when wrapping a local server.
-- If a smaller server bundle is needed later, evaluate Next's standalone/build-adapter support against the current Next.js 16 docs before changing `next.config.ts`.
+1. `DESKTOP_BUILD=1 npm run build` — enables `output: "standalone"` in `next.config.ts`.
+2. `node packaging/desktop/scripts/prepare-standalone.mjs` — copies `.next/standalone`, static assets, and `public/` into `packaging/desktop/resources/server`.
+3. `npm --prefix packaging/desktop ci && npm --prefix packaging/desktop run dist` — produces `DevBench.app` and the `.dmg`.
+
+### Signing and notarization
+
+Local unsigned builds are fine for testing. For public download, sign with a **Developer ID Application** certificate and notarize via electron-builder (see the desktop README).
+
+### Alternatives
+
+| Approach | Status in repo |
+|----------|----------------|
+| Electron + local Next server | **Implemented** (`packaging/desktop/`) |
+| Tauri wrapper | Not implemented; smaller binary, more setup |
+| Online-only wrapper (opens devbench.co.in) | Not recommended for privacy positioning |
+
+### Next.js notes
+
+- Route Handlers under `src/app/api` require a running server; standalone + `server.js` covers that.
+- `DESKTOP_BUILD=1` is only set for desktop builds so Vercel deployments keep the default output mode.
 
 ## Recommendation
 
-Ship Homebrew first because it is low-risk and already maps to `scripts/devbench-cli.mjs`. The formula vendors the small CLI runtime dependencies through fixed resource checksums, so Homebrew does not need to run `npm install` during installation. Add a `.dmg` once the desired desktop behavior is clear:
-
-- Online wrapper: smaller engineering effort, depends on the public site.
-- Offline/local wrapper: more useful for privacy-minded users, requires packaging the Next runtime.
+- **CLI:** `brew install devbench` — small footprint.
+- **Desktop:** `brew install --cask devbench` or download the `.dmg` from GitHub Releases.
+- Document the large desktop download size (Next + Electron) in release notes.

@@ -14,7 +14,10 @@
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "devbench-cli": "node scripts/devbench-cli.mjs"
+    "devbench-cli": "node scripts/devbench-cli.mjs",
+    "build:desktop": "DESKTOP_BUILD=1 npm run build && node packaging/desktop/scripts/prepare-standalone.mjs",
+    "dist:mac": "npm run build:desktop && npm --prefix packaging/desktop ci && npm --prefix packaging/desktop run dist",
+    "release:homebrew": "node scripts/release-homebrew.mjs"
   },
   "bin": {
     "devbench-cli": "./scripts/devbench-cli.mjs"

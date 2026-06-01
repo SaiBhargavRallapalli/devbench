@@ -47,6 +47,9 @@ const EMBED_HEADERS = [
 ];
 
 const nextConfig: NextConfig = {
+  // Self-contained server bundle for the macOS desktop app (see packaging/desktop).
+  ...(process.env.DESKTOP_BUILD === "1" ? { output: "standalone" as const } : {}),
+
   // Prevents readable source code appearing in browser DevTools on production
   productionBrowserSourceMaps: false,
 

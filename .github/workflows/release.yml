@@ -1,0 +1,268 @@
+# Build signed/notarized macOS DMGs, publish GitHub Release, update Homebrew tap.
+#
+# If `git push origin v*` fails with GH013 (tag creation restricted), use either:
+#   • Actions → Release → Run workflow (recommended), or
+#   • GitHub → Releases → Publish (triggers release: published), or
+#   • Relax tag rulesets for admins / github-actions[bot] (see .github/RELEASE_SETUP.md)
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version without v (e.g. 0.1.0)"
+        required: true
+        type: string
+      publish_release:
+        description: "Create/update GitHub Release and upload DMGs"
+        required: false
+        default: true
+        type: boolean
+      update_homebrew_tap:
+        description: "Push Formula + Cask to homebrew-devbench"
+        required: false
+        default: true
+        type: boolean
+
+permissions:
+  contents: write
+
+env:
+  HOMEBREW_TAP_REPOSITORY: SaiBhargavRallapalli/homebrew-devbench
+
+jobs:
+  resolve-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.out.outputs.version }}
+      tag: ${{ steps.out.outputs.tag }}
+      is_tag_push: ${{ steps.out.outputs.is_tag_push }}
+      from_release_event: ${{ steps.out.outputs.from_release_event }}
+    steps:
+      - id: out
+        run: |
+          FROM_RELEASE="false"
+          if [ "${{ github.event_name }}" = "release" ]; then
+            TAG="${{ github.event.release.tag_name }}"
+            VERSION="${TAG#v}"
+            FROM_RELEASE="true"
+            echo "is_tag_push=false" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event_name }}" = "push" ] && [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
+            TAG="${GITHUB_REF_NAME}"
+            VERSION="${TAG#v}"
+            echo "is_tag_push=true" >> "$GITHUB_OUTPUT"
+          else
+            VERSION="${{ github.event.inputs.version }}"
+            TAG="v${VERSION}"
+            echo "is_tag_push=false" >> "$GITHUB_OUTPUT"
+          fi
+          if [ -z "$VERSION" ]; then
+            echo "Could not resolve release version"
+            exit 1
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "from_release_event=$FROM_RELEASE" >> "$GITHUB_OUTPUT"
+
+  build-macos-dmg:
+    name: DMG (${{ matrix.arch }})
+    needs: resolve-version
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [arm64, x64]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Sync desktop package version
+        run: |
+          node -e "
+            const fs = require('fs');
+            const version = process.env.VERSION;
+            const p = 'packaging/desktop/package.json';
+            const j = JSON.parse(fs.readFileSync(p, 'utf8'));
+            j.version = version;
+            fs.writeFileSync(p, JSON.stringify(j, null, 2) + '\n');
+          "
+        env:
+          VERSION: ${{ needs.resolve-version.outputs.version }}
+
+      - name: Build Next.js (standalone)
+        run: npm ci && DESKTOP_BUILD=1 npm run build
+
+      - name: Prepare desktop server bundle
+        run: node packaging/desktop/scripts/prepare-standalone.mjs
+
+      - name: Install desktop dependencies
+        working-directory: packaging/desktop
+        run: npm ci
+
+      - name: Build DMG
+        working-directory: packaging/desktop
+        run: |
+          EXTRA=()
+          if [ -n "${CSC_LINK:-}" ]; then
+            echo "Signing and notarization enabled"
+            EXTRA+=("-c.mac.notarize=true")
+          else
+            echo "::warning::CSC_LINK not set — building unsigned DMG (Gatekeeper may warn users)"
+          fi
+          npm run dist -- --${{ matrix.arch }} "${EXTRA[@]}"
+        env:
+          CSC_LINK: ${{ secrets.CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+
+      - name: Stage release asset file names
+        env:
+          VERSION: ${{ needs.resolve-version.outputs.version }}
+        run: |
+          set -euo pipefail
+          cd packaging/desktop/dist
+          ARM_SRC=$(ls -1 *arm64*.dmg | head -1)
+          X64_SRC=$(ls -1 *x64*.dmg | head -1)
+          cp "$ARM_SRC" "DevBench-${VERSION}-arm64.dmg"
+          cp "$X64_SRC" "DevBench-${VERSION}-x64.dmg"
+          cp "$ARM_SRC" "DevBench-arm64.dmg"
+          cp "$X64_SRC" "DevBench-x64.dmg"
+          ls -la
+
+      - name: Upload DMG artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dmg-${{ matrix.arch }}
+          path: |
+            packaging/desktop/dist/DevBench-${{ needs.resolve-version.outputs.version }}-${{ matrix.arch }}.dmg
+            packaging/desktop/dist/DevBench-${{ matrix.arch }}.dmg
+          if-no-files-found: error
+
+  github-release:
+    name: GitHub Release
+    needs: [resolve-version, build-macos-dmg]
+    runs-on: ubuntu-latest
+    if: >-
+      needs.resolve-version.outputs.is_tag_push == 'true' ||
+      needs.resolve-version.outputs.from_release_event == 'true' ||
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.publish_release == 'true')
+    steps:
+      - name: Download DMG artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: dmg-*
+          merge-multiple: true
+          path: release-assets
+
+      - name: List release assets
+        run: ls -la release-assets/
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.resolve-version.outputs.tag }}
+          target_commitish: ${{ github.sha }}
+          name: DevBench ${{ needs.resolve-version.outputs.version }}
+          generate_release_notes: true
+          files: |
+            release-assets/DevBench-${{ needs.resolve-version.outputs.version }}-arm64.dmg
+            release-assets/DevBench-${{ needs.resolve-version.outputs.version }}-x64.dmg
+            release-assets/DevBench-arm64.dmg
+            release-assets/DevBench-x64.dmg
+          fail_on_unmatched_files: true
+
+  update-homebrew-tap:
+    name: Update Homebrew tap
+    needs: [resolve-version, build-macos-dmg, github-release]
+    runs-on: ubuntu-latest
+    if: >-
+      always() &&
+      needs.build-macos-dmg.result == 'success' &&
+      needs.github-release.result == 'success' &&
+      (
+        needs.resolve-version.outputs.is_tag_push == 'true' ||
+        needs.resolve-version.outputs.from_release_event == 'true' ||
+        (github.event_name == 'workflow_dispatch' && github.event.inputs.update_homebrew_tap == 'true')
+      )
+    steps:
+      - name: Download DMG artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: dmg-*
+          merge-multiple: true
+          path: release-assets
+
+      - name: Checkout application repo
+        uses: actions/checkout@v4
+
+      - name: Compute checksums
+        id: checksums
+        env:
+          TAG: ${{ needs.resolve-version.outputs.tag }}
+        run: |
+          set -euo pipefail
+          ARM64_DMG=$(ls release-assets/DevBench-${{ needs.resolve-version.outputs.version }}-arm64.dmg)
+          X64_DMG=$(ls release-assets/DevBench-${{ needs.resolve-version.outputs.version }}-x64.dmg)
+          echo "sha256_dmg_arm64=$(shasum -a 256 "$ARM64_DMG" | awk '{print $1}')" >> "$GITHUB_OUTPUT"
+          echo "sha256_dmg_x64=$(shasum -a 256 "$X64_DMG" | awk '{print $1}')" >> "$GITHUB_OUTPUT"
+
+          curl -fsSL -o source.tar.gz \
+            "https://github.com/${GITHUB_REPOSITORY}/archive/refs/tags/${TAG}.tar.gz"
+          echo "sha256_source=$(shasum -a 256 source.tar.gz | awk '{print $1}')" >> "$GITHUB_OUTPUT"
+
+      - name: Generate Homebrew Formula and Cask
+        run: node scripts/release-homebrew.mjs
+        env:
+          RELEASE_VERSION: ${{ needs.resolve-version.outputs.version }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          SHA256_SOURCE: ${{ steps.checksums.outputs.sha256_source }}
+          SHA256_DMG_ARM64: ${{ steps.checksums.outputs.sha256_dmg_arm64 }}
+          SHA256_DMG_X64: ${{ steps.checksums.outputs.sha256_dmg_x64 }}
+
+      - name: Upload generated Homebrew files
+        uses: actions/upload-artifact@v4
+        with:
+          name: homebrew-tap-files
+          path: dist/homebrew/
+
+      - name: Push to Homebrew tap
+        env:
+          HOMEBREW_TAP_TOKEN: ${{ secrets.HOMEBREW_TAP_GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${HOMEBREW_TAP_TOKEN:-}" ]; then
+            echo "::warning::HOMEBREW_TAP_GITHUB_TOKEN is not set. Download the homebrew-tap-files artifact and push manually to ${HOMEBREW_TAP_REPOSITORY}."
+            exit 0
+          fi
+
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git clone "https://x-access-token:${HOMEBREW_TAP_TOKEN}@github.com/${HOMEBREW_TAP_REPOSITORY}.git" homebrew-tap
+          mkdir -p homebrew-tap/Formula homebrew-tap/Casks
+          cp dist/homebrew/Formula/devbench.rb homebrew-tap/Formula/devbench.rb
+          cp dist/homebrew/Casks/devbench.rb homebrew-tap/Casks/devbench.rb
+
+          cd homebrew-tap
+          git add Formula/devbench.rb Casks/devbench.rb
+          if git diff --staged --quiet; then
+            echo "Homebrew tap already up to date"
+            exit 0
+          fi
+          git commit -m "devbench ${{ needs.resolve-version.outputs.version }}"
+          git push origin HEAD

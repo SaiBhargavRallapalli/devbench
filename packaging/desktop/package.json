@@ -1,0 +1,47 @@
+{
+  "name": "devbench-desktop",
+  "version": "0.1.0",
+  "private": true,
+  "description": "DevBench macOS desktop shell (Electron)",
+  "license": "MIT",
+  "type": "module",
+  "main": "main.mjs",
+  "scripts": {
+    "dist": "electron-builder --mac dmg",
+    "dist:dir": "electron-builder --mac dir",
+    "pack": "electron-builder --dir"
+  },
+  "devDependencies": {
+    "electron": "^35.7.5",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "co.in.devbench.desktop",
+    "productName": "DevBench",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.mjs"
+    ],
+    "extraResources": [
+      {
+        "from": "resources/server",
+        "to": "server"
+      }
+    ],
+    "mac": {
+      "category": "public.app-category.developer-tools",
+      "target": [
+        "dmg"
+      ],
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist"
+    },
+    "dmg": {
+      "title": "DevBench ${version}"
+    }
+  }
+}

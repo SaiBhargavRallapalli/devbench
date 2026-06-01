@@ -2,12 +2,23 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![CI](https://github.com/SaiBhargavRallapalli/devbench/actions/workflows/ci.yml/badge.svg)](https://github.com/SaiBhargavRallapalli/devbench/actions)
+[![Release](https://github.com/SaiBhargavRallapalli/devbench/actions/workflows/release.yml/badge.svg)](https://github.com/SaiBhargavRallapalli/devbench/actions/workflows/release.yml)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
 **DevBench** is an open-source collection of **browser-based developer tools** — formatters, encoders, PDF utilities, calculators, and more — built so as much work as possible runs **on your device** (no account required for the public app).
 
 Live site: **[devbench.co.in](https://www.devbench.co.in)**
+
+**macOS install** (after the [homebrew-devbench](https://github.com/SaiBhargavRallapalli/homebrew-devbench) tap is published):
+
+```bash
+brew tap SaiBhargavRallapalli/devbench
+brew install devbench              # terminal CLI
+brew install --cask devbench       # desktop app
+```
+
+See [`docs/PACKAGING.md`](docs/PACKAGING.md) for releases, `.dmg` builds, and tap setup.
 
 ---
 

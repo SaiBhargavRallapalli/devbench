@@ -1,0 +1,30 @@
+cask "devbench" do
+  version "VERSION"
+
+  name "DevBench"
+  desc "Privacy-first browser developer tools (desktop app)"
+  homepage "https://www.devbench.co.in"
+
+  on_arm do
+    sha256 "REPLACE_ARM64_DMG_SHA256"
+    url "https://github.com/GITHUB_REPOSITORY/releases/download/vVERSION/DevBench-VERSION-arm64.dmg",
+        verified: "github.com/GITHUB_REPOSITORY_OWNER/"
+  end
+
+  on_intel do
+    sha256 "REPLACE_X64_DMG_SHA256"
+    url "https://github.com/GITHUB_REPOSITORY/releases/download/vVERSION/DevBench-VERSION-x64.dmg",
+        verified: "github.com/GITHUB_REPOSITORY_OWNER/"
+  end
+
+  app "DevBench.app"
+
+  zap trash: [
+    "~/Library/Application Support/devbench-desktop",
+    "~/Library/Caches/co.in.devbench.desktop",
+    "~/Library/Caches/devbench-desktop-updater",
+    "~/Library/Logs/devbench-desktop",
+    "~/Library/Preferences/co.in.devbench.desktop.plist",
+    "~/Library/Saved Application State/co.in.devbench.desktop.savedState",
+  ]
+end

@@ -20,6 +20,12 @@
 # production
 /build
 
+# macOS desktop packaging
+/packaging/desktop/node_modules
+/packaging/desktop/dist
+/packaging/desktop/resources/server
+/dist/homebrew
+
 # misc
 .DS_Store
 *.pem

@@ -34,6 +34,7 @@ const WORKSPACE_ROUTES = [
   { path: "/embed-demo",       priority: 0.5,  freq: "monthly" },
   { path: "/blog",             priority: 0.8,  freq: "weekly"  },
   { path: "/compare",          priority: 0.65, freq: "monthly" },
+  { path: "/download",         priority: 0.75, freq: "monthly" },
   { path: "/about",            priority: 0.5,  freq: "yearly"  },
   { path: "/contact",          priority: 0.5,  freq: "yearly"  },
   { path: "/privacy",          priority: 0.4,  freq: "yearly"  },
