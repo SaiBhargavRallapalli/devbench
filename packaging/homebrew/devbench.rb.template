@@ -6,7 +6,7 @@ class Devbench < Formula
   license "MIT"
   head "https://github.com/SaiBhargavRallapalli/devbench.git", branch: "main"
 
-  depends_on "node@20"
+  depends_on "node"
 
   resource "argparse" do
     url "https://registry.npmjs.org/argparse/-/argparse-2.0.1.tgz"
@@ -19,7 +19,7 @@ class Devbench < Formula
   end
 
   def install
-    node = Formula["node@20"].opt_bin/"node"
+    node = Formula["node"].opt_bin/"node"
 
     libexec.install "LICENSE", "README.md", "package.json", "scripts"
     (libexec/"node_modules").mkpath
