@@ -205,10 +205,10 @@ jobs:
           name: DevBench ${{ needs.resolve-version.outputs.version }}
           generate_release_notes: true
           files: |
-            release-assets/DevBench-${{ needs.resolve-version.outputs.version }}-arm64.dmg
-            release-assets/DevBench-${{ needs.resolve-version.outputs.version }}-x64.dmg
-            release-assets/DevBench-arm64.dmg
-            release-assets/DevBench-x64.dmg
+            release-assets/**/DevBench-${{ needs.resolve-version.outputs.version }}-arm64.dmg
+            release-assets/**/DevBench-${{ needs.resolve-version.outputs.version }}-x64.dmg
+            release-assets/**/DevBench-arm64.dmg
+            release-assets/**/DevBench-x64.dmg
           fail_on_unmatched_files: true
 
   update-homebrew-tap:
@@ -239,15 +239,24 @@ jobs:
         id: checksums
         env:
           TAG: ${{ needs.resolve-version.outputs.tag }}
+          VERSION: ${{ needs.resolve-version.outputs.version }}
         run: |
           set -euo pipefail
-          ARM64_DMG=$(ls release-assets/DevBench-${{ needs.resolve-version.outputs.version }}-arm64.dmg)
-          X64_DMG=$(ls release-assets/DevBench-${{ needs.resolve-version.outputs.version }}-x64.dmg)
+          ls -laR release-assets/
+          ARM64_DMG=$(find release-assets -name "DevBench-${VERSION}-arm64.dmg" | head -1)
+          X64_DMG=$(find release-assets -name "DevBench-${VERSION}-x64.dmg" | head -1)
+          test -f "$ARM64_DMG" && test -f "$X64_DMG"
           echo "sha256_dmg_arm64=$(shasum -a 256 "$ARM64_DMG" | awk '{print $1}')" >> "$GITHUB_OUTPUT"
           echo "sha256_dmg_x64=$(shasum -a 256 "$X64_DMG" | awk '{print $1}')" >> "$GITHUB_OUTPUT"
 
-          curl -fsSL -o source.tar.gz \
-            "https://github.com/${GITHUB_REPOSITORY}/archive/refs/tags/${TAG}.tar.gz"
+          for attempt in 1 2 3 4 5; do
+            if curl -fsSL -o source.tar.gz \
+              "https://github.com/${GITHUB_REPOSITORY}/archive/refs/tags/${TAG}.tar.gz"; then
+              break
+            fi
+            echo "Source archive not ready yet (attempt ${attempt}/5)..."
+            sleep 10
+          done
           echo "sha256_source=$(shasum -a 256 source.tar.gz | awk '{print $1}')" >> "$GITHUB_OUTPUT"
 
       - name: Generate Homebrew Formula and Cask
