@@ -144,16 +144,14 @@ jobs:
       - name: Stage release asset file names
         env:
           VERSION: ${{ needs.resolve-version.outputs.version }}
+          ARCH: ${{ matrix.arch }}
         run: |
           set -euo pipefail
           cd packaging/desktop/dist
-          ARM_SRC=$(ls -1 *arm64*.dmg | head -1)
-          X64_SRC=$(ls -1 *x64*.dmg | head -1)
-          cp "$ARM_SRC" "DevBench-${VERSION}-arm64.dmg"
-          cp "$X64_SRC" "DevBench-${VERSION}-x64.dmg"
-          cp "$ARM_SRC" "DevBench-arm64.dmg"
-          cp "$X64_SRC" "DevBench-x64.dmg"
-          ls -la
+          SRC=$(ls -1 *"${ARCH}"*.dmg | head -1)
+          cp "$SRC" "DevBench-${VERSION}-${ARCH}.dmg"
+          cp "$SRC" "DevBench-${ARCH}.dmg"
+          ls -la DevBench*.dmg
 
       - name: Upload DMG artifact
         uses: actions/upload-artifact@v4
