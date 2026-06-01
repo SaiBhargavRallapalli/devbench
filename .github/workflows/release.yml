@@ -140,6 +140,9 @@ jobs:
             EXTRA+=("-c.mac.identity=Developer ID Application" "-c.mac.notarize=true")
           fi
           npm run dist -- --${{ matrix.arch }} "${EXTRA[@]}"
+        env:
+          # Prevent electron-builder from auto-publishing to GitHub in CI
+          GH_TOKEN: ""
 
       - name: Stage release asset file names
         env:
@@ -148,7 +151,17 @@ jobs:
         run: |
           set -euo pipefail
           cd packaging/desktop/dist
-          SRC=$(ls -1 *"${ARCH}"*.dmg | head -1)
+          echo "Built files:"
+          ls -la
+          if ls *"${ARCH}"*.dmg >/dev/null 2>&1; then
+            SRC=$(ls -1 *"${ARCH}"*.dmg | head -1)
+          elif [ "$ARCH" = "x64" ] && [ -f "DevBench-${VERSION}.dmg" ]; then
+            # electron-builder on arm64 runners may omit arch in the x64 filename
+            SRC="DevBench-${VERSION}.dmg"
+          else
+            SRC=$(ls -1 *.dmg | grep -v blockmap | head -1)
+          fi
+          test -n "$SRC" && test -f "$SRC"
           cp "$SRC" "DevBench-${VERSION}-${ARCH}.dmg"
           cp "$SRC" "DevBench-${ARCH}.dmg"
           ls -la DevBench*.dmg

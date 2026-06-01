@@ -19,6 +19,7 @@
   "build": {
     "appId": "co.in.devbench.desktop",
     "productName": "DevBench",
+    "artifactName": "${productName}-${version}-${arch}.${ext}",
     "directories": {
       "output": "dist"
     },
