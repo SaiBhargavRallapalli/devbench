@@ -15,9 +15,10 @@ type InstallOptionsProps = {
 
 export default function InstallOptions({ release, compact = false }: InstallOptionsProps) {
   const versionLabel = release?.version ?? APP_VERSION;
-  const dmgArm64 = release?.dmgArm64Url ?? distributionLinks.dmgLatest.arm64;
-  const dmgX64 = release?.dmgX64Url ?? distributionLinks.dmgLatest.x64;
-  const hasPublishedRelease = Boolean(release);
+  const dmgArm64 = release?.dmgArm64Url ?? null;
+  const dmgX64 = release?.dmgX64Url ?? null;
+  const hasPublishedRelease = Boolean(release && dmgArm64 && dmgX64);
+  const releaseWorkflowUrl = `https://github.com/${GITHUB_REPOSITORY}/actions/workflows/release.yml`;
 
   return (
     <div className={compact ? "space-y-6" : "space-y-8"}>
@@ -49,34 +50,48 @@ export default function InstallOptions({ release, compact = false }: InstallOpti
           ) : (
             <>
               {" "}
-              Expected version <strong className="text-foreground">v{versionLabel}</strong> — if
-              downloads 404, run the{" "}
-              <a
-                href={`https://github.com/${GITHUB_REPOSITORY}/actions/workflows/release.yml`}
-                className="text-accent hover:underline"
-              >
+              macOS installers are not published yet (v{versionLabel} pending). A maintainer must
+              run the{" "}
+              <a href={releaseWorkflowUrl} className="text-accent hover:underline">
                 Release workflow
               </a>{" "}
-              on GitHub.
+              on GitHub once — then downloads and Homebrew cask will work.
             </>
           )}
         </p>
-        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-          <a
-            href={dmgArm64}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-accent px-5 py-3 text-sm font-semibold text-accent-foreground hover:opacity-90 transition-opacity"
-          >
-            <Download className="h-4 w-4" aria-hidden />
-            Download for Apple Silicon
-          </a>
-          <a
-            href={dmgX64}
-            className="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-card px-5 py-3 text-sm font-semibold text-foreground hover:bg-muted transition-colors"
-          >
-            <Download className="h-4 w-4" aria-hidden />
-            Download for Intel Mac
-          </a>
-        </div>
+        {hasPublishedRelease ? (
+          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+            <a
+              href={dmgArm64!}
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-accent px-5 py-3 text-sm font-semibold text-accent-foreground hover:opacity-90 transition-opacity"
+            >
+              <Download className="h-4 w-4" aria-hidden />
+              Download for Apple Silicon
+            </a>
+            <a
+              href={dmgX64!}
+              className="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-card px-5 py-3 text-sm font-semibold text-foreground hover:bg-muted transition-colors"
+            >
+              <Download className="h-4 w-4" aria-hidden />
+              Download for Intel Mac
+            </a>
+          </div>
+        ) : (
+          <div className="rounded-xl border border-dashed border-border bg-muted/30 p-5 text-sm text-muted-foreground">
+            <p className="font-medium text-foreground mb-2">DMG not available yet</p>
+            <p className="mb-3 leading-relaxed">
+              The download URL returns 404 until the first GitHub Release is published with{" "}
+              <code className="text-xs">DevBench-arm64.dmg</code> and{" "}
+              <code className="text-xs">DevBench-x64.dmg</code> assets.
+            </p>
+            <a
+              href={releaseWorkflowUrl}
+              className="inline-flex items-center justify-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground hover:opacity-90"
+            >
+              Open Release workflow on GitHub
+            </a>
+          </div>
+        )}
         <p className="mt-3 text-xs text-muted-foreground">
           Or install with Homebrew cask (below). All builds:{" "}
           <Link href={distributionLinks.releasesPage} className="text-accent hover:underline">

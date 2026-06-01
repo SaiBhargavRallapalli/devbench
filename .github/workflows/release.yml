@@ -112,23 +112,34 @@ jobs:
         working-directory: packaging/desktop
         run: npm ci
 
+      - name: Configure signing (optional)
+        id: signing
+        env:
+          CSC_LINK_SECRET: ${{ secrets.CSC_LINK }}
+        run: |
+          if [ -n "${CSC_LINK_SECRET}" ]; then
+            echo "signed=true" >> "$GITHUB_OUTPUT"
+            echo "CSC_LINK=${CSC_LINK_SECRET}" >> "$GITHUB_ENV"
+            echo "CSC_KEY_PASSWORD=${{ secrets.CSC_KEY_PASSWORD }}" >> "$GITHUB_ENV"
+            echo "APPLE_ID=${{ secrets.APPLE_ID }}" >> "$GITHUB_ENV"
+            echo "APPLE_APP_SPECIFIC_PASSWORD=${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}" >> "$GITHUB_ENV"
+            echo "APPLE_TEAM_ID=${{ secrets.APPLE_TEAM_ID }}" >> "$GITHUB_ENV"
+          else
+            echo "signed=false" >> "$GITHUB_OUTPUT"
+            # Do not set CSC_LINK="" — electron-builder treats that as a bad cert path.
+            echo "CSC_IDENTITY_AUTO_DISCOVERY=false" >> "$GITHUB_ENV"
+            echo "::warning::CSC_LINK not set — building unsigned DMG (Gatekeeper may warn users)"
+          fi
+
       - name: Build DMG
         working-directory: packaging/desktop
         run: |
           EXTRA=()
-          if [ -n "${CSC_LINK:-}" ]; then
+          if [ "${{ steps.signing.outputs.signed }}" = "true" ]; then
             echo "Signing and notarization enabled"
-            EXTRA+=("-c.mac.notarize=true")
-          else
-            echo "::warning::CSC_LINK not set — building unsigned DMG (Gatekeeper may warn users)"
+            EXTRA+=("-c.mac.identity=Developer ID Application" "-c.mac.notarize=true")
           fi
           npm run dist -- --${{ matrix.arch }} "${EXTRA[@]}"
-        env:
-          CSC_LINK: ${{ secrets.CSC_LINK }}
-          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
-          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
 
       - name: Stage release asset file names
         env:
@@ -253,7 +264,12 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git clone "https://x-access-token:${HOMEBREW_TAP_TOKEN}@github.com/${HOMEBREW_TAP_REPOSITORY}.git" homebrew-tap
+          if ! git clone "https://x-access-token:${HOMEBREW_TAP_TOKEN}@github.com/${HOMEBREW_TAP_REPOSITORY}.git" homebrew-tap 2>/dev/null; then
+            echo "Creating ${HOMEBREW_TAP_REPOSITORY}..."
+            gh repo create "${HOMEBREW_TAP_REPOSITORY}" --public --description "Homebrew tap for DevBench (CLI + macOS app)"
+            git clone "https://x-access-token:${HOMEBREW_TAP_TOKEN}@github.com/${HOMEBREW_TAP_REPOSITORY}.git" homebrew-tap
+            cp packaging/homebrew/tap-README.example.md homebrew-tap/README.md
+          fi
           mkdir -p homebrew-tap/Formula homebrew-tap/Casks
           cp dist/homebrew/Formula/devbench.rb homebrew-tap/Formula/devbench.rb
           cp dist/homebrew/Casks/devbench.rb homebrew-tap/Casks/devbench.rb

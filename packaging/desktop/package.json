@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "description": "DevBench macOS desktop shell (Electron)",
+  "author": "DevBench contributors",
   "license": "MIT",
   "type": "module",
   "main": "main.mjs",
@@ -35,6 +36,7 @@
       "target": [
         "dmg"
       ],
+      "identity": null,
       "hardenedRuntime": true,
       "gatekeeperAssess": false,
       "entitlements": "build/entitlements.mac.plist",

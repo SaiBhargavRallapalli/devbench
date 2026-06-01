@@ -10,7 +10,7 @@
 
 Live site: **[devbench.co.in](https://www.devbench.co.in)**
 
-**macOS install** (after the [homebrew-devbench](https://github.com/SaiBhargavRallapalli/homebrew-devbench) tap is published):
+**macOS install:** [Download page](https://www.devbench.co.in/download) · [GitHub Releases](https://github.com/SaiBhargavRallapalli/devbench/releases)
 
 ```bash
 brew tap SaiBhargavRallapalli/devbench
@@ -18,7 +18,7 @@ brew install devbench              # terminal CLI
 brew install --cask devbench       # desktop app
 ```
 
-See [`docs/PACKAGING.md`](docs/PACKAGING.md) for releases, `.dmg` builds, and tap setup.
+See [`docs/PACKAGING.md`](docs/PACKAGING.md) for release automation and tap setup.
 
 ---
 
