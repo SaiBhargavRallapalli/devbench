@@ -11,6 +11,7 @@ This file lists **maintainer and contributor** documentation in this repository.
 | **Security** | [`DEVBENCH-THREAT-MODEL.md`](./DEVBENCH-THREAT-MODEL.md) | Threat model, `/api/proxy`, CSP, third parties. |
 | **Data flow** | [`SECURITY-DATA-FLOW-MATRIX.md`](./SECURITY-DATA-FLOW-MATRIX.md) | Which tools use the network or `localStorage`. |
 | **Operations** | [`RUNBOOK.md`](./RUNBOOK.md) | Build, deploy, rollback, E2E smoke, CSP checklist. |
+| **Packaging** | [`PACKAGING.md`](./PACKAGING.md) | Homebrew formula template and macOS `.dmg` release options. |
 | **Performance** | [`PERFORMANCE-BUDGET.md`](./PERFORMANCE-BUDGET.md) | Lab / RUM targets for flagship routes. |
 | **Debt triage** | [`TECH-DEBT.md`](./TECH-DEBT.md) | How we prioritise refactors vs fixes. |
 | **E2E smoke** | [`e2e/smoke.spec.ts`](../e2e/smoke.spec.ts), [`playwright.config.ts`](../playwright.config.ts) | Playwright smoke; run with `npm run test:e2e`. |

@@ -1,0 +1,54 @@
+class Devbench < Formula
+  desc "Privacy-first browser developer tools and CLI helpers"
+  homepage "https://www.devbench.co.in"
+  url "https://github.com/SaiBhargavRallapalli/devbench/archive/refs/tags/vVERSION.tar.gz"
+  sha256 "REPLACE_WITH_RELEASE_TARBALL_SHA256"
+  license "MIT"
+  head "https://github.com/SaiBhargavRallapalli/devbench.git", branch: "main"
+
+  depends_on "node@20"
+
+  resource "argparse" do
+    url "https://registry.npmjs.org/argparse/-/argparse-2.0.1.tgz"
+    sha256 "f3ef56a9e6db173a57f4e47e59ae8edbd6ac22881e44ccdc1ad00835da4c1c7c80835d1fd3969215505b704a867ff3d7c35123019faadbf6c4060dc3beeacadd"
+  end
+
+  resource "js-yaml" do
+    url "https://registry.npmjs.org/js-yaml/-/js-yaml-4.1.1.tgz"
+    sha256 "a90293e334315e5f252f006d1cc5b06937067c5399be23897addcecbfc661a4da0647ebbec224cf44bed7dd4a48167004d9863ff9e49674ae6cb79b2093e65b0"
+  end
+
+  def install
+    node = Formula["node@20"].opt_bin/"node"
+
+    libexec.install "LICENSE", "README.md", "package.json", "scripts"
+    (libexec/"node_modules").mkpath
+
+    resource("argparse").stage do
+      install_npm_resource "argparse"
+    end
+
+    resource("js-yaml").stage do
+      install_npm_resource "js-yaml"
+    end
+
+    %w[devbench devbench-cli].each do |cmd|
+      (bin/cmd).write <<~SH
+        #!/bin/bash
+        exec "#{node}" "#{libexec}/scripts/devbench-cli.mjs" "$@"
+      SH
+    end
+  end
+
+  test do
+    assert_equal "{\n  \"ok\": true\n}", shell_output("echo '{\"ok\":true}' | #{bin}/devbench json-format")
+  end
+
+  private
+
+  def install_npm_resource(name)
+    source = Pathname.pwd/"package"
+    source = Pathname.pwd unless source.directory?
+    (libexec/"node_modules"/name).install source.children
+  end
+end
