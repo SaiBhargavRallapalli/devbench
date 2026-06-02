@@ -3,6 +3,7 @@ import { ArrowLeft } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import InstallOptions from "@/components/InstallOptions";
+import MacInstallTroubleshooting from "@/components/MacInstallTroubleshooting";
 import { fetchLatestGitHubRelease } from "@/lib/github-release";
 
 export default async function DownloadPage() {
@@ -28,6 +29,8 @@ export default async function DownloadPage() {
         <div className="mt-10">
           <InstallOptions release={release} />
         </div>
+
+        <MacInstallTroubleshooting />
 
         <section className="mt-10 rounded-xl border border-border bg-card/50 p-5 text-sm text-muted-foreground leading-relaxed">
           <h2 className="text-base font-semibold text-foreground mb-2">Browser (no install)</h2>

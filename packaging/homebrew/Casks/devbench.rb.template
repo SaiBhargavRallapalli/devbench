@@ -19,6 +19,13 @@ cask "devbench" do
 
   app "DevBench.app"
 
+  postflight do
+    # Clear download quarantine so Gatekeeper does not show "app is damaged".
+    system_command "/usr/bin/xattr",
+                   args: ["-dr", "com.apple.quarantine", "#{staged_path}/DevBench.app"],
+                   print_stderr: false
+  end
+
   zap trash: [
     "~/Library/Application Support/devbench-desktop",
     "~/Library/Caches/co.in.devbench.desktop",

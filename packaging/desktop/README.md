@@ -42,9 +42,19 @@ npm install
 npx electron .
 ```
 
+## “App is damaged and can’t be opened”
+
+macOS often shows this for **unsigned** DMGs (quarantine), not a broken build. After installing to `/Applications`:
+
+```bash
+xattr -cr /Applications/DevBench.app
+```
+
+Then open DevBench again, or right-click → **Open** once.
+
 ## Code signing and notarization
 
-Unsigned builds work for local testing. Gatekeeper may block downloads until users allow the app in **System Settings → Privacy & Security**.
+Ad-hoc signing (`identity: "-"`) is used when no Developer ID certificate is configured. Full notarization removes Gatekeeper prompts for everyone.
 
 For distribution outside your machine:
 

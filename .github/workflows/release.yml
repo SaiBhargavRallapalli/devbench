@@ -126,9 +126,8 @@ jobs:
             echo "APPLE_TEAM_ID=${{ secrets.APPLE_TEAM_ID }}" >> "$GITHUB_ENV"
           else
             echo "signed=false" >> "$GITHUB_OUTPUT"
-            # Do not set CSC_LINK="" — electron-builder treats that as a bad cert path.
-            echo "CSC_IDENTITY_AUTO_DISCOVERY=false" >> "$GITHUB_ENV"
-            echo "::warning::CSC_LINK not set — building unsigned DMG (Gatekeeper may warn users)"
+            # Ad-hoc sign (-) avoids macOS "app is damaged" for unsigned downloads.
+            echo "::warning::CSC_LINK not set — ad-hoc signed DMG (users may still need xattr once)"
           fi
 
       - name: Build DMG
@@ -138,6 +137,8 @@ jobs:
           if [ "${{ steps.signing.outputs.signed }}" = "true" ]; then
             echo "Signing and notarization enabled"
             EXTRA+=("-c.mac.identity=Developer ID Application" "-c.mac.notarize=true")
+          else
+            EXTRA+=("-c.mac.identity=-")
           fi
           npm run dist -- --${{ matrix.arch }} "${EXTRA[@]}"
         env:
