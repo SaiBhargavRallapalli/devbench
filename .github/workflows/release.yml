@@ -216,6 +216,8 @@ jobs:
     name: Update Homebrew tap
     needs: [resolve-version, build-macos-dmg, github-release]
     runs-on: ubuntu-latest
+    # Tap update is optional; DMG + GitHub Release are the critical path.
+    continue-on-error: true
     if: >-
       always() &&
       needs.build-macos-dmg.result == 'success' &&
@@ -238,16 +240,16 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p release-assets
-          cd release-assets
           # Checksum the files Homebrew downloads (published release), not CI artifacts.
           gh release download "$TAG" --repo "${GITHUB_REPOSITORY}" \
+            --dir release-assets \
             --pattern "DevBench-${VERSION}-arm64.dmg" --clobber
           gh release download "$TAG" --repo "${GITHUB_REPOSITORY}" \
+            --dir release-assets \
             --pattern "DevBench-${VERSION}-x64.dmg" --clobber
-          ls -la
-          echo "sha256_dmg_arm64=$(shasum -a 256 "DevBench-${VERSION}-arm64.dmg" | awk '{print $1}')" >> "$GITHUB_OUTPUT"
-          echo "sha256_dmg_x64=$(shasum -a 256 "DevBench-${VERSION}-x64.dmg" | awk '{print $1}')" >> "$GITHUB_OUTPUT"
-          cd ..
+          ls -la release-assets/
+          echo "sha256_dmg_arm64=$(shasum -a 256 "release-assets/DevBench-${VERSION}-arm64.dmg" | awk '{print $1}')" >> "$GITHUB_OUTPUT"
+          echo "sha256_dmg_x64=$(shasum -a 256 "release-assets/DevBench-${VERSION}-x64.dmg" | awk '{print $1}')" >> "$GITHUB_OUTPUT"
 
           for attempt in 1 2 3 4 5; do
             if curl -fsSL -o source.tar.gz \
