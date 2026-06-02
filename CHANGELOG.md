@@ -2,17 +2,100 @@
 
 > Generated from git log. Refresh with `npm run changelog` or the **Update changelog** GitHub Action.
 
-## 2026-05-30
+## 2026-06-02
+
+### Fixed
+- release workflow homebrew checksum paths; tap job non-blocking (`75f764a`)
+- compute Homebrew cask checksums from published release DMGs (`718a68b`)
+- macOS Gatekeeper damaged-app guidance and ad-hoc signing (`7eff834`)
+- improve release workflow for DMG artifacts (`80e5431`)
+
+### Changed
+- conditionally display macOS app download options (`dfae871`)
+
+### Docs
+- tag bypass instructions; faster homebrew tap bootstrap (`de23778`)
+
+## 2026-06-01
 
 ### Added
-- Notepad++ workspace at `/notepad` — multi-tab editor with split view, side panels, macros, named sessions, encoding options, and local session restore (`d792850`)
+- enhance macOS desktop app support and update documentation (`22b2974`)
+- Add Homebrew packaging guide (`43fd909`)
+
+### Fixed
+- skip identical cp when staging release DMG names (`7066ba5`)
+- consistent DMG artifact names in release CI (`18f543c`)
+- stage per-arch DMG assets in release matrix jobs (`ac2a298`)
+- ship unsigned DMG builds in CI and restore install flow (`45f9126`)
+
+### Changed
+- Use current Node in Homebrew formula (`0ee6bc8`)
+- Fix Homebrew resource checksums (`91ce347`)
+
+## 2026-05-31
+
+### Added
+- add Image Merger tool and update related components (`783841b`)
+- add Notepad++ workspace and integrate into navigation and tools (`d792850`)
+- expand image tools with new features and connectivity updates (`2cb6a97`)
+
+### Fixed
+- resolve Notepad lint errors blocking CI. (`9184536`)
+
+### Chore
+- Notepad workspace docs and compare menu fix (#24) (`b88dc41`)
+- document Notepad workspace and wire Tools compare menu. (`e9c4fea`)
+
+## 2026-05-29
+
+### Added
+- enhance Image Format Converter with SVG support and additional formats (`412754b`)
+- add HEIC support to Image Format Converter tool (`d0c13bb`)
+
+## 2026-05-27
+
+### Added
+- refactor state synchronization in components to comply with React hooks rules (`5c06910`)
+- update tool descriptions and implement spotlight tool rotation for enhanced SEO (`9faeeda`)
+
+### Changed
+- Implement code changes to enhance functionality and improve performance (`88a4b79`)
+
+## 2026-05-26
+
+### Added
+- enhance JSON parsing by adding deep-parse functionality for embedded JSON strings (`6886d51`)
+- enhance ToolSearch component to sync state with URL parameters and improve search functionality (`2ec033c`)
+- add custom scrollbar styles and enable overflow for tool preview panel (`cefcea5`)
+- implement smooth scroll to tools section on category/query param load (`433aa24`)
+- enhance footer and tool components with improved UI elements and functionality (`ea7baf5`)
+- refine header and tool components for improved navigation and user experience (`2b9e032`)
+- enhance UI and functionality across various components (`24e9004`)
+- enhance tool browsing experience with updated links and improved UI elements (`6705a31`)
+- enhance navigation and tool preview functionality (`850dcdf`)
+- update metadata and improve content for better user engagement (`cd7ecaa`)
+
+## 2026-05-25
+
+### Added
+- relocate Google Tag Manager script to improve hydration process (`a0392a3`)
+
+## 2026-05-24
+
+### Added
+- remove unused components and add error handling for tools (`c1d3256`)
+- enhance user feedback for copy actions and improve search result messaging (`fa6034f`)
 
 ## 2026-05-22
 
 ### Added
 - enhance ESLint and Lighthouse configurations, add test coverage (`93ed65e`)
 
+### Changed
+- improve JSON parsing logic in JsonToolkitPage (`f1c8061`)
+
 ### Chore
+- update changelog workflow and documentation (`f64ae7e`)
 - remove post-commit hook for changelog auto-update (`f97ea65`)
 - update README and changelog script for clarity and usage instructions (`622ad9c`)
 - update CHANGELOG.md to reflect correct commit hash for ESLint and Lighthouse enhancements (`24896bd`)
