@@ -16,11 +16,13 @@ curl -fsSL -o "$TMP/source.tar.gz" \
   "https://github.com/${REPO}/archive/refs/tags/${TAG}.tar.gz"
 
 if [ -z "${SHA256_DMG_ARM64:-}" ] || [ -z "${SHA256_DMG_X64:-}" ]; then
-  echo "Downloading release DMGs for checksums (one at a time)..."
+  echo "Downloading published release DMGs for checksums (must match GitHub assets)..."
   gh release download "$TAG" --repo "$REPO" --dir "$TMP" \
-    --pattern "DevBench-${VERSION}-arm64.dmg"
+    --pattern "DevBench-${VERSION}-arm64.dmg" \
+    --clobber
   gh release download "$TAG" --repo "$REPO" --dir "$TMP" \
-    --pattern "DevBench-${VERSION}-x64.dmg"
+    --pattern "DevBench-${VERSION}-x64.dmg" \
+    --clobber
 fi
 
 export RELEASE_VERSION="$VERSION"

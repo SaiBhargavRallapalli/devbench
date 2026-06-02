@@ -226,29 +226,28 @@ jobs:
         (github.event_name == 'workflow_dispatch' && github.event.inputs.update_homebrew_tap == 'true')
       )
     steps:
-      - name: Download DMG artifacts
-        uses: actions/download-artifact@v4
-        with:
-          pattern: dmg-*
-          merge-multiple: true
-          path: release-assets
-
       - name: Checkout application repo
         uses: actions/checkout@v4
 
-      - name: Compute checksums
+      - name: Compute checksums from published release assets
         id: checksums
         env:
           TAG: ${{ needs.resolve-version.outputs.tag }}
           VERSION: ${{ needs.resolve-version.outputs.version }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          ls -laR release-assets/
-          ARM64_DMG=$(find release-assets -name "DevBench-${VERSION}-arm64.dmg" | head -1)
-          X64_DMG=$(find release-assets -name "DevBench-${VERSION}-x64.dmg" | head -1)
-          test -f "$ARM64_DMG" && test -f "$X64_DMG"
-          echo "sha256_dmg_arm64=$(shasum -a 256 "$ARM64_DMG" | awk '{print $1}')" >> "$GITHUB_OUTPUT"
-          echo "sha256_dmg_x64=$(shasum -a 256 "$X64_DMG" | awk '{print $1}')" >> "$GITHUB_OUTPUT"
+          mkdir -p release-assets
+          cd release-assets
+          # Checksum the files Homebrew downloads (published release), not CI artifacts.
+          gh release download "$TAG" --repo "${GITHUB_REPOSITORY}" \
+            --pattern "DevBench-${VERSION}-arm64.dmg" --clobber
+          gh release download "$TAG" --repo "${GITHUB_REPOSITORY}" \
+            --pattern "DevBench-${VERSION}-x64.dmg" --clobber
+          ls -la
+          echo "sha256_dmg_arm64=$(shasum -a 256 "DevBench-${VERSION}-arm64.dmg" | awk '{print $1}')" >> "$GITHUB_OUTPUT"
+          echo "sha256_dmg_x64=$(shasum -a 256 "DevBench-${VERSION}-x64.dmg" | awk '{print $1}')" >> "$GITHUB_OUTPUT"
+          cd ..
 
           for attempt in 1 2 3 4 5; do
             if curl -fsSL -o source.tar.gz \
