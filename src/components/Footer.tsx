@@ -199,12 +199,6 @@ export default function Footer() {
               Changelog
             </Link>
             <Link
-              href="/download"
-              className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-            >
-              Download
-            </Link>
-            <Link
               href="/about"
               className="text-sm text-muted-foreground transition-colors hover:text-foreground"
             >

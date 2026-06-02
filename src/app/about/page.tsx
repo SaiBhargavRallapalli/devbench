@@ -4,6 +4,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import InstallOptions from "@/components/InstallOptions";
 import { fetchLatestGitHubRelease } from "@/lib/github-release";
+import { SHOW_MAC_APP_DOWNLOAD } from "@/lib/distribution";
 
 export default async function AboutPage() {
   const release = await fetchLatestGitHubRelease();
@@ -98,17 +99,21 @@ export default async function AboutPage() {
             works the way it does.
           </p>
 
-          <h2 className="text-xl font-semibold text-foreground pt-2">Install on macOS</h2>
-          <p>
-            Download the desktop app, use Homebrew, or keep using the browser — details on the{" "}
-            <Link href="/download" className="text-accent hover:underline">
-              download page
-            </Link>
-            .
-          </p>
-          <div className="not-prose">
-            <InstallOptions release={release} compact />
-          </div>
+          {SHOW_MAC_APP_DOWNLOAD ? (
+            <>
+              <h2 className="text-xl font-semibold text-foreground pt-2">Install on macOS</h2>
+              <p>
+                Download the desktop app, use Homebrew, or keep using the browser — details on the{" "}
+                <Link href="/download" className="text-accent hover:underline">
+                  install page
+                </Link>
+                .
+              </p>
+              <div className="not-prose">
+                <InstallOptions release={release} compact />
+              </div>
+            </>
+          ) : null}
 
           <h2 className="text-xl font-semibold text-foreground pt-2">Get in touch</h2>
           <p>

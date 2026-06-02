@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import InstallOptions from "@/components/InstallOptions";
 import MacInstallTroubleshooting from "@/components/MacInstallTroubleshooting";
 import { fetchLatestGitHubRelease } from "@/lib/github-release";
+import { SHOW_MAC_APP_DOWNLOAD } from "@/lib/distribution";
 
 export default async function DownloadPage() {
   const release = await fetchLatestGitHubRelease();
@@ -20,17 +21,20 @@ export default async function DownloadPage() {
           <ArrowLeft className="h-4 w-4" />
           Back to home
         </Link>
-        <h1 className="text-3xl font-bold tracking-tight">Download DevBench</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Install DevBench</h1>
         <p className="mt-3 text-muted-foreground leading-relaxed">
-          Use DevBench in the browser at no install cost, or install the macOS app for an
-          offline-capable desktop experience. The CLI is available for scripts and terminals.
+          Use DevBench in the browser at no install cost. The terminal CLI is available for
+          scripts and automation.
+          {SHOW_MAC_APP_DOWNLOAD
+            ? " The macOS desktop app can be installed from the options below."
+            : " The macOS desktop app installer is temporarily unavailable."}
         </p>
 
         <div className="mt-10">
           <InstallOptions release={release} />
         </div>
 
-        <MacInstallTroubleshooting />
+        {SHOW_MAC_APP_DOWNLOAD ? <MacInstallTroubleshooting /> : null}
 
         <section className="mt-10 rounded-xl border border-border bg-card/50 p-5 text-sm text-muted-foreground leading-relaxed">
           <h2 className="text-base font-semibold text-foreground mb-2">Browser (no install)</h2>

@@ -10,6 +10,9 @@ export const HOMEBREW_TAP = "SaiBhargavRallapalli/devbench";
 /** Shipped app version (keep in sync with release tags). */
 export const APP_VERSION = packageJson.version;
 
+/** Set true when DMG / desktop install CTAs are ready for public use. */
+export const SHOW_MAC_APP_DOWNLOAD = false;
+
 const RELEASES_BASE = `https://github.com/${GITHUB_REPOSITORY}/releases`;
 
 export const distributionLinks = {

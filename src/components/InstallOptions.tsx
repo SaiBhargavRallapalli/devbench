@@ -5,6 +5,7 @@ import {
   APP_VERSION,
   distributionLinks,
   GITHUB_REPOSITORY,
+  SHOW_MAC_APP_DOWNLOAD,
 } from "@/lib/distribution";
 import type { GitHubReleaseSummary } from "@/lib/github-release";
 
@@ -22,6 +23,7 @@ export default function InstallOptions({ release, compact = false }: InstallOpti
 
   return (
     <div className={compact ? "space-y-6" : "space-y-8"}>
+      {SHOW_MAC_APP_DOWNLOAD ? (
       <section aria-labelledby="install-mac-heading">
         <div className="mb-3 flex items-center gap-2">
           <Apple className="h-5 w-5 text-accent" aria-hidden />
@@ -100,6 +102,7 @@ export default function InstallOptions({ release, compact = false }: InstallOpti
           .
         </p>
       </section>
+      ) : null}
 
       <section aria-labelledby="install-brew-heading">
         <div className="mb-3 flex items-center gap-2">
@@ -112,18 +115,27 @@ export default function InstallOptions({ release, compact = false }: InstallOpti
           </h2>
         </div>
         <p className="mb-4 text-sm text-muted-foreground leading-relaxed">
-          Tap once, then install the <strong className="text-foreground">CLI</strong> and/or the{" "}
-          <strong className="text-foreground">desktop app</strong> (cask).
+          Tap once, then install the <strong className="text-foreground">CLI</strong>
+          {SHOW_MAC_APP_DOWNLOAD ? (
+            <>
+              {" "}
+              and/or the <strong className="text-foreground">desktop app</strong> (cask).
+            </>
+          ) : (
+            "."
+          )}
         </p>
         <div className="space-y-3">
           <InstallCommand command={distributionLinks.brew.tap} label="1. Add tap" />
-          <InstallCommand
-            command={distributionLinks.brew.installDesktop}
-            label="2a. Desktop app (GUI)"
-          />
+          {SHOW_MAC_APP_DOWNLOAD ? (
+            <InstallCommand
+              command={distributionLinks.brew.installDesktop}
+              label="2a. Desktop app (GUI)"
+            />
+          ) : null}
           <InstallCommand
             command={distributionLinks.brew.installCli}
-            label="2b. Terminal CLI only"
+            label={SHOW_MAC_APP_DOWNLOAD ? "2b. Terminal CLI only" : "2. Terminal CLI"}
           />
         </div>
       </section>
