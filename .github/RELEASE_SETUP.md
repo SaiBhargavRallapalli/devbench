@@ -2,28 +2,25 @@
 
 ## 1. Tag push blocked (GH013)?
 
-If `git push origin v0.1.0` fails with **“Cannot create ref due to creations being restricted”**:
+The repo has a **protect-releases** ruleset on `refs/tags/v*`. **Repository admins** can bypass it when pushing tags.
 
-**Option A — Run the Release workflow (recommended)**
-
-1. Merge packaging + workflow changes to `main`.
-2. GitHub → **Actions** → **Release** → **Run workflow**.
-3. Version: `0.1.0`, enable **Publish release** and **Update Homebrew tap**.
-4. The workflow creates the tag and release using `GITHUB_TOKEN` (often allowed when local pushes are not).
-
-**Option B — Relax repository rules**
-
-Settings → **Rules** → rulesets affecting tags → allow **Repository admin** and/or **GitHub Actions** to create tags.
-
-**Option C — Create release in the UI**
-
-Releases → **Draft a new release** → choose tag `v0.1.0` → **Publish**. That triggers the workflow via `release: published`.
-
-Delete the local tag if the remote push failed:
+**Recommended (admin):**
 
 ```bash
-git tag -d v0.1.0
+git tag -f v0.1.0 origin/main   # or the release commit
+git push origin v0.1.0
+# remote should say: "Bypassed rule violations for refs/tags/v0.1.0"
 ```
+
+That push triggers the **Release** workflow (`on: push: tags: v*`), which builds DMGs and publishes the GitHub Release.
+
+**If you are not an admin:**
+
+- Ask an admin to push the tag, or
+- Settings → **Rules** → **protect-releases** → add **GitHub Actions** as a bypass actor (Integration), or
+- Run **Actions → Release** after an admin has created tag `v0.1.0` once.
+
+`GITHUB_TOKEN` in Actions **cannot** create tags while the ruleset blocks it unless Actions is in the bypass list. Uploading release assets still works once the tag exists.
 
 ---
 

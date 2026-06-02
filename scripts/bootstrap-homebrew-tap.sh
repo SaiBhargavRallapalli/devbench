@@ -12,19 +12,22 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
 
-echo "Downloading release assets for ${TAG}..."
-gh release download "$TAG" --repo "$REPO" --dir "$TMP" \
-  --pattern "DevBench-${VERSION}-arm64.dmg" \
-  --pattern "DevBench-${VERSION}-x64.dmg"
-
 curl -fsSL -o "$TMP/source.tar.gz" \
   "https://github.com/${REPO}/archive/refs/tags/${TAG}.tar.gz"
 
+if [ -z "${SHA256_DMG_ARM64:-}" ] || [ -z "${SHA256_DMG_X64:-}" ]; then
+  echo "Downloading release DMGs for checksums (one at a time)..."
+  gh release download "$TAG" --repo "$REPO" --dir "$TMP" \
+    --pattern "DevBench-${VERSION}-arm64.dmg"
+  gh release download "$TAG" --repo "$REPO" --dir "$TMP" \
+    --pattern "DevBench-${VERSION}-x64.dmg"
+fi
+
 export RELEASE_VERSION="$VERSION"
 export GITHUB_REPOSITORY="$REPO"
-export SHA256_SOURCE="$(shasum -a 256 "$TMP/source.tar.gz" | awk '{print $1}')"
-export SHA256_DMG_ARM64="$(shasum -a 256 "$TMP/DevBench-${VERSION}-arm64.dmg" | awk '{print $1}')"
-export SHA256_DMG_X64="$(shasum -a 256 "$TMP/DevBench-${VERSION}-x64.dmg" | awk '{print $1}')"
+export SHA256_SOURCE="${SHA256_SOURCE:-$(shasum -a 256 "$TMP/source.tar.gz" | awk '{print $1}')}"
+export SHA256_DMG_ARM64="${SHA256_DMG_ARM64:-$(shasum -a 256 "$TMP/DevBench-${VERSION}-arm64.dmg" | awk '{print $1}')}"
+export SHA256_DMG_X64="${SHA256_DMG_X64:-$(shasum -a 256 "$TMP/DevBench-${VERSION}-x64.dmg" | awk '{print $1}')}"
 
 node "$ROOT/scripts/release-homebrew.mjs"
 

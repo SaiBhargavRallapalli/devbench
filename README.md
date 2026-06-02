@@ -10,7 +10,7 @@
 
 Live site: **[devbench.co.in](https://www.devbench.co.in)**
 
-**macOS install:** [Download page](https://www.devbench.co.in/download) · [GitHub Releases](https://github.com/SaiBhargavRallapalli/devbench/releases)
+**macOS install:** [Download page](https://www.devbench.co.in/download) · [GitHub Releases](https://github.com/SaiBhargavRallapalli/devbench/releases) · [Homebrew tap](https://github.com/SaiBhargavRallapalli/homebrew-devbench)
 
 ```bash
 brew tap SaiBhargavRallapalli/devbench
