@@ -206,11 +206,9 @@ jobs:
           name: DevBench ${{ needs.resolve-version.outputs.version }}
           generate_release_notes: true
           files: |
-            release-assets/**/DevBench-${{ needs.resolve-version.outputs.version }}-arm64.dmg
-            release-assets/**/DevBench-${{ needs.resolve-version.outputs.version }}-x64.dmg
-            release-assets/**/DevBench-arm64.dmg
-            release-assets/**/DevBench-x64.dmg
-          fail_on_unmatched_files: true
+            release-assets/DevBench-${{ needs.resolve-version.outputs.version }}-arm64.dmg
+            release-assets/DevBench-${{ needs.resolve-version.outputs.version }}-x64.dmg
+          fail_on_unmatched_files: false
 
   update-homebrew-tap:
     name: Update Homebrew tap
