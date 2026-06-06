@@ -1,4 +1,6 @@
 // Copyright (c) 2026 DevBench contributors. MIT License.
+import { SHARE_FRAGMENT_MAX_CHARS } from "@/lib/share-fragment-limits";
+
 /** Share tool inputs via URL fragment `#state=…` (fully client-side; never hits the server). */
 
 export type SharedToolPayload = {
@@ -41,7 +43,7 @@ export function encodeSharedToolState(input: string, input2?: string): string {
 export function decodeSharedToolState(hash: string): SharedToolPayload | null {
   if (!hash.startsWith(PREFIX)) return null;
   const raw = hash.slice(PREFIX.length).trim();
-  if (!raw) return null;
+  if (!raw || raw.length > SHARE_FRAGMENT_MAX_CHARS) return null;
   try {
     const bytes = base64UrlToBytes(raw);
     const json = new TextDecoder().decode(bytes);

@@ -49,4 +49,10 @@ describe("fixCommonMistakes", () => {
     expect(parsed.responses[0].type).toBe("text");
     expect(parsed.responses[1].card).toBe("swiggy_response");
   });
+
+  it("expands a single embedded JSON string", () => {
+    const result = fixCommonMistakes('{"msg":"{\\"ok\\":true}"}');
+    expect(result.success).toBe(true);
+    expect(JSON.parse(result.text)).toEqual({ msg: { ok: true } });
+  });
 });

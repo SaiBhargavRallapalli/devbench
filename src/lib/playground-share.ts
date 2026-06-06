@@ -1,5 +1,7 @@
 /** Share playground code via URL fragment `#pg=` (client-side only). */
 
+import { SHARE_FRAGMENT_MAX_CHARS } from "@/lib/share-fragment-limits";
+
 const PREFIX = "#pg=";
 
 export type PlaygroundSharePayload = {
@@ -34,8 +36,10 @@ export function encodePlaygroundShare(payload: PlaygroundSharePayload): string {
 
 export function decodePlaygroundShare(hash: string): PlaygroundSharePayload | null {
   if (!hash.startsWith(PREFIX)) return null;
+  const raw = hash.slice(PREFIX.length).trim();
+  if (!raw || raw.length > SHARE_FRAGMENT_MAX_CHARS) return null;
   try {
-    const bytes = base64UrlToBytes(hash.slice(PREFIX.length).trim());
+    const bytes = base64UrlToBytes(raw);
     const json = new TextDecoder().decode(bytes);
     const o = JSON.parse(json) as PlaygroundSharePayload;
     if (o.v !== 1 || typeof o.code !== "string") return null;
