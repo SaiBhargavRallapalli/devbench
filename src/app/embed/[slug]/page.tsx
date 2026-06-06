@@ -12,8 +12,9 @@ import {
   needsNoInput,
 } from "@/lib/tool-runner";
 import {
-  isEmbedCommand,
+  parseEmbedCommand,
   postEmbedEvent,
+  isEmbedMessageFromParent,
   type EmbedConfig,
 } from "@/lib/embed-api";
 
@@ -50,8 +51,13 @@ export default function EmbedPage() {
   });
   const [embedConfig, setEmbedConfig] = useState<EmbedConfig>({ autoRun: true });
   const stateRef = useRef(state);
+  const embedConfigRef = useRef(embedConfig);
+  const suppressAutoProcessRef = useRef(false);
   useEffect(() => {
     stateRef.current = state;
+  });
+  useEffect(() => {
+    embedConfigRef.current = embedConfig;
   });
 
   const process = useCallback(async () => {
@@ -82,17 +88,16 @@ export default function EmbedPage() {
 
   useEffect(() => {
     function onMessage(ev: MessageEvent) {
-      if (!isEmbedCommand(ev.data)) return;
-      const cmd = ev.data;
+      if (!isEmbedMessageFromParent(ev)) return;
+      const cmd = parseEmbedCommand(ev.data);
+      if (!cmd) return;
       if (cmd.type === "SET_INPUT") {
+        suppressAutoProcessRef.current = embedConfigRef.current.autoRun === false;
         setState((s) => ({
           ...s,
           input: cmd.input,
           input2: cmd.input2 ?? s.input2,
         }));
-        if (embedConfig.autoRun !== false) {
-          setTimeout(() => void process(), 50);
-        }
       } else if (cmd.type === "RUN") {
         void process();
       } else if (cmd.type === "CLEAR") {
@@ -112,10 +117,14 @@ export default function EmbedPage() {
     }
     window.addEventListener("message", onMessage);
     return () => window.removeEventListener("message", onMessage);
-  }, [embedConfig.autoRun, process]);
+  }, [process]);
 
   useEffect(() => {
     if (CUSTOM_TOOL_SLUGS.has(slug)) return;
+    if (suppressAutoProcessRef.current) {
+      suppressAutoProcessRef.current = false;
+      return;
+    }
     const timer = setTimeout(process, 150);
     return () => clearTimeout(timer);
   }, [process, slug, state.input, state.input2, state.options]);

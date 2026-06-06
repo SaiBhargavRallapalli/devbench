@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import Editor, { loader } from "@monaco-editor/react";
 import { Play, Trash2, Loader2, Keyboard, Share2 } from "lucide-react";
 import { encodePlaygroundShare, decodePlaygroundShare } from "@/lib/playground-share";
-import { PLAYGROUND_MONACO_VS_CDN } from "@/lib/playground/constants";
+import { PLAYGROUND_MONACO_VS_CDN, SANDBOX_MAX_CODE_CHARS, SANDBOX_MAX_LOG_LINES } from "@/lib/playground/constants";
 import { getSandboxJsSrcdoc } from "@/lib/playground/sandbox-js-srcdoc";
 import { isSandboxChildMessage } from "@/lib/playground/sandbox-js-messages";
 import { transpileTsToJs } from "@/lib/playground/transpile-ts";
@@ -117,6 +117,14 @@ export default function JsTsSandboxPanel({ mode, dark }: { mode: WebPlayMode; da
       if (d.type === "LOG") {
         const line = `[${d.level}] ${d.args.join(" ")}`;
         pending.lines.push(line);
+        if (pending.lines.length > SANDBOX_MAX_LOG_LINES) {
+          pending.lines.splice(0, pending.lines.length - SANDBOX_MAX_LOG_LINES);
+          if (!pending.lines[0]?.startsWith("[info] Log truncated")) {
+            pending.lines.unshift(
+              `[info] Log truncated — showing last ${SANDBOX_MAX_LOG_LINES} lines`,
+            );
+          }
+        }
         setOutput([...pending.lines]);
         return;
       }
@@ -168,6 +176,13 @@ export default function JsTsSandboxPanel({ mode, dark }: { mode: WebPlayMode; da
     }
     const preamble = buildJsSandboxPreamble(stdin, nodeShim);
     const finalCode = preamble + "\n" + jsBody;
+    if (finalCode.length > SANDBOX_MAX_CODE_CHARS) {
+      setOutput([
+        `Code exceeds sandbox limit (${SANDBOX_MAX_CODE_CHARS.toLocaleString()} characters including stdin preamble).`,
+      ]);
+      setRunning(false);
+      return;
+    }
     const id = ++runIdRef.current;
     const lines: string[] = [];
     pendingRunRef.current = { id, lines, sawDone: false, sawError: false };

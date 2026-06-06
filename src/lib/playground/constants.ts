@@ -39,3 +39,12 @@ export const PLAYGROUND_PYODIDE_VERSION = "0.29.4";
 export const PLAYGROUND_PYODIDE_INDEX_URL = `https://cdn.jsdelivr.net/pyodide/v${PLAYGROUND_PYODIDE_VERSION}/full/`;
 
 export const SANDBOX_MESSAGE_SOURCE = "devbench-sandbox" as const;
+
+/** Max user code (+ preamble) accepted by the JS sandbox iframe. */
+export const SANDBOX_MAX_CODE_CHARS = 256 * 1024;
+
+/** Max serialized length per console.log argument echoed via postMessage. */
+export const SANDBOX_MAX_LOG_ARG_CHARS = 8192;
+
+/** Max console lines retained per run in the parent UI. */
+export const SANDBOX_MAX_LOG_LINES = 500;

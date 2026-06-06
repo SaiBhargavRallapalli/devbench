@@ -1,5 +1,9 @@
 import { jsonrepair } from "jsonrepair";
 
+/** Guard deep JSON string expansion against matryoshka / runaway recursion. */
+export const DEEP_PARSE_MAX_DEPTH = 32;
+export const DEEP_PARSE_MAX_EXPANSIONS = 128;
+
 export interface FixResult {
   text: string;
   fixes: string[];
@@ -487,7 +491,10 @@ export function fixCommonMistakes(input: string): FixResult {
   // Deep-parse helper: expands string values that contain valid (or repairable) JSON objects/arrays.
   // Defined here so it can be called both before and after the jsonrepair last-resort pass.
   let deepExpandCount = 0;
-  function deepParseStrings(val: unknown): unknown {
+  function deepParseStrings(val: unknown, depth = 0): unknown {
+    if (depth > DEEP_PARSE_MAX_DEPTH) return val;
+    if (deepExpandCount >= DEEP_PARSE_MAX_EXPANSIONS) return val;
+
     if (typeof val === "string") {
       // Build candidate list: try raw string first, then with invalid escapes fixed.
       // This handles embedded JSON like `{"text": "Added 2\× Salt"}` where \× is an
@@ -500,7 +507,7 @@ export function fixCommonMistakes(input: string): FixResult {
           const inner = JSON.parse(candidate) as unknown;
           if (inner !== null && typeof inner === "object") {
             deepExpandCount++;
-            return deepParseStrings(inner);
+            return deepParseStrings(inner, depth + 1);
           }
         } catch { /* try next candidate */ }
       }
@@ -510,16 +517,20 @@ export function fixCommonMistakes(input: string): FixResult {
           const inner = JSON.parse(unescaped) as unknown;
           if (inner !== null && typeof inner === "object") {
             deepExpandCount++;
-            return deepParseStrings(inner);
+            return deepParseStrings(inner, depth + 1);
           }
         }
       } catch { /* not parseable either way */ }
       return val;
     }
-    if (Array.isArray(val)) return val.map(deepParseStrings);
+    if (Array.isArray(val)) {
+      return val.map((item) => deepParseStrings(item, depth + 1));
+    }
     if (val !== null && typeof val === "object") {
       const r: Record<string, unknown> = {};
-      for (const [k, v] of Object.entries(val as Record<string, unknown>)) r[k] = deepParseStrings(v);
+      for (const [k, v] of Object.entries(val as Record<string, unknown>)) {
+        r[k] = deepParseStrings(v, depth + 1);
+      }
       return r;
     }
     return val;

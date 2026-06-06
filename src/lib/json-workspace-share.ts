@@ -5,6 +5,7 @@
  */
 
 import type { JsonWorkspaceTab } from "@/lib/json-workspace-types";
+import { SHARE_FRAGMENT_MAX_CHARS } from "@/lib/share-fragment-limits";
 
 export type SharedJsonWorkspacePayload = {
   v: 2;
@@ -67,7 +68,7 @@ export function encodeJsonWorkspaceState(payload: SharedJsonWorkspacePayload): s
 export function decodeJsonWorkspaceState(hash: string): SharedJsonWorkspacePayload | null {
   if (!hash.startsWith(PREFIX)) return null;
   const raw = hash.slice(PREFIX.length).trim();
-  if (!raw) return null;
+  if (!raw || raw.length > SHARE_FRAGMENT_MAX_CHARS) return null;
   try {
     const bytes = base64UrlToBytes(raw);
     const json = new TextDecoder().decode(bytes);

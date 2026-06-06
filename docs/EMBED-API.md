@@ -48,9 +48,25 @@ All messages include `{ source: "devbench-embed" }`.
 | `READY` | `{ slug, name }` |
 | `STATE` | `{ input, input2, output, error }` |
 | `OUTPUT` | `{ output, error }` |
-| `RESIZE` | `{ height: number }` |
+| `RESIZE` | `{ height: number }` (reserved — not emitted yet) |
 
-## Security
+## Limits & security
 
-- Only accept messages where `event.source === iframe.contentWindow`.
-- Embed routes use `frame-ancestors *` (see `next.config.ts`).
+**Payload caps (enforced on the iframe):**
+
+| Field | Max size |
+|-------|----------|
+| `SET_INPUT.input` / `input2` | 512 KB each |
+| `OUTPUT.output` / `STATE.output` echoed to parent | 512 KB (truncated with notice) |
+| `OUTPUT.error` / `STATE.error` | 4 KB |
+
+Oversized or malformed commands are **silently ignored**. The SDK (`embed-sdk.js`) also refuses to send inputs above 512 KB.
+
+**Origin checks:**
+
+- **Parent → iframe:** the embed page accepts commands only from `event.source === window.parent`.
+- **iframe → parent:** host pages should accept events only where `event.source === iframe.contentWindow` (built into `createEmbedController` / `DevBenchEmbed.createEmbedController`).
+
+**Auto-run:** when `CONFIGURE.autoRun` is `false`, programmatic `SET_INPUT` does not trigger a run; manual edits inside the iframe still debounce-run after 150 ms. `RUN` always executes immediately.
+
+**Embed routes** use `frame-ancestors *` (see `next.config.ts`).
