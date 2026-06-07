@@ -1713,6 +1713,640 @@ function PythagoreanTheoremExamples() {
   );
 }
 
+function MergePdfOnline() {
+  return (
+    <div className="space-y-4">
+      <p className={prose}>
+        Merging PDFs is one of those tasks that sounds trivial until you realise your options are: install Adobe Acrobat (expensive), upload files to a random website (risky), or use a command-line tool (overkill for a quick task). This guide covers all three approaches — and explains when each makes sense.
+      </p>
+
+      <h2 className={h2}>Why merge PDFs?</h2>
+      <ul className={ul}>
+        <li><strong>Contracts and agreements</strong> — combine the main document with attachments into one file before signing</li>
+        <li><strong>Invoices and receipts</strong> — merge multiple monthly invoices into one for expense reports</li>
+        <li><strong>Portfolio or report submissions</strong> — universities and employers often require one PDF upload</li>
+        <li><strong>Scanned documents</strong> — a scanner that produces one PDF per page needs merging before sharing</li>
+        <li><strong>Presentations</strong> — combine slide deck exports from multiple contributors</li>
+      </ul>
+
+      <h2 className={h2}>Online vs desktop vs command line</h2>
+      <table className={table}>
+        <thead>
+          <tr>
+            <th className={th}>Method</th>
+            <th className={th}>Pros</th>
+            <th className={th}>Cons</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td className={td}>Online tool (browser-side)</td><td className={td}>No install, works on any OS, files never leave your device</td><td className={td}>Depends on browser PDF libraries</td></tr>
+          <tr><td className={td}>Online tool (server-side)</td><td className={td}>Handles large files, richer features</td><td className={td}>Files uploaded to a third-party server — privacy risk</td></tr>
+          <tr><td className={td}>Adobe Acrobat</td><td className={td}>Full-featured, reliable</td><td className={td}>Paid subscription, overkill for occasional use</td></tr>
+          <tr><td className={td}>macOS Preview</td><td className={td}>Built-in, free, fast</td><td className={td}>macOS only</td></tr>
+          <tr><td className={td}>Ghostscript (CLI)</td><td className={td}>Free, scriptable, handles any file size</td><td className={td}>Command-line setup required</td></tr>
+        </tbody>
+      </table>
+
+      <h2 className={h2}>The privacy question</h2>
+      <p className={prose}>
+        Before you drag your bank statements or NDA into an online tool, check whether processing happens in your browser or on their server. A tool that runs in the browser — using JavaScript libraries like <code className={code}>pdf-lib</code> or <code className={code}>pdf.js</code> — never transmits your files. A server-side tool receives, processes, and (ideally) deletes your file, but you're trusting their infrastructure and privacy policy.
+      </p>
+      <p className={prose}>
+        Look for explicit "processed in your browser" language, or check the browser's network tab while merging — if no file upload request appears, processing is local.
+      </p>
+
+      <h2 className={h2}>How to merge PDFs in your browser (DevBench)</h2>
+      <ol className={ol}>
+        <li>Open <Link href="/tools/merge-pdf" className="text-primary underline underline-offset-2 hover:no-underline">DevBench PDF Merger</Link> — no account needed</li>
+        <li>Click <strong>Add PDFs</strong> or drag and drop your files into the upload zone</li>
+        <li>Reorder pages by dragging the thumbnail list — put them in the sequence you want in the final document</li>
+        <li>Click <strong>Merge PDFs</strong></li>
+        <li>Download the combined file — it's generated entirely in your browser using pdf-lib</li>
+      </ol>
+      <p className={prose}>
+        Your files are never sent to a server. The download happens client-side and the result exists only in your browser memory until you save it.
+      </p>
+
+      <h2 className={h2}>Merge PDFs on macOS (Preview)</h2>
+      <ol className={ol}>
+        <li>Open the first PDF in Preview</li>
+        <li>Go to <strong>View → Thumbnails</strong> to show the page sidebar</li>
+        <li>Drag additional PDF files into the sidebar at the position where you want them inserted</li>
+        <li>Go to <strong>File → Export as PDF</strong> to save the merged document</li>
+      </ol>
+      <p className={prose}>
+        This works for any number of files. Drag pages between positions to reorder before exporting.
+      </p>
+
+      <h2 className={h2}>Merge PDFs with Ghostscript (command line)</h2>
+      <p className={prose}>
+        Install Ghostscript (<code className={code}>brew install ghostscript</code> on macOS, <code className={code}>apt install ghostscript</code> on Ubuntu), then:
+      </p>
+      <pre className="bg-muted rounded-lg px-4 py-3 text-xs font-mono overflow-x-auto my-3">
+{`gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite \\
+   -sOutputFile=merged.pdf \\
+   file1.pdf file2.pdf file3.pdf`}
+      </pre>
+      <p className={prose}>
+        Ghostscript recompresses content during merge, which can slightly reduce quality on image-heavy PDFs. Use <code className={code}>-dCompatibilityLevel=1.7 -dPDFSETTINGS=/prepress</code> to preserve quality:
+      </p>
+      <pre className="bg-muted rounded-lg px-4 py-3 text-xs font-mono overflow-x-auto my-3">
+{`gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite \\
+   -dCompatibilityLevel=1.7 -dPDFSETTINGS=/prepress \\
+   -sOutputFile=merged.pdf \\
+   file1.pdf file2.pdf file3.pdf`}
+      </pre>
+
+      <h2 className={h2}>Merge PDFs with Python (pypdf)</h2>
+      <pre className="bg-muted rounded-lg px-4 py-3 text-xs font-mono overflow-x-auto my-3">
+{`from pypdf import PdfWriter
+
+writer = PdfWriter()
+for filename in ["file1.pdf", "file2.pdf", "file3.pdf"]:
+    writer.append(filename)
+
+with open("merged.pdf", "wb") as output:
+    writer.write(output)`}
+      </pre>
+      <p className={prose}>
+        Install with <code className={code}>pip install pypdf</code>. This is ideal for batch merging in scripts — merge hundreds of files in a loop.
+      </p>
+
+      <h2 className={h2}>Common problems and fixes</h2>
+      <table className={table}>
+        <thead>
+          <tr>
+            <th className={th}>Problem</th>
+            <th className={th}>Cause</th>
+            <th className={th}>Fix</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td className={td}>Merged file is very large</td><td className={td}>High-res images in source PDFs</td><td className={td}>Compress first, then merge; or use <code className={code}>/screen</code> setting in Ghostscript</td></tr>
+          <tr><td className={td}>Fonts look wrong</td><td className={td}>Fonts not embedded in source PDF</td><td className={td}>Regenerate source PDFs with embedded fonts</td></tr>
+          <tr><td className={td}>Pages appear rotated</td><td className={td}>PDF rotation metadata mismatch</td><td className={td}>Rotate pages before merging using a PDF editor or tool</td></tr>
+          <tr><td className={td}>Password-protected PDF fails</td><td className={td}>Encrypted PDFs can't be merged without the password</td><td className={td}>Unlock the PDF first (requires the password)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function ImageToPdfPost() {
+  return (
+    <div className="space-y-4">
+      <p className={prose}>
+        Whether you're submitting scanned documents, sending photos as a professional attachment, or archiving screenshots, converting images to PDF is a routine task. This guide covers every method — browser tools, built-in OS features, and command-line options — with a clear take on when to use each.
+      </p>
+
+      <h2 className={h2}>When do you need image-to-PDF?</h2>
+      <ul className={ul}>
+        <li><strong>Document submissions</strong> — universities, banks, and government portals almost always require PDF, not JPEG</li>
+        <li><strong>Multi-page scans</strong> — a scanner that produces one image per page; you need them as a single paginated document</li>
+        <li><strong>Professional sharing</strong> — a PDF preserves layout and doesn't accidentally get compressed by email clients or messaging apps</li>
+        <li><strong>Archiving photos</strong> — PDF/A is an ISO standard for long-term digital archiving</li>
+        <li><strong>iOS/Android screenshots</strong> — HEIC photos from iPhones need conversion before Windows users can view them</li>
+      </ul>
+
+      <h2 className={h2}>Supported formats</h2>
+      <table className={table}>
+        <thead>
+          <tr>
+            <th className={th}>Format</th>
+            <th className={th}>Common source</th>
+            <th className={th}>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td className={td}>JPEG / JPG</td><td className={td}>Photos, scans</td><td className={td}>Most widely supported; lossy compression</td></tr>
+          <tr><td className={td}>PNG</td><td className={td}>Screenshots, graphics with transparency</td><td className={td}>Lossless; transparency becomes white background in PDF</td></tr>
+          <tr><td className={td}>HEIC / HEIF</td><td className={td}>iPhone photos (iOS 11+)</td><td className={td}>Modern format; not natively supported on older Windows/Linux</td></tr>
+          <tr><td className={td}>WebP</td><td className={td}>Web-optimised images</td><td className={td}>Increasingly common; browser tools handle it natively</td></tr>
+          <tr><td className={td}>BMP</td><td className={td}>Old Windows graphics</td><td className={td}>Large file size; always convert to JPEG first</td></tr>
+          <tr><td className={td}>TIFF</td><td className={td}>High-res scans, print</td><td className={td}>Large file; preserve for archival PDFs</td></tr>
+        </tbody>
+      </table>
+
+      <h2 className={h2}>Convert images to PDF in your browser (DevBench)</h2>
+      <ol className={ol}>
+        <li>Open <Link href="/tools/image-to-pdf" className="text-primary underline underline-offset-2 hover:no-underline">DevBench Image to PDF</Link></li>
+        <li>Drag and drop your images — JPG, PNG, WebP, HEIC, BMP, or TIFF</li>
+        <li>Reorder pages by dragging thumbnails into the desired sequence</li>
+        <li>Choose page size (A4 is the global standard; Letter is common in North America)</li>
+        <li>Click <strong>Convert to PDF</strong> and download</li>
+      </ol>
+      <p className={prose}>
+        All processing happens in your browser with pdf-lib. No images are uploaded. Works with multiple images at once — one image per page.
+      </p>
+
+      <h2 className={h2}>Convert on macOS (built-in, no install)</h2>
+      <p className={prose}>
+        For a single image: open it in Preview → <strong>File → Export as PDF</strong>. Done.
+      </p>
+      <p className={prose}>
+        For multiple images: select all files in Finder → right-click → <strong>Quick Actions → Create PDF</strong>. macOS creates a multi-page PDF in the same folder with images sorted by filename.
+      </p>
+
+      <h2 className={h2}>Convert on Windows 10/11 (built-in)</h2>
+      <ol className={ol}>
+        <li>Open the image in the Photos app</li>
+        <li>Press <code className={code}>Ctrl + P</code> to print</li>
+        <li>In the printer dropdown, select <strong>Microsoft Print to PDF</strong></li>
+        <li>Choose orientation and click Print — then save the PDF</li>
+      </ol>
+      <p className={prose}>
+        For multiple images, select all in File Explorer → right-click → Print → choose Microsoft Print to PDF. Windows will ask for page layout and create a multi-page PDF.
+      </p>
+
+      <h2 className={h2}>Convert with ImageMagick (command line)</h2>
+      <pre className="bg-muted rounded-lg px-4 py-3 text-xs font-mono overflow-x-auto my-3">
+{`# Single image
+convert photo.jpg output.pdf
+
+# Multiple images to one PDF
+convert page1.jpg page2.jpg page3.jpg combined.pdf
+
+# With quality control (lower number = smaller file)
+convert -quality 80 photo.jpg output.pdf`}
+      </pre>
+      <p className={prose}>
+        Install ImageMagick with <code className={code}>brew install imagemagick</code> (macOS) or <code className={code}>apt install imagemagick</code> (Ubuntu). For HEIC files on macOS you also need <code className={code}>brew install libheif</code>.
+      </p>
+      <p className={prose}>
+        Note: some Linux systems restrict ImageMagick's PDF output by default due to security policies. Edit <code className={code}>/etc/ImageMagick-6/policy.xml</code> and change the PDF policy from <code className={code}>none</code> to <code className={code}>read|write</code> if you get a "not authorized" error.
+      </p>
+
+      <h2 className={h2}>Tips for better output quality</h2>
+      <ul className={ul}>
+        <li><strong>Page size matters</strong> — A4 (210×297mm) is standard globally; if your images are portrait photos they'll fit correctly. Landscape photos may need a rotated page setting.</li>
+        <li><strong>DPI for scans</strong> — 150 DPI is readable; 300 DPI is the standard for document archival. Higher DPI = larger file.</li>
+        <li><strong>Transparent PNG</strong> — transparency is not supported in PDF. It renders as white. If you need the transparent background preserved, convert to PNG with a coloured background before converting to PDF.</li>
+        <li><strong>HEIC to PDF</strong> — browsers natively support HEIC → PDF now; if your tool doesn't, convert HEIC → JPEG first using macOS Photos or a converter.</li>
+      </ul>
+    </div>
+  );
+}
+
+function LoanEmiCalculator() {
+  return (
+    <div className="space-y-4">
+      <p className={prose}>
+        An EMI — Equated Monthly Installment — is the fixed amount you pay every month to repay a loan. It combines principal repayment and interest in a single number. Understanding how the EMI formula works helps you compare loan offers, plan prepayments, and avoid being surprised by amortisation schedules.
+      </p>
+
+      <h2 className={h2}>The EMI formula</h2>
+      <p className={prose}>
+        The standard EMI formula is:
+      </p>
+      <pre className="bg-muted rounded-lg px-4 py-3 text-xs font-mono overflow-x-auto my-3">
+{`EMI = P × r × (1 + r)^n
+      ─────────────────────
+          (1 + r)^n − 1
+
+Where:
+  P = Principal loan amount
+  r = Monthly interest rate (annual rate ÷ 12 ÷ 100)
+  n = Loan tenure in months`}
+      </pre>
+      <p className={prose}>
+        The formula looks complex but the intuition is straightforward: you're spreading the loan amount (plus all future interest) evenly across <code className={code}>n</code> payments so that the outstanding balance reaches exactly zero at the last payment.
+      </p>
+
+      <h2 className={h2}>Worked example: home loan</h2>
+      <p className={prose}>
+        Suppose you take a home loan of <strong>₹50,00,000</strong> at <strong>8.5% per annum</strong> for <strong>20 years</strong>.
+      </p>
+      <ul className={ul}>
+        <li>P = 50,00,000</li>
+        <li>Annual rate = 8.5%, so monthly rate r = 8.5 ÷ 12 ÷ 100 = 0.007083</li>
+        <li>n = 20 × 12 = 240 months</li>
+      </ul>
+      <pre className="bg-muted rounded-lg px-4 py-3 text-xs font-mono overflow-x-auto my-3">
+{`EMI = 50,00,000 × 0.007083 × (1.007083)^240
+      ──────────────────────────────────────
+              (1.007083)^240 − 1
+
+    = 50,00,000 × 0.007083 × 5.2748
+      ─────────────────────────────
+              5.2748 − 1
+
+    = 50,00,000 × 0.03735 / 4.2748
+
+    ≈ ₹43,671 per month`}
+      </pre>
+      <p className={prose}>
+        Over 240 months you pay ₹43,671 × 240 = <strong>₹1,04,81,040</strong> in total. The interest cost is ₹1,04,81,040 − ₹50,00,000 = <strong>₹54,81,040</strong> — more than the original principal. This is why tenure choice matters enormously.
+      </p>
+
+      <h2 className={h2}>How interest rate affects EMI</h2>
+      <p className={prose}>
+        Same ₹50 lakh loan, 20-year tenure at different rates:
+      </p>
+      <table className={table}>
+        <thead>
+          <tr>
+            <th className={th}>Interest rate</th>
+            <th className={th}>Monthly EMI</th>
+            <th className={th}>Total interest paid</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td className={td}>7.0% p.a.</td><td className={td}>₹38,765</td><td className={td}>₹43,03,600</td></tr>
+          <tr><td className={td}>8.0% p.a.</td><td className={td}>₹41,822</td><td className={td}>₹50,37,280</td></tr>
+          <tr><td className={td}>8.5% p.a.</td><td className={td}>₹43,671</td><td className={td}>₹54,81,040</td></tr>
+          <tr><td className={td}>9.0% p.a.</td><td className={td}>₹44,986</td><td className={td}>₹57,96,640</td></tr>
+          <tr><td className={td}>10.0% p.a.</td><td className={td}>₹48,251</td><td className={td}>₹65,80,240</td></tr>
+        </tbody>
+      </table>
+      <p className={prose}>
+        A 1% rate difference on a ₹50 lakh loan over 20 years costs roughly <strong>₹7–8 lakh more in interest</strong>. Negotiating your interest rate down by even 0.5% at origination is worth significant effort.
+      </p>
+
+      <h2 className={h2}>How tenure affects EMI and total cost</h2>
+      <p className={prose}>
+        Same ₹50 lakh loan at 8.5% p.a. at different tenures:
+      </p>
+      <table className={table}>
+        <thead>
+          <tr>
+            <th className={th}>Tenure</th>
+            <th className={th}>Monthly EMI</th>
+            <th className={th}>Total interest paid</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td className={td}>10 years</td><td className={td}>₹62,000</td><td className={td}>₹24,40,000</td></tr>
+          <tr><td className={td}>15 years</td><td className={td}>₹49,250</td><td className={td}>₹38,65,000</td></tr>
+          <tr><td className={td}>20 years</td><td className={td}>₹43,671</td><td className={td}>₹54,81,040</td></tr>
+          <tr><td className={td}>25 years</td><td className={td}>₹40,260</td><td className={td}>₹70,78,000</td></tr>
+          <tr><td className={td}>30 years</td><td className={td}>₹38,446</td><td className={td}>₹88,40,560</td></tr>
+        </tbody>
+      </table>
+      <p className={prose}>
+        Extending from 20 to 30 years saves only ₹5,225/month in EMI but costs an extra <strong>₹33,59,520 in interest</strong>. Shorter tenures hurt your monthly cash flow but dramatically reduce the total cost of the loan.
+      </p>
+
+      <h2 className={h2}>How amortisation works</h2>
+      <p className={prose}>
+        In the early months, most of your EMI is interest and very little is principal repayment. As the outstanding balance shrinks, the interest component falls and the principal component rises — but the EMI stays constant.
+      </p>
+      <p className={prose}>
+        For the ₹50 lakh / 8.5% / 20-year example, the first few months look like:
+      </p>
+      <table className={table}>
+        <thead>
+          <tr>
+            <th className={th}>Month</th>
+            <th className={th}>EMI</th>
+            <th className={th}>Interest</th>
+            <th className={th}>Principal</th>
+            <th className={th}>Outstanding</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td className={td}>1</td><td className={td}>₹43,671</td><td className={td}>₹35,417</td><td className={td}>₹8,254</td><td className={td}>₹49,91,746</td></tr>
+          <tr><td className={td}>2</td><td className={td}>₹43,671</td><td className={td}>₹35,358</td><td className={td}>₹8,313</td><td className={td}>₹49,83,433</td></tr>
+          <tr><td className={td}>12</td><td className={td}>₹43,671</td><td className={td}>₹34,820</td><td className={td}>₹8,851</td><td className={td}>₹49,14,400</td></tr>
+          <tr><td className={td}>120</td><td className={td}>₹43,671</td><td className={td}>₹24,108</td><td className={td}>₹19,563</td><td className={td}>₹33,73,000</td></tr>
+          <tr><td className={td}>240</td><td className={td}>₹43,671</td><td className={td}>₹309</td><td className={td}>₹43,362</td><td className={td}>₹0</td></tr>
+        </tbody>
+      </table>
+
+      <h2 className={h2}>Prepayment: how it helps</h2>
+      <p className={prose}>
+        Making a lump-sum prepayment directly reduces the outstanding principal, which shrinks future interest. Even a small prepayment in the early years has outsized impact because you eliminate years of compounding interest.
+      </p>
+      <p className={prose}>
+        Example: a ₹2 lakh prepayment at the end of year 1 on the above loan reduces the remaining tenure by approximately 14 months and saves roughly ₹6 lakh in total interest — a 3× return on the prepayment amount.
+      </p>
+      <p className={prose}>
+        Check the prepayment penalty clause before paying early — some lenders charge 1–2% on prepaid amounts for fixed-rate loans.
+      </p>
+
+      <p className={prose}>
+        Use the{" "}
+        <Link href="/tools/loan-emi-calculator" className="text-primary underline underline-offset-2 hover:no-underline">
+          DevBench EMI Calculator
+        </Link>{" "}
+        to compute your exact monthly installment, total interest, and amortisation schedule for any loan amount, rate, and tenure.
+      </p>
+    </div>
+  );
+}
+
+function BmiCalculatorPost() {
+  return (
+    <div className="space-y-4">
+      <p className={prose}>
+        BMI — Body Mass Index — is a number derived from your height and weight that classifies body size into underweight, normal, overweight, and obese ranges. It's the most widely used screening tool in clinical practice, but it has important limitations that are worth understanding before acting on a number.
+      </p>
+
+      <h2 className={h2}>The BMI formula</h2>
+      <p className={prose}>
+        BMI is calculated differently depending on which unit system you use:
+      </p>
+      <table className={table}>
+        <thead>
+          <tr>
+            <th className={th}>System</th>
+            <th className={th}>Formula</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td className={td}>Metric</td><td className={td}>BMI = weight (kg) ÷ height (m)²</td></tr>
+          <tr><td className={td}>Imperial</td><td className={td}>BMI = 703 × weight (lb) ÷ height (in)²</td></tr>
+        </tbody>
+      </table>
+
+      <h2 className={h2}>Worked examples</h2>
+      <p className={prose}>
+        <strong>Example 1 (metric):</strong> A person who weighs 70 kg and is 1.75 m tall.
+      </p>
+      <pre className="bg-muted rounded-lg px-4 py-3 text-xs font-mono overflow-x-auto my-3">
+{`BMI = 70 ÷ (1.75)²
+    = 70 ÷ 3.0625
+    = 22.9`}
+      </pre>
+      <p className={prose}>
+        <strong>Example 2 (imperial):</strong> A person who weighs 154 lb and is 5′9″ (69 inches) tall.
+      </p>
+      <pre className="bg-muted rounded-lg px-4 py-3 text-xs font-mono overflow-x-auto my-3">
+{`BMI = 703 × 154 ÷ (69)²
+    = 703 × 154 ÷ 4761
+    = 108,262 ÷ 4761
+    = 22.7`}
+      </pre>
+
+      <h2 className={h2}>BMI classification (WHO standard)</h2>
+      <table className={table}>
+        <thead>
+          <tr>
+            <th className={th}>BMI range</th>
+            <th className={th}>Category</th>
+            <th className={th}>Health risk</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td className={td}>Below 16.0</td><td className={td}>Severe underweight</td><td className={td}>High risk of malnutrition, bone density loss, heart problems</td></tr>
+          <tr><td className={td}>16.0 – 16.9</td><td className={td}>Moderate underweight</td><td className={td}>Elevated risk, clinical evaluation recommended</td></tr>
+          <tr><td className={td}>17.0 – 18.4</td><td className={td}>Mild underweight</td><td className={td}>Slightly elevated risk</td></tr>
+          <tr><td className={td}>18.5 – 24.9</td><td className={td}>Normal weight</td><td className={td}>Lowest risk range</td></tr>
+          <tr><td className={td}>25.0 – 29.9</td><td className={td}>Overweight</td><td className={td}>Moderately increased risk of metabolic disease</td></tr>
+          <tr><td className={td}>30.0 – 34.9</td><td className={td}>Obese Class I</td><td className={td}>High risk</td></tr>
+          <tr><td className={td}>35.0 – 39.9</td><td className={td}>Obese Class II</td><td className={td}>Very high risk</td></tr>
+          <tr><td className={td}>40.0 and above</td><td className={td}>Obese Class III (severe)</td><td className={td}>Extremely high risk</td></tr>
+        </tbody>
+      </table>
+
+      <h2 className={h2}>Asian BMI cut-offs</h2>
+      <p className={prose}>
+        The WHO classification above is based primarily on European populations. Multiple studies have shown that people of South Asian, East Asian, and Southeast Asian origin have higher rates of metabolic disease (type 2 diabetes, cardiovascular disease) at the same BMI compared to European populations. Several health authorities — including India's National Institute of Nutrition — recommend adjusted cut-offs:
+      </p>
+      <table className={table}>
+        <thead>
+          <tr>
+            <th className={th}>Category</th>
+            <th className={th}>Standard WHO cut-off</th>
+            <th className={th}>Recommended Asian cut-off</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td className={td}>Overweight</td><td className={td}>≥ 25.0</td><td className={td}>≥ 23.0</td></tr>
+          <tr><td className={td}>Obese</td><td className={td}>≥ 30.0</td><td className={td}>≥ 27.5</td></tr>
+        </tbody>
+      </table>
+
+      <h2 className={h2}>Limitations of BMI</h2>
+      <p className={prose}>
+        BMI is a population-level screening tool, not a diagnostic metric. It has known blind spots:
+      </p>
+      <ul className={ul}>
+        <li><strong>Muscle vs fat</strong> — BMI doesn't distinguish between muscle and fat tissue. A muscular athlete can have a BMI of 28–30 (overweight by classification) with very low body fat. Conversely, a sedentary person with a "normal" BMI of 23 can carry excess visceral fat.</li>
+        <li><strong>Fat distribution</strong> — where you carry fat matters more than total fat. Visceral fat (around the abdomen) is more metabolically active and dangerous than subcutaneous fat. Waist circumference is a better predictor of cardiovascular risk than BMI alone.</li>
+        <li><strong>Age</strong> — older adults tend to have more body fat at the same BMI due to muscle loss (sarcopenia). BMI slightly overestimates health for older people.</li>
+        <li><strong>Sex</strong> — women naturally carry more body fat than men at the same BMI. The 18.5–24.9 range is identical for both sexes despite this biological difference.</li>
+        <li><strong>Pregnancy</strong> — BMI is not applicable during pregnancy.</li>
+      </ul>
+      <p className={prose}>
+        Use BMI as a first-pass indicator. For a more complete picture, pair it with waist circumference (risk increases above 88 cm for women / 102 cm for men by WHO criteria) and body fat percentage measured by DEXA scan or bioimpedance analysis.
+      </p>
+
+      <h2 className={h2}>Healthy weight range by height</h2>
+      <table className={table}>
+        <thead>
+          <tr>
+            <th className={th}>Height</th>
+            <th className={th}>Healthy weight (BMI 18.5–24.9)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td className={td}>155 cm (5′1″)</td><td className={td}>44 – 60 kg (98 – 132 lb)</td></tr>
+          <tr><td className={td}>160 cm (5′3″)</td><td className={td}>47 – 64 kg (104 – 141 lb)</td></tr>
+          <tr><td className={td}>165 cm (5′5″)</td><td className={td}>50 – 68 kg (111 – 149 lb)</td></tr>
+          <tr><td className={td}>170 cm (5′7″)</td><td className={td}>54 – 72 kg (118 – 159 lb)</td></tr>
+          <tr><td className={td}>175 cm (5′9″)</td><td className={td}>57 – 76 kg (125 – 168 lb)</td></tr>
+          <tr><td className={td}>180 cm (5′11″)</td><td className={td}>60 – 81 kg (133 – 178 lb)</td></tr>
+          <tr><td className={td}>185 cm (6′1″)</td><td className={td}>63 – 85 kg (140 – 188 lb)</td></tr>
+        </tbody>
+      </table>
+
+      <p className={prose}>
+        Calculate your BMI instantly with the{" "}
+        <Link href="/tools/bmi-calculator" className="text-primary underline underline-offset-2 hover:no-underline">
+          DevBench BMI Calculator
+        </Link>{" "}
+        — enter height and weight in metric or imperial and get your BMI, category, and healthy weight range.
+      </p>
+    </div>
+  );
+}
+
+function JsonToCsvPost() {
+  return (
+    <div className="space-y-4">
+      <p className={prose}>
+        JSON is the lingua franca of APIs; CSV is the lingua franca of spreadsheets. Converting between them is a daily task for data engineers, analysts, and developers pulling data from APIs into Excel, Google Sheets, or a SQL import. This guide covers how the conversion works, the edge cases that trip people up, and code examples in JavaScript and Python.
+      </p>
+
+      <h2 className={h2}>When you need JSON → CSV</h2>
+      <ul className={ul}>
+        <li><strong>API data into spreadsheets</strong> — export REST API responses to Excel or Google Sheets for non-technical stakeholders</li>
+        <li><strong>Database exports</strong> — MongoDB and Firestore export JSON; downstream tools often expect CSV</li>
+        <li><strong>Data science pipelines</strong> — pandas, R, and most ML toolkits read CSV natively and have no built-in JSON array reader</li>
+        <li><strong>Bulk imports</strong> — CRMs, email platforms, and accounting tools almost universally accept CSV for data import</li>
+      </ul>
+
+      <h2 className={h2}>How JSON arrays map to CSV</h2>
+      <p className={prose}>
+        The conversion only makes sense for a JSON array of objects with consistent keys. Each object becomes a row; the keys become column headers.
+      </p>
+      <pre className="bg-muted rounded-lg px-4 py-3 text-xs font-mono overflow-x-auto my-3">
+{`// Input JSON
+[
+  { "name": "Alice", "age": 30, "city": "Mumbai" },
+  { "name": "Bob",   "age": 25, "city": "Delhi"  },
+  { "name": "Carol", "age": 35, "city": "Pune"   }
+]
+
+// Output CSV
+name,age,city
+Alice,30,Mumbai
+Bob,25,Delhi
+Carol,35,Pune`}
+      </pre>
+
+      <h2 className={h2}>Convert online (DevBench)</h2>
+      <ol className={ol}>
+        <li>Open <Link href="/tools/json-to-csv" className="text-primary underline underline-offset-2 hover:no-underline">DevBench JSON to CSV</Link></li>
+        <li>Paste your JSON array (or upload a .json file)</li>
+        <li>Click <strong>Convert</strong> — headers are auto-detected from the first object's keys</li>
+        <li>Copy the CSV output or download as a .csv file</li>
+      </ol>
+      <p className={prose}>
+        DevBench handles nested objects by flattening them with dot notation (<code className={code}>address.city</code>) and arrays by joining values with a semicolon.
+      </p>
+
+      <h2 className={h2}>Convert in JavaScript</h2>
+      <pre className="bg-muted rounded-lg px-4 py-3 text-xs font-mono overflow-x-auto my-3">
+{`function jsonToCsv(arr) {
+  if (!arr.length) return "";
+  const headers = Object.keys(arr[0]);
+  const escape = (val) => {
+    const str = String(val ?? "");
+    return str.includes(",") || str.includes('"') || str.includes("\\n")
+      ? \`"\${str.replace(/"/g, '""')}"\`
+      : str;
+  };
+  const rows = arr.map((obj) =>
+    headers.map((h) => escape(obj[h])).join(",")
+  );
+  return [headers.join(","), ...rows].join("\\n");
+}
+
+const data = [
+  { name: "Alice", age: 30, city: "Mumbai" },
+  { name: "Bob",   age: 25, city: "Delhi"  },
+];
+console.log(jsonToCsv(data));`}
+      </pre>
+      <p className={prose}>
+        The <code className={code}>escape</code> function handles the RFC 4180 quoting rules: wrap in double-quotes if the value contains a comma, double-quote, or newline; double up any embedded double-quotes.
+      </p>
+
+      <h2 className={h2}>Convert in Python</h2>
+      <pre className="bg-muted rounded-lg px-4 py-3 text-xs font-mono overflow-x-auto my-3">
+{`import json, csv, io
+
+with open("data.json") as f:
+    data = json.load(f)
+
+output = io.StringIO()
+writer = csv.DictWriter(output, fieldnames=data[0].keys())
+writer.writeheader()
+writer.writerows(data)
+print(output.getvalue())`}
+      </pre>
+      <p className={prose}>
+        Python's <code className={code}>csv.DictWriter</code> handles all quoting automatically. Replace <code className={code}>io.StringIO()</code> with <code className={code}>open("output.csv", "w", newline="")</code> to write directly to a file. The <code className={code}>newline=""</code> argument is required on Windows to prevent double line endings.
+      </p>
+
+      <h2 className={h2}>Edge cases and how to handle them</h2>
+      <table className={table}>
+        <thead>
+          <tr>
+            <th className={th}>Edge case</th>
+            <th className={th}>Example</th>
+            <th className={th}>How to handle</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td className={td}>Missing keys</td><td className={td}>Object 2 has no <code className={code}>city</code> key</td><td className={td}>Output empty string for the cell; don't skip the column</td></tr>
+          <tr><td className={td}>Value contains comma</td><td className={td}><code className={code}>"New York, NY"</code></td><td className={td}>Wrap in double-quotes: <code className={code}>"New York, NY"</code></td></tr>
+          <tr><td className={td}>Value contains double-quote</td><td className={td}><code className={code}>He said "hello"</code></td><td className={td}>Escape as <code className={code}>"He said ""hello"""</code></td></tr>
+          <tr><td className={td}>Nested object</td><td className={td}><code className={code}>{`{ "addr": { "city": "Mumbai" } }`}</code></td><td className={td}>Flatten to <code className={code}>addr.city</code> column, or JSON-encode the value as a string</td></tr>
+          <tr><td className={td}>Array value</td><td className={td}><code className={code}>{`{ "tags": ["a", "b"] }`}</code></td><td className={td}>Join as <code className={code}>a;b</code> or JSON-encode as <code className={code}>["a","b"]</code></td></tr>
+          <tr><td className={td}>Null / undefined</td><td className={td}><code className={code}>null</code></td><td className={td}>Output as empty string (most spreadsheet tools interpret blank as null)</td></tr>
+          <tr><td className={td}>Very large numbers</td><td className={td}><code className={code}>9007199254740993</code></td><td className={td}>Wrap in double-quotes to prevent Excel from rounding with float precision</td></tr>
+        </tbody>
+      </table>
+
+      <h2 className={h2}>Handling nested JSON: flatten vs stringify</h2>
+      <p className={prose}>
+        Two strategies for nested objects:
+      </p>
+      <ul className={ul}>
+        <li><strong>Flatten</strong> — recursively expand <code className={code}>{`{ "address": { "city": "Mumbai", "pin": "400001" } }`}</code> into two columns: <code className={code}>address.city</code> and <code className={code}>address.pin</code>. Good when nested structure is shallow and consistent.</li>
+        <li><strong>Stringify</strong> — JSON-encode the nested value as a string and put it in a single column. Good for deeply nested or variable-structure objects — preserves data without exploding column count.</li>
+      </ul>
+      <pre className="bg-muted rounded-lg px-4 py-3 text-xs font-mono overflow-x-auto my-3">
+{`// Flatten approach
+function flatten(obj, prefix = "") {
+  return Object.entries(obj).reduce((acc, [k, v]) => {
+    const key = prefix ? \`\${prefix}.\${k}\` : k;
+    if (v && typeof v === "object" && !Array.isArray(v)) {
+      Object.assign(acc, flatten(v, key));
+    } else {
+      acc[key] = v;
+    }
+    return acc;
+  }, {});
+}
+
+const flat = data.map(flatten);
+console.log(jsonToCsv(flat));`}
+      </pre>
+
+      <p className={prose}>
+        For quick conversions without writing code, use the{" "}
+        <Link href="/tools/json-to-csv" className="text-primary underline underline-offset-2 hover:no-underline">
+          DevBench JSON to CSV converter
+        </Link>
+        {" "}— paste your array and download the result in one click.
+      </p>
+    </div>
+  );
+}
+
 export const POST_CONTENT: Record<string, React.ReactNode> = {
   "browser-code-playground-privacy": <BrowserCodePlaygroundPrivacy />,
   "how-base64-encoding-works-and-when-not-to-use-it": <Base64EncodingExplained />,
@@ -1733,4 +2367,9 @@ export const POST_CONTENT: Record<string, React.ReactNode> = {
   "celsius-to-fahrenheit-converter": <CelsiusToFahrenheit />,
   "morse-code-alphabet-chart": <MorseCodeAlphabetChart />,
   "pythagorean-theorem-examples": <PythagoreanTheoremExamples />,
+  "merge-pdf-online": <MergePdfOnline />,
+  "image-to-pdf": <ImageToPdfPost />,
+  "loan-emi-calculator": <LoanEmiCalculator />,
+  "bmi-calculator": <BmiCalculatorPost />,
+  "json-to-csv": <JsonToCsvPost />,
 };

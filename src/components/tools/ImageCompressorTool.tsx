@@ -238,7 +238,7 @@ export default function ImageCompressorTool({ tool }: { tool: Tool }) {
             <div className="flex min-h-[200px] items-center justify-center rounded-xl border border-dashed border-border bg-muted/30 p-4">
               {srcUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={srcUrl} alt="" className="max-h-72 max-w-full object-contain" />
+                <img src={srcUrl} alt="Original image" className="max-h-72 max-w-full object-contain" />
               ) : (
                 <span className="text-sm text-muted-foreground">No file</span>
               )}
@@ -260,7 +260,7 @@ export default function ImageCompressorTool({ tool }: { tool: Tool }) {
             <div className="flex min-h-[200px] items-center justify-center rounded-xl border border-border bg-muted/20 p-4">
               {previewUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={previewUrl} alt="" className="max-h-72 max-w-full object-contain" />
+                <img src={previewUrl} alt="Compressed image preview" className="max-h-72 max-w-full object-contain" />
               ) : (
                 <span className="text-sm text-muted-foreground">Adjust quality…</span>
               )}

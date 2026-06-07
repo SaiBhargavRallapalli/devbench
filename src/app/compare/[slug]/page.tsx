@@ -5,7 +5,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import JsonLd from "@/components/JsonLd";
 import { TOOL_COMPARISONS } from "@/lib/tool-comparisons";
-import { SITE_URL } from "@/lib/social-metadata";
+import { socialMetadata, SITE_URL } from "@/lib/social-metadata";
 import { breadcrumbSchema } from "@/lib/breadcrumb-schema";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -18,10 +18,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const comp = TOOL_COMPARISONS.find((c) => c.slug === slug);
   if (!comp) return { title: "Compare" };
+  const canonicalPath = `/compare/${comp.slug}`;
   return {
     title: comp.title,
     description: comp.deck,
-    alternates: { canonical: `${SITE_URL}/compare/${comp.slug}` },
+    alternates: { canonical: `${SITE_URL}${canonicalPath}` },
+    ...socialMetadata({
+      title: comp.title,
+      description: comp.deck,
+      canonicalPath,
+    }),
   };
 }
 

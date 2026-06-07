@@ -68,15 +68,15 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://www.devbench.co.in",
     siteName: "DevBench",
-    title: "DevBench - Free Online Developer Tools for Developers",
+    title: "DevBench — 143+ Free Online Developer Tools",
     description:
-      "Explore 100+ free online developer tools for JSON formatting, encoding, and more—no signup required!",
+      "143+ free online developer tools — JWT debugger, PDF merge, Base64, regex tester, UUID generator, EMI calculator, and more. No signup, runs in your browser.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "DevBench - Free Online Developer Tools for Developers",
+    title: "DevBench — 143+ Free Online Developer Tools",
     description:
-      "Explore 100+ free online developer tools for JSON formatting, encoding, and more—no signup required!",
+      "143+ free online developer tools — JWT debugger, PDF merge, Base64, regex tester, UUID generator, EMI calculator, and more. No signup, runs in your browser.",
     site: "@devbench",
     creator: "@devbench",
   },

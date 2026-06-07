@@ -240,6 +240,66 @@ export const BLOG_POSTS: BlogPost[] = [
     relatedToolLabel: "Pythagorean Theorem Calculator",
     relatedToolHref: "/tools/pythagorean-theorem",
   },
+  {
+    slug: "merge-pdf-online",
+    title: "How to Merge PDFs Online for Free (Browser, macOS, CLI)",
+    date: "2026-06-07",
+    excerpt:
+      "Combine multiple PDFs into one without uploading to a server. Covers browser-based tools, macOS Preview, Ghostscript, and Python pypdf — with tips on file size, fonts, and password-protected PDFs.",
+    tags: ["pdf", "tools", "productivity"],
+    readMinutes: 6,
+    relatedToolSlug: "merge-pdf",
+    relatedToolLabel: "PDF Merger",
+    relatedToolHref: "/tools/merge-pdf",
+  },
+  {
+    slug: "image-to-pdf",
+    title: "How to Convert Images to PDF Online (JPG, PNG, HEIC — Free)",
+    date: "2026-06-07",
+    excerpt:
+      "Convert photos and screenshots to PDF without uploading them anywhere. Covers JPEG, PNG, WebP, HEIC, and TIFF — with browser tools, macOS, Windows, and ImageMagick CLI methods.",
+    tags: ["pdf", "image", "converter", "tools"],
+    readMinutes: 5,
+    relatedToolSlug: "image-to-pdf",
+    relatedToolLabel: "Image to PDF Converter",
+    relatedToolHref: "/tools/image-to-pdf",
+  },
+  {
+    slug: "loan-emi-calculator",
+    title: "EMI Calculator: Formula, How to Calculate Monthly Loan Installments",
+    date: "2026-06-07",
+    excerpt:
+      "Understand the EMI formula, see a full worked example for a ₹50 lakh home loan, compare how rate and tenure affect total interest paid, and learn how prepayment reduces your cost.",
+    tags: ["finance", "calculator", "loans", "india"],
+    readMinutes: 7,
+    relatedToolSlug: "loan-emi-calculator",
+    relatedToolLabel: "Loan EMI Calculator",
+    relatedToolHref: "/tools/loan-emi-calculator",
+  },
+  {
+    slug: "bmi-calculator",
+    title: "BMI Calculator: What Is BMI and How to Calculate It",
+    date: "2026-06-07",
+    excerpt:
+      "The BMI formula in metric and imperial, WHO classification table, adjusted cut-offs for Asian populations, worked examples, and an honest look at what BMI can and cannot tell you.",
+    tags: ["health", "calculator", "reference"],
+    readMinutes: 6,
+    relatedToolSlug: "bmi-calculator",
+    relatedToolLabel: "BMI Calculator",
+    relatedToolHref: "/tools/bmi-calculator",
+  },
+  {
+    slug: "json-to-csv",
+    title: "JSON to CSV: How to Convert JSON Arrays to Spreadsheet Format",
+    date: "2026-06-07",
+    excerpt:
+      "How JSON arrays map to CSV rows and columns, RFC 4180 quoting rules, JavaScript and Python code, and a detailed edge-case guide covering nested objects, null values, and large numbers.",
+    tags: ["json", "csv", "data", "conversion"],
+    readMinutes: 6,
+    relatedToolSlug: "json-to-csv",
+    relatedToolLabel: "JSON to CSV Converter",
+    relatedToolHref: "/tools/json-to-csv",
+  },
 ];
 
 export function getBlogPost(slug: string): BlogPost | undefined {

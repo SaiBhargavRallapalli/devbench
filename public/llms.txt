@@ -1,6 +1,6 @@
 # DevBench
 
-> DevBench is a free, open-source collection of 130+ browser-based developer tools — JSON formatters, encoders, PDF utilities, calculators, converters, and more. All processing runs client-side; no account required and no data is uploaded to servers.
+> DevBench is a free, open-source collection of 143+ browser-based developer tools — JSON formatters, encoders, PDF utilities, calculators, converters, and more. All processing runs client-side; no account required and no data is uploaded to servers.
 
 Live site: https://www.devbench.co.in
 

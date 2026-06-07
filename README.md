@@ -3,6 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![CI](https://github.com/SaiBhargavRallapalli/devbench/actions/workflows/ci.yml/badge.svg)](https://github.com/SaiBhargavRallapalli/devbench/actions)
 [![Release](https://github.com/SaiBhargavRallapalli/devbench/actions/workflows/release.yml/badge.svg)](https://github.com/SaiBhargavRallapalli/devbench/actions/workflows/release.yml)
+[![Commits per month](https://img.shields.io/github/commit-activity/m/SaiBhargavRallapalli/devbench)](https://github.com/SaiBhargavRallapalli/devbench/pulse)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
