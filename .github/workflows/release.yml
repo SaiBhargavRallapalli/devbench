@@ -199,6 +199,7 @@ jobs:
         run: ls -la release-assets/
 
       - name: Publish release
+        id: publish
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ needs.resolve-version.outputs.tag }}
@@ -209,6 +210,15 @@ jobs:
             release-assets/DevBench-${{ needs.resolve-version.outputs.version }}-arm64.dmg
             release-assets/DevBench-${{ needs.resolve-version.outputs.version }}-x64.dmg
           fail_on_unmatched_files: false
+        continue-on-error: true
+
+      - name: Handle tag creation failure
+        if: failure() && needs.resolve-version.outputs.is_tag_push == 'true'
+        run: |
+          echo "::warning::Tag creation blocked by repository rules. Use workflow_dispatch instead."
+          echo "To release v${{ needs.resolve-version.outputs.version }}, go to:"
+          echo "  → Actions → Release → Run workflow"
+          exit 1
 
   update-homebrew-tap:
     name: Update Homebrew tap
