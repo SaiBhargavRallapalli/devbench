@@ -2,16 +2,13 @@
 import type { Result } from "./_shared";
 
 export function convertTemperature(value: number, from: "C" | "F" | "K"): Result {
-  let c: number, f: number, k: number;
-  switch (from) {
-    case "C": c = value; f = (value * 9) / 5 + 32; k = value + 273.15; break;
-    case "F": c = ((value - 32) * 5) / 9; f = value; k = ((value - 32) * 5) / 9 + 273.15; break;
-    case "K": c = value - 273.15; f = ((value - 273.15) * 9) / 5 + 32; k = value; break;
-  }
+  const c = from === "C" ? value : from === "F" ? ((value - 32) * 5) / 9 : value - 273.15;
+  const f = from === "F" ? value : from === "C" ? (value * 9) / 5 + 32 : ((value - 273.15) * 9) / 5 + 32;
+  const k = from === "K" ? value : from === "C" ? value + 273.15 : ((value - 32) * 5) / 9 + 273.15;
   return [
-    `Celsius:    ${c!.toFixed(2)} °C`,
-    `Fahrenheit: ${f!.toFixed(2)} °F`,
-    `Kelvin:     ${k!.toFixed(2)} K`,
+    `Celsius:    ${c.toFixed(2)} °C`,
+    `Fahrenheit: ${f.toFixed(2)} °F`,
+    `Kelvin:     ${k.toFixed(2)} K`,
   ].join("\n");
 }
 

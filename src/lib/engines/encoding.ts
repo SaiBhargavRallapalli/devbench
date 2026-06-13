@@ -57,7 +57,8 @@ export function hexToText(input: string): Result {
   try {
     const hex = input.replace(/\s+/g, "");
     if (hex.length % 2 !== 0) return { output: "", error: "Hex string must have even length" };
-    const bytes = new Uint8Array(hex.match(/.{2}/g)!.map((b) => parseInt(b, 16)));
+    if (!hex) return "";
+    const bytes = new Uint8Array((hex.match(/.{2}/g) ?? []).map((b) => parseInt(b, 16)));
     return new TextDecoder().decode(bytes);
   } catch {
     return { output: "", error: "Invalid hex string" };

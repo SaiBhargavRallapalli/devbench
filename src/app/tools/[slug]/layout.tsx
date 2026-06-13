@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getToolBySlug } from "@/lib/tools-registry";
+import { getToolBySlug, TOOLS } from "@/lib/tools-registry";
 import { TOOL_FAQS } from "@/lib/tool-faqs";
 import { TOOL_PAGE_CONTENT } from "@/lib/tool-page-content";
 import ToolSeoContent from "@/components/tools/ToolSeoContent";
@@ -14,6 +14,10 @@ import { breadcrumbSchema } from "@/lib/breadcrumb-schema";
 import { categoryBrowseHref, categoryLabel } from "@/lib/category-navigation";
 import { toolPageStructuredGraph } from "@/lib/tool-structured-data";
 import { publicHrefForToolSlug } from "@/lib/devbench-workspaces";
+
+export function generateStaticParams() {
+  return TOOLS.map((tool) => ({ slug: tool.slug }));
+}
 
 export async function generateMetadata({
   params,

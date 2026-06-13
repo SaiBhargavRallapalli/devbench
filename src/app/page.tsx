@@ -1,10 +1,10 @@
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { Shield, Zap, Globe, Sparkles, ArrowRight } from "lucide-react";
 import { TOOLS, getToolBySlug } from "@/lib/tools-registry";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FavoritesBar from "@/components/FavoritesBar";
-import EngagementHome from "@/components/EngagementHome";
 import JsonLd from "@/components/JsonLd";
 import { FOOTER_CATEGORY_ORDER } from "@/lib/site-navigation";
 import { getCategoryHighlightTools } from "@/lib/category-navigation";
@@ -12,6 +12,11 @@ import { toolGroupSchema } from "@/lib/tool-structured-data";
 import TrackedAffiliateLink from "@/components/TrackedAffiliateLink";
 import EngagementFloatingCta from "@/components/EngagementFloatingCta";
 import { publicHrefForToolSlug } from "@/lib/devbench-workspaces";
+
+const EngagementHome = dynamic(() => import("@/components/EngagementHome"), {
+  ssr: false,
+  loading: () => <div className="min-h-[600px]" aria-hidden />,
+});
 
 const websiteSchema = {
   "@context": "https://schema.org",
@@ -225,10 +230,20 @@ export default function HomePage() {
             >
               Domains, SSLs & Premium DNS — Discounts Sitewide ↗
             </TrackedAffiliateLink>
+            <span aria-hidden="true" className="opacity-30 hidden sm:inline">·</span>
+            <TrackedAffiliateLink
+              href="https://apply.scapia.cards/landing_page?referral_code=qzgaii"
+              vendor="scapia"
+              offer="credit_card"
+              placement="homepage_sponsor_bar"
+              className="hover:text-foreground transition-colors"
+            >
+              Scapia Travel Credit Card — No Annual Fee ↗
+            </TrackedAffiliateLink>
           </div>
         </div>
 
-        <EngagementHome tools={TOOLS} />
+        <EngagementHome />
       </main>
       <EngagementFloatingCta />
       <Footer />

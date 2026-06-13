@@ -15,19 +15,29 @@ const AFFILIATE_LINKS = [
     label: "Shared Hosting",
     href: "https://namecheap.pxf.io/c/7275861/3884366/5618?partnerpropertyid=8365175",
     desc: "from $1.58/mo",
+    vendor: "namecheap",
     offer: "shared_hosting",
   },
   {
     label: "VPS Hosting",
     href: "https://namecheap.pxf.io/c/7275861/3884368/5618?partnerpropertyid=8365175",
     desc: "from $6.88/mo",
+    vendor: "namecheap",
     offer: "vps_hosting",
   },
   {
     label: "Domains, SSLs & DNS",
     href: "https://namecheap.pxf.io/c/7275861/3884352/5618?partnerpropertyid=8365175",
     desc: "discounts sitewide",
+    vendor: "namecheap",
     offer: "domains_ssl_dns",
+  },
+  {
+    label: "Scapia Travel Card",
+    href: "https://apply.scapia.cards/landing_page?referral_code=qzgaii",
+    desc: "no annual fee",
+    vendor: "scapia",
+    offer: "credit_card",
   },
 ];
 
@@ -78,14 +88,14 @@ export default function Footer() {
 
         <div className="mb-6 pb-6 border-b border-border">
           <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2.5 text-center sm:text-left">
-            Recommended hosting
+            Sponsors
           </p>
           <div className="flex flex-wrap gap-3 justify-center sm:justify-start">
             {AFFILIATE_LINKS.map((link) => (
               <TrackedAffiliateLink
                 key={link.href}
                 href={link.href}
-                vendor="namecheap"
+                vendor={link.vendor}
                 offer={link.offer}
                 placement="footer"
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-card text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"

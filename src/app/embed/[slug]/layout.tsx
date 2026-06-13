@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
-import { getToolBySlug } from "@/lib/tools-registry";
+import { getToolBySlug, TOOLS } from "@/lib/tools-registry";
 
 type Props = { params: Promise<{ slug: string }> };
+
+export function generateStaticParams() {
+  return TOOLS.map((tool) => ({ slug: tool.slug }));
+}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;

@@ -124,12 +124,6 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <head>
-        {/* Plain script avoids next/script data-nscript mismatch warnings for AdSense */}
-        <script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6450653669194686"
-          crossOrigin="anonymous"
-        />
         {/* Safe static scripts below — __html is a string literal, not user input. lgtm[js/xss] */}
         {/* Sync theme on <html> before CSS/paint so Tailwind dark: matches preference (see globals.css @custom-variant) */}
         <script
@@ -177,6 +171,13 @@ export default function RootLayout({
         <Analytics />
         <SpeedInsights />
       </body>
+      {/* AdSense — loaded after hydration so it doesn't delay FCP/LCP */}
+      <Script
+        id="adsense-script"
+        strategy="afterInteractive"
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6450653669194686"
+        crossOrigin="anonymous"
+      />
       {/* Google Tag Manager — must be outside <head>, injected client-side after hydration */}
       <Script
         id="gtm-script"
