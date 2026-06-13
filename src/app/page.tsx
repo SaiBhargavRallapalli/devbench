@@ -194,7 +194,7 @@ export default function HomePage() {
         <div className="border-b border-border bg-muted/30">
           <div className="max-w-6xl mx-auto px-4 py-2.5 flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 text-xs text-muted-foreground">
             <span className="text-muted-foreground uppercase tracking-wide font-medium text-[10px]">
-              Sponsored
+              Affiliate
             </span>
             <TrackedAffiliateLink
               href="https://namecheap.pxf.io/c/7275861/3884366/5618?partnerpropertyid=8365175"
