@@ -1,5 +1,4 @@
 import Link from "next/link";
-import dynamic from "next/dynamic";
 import { Shield, Zap, Globe, Sparkles, ArrowRight } from "lucide-react";
 import { TOOLS, getToolBySlug } from "@/lib/tools-registry";
 import Header from "@/components/Header";
@@ -12,11 +11,7 @@ import { toolGroupSchema } from "@/lib/tool-structured-data";
 import TrackedAffiliateLink from "@/components/TrackedAffiliateLink";
 import EngagementFloatingCta from "@/components/EngagementFloatingCta";
 import { publicHrefForToolSlug } from "@/lib/devbench-workspaces";
-
-const EngagementHome = dynamic(() => import("@/components/EngagementHome"), {
-  ssr: false,
-  loading: () => <div className="min-h-[600px]" aria-hidden />,
-});
+import EngagementHome from "@/components/EngagementHomeLazy";
 
 const websiteSchema = {
   "@context": "https://schema.org",
