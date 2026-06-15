@@ -402,6 +402,16 @@ export const TOOLS: Tool[] = [
     icon: "🎨",
   },
 
+  // Finance utilities
+  {
+    slug: "expense-splitter",
+    name: "Expense Splitter",
+    shortName: "Split Bill",
+    description: "Split group expenses and calculate who owes whom — add participants, log expenses, get minimum transactions to settle up. 100% client-side.",
+    category: "finance",
+    icon: "÷",
+  },
+
   // Developer utilities (new)
   {
     slug: "gitignore-generator",

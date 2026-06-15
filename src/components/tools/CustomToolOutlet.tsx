@@ -57,6 +57,7 @@ const IpInfoTool              = dynamic(() => import("@/components/tools/IpInfoT
 const NpmCompareTool          = dynamic(() => import("@/components/tools/NpmCompareTool"));
 const ColorConverterTool      = dynamic(() => import("@/components/tools/ColorConverterTool"));
 const ColorPaletteTool        = dynamic(() => import("@/components/tools/ColorPaletteTool"));
+const ExpenseSplitterTool     = dynamic(() => import("@/components/tools/ExpenseSplitterTool"));
 
 const FINANCE_SLUGS = new Set([
   "simple-interest", "gst-calculator", "discount-calculator",
@@ -94,7 +95,7 @@ export const CUSTOM_TOOL_SLUGS: ReadonlySet<string> = new Set([
   "mermaid-editor", "timezone-converter", "websocket-tester", "ipynb-to-pdf",
   "gitignore-generator", "license-generator", "env-validator",
   "dns-lookup", "ip-info", "npm-compare", "color-converter", "color-palette",
-  "notepad-plus-plus",
+  "notepad-plus-plus", "expense-splitter",
 ]);
 
 export default function CustomToolOutlet({ slug, tool }: { slug: string; tool: Tool }) {
@@ -155,6 +156,7 @@ export default function CustomToolOutlet({ slug, tool }: { slug: string; tool: T
     case "npm-compare":              return <NpmCompareTool tool={tool} />;
     case "color-converter":          return <ColorConverterTool tool={tool} />;
     case "color-palette":            return <ColorPaletteTool tool={tool} />;
+    case "expense-splitter":         return <ExpenseSplitterTool tool={tool} />;
     default:                         return null;
   }
 }
