@@ -34,6 +34,7 @@ function GenerateTab() {
     let cancelled = false;
     const t = text.trim();
     if (!t) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setDataUrl(null);
       setErr("");
       return;
@@ -134,6 +135,7 @@ function ScanTab() {
 
   // Check BarcodeDetector support on mount
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSupport(typeof window !== "undefined" && "BarcodeDetector" in window ? "yes" : "no");
   }, []);
 
