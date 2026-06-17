@@ -225,6 +225,22 @@ export const TOOLS: Tool[] = [
     category: "image",
     icon: "🗜",
   },
+  {
+    slug: "video-converter",
+    name: "Video Converter",
+    shortName: "Convert Video",
+    description: "Convert video files between MP4, WebM, MOV, AVI, and MKV — 100% client-side, no uploads needed",
+    category: "image",
+    icon: "🎬",
+  },
+  {
+    slug: "gif-maker",
+    name: "GIF Maker",
+    shortName: "GIF Maker",
+    description: "Turn any video clip into a high-quality animated GIF — set start time, duration, FPS, and width. Runs entirely in your browser.",
+    category: "image",
+    icon: "🎞️",
+  },
   // PDF suite — order matches /pdf hub (organize → optimize → convert → review)
   {
     slug: "merge-pdf",

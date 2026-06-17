@@ -58,6 +58,7 @@ const NpmCompareTool          = dynamic(() => import("@/components/tools/NpmComp
 const ColorConverterTool      = dynamic(() => import("@/components/tools/ColorConverterTool"));
 const ColorPaletteTool        = dynamic(() => import("@/components/tools/ColorPaletteTool"));
 const ExpenseSplitterTool     = dynamic(() => import("@/components/tools/ExpenseSplitterTool"));
+const VideoConverterTool      = dynamic(() => import("@/components/tools/VideoConverterTool"));
 
 const FINANCE_SLUGS = new Set([
   "simple-interest", "gst-calculator", "discount-calculator",
@@ -96,6 +97,7 @@ export const CUSTOM_TOOL_SLUGS: ReadonlySet<string> = new Set([
   "gitignore-generator", "license-generator", "env-validator",
   "dns-lookup", "ip-info", "npm-compare", "color-converter", "color-palette",
   "notepad-plus-plus", "expense-splitter",
+  "video-converter", "gif-maker",
 ]);
 
 export default function CustomToolOutlet({ slug, tool }: { slug: string; tool: Tool }) {
@@ -157,6 +159,8 @@ export default function CustomToolOutlet({ slug, tool }: { slug: string; tool: T
     case "color-converter":          return <ColorConverterTool tool={tool} />;
     case "color-palette":            return <ColorPaletteTool tool={tool} />;
     case "expense-splitter":         return <ExpenseSplitterTool tool={tool} />;
+    case "video-converter":          return <VideoConverterTool tool={tool} />;
+    case "gif-maker":                return <VideoConverterTool tool={tool} />;
     default:                         return null;
   }
 }
