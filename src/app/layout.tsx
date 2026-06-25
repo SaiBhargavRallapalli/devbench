@@ -32,7 +32,7 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.devbench.co.in"),
   title: {
-    default: "DevBench - Free Online Developer Tools for Developers",
+    default: `DevBench — ${TOOLS.length}+ Free Online Developer Tools | No Signup`,
     template: "%s | DevBench",
   },
   description:

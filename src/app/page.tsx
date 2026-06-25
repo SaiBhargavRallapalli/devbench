@@ -41,6 +41,33 @@ const featuredTools = FEATURED_TOOL_SLUGS.flatMap((slug) => {
   return t ? [t] : [];
 });
 
+const HOMEPAGE_FAQS = [
+  {
+    q: "What is DevBench?",
+    a: `DevBench is a free collection of ${TOOLS.length}+ online developer tools — JSON formatter, JWT debugger, Base64 encoder/decoder, regex tester, PDF merger, UUID generator, password generator, EMI calculator, and more. Everything runs directly in your browser with no account required.`,
+  },
+  {
+    q: "Is DevBench completely free?",
+    a: "Yes. All tools on DevBench are free to use, forever. There are no paywalls, usage limits, or premium tiers. The site is supported by unobtrusive affiliate links and ads.",
+  },
+  {
+    q: "Does DevBench store or upload my data?",
+    a: "No. Every tool runs client-side in your browser. Your JSON, JWTs, passwords, PDFs, and code never leave your device. DevBench has no backend that processes your input.",
+  },
+  {
+    q: "Do I need to create an account?",
+    a: "No signup, no email, no account. Open a tool and use it immediately — your last input is auto-saved in your browser's local storage so it's still there when you come back.",
+  },
+  {
+    q: "What kinds of developer tools does DevBench include?",
+    a: "DevBench covers JSON formatting and diffing, JWT debugging, Base64 and URL encoding, regex testing, UUID/ULID generation, hash generation (SHA-256, SHA-512), AES-256 encryption, PDF merging and splitting, text diffing, cron expression parsing, Unix timestamp conversion, QR code generation, finance calculators (EMI, GST, compound interest), health calculators (BMI, BMR), and much more.",
+  },
+  {
+    q: "Can I use DevBench offline?",
+    a: "Yes. DevBench is a Progressive Web App (PWA). After your first visit the app is cached by a service worker, so tools continue to work without an internet connection. You can also install it to your home screen or desktop for instant access.",
+  },
+] as const;
+
 const WHY_DEVBENCH_FEATURES = [
   {
     icon: Shield,
@@ -171,6 +198,23 @@ export default function HomePage() {
                   </p>
                 </div>
               </section>
+
+              <section aria-labelledby="faq-heading" className="text-left">
+                <h2
+                  id="faq-heading"
+                  className="text-lg font-semibold tracking-tight text-foreground sm:text-xl mb-5"
+                >
+                  Frequently asked questions
+                </h2>
+                <dl className="space-y-4">
+                  {HOMEPAGE_FAQS.map((faq) => (
+                    <div key={faq.q} className="rounded-2xl border border-border/70 bg-card/50 px-5 py-4 shadow-sm shadow-black/[0.03]">
+                      <dt className="text-sm font-semibold text-foreground">{faq.q}</dt>
+                      <dd className="mt-1.5 text-xs leading-relaxed text-muted-foreground">{faq.a}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </section>
             </div>
           </div>
         </section>
@@ -229,6 +273,15 @@ export default function HomePage() {
 
       <JsonLd data={websiteSchemaWithSearch()} />
       <JsonLd data={homepageToolGroupsSchema} />
+      <JsonLd data={{
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: HOMEPAGE_FAQS.map((faq) => ({
+          "@type": "Question",
+          name: faq.q,
+          acceptedAnswer: { "@type": "Answer", text: faq.a },
+        })),
+      }} />
     </>
   );
 }

@@ -9,6 +9,7 @@ export interface BlogPost {
   relatedToolSlug?: string;
   relatedToolLabel?: string;
   relatedToolHref?: string;
+  relatedBlogSlugs?: string[];
 }
 
 export const BLOG_POSTS: BlogPost[] = [
@@ -35,6 +36,7 @@ export const BLOG_POSTS: BlogPost[] = [
     relatedToolSlug: "base64-encode",
     relatedToolLabel: "Base64 Encode",
     relatedToolHref: "/tools/base64-encode",
+    relatedBlogSlugs: ["jwt-decoder-without-uploading-to-server", "encodeuricomponent-vs-encodeuri", "sha256-vs-md5-hash-functions"],
   },
   {
     slug: "jwt-security-best-practices-10-things-developers-get-wrong",
@@ -47,6 +49,7 @@ export const BLOG_POSTS: BlogPost[] = [
     relatedToolSlug: "jwt-debugger",
     relatedToolLabel: "JWT Debugger",
     relatedToolHref: "/jwt-debugger",
+    relatedBlogSlugs: ["jwt-explained", "jwt-decoder-without-uploading-to-server", "how-to-generate-secure-passwords"],
   },
   {
     slug: "yaml-vs-json-key-differences-with-real-examples",
@@ -59,18 +62,20 @@ export const BLOG_POSTS: BlogPost[] = [
     relatedToolSlug: "yaml-formatter",
     relatedToolLabel: "YAML Formatter & Validator",
     relatedToolHref: "/tools/yaml-formatter",
+    relatedBlogSlugs: ["how-to-validate-json-online", "common-json-errors", "json-to-csv"],
   },
   {
-    slug: "how-to-validate-json-online",
-    title: "How to Validate JSON Online (Safely)",
-    date: "2026-05-08",
+    slug: “how-to-validate-json-online”,
+    title: “How to Validate JSON Online (Safely)”,
+    date: “2026-05-08”,
     excerpt:
-      "Validate JSON before it breaks production APIs — what “valid JSON” means, how browser-only tools differ from server uploads, and a simple workflow you can repeat every time.",
-    tags: ["json", "debugging", "web"],
+      “Validate JSON before it breaks production APIs — what “valid JSON” means, how browser-only tools differ from server uploads, and a simple workflow you can repeat every time.”,
+    tags: [“json”, “debugging”, “web”],
     readMinutes: 5,
-    relatedToolSlug: "json-formatter",
-    relatedToolLabel: "JSON Formatter & Validator",
-    relatedToolHref: "/json",
+    relatedToolSlug: “json-formatter”,
+    relatedToolLabel: “JSON Formatter & Validator”,
+    relatedToolHref: “/json”,
+    relatedBlogSlugs: [“common-json-errors”, “yaml-vs-json-key-differences-with-real-examples”, “json-to-csv”],
   },
   {
     slug: "jwt-decoder-without-uploading-to-server",
@@ -83,6 +88,7 @@ export const BLOG_POSTS: BlogPost[] = [
     relatedToolSlug: "jwt-debugger",
     relatedToolLabel: "JWT Debugger",
     relatedToolHref: "/jwt-debugger",
+    relatedBlogSlugs: ["jwt-explained", "jwt-security-best-practices-10-things-developers-get-wrong", "how-base64-encoding-works-and-when-not-to-use-it"],
   },
   {
     slug: "uuid-vs-ulid-vs-nanoid",
@@ -95,6 +101,7 @@ export const BLOG_POSTS: BlogPost[] = [
     relatedToolSlug: "uuid-generator",
     relatedToolLabel: "UUID / ULID / Nano ID Generator",
     relatedToolHref: "/tools/uuid-generator",
+    relatedBlogSlugs: ["how-to-generate-secure-passwords", "sha256-vs-md5-hash-functions"],
   },
   {
     slug: "jwt-explained",
@@ -107,6 +114,7 @@ export const BLOG_POSTS: BlogPost[] = [
     relatedToolSlug: "jwt-debugger",
     relatedToolLabel: "JWT Debugger",
     relatedToolHref: "/jwt-debugger",
+    relatedBlogSlugs: ["jwt-security-best-practices-10-things-developers-get-wrong", "jwt-decoder-without-uploading-to-server", "how-base64-encoding-works-and-when-not-to-use-it"],
   },
   {
     slug: "encodeuricomponent-vs-encodeuri",
@@ -119,6 +127,7 @@ export const BLOG_POSTS: BlogPost[] = [
     relatedToolSlug: "url-encode",
     relatedToolLabel: "URL Encoder / Decoder",
     relatedToolHref: "/tools/url-encode",
+    relatedBlogSlugs: ["how-base64-encoding-works-and-when-not-to-use-it", "how-to-validate-json-online"],
   },
   {
     slug: "common-json-errors",
@@ -131,6 +140,7 @@ export const BLOG_POSTS: BlogPost[] = [
     relatedToolSlug: "json-formatter",
     relatedToolLabel: "JSON Formatter & Validator",
     relatedToolHref: "/json",
+    relatedBlogSlugs: ["how-to-validate-json-online", "yaml-vs-json-key-differences-with-real-examples", "json-to-csv"],
   },
   {
     slug: "regex-cheat-sheet-javascript",
@@ -143,6 +153,7 @@ export const BLOG_POSTS: BlogPost[] = [
     relatedToolSlug: "regex-tester",
     relatedToolLabel: "Regex Tester",
     relatedToolHref: "/tools/regex-tester",
+    relatedBlogSlugs: ["cron-expression-syntax-guide", "unix-timestamps-explained"],
   },
   {
     slug: "how-to-generate-secure-passwords",
@@ -155,6 +166,7 @@ export const BLOG_POSTS: BlogPost[] = [
     relatedToolSlug: "password-generator",
     relatedToolLabel: "Password Generator",
     relatedToolHref: "/tools/password-generator",
+    relatedBlogSlugs: ["sha256-vs-md5-hash-functions", "uuid-vs-ulid-vs-nanoid", "jwt-security-best-practices-10-things-developers-get-wrong"],
   },
   {
     slug: "sha256-vs-md5-hash-functions",
@@ -167,6 +179,7 @@ export const BLOG_POSTS: BlogPost[] = [
     relatedToolSlug: "hash-generator",
     relatedToolLabel: "Hash Generator",
     relatedToolHref: "/tools/hash-generator",
+    relatedBlogSlugs: ["how-to-generate-secure-passwords", "how-base64-encoding-works-and-when-not-to-use-it"],
   },
   {
     slug: "cron-expression-syntax-guide",
@@ -179,6 +192,7 @@ export const BLOG_POSTS: BlogPost[] = [
     relatedToolSlug: "cron-parser",
     relatedToolLabel: "Cron Expression Parser",
     relatedToolHref: "/tools/cron-parser",
+    relatedBlogSlugs: ["unix-timestamps-explained", "regex-cheat-sheet-javascript"],
   },
   {
     slug: "unix-timestamps-explained",
@@ -191,6 +205,7 @@ export const BLOG_POSTS: BlogPost[] = [
     relatedToolSlug: "unix-timestamp",
     relatedToolLabel: "Unix Timestamp Converter",
     relatedToolHref: "/tools/unix-timestamp",
+    relatedBlogSlugs: ["cron-expression-syntax-guide", "regex-cheat-sheet-javascript"],
   },
   {
     slug: "hex-rgb-hsl-css-colors-explained",
@@ -251,6 +266,7 @@ export const BLOG_POSTS: BlogPost[] = [
     relatedToolSlug: "merge-pdf",
     relatedToolLabel: "PDF Merger",
     relatedToolHref: "/tools/merge-pdf",
+    relatedBlogSlugs: ["image-to-pdf"],
   },
   {
     slug: "image-to-pdf",
@@ -263,6 +279,7 @@ export const BLOG_POSTS: BlogPost[] = [
     relatedToolSlug: "image-to-pdf",
     relatedToolLabel: "Image to PDF Converter",
     relatedToolHref: "/tools/image-to-pdf",
+    relatedBlogSlugs: ["merge-pdf-online"],
   },
   {
     slug: "loan-emi-calculator",
@@ -275,6 +292,7 @@ export const BLOG_POSTS: BlogPost[] = [
     relatedToolSlug: "loan-emi-calculator",
     relatedToolLabel: "Loan EMI Calculator",
     relatedToolHref: "/tools/loan-emi-calculator",
+    relatedBlogSlugs: ["bmi-calculator"],
   },
   {
     slug: "bmi-calculator",
@@ -287,6 +305,7 @@ export const BLOG_POSTS: BlogPost[] = [
     relatedToolSlug: "bmi-calculator",
     relatedToolLabel: "BMI Calculator",
     relatedToolHref: "/tools/bmi-calculator",
+    relatedBlogSlugs: ["loan-emi-calculator"],
   },
   {
     slug: "json-to-csv",
@@ -299,6 +318,7 @@ export const BLOG_POSTS: BlogPost[] = [
     relatedToolSlug: "json-to-csv",
     relatedToolLabel: "JSON to CSV Converter",
     relatedToolHref: "/tools/json-to-csv",
+    relatedBlogSlugs: ["how-to-validate-json-online", "common-json-errors", "yaml-vs-json-key-differences-with-real-examples"],
   },
 ];
 
