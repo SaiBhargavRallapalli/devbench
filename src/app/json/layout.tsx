@@ -5,6 +5,7 @@ import JsonLd from "@/components/JsonLd";
 import { TOOL_FAQS } from "@/lib/tool-faqs";
 import { socialMetadata, SITE_URL } from "@/lib/social-metadata";
 import { breadcrumbSchema } from "@/lib/breadcrumb-schema";
+import { faqPageSchema } from "@/lib/schema-helpers";
 import { webApplicationEnrichment } from "@/lib/web-application-schema";
 
 const JSON_TITLE = "JSON Formatter, Validator & Toolkit";
@@ -63,21 +64,7 @@ const webAppSchema = {
 };
 
 const jsonFaqs = TOOL_FAQS["json"];
-const faqSchema =
-  jsonFaqs?.length
-    ? {
-        "@context": "https://schema.org",
-        "@type": "FAQPage",
-        mainEntity: jsonFaqs.map((faq) => ({
-          "@type": "Question",
-          name: faq.q,
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: faq.a,
-          },
-        })),
-      }
-    : null;
+const faqSchema = faqPageSchema(jsonFaqs ?? []);
 
 export default function JsonToolkitLayout({
   children,

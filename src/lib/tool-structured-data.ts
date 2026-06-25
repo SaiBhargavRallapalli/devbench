@@ -74,6 +74,7 @@ export function toolItemSchema(
       price: "0",
       priceCurrency: "USD",
     },
+    isAccessibleForFree: true,
     keywords: toolKeywords(tool).join(", "),
   };
 

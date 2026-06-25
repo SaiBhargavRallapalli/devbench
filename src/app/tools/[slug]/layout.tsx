@@ -11,6 +11,7 @@ import CategoryBrowseMore from "@/components/CategoryBrowseMore";
 import { socialMetadata, SITE_URL } from "@/lib/social-metadata";
 import { webApplicationEnrichment, toolScreenshotUrl } from "@/lib/web-application-schema";
 import { breadcrumbSchema } from "@/lib/breadcrumb-schema";
+import { faqPageGraphNode } from "@/lib/schema-helpers";
 import { categoryBrowseHref, categoryLabel } from "@/lib/category-navigation";
 import { toolPageStructuredGraph } from "@/lib/tool-structured-data";
 import { publicHrefForToolSlug } from "@/lib/devbench-workspaces";
@@ -102,18 +103,9 @@ export default async function ToolSlugLayout({
     );
   }
 
-  if (faqs.length > 0) {
-    graph.push({
-      "@type": "FAQPage",
-      mainEntity: faqs.map((faq) => ({
-        "@type": "Question",
-        name: faq.q,
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: faq.a,
-        },
-      })),
-    });
+  const faqNode = faqPageGraphNode(faqs);
+  if (faqNode) {
+    graph.push(faqNode);
   }
 
   const jsonLd = graph.length > 0

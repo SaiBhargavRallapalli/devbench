@@ -10,6 +10,7 @@ import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import JsonLd from "@/components/JsonLd";
+import { organizationSchema } from "@/lib/site-organization-schema";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -93,25 +94,6 @@ export const metadata: Metadata = {
   },
 };
 
-const websiteSchema = {
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  name: "DevBench",
-  url: "https://www.devbench.co.in",
-  description:
-    "Free online developer tools — JSON, Base64, regex, JWT, UUID & 100+ more. No login; runs in your browser.",
-};
-
-const organizationSchema = {
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  name: "DevBench",
-  url: "https://www.devbench.co.in",
-  logo: "https://www.devbench.co.in/icon.svg",
-  description:
-    "Free online developer tools — JSON formatter, Base64 encoder, regex tester, JWT debugger, UUID generator & more. No login required.",
-};
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -141,7 +123,6 @@ export default function RootLayout({
         <style dangerouslySetInnerHTML={{ __html: `body{background:#fafafa;color:#111111}html.dark body{background:#09090b;color:#fafafa}@media(prefers-color-scheme:dark){html:not(.light) body{background:#09090b;color:#fafafa}}` }} />
       </head>
       <body className="min-h-full flex flex-col bg-background text-foreground">
-        <JsonLd data={websiteSchema} />
         <JsonLd data={organizationSchema} />
         {/* Skip link — visible only when focused; first tab stop for keyboard users */}
         <a

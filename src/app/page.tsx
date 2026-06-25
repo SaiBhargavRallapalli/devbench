@@ -8,27 +8,11 @@ import JsonLd from "@/components/JsonLd";
 import { FOOTER_CATEGORY_ORDER } from "@/lib/site-navigation";
 import { getCategoryHighlightTools } from "@/lib/category-navigation";
 import { toolGroupSchema } from "@/lib/tool-structured-data";
+import { websiteSchemaWithSearch } from "@/lib/site-organization-schema";
 import TrackedAffiliateLink from "@/components/TrackedAffiliateLink";
 import EngagementFloatingCta from "@/components/EngagementFloatingCta";
 import { publicHrefForToolSlug } from "@/lib/devbench-workspaces";
 import EngagementHome from "@/components/EngagementHomeLazy";
-
-const websiteSchema = {
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  name: "DevBench",
-  url: "https://www.devbench.co.in",
-  description:
-    `${TOOLS.length}+ free tools in your browser — JSON, PDFs, converters, calculators. No signup.`,
-  potentialAction: {
-    "@type": "SearchAction",
-    target: {
-      "@type": "EntryPoint",
-      urlTemplate: "https://www.devbench.co.in/?q={search_term_string}",
-    },
-    "query-input": "required name=search_term_string",
-  },
-};
 
 const homepageToolGroupsSchema = {
   "@context": "https://schema.org",
@@ -91,8 +75,8 @@ export default function HomePage() {
               </span>
             </div>
             <h1 className="text-4xl sm:text-6xl font-bold tracking-tight mb-4 text-balance">
-              Your Developer{" "}
-              <span className="text-accent">Workbench</span>
+              Free Online{" "}
+              <span className="text-accent">Developer Tools</span>
             </h1>
             <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-8 leading-relaxed">
               Whether you ship code, study, or just need to fix a file — decode JWTs, merge PDFs,
@@ -243,7 +227,7 @@ export default function HomePage() {
       <EngagementFloatingCta />
       <Footer />
 
-      <JsonLd data={websiteSchema} />
+      <JsonLd data={websiteSchemaWithSearch()} />
       <JsonLd data={homepageToolGroupsSchema} />
     </>
   );
