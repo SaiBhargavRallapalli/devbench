@@ -2347,6 +2347,1124 @@ console.log(jsonToCsv(flat));`}
   );
 }
 
+function JsonSchemaValidation() {
+  return (
+    <div className="space-y-4">
+      <p className={prose}>
+        JSON is flexible by design — any key, any value, any depth. That flexibility is great for prototyping and terrible for production APIs. JSON Schema is the standard way to describe what a valid JSON document must look like: which fields are required, what types they must be, and what constraints they must satisfy.
+      </p>
+
+      <h2 className={h2}>What JSON Schema actually is</h2>
+      <p className={prose}>
+        A JSON Schema is itself a JSON document. You write it once, then use it to validate any number of input documents against it. The schema lives at <code className={code}>$schema: "https://json-schema.org/draft/2020-12/schema"</code> by convention. Libraries like <strong>AJV</strong> (Node.js), <strong>jsonschema</strong> (Python), and <strong>Newtonsoft.Json.Schema</strong> (.NET) implement validation against it.
+      </p>
+      <p className={prose}>A minimal schema looks like this:</p>
+      <pre className="bg-muted rounded-xl p-4 text-xs font-mono overflow-auto my-3"><code>{`{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["id", "name", "email"],
+  "properties": {
+    "id":    { "type": "integer", "minimum": 1 },
+    "name":  { "type": "string",  "minLength": 1 },
+    "email": { "type": "string",  "format": "email" }
+  },
+  "additionalProperties": false
+}`}</code></pre>
+      <p className={prose}>This schema says: the document must be an object with three required fields. <code className={code}>id</code> must be a positive integer, <code className={code}>name</code> a non-empty string, <code className={code}>email</code> a valid email address, and no extra fields are allowed.</p>
+
+      <h2 className={h2}>The six core keywords</h2>
+      <table className={table}>
+        <thead><tr><th className={th}>Keyword</th><th className={th}>What it does</th><th className={th}>Example</th></tr></thead>
+        <tbody>
+          <tr><td className={td}><code className={code}>type</code></td><td className={td}>Constrains the JSON type</td><td className={td}><code className={code}>{`"type": "string"`}</code></td></tr>
+          <tr><td className={td}><code className={code}>required</code></td><td className={td}>Lists mandatory keys in an object</td><td className={td}><code className={code}>{`"required": ["id"]`}</code></td></tr>
+          <tr><td className={td}><code className={code}>properties</code></td><td className={td}>Defines sub-schemas for each key</td><td className={td}><code className={code}>{`"properties": { "age": { ... } }`}</code></td></tr>
+          <tr><td className={td}><code className={code}>enum</code></td><td className={td}>Restricts value to a fixed set</td><td className={td}><code className={code}>{`"enum": ["active", "inactive"]`}</code></td></tr>
+          <tr><td className={td}><code className={code}>minimum / maximum</code></td><td className={td}>Numeric range constraints</td><td className={td}><code className={code}>{`"minimum": 0, "maximum": 100`}</code></td></tr>
+          <tr><td className={td}><code className={code}>pattern</code></td><td className={td}>Regex the string must match</td><td className={td}><code className={code}>{`"pattern": "^[A-Z]{2}\\d{4}$"`}</code></td></tr>
+        </tbody>
+      </table>
+
+      <h2 className={h2}>String constraints</h2>
+      <ul className={ul}>
+        <li><code className={code}>minLength</code> / <code className={code}>maxLength</code> — character count bounds</li>
+        <li><code className={code}>pattern</code> — a regex the value must satisfy (anchored to the full string)</li>
+        <li><code className={code}>format</code> — semantic hints: <code className={code}>email</code>, <code className={code}>uri</code>, <code className={code}>date</code>, <code className={code}>date-time</code>, <code className={code}>uuid</code>. Note: formats are annotations by default — validators only enforce them if you opt in (e.g. <code className={code}>ajv.opts.formats</code>)</li>
+      </ul>
+
+      <h2 className={h2}>Array constraints</h2>
+      <ul className={ul}>
+        <li><code className={code}>items</code> — the schema every element must satisfy</li>
+        <li><code className={code}>minItems</code> / <code className={code}>maxItems</code> — length bounds</li>
+        <li><code className={code}>uniqueItems: true</code> — no duplicates allowed</li>
+      </ul>
+      <pre className="bg-muted rounded-xl p-4 text-xs font-mono overflow-auto my-3"><code>{`{
+  "type": "array",
+  "items": { "type": "string" },
+  "minItems": 1,
+  "uniqueItems": true
+}`}</code></pre>
+
+      <h2 className={h2}>Composition keywords</h2>
+      <p className={prose}>JSON Schema has four composition keywords that let you build complex rules from simpler schemas:</p>
+      <ul className={ul}>
+        <li><code className={code}>allOf</code> — must satisfy every listed schema (AND)</li>
+        <li><code className={code}>anyOf</code> — must satisfy at least one listed schema (OR)</li>
+        <li><code className={code}>oneOf</code> — must satisfy exactly one listed schema (XOR)</li>
+        <li><code className={code}>not</code> — must not satisfy the given schema</li>
+      </ul>
+      <p className={prose}>A common pattern is <code className={code}>anyOf</code> for nullable fields: <code className={code}>{`"anyOf": [{ "type": "string" }, { "type": "null" }]`}</code>. In JSON Schema 2019-09+ you can write this more concisely as <code className={code}>{`"type": ["string", "null"]`}</code>.</p>
+
+      <h2 className={h2}>Validating with AJV in Node.js</h2>
+      <pre className="bg-muted rounded-xl p-4 text-xs font-mono overflow-auto my-3"><code>{`import Ajv from "ajv";
+import addFormats from "ajv-formats";
+
+const ajv = new Ajv();
+addFormats(ajv); // enables "email", "uri", "date-time" etc.
+
+const schema = {
+  type: "object",
+  required: ["id", "name"],
+  properties: {
+    id:   { type: "integer", minimum: 1 },
+    name: { type: "string", minLength: 1 },
+  },
+  additionalProperties: false,
+};
+
+const validate = ajv.compile(schema);
+const valid = validate({ id: 1, name: "Alice" });
+
+if (!valid) {
+  console.error(validate.errors);
+}`}</code></pre>
+      <p className={prose}>
+        <code className={code}>ajv.compile()</code> returns a reusable validation function — compile once, call many times. The <code className={code}>validate.errors</code> array contains detailed error objects with the failing path, keyword, and message.
+      </p>
+
+      <h2 className={h2}>$ref and reusable definitions</h2>
+      <p className={prose}>Large schemas use <code className={code}>$defs</code> (formerly <code className={code}>definitions</code>) and <code className={code}>$ref</code> to avoid repetition:</p>
+      <pre className="bg-muted rounded-xl p-4 text-xs font-mono overflow-auto my-3"><code>{`{
+  "$defs": {
+    "Address": {
+      "type": "object",
+      "required": ["street", "city"],
+      "properties": {
+        "street": { "type": "string" },
+        "city":   { "type": "string" }
+      }
+    }
+  },
+  "type": "object",
+  "properties": {
+    "billing":  { "$ref": "#/$defs/Address" },
+    "shipping": { "$ref": "#/$defs/Address" }
+  }
+}`}</code></pre>
+
+      <h2 className={h2}>Common mistakes</h2>
+      <ul className={ul}>
+        <li><strong>Forgetting <code className={code}>additionalProperties: false</code></strong> — without it, extra fields silently pass validation</li>
+        <li><strong>Confusing <code className={code}>format</code> enforcement</strong> — <code className={code}>{`"format": "email"`}</code> is not enforced unless your validator is configured to check formats</li>
+        <li><strong>Using <code className={code}>oneOf</code> where <code className={code}>anyOf</code> is correct</strong> — <code className={code}>oneOf</code> fails if more than one sub-schema matches, which is rarely what you want</li>
+        <li><strong>Schema draft mismatch</strong> — AJV v8 defaults to Draft 2020-12; older tooling may use Draft 4 or 7 with different keyword semantics</li>
+      </ul>
+    </div>
+  );
+}
+
+function JsonPathCheatSheet() {
+  return (
+    <div className="space-y-4">
+      <p className={prose}>
+        JSONPath is a query language for JSON, analogous to XPath for XML. Given a deeply nested JSON document, a JSONPath expression lets you extract one value, a list of values, or everything that matches a pattern — without writing loops. It is supported natively in PostgreSQL (<code className={code}>jsonb_path_query</code>), AWS CloudFormation, Kubernetes admission webhooks, and most API testing tools.
+      </p>
+
+      <h2 className={h2}>Root and current node</h2>
+      <table className={table}>
+        <thead><tr><th className={th}>Symbol</th><th className={th}>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td className={td}><code className={code}>$</code></td><td className={td}>Root of the document</td></tr>
+          <tr><td className={td}><code className={code}>@</code></td><td className={td}>Current node (used inside filter expressions)</td></tr>
+        </tbody>
+      </table>
+      <p className={prose}>Every JSONPath expression starts with <code className={code}>$</code>.</p>
+
+      <h2 className={h2}>Navigation operators</h2>
+      <table className={table}>
+        <thead><tr><th className={th}>Operator</th><th className={th}>Meaning</th><th className={th}>Example</th></tr></thead>
+        <tbody>
+          <tr><td className={td}><code className={code}>.key</code></td><td className={td}>Child key (dot notation)</td><td className={td}><code className={code}>$.user.name</code></td></tr>
+          <tr><td className={td}><code className={code}>["key"]</code></td><td className={td}>Child key (bracket notation — use for keys with spaces or special chars)</td><td className={td}><code className={code}>{`$["first name"]`}</code></td></tr>
+          <tr><td className={td}><code className={code}>[n]</code></td><td className={td}>Array element at index <em>n</em> (0-based)</td><td className={td}><code className={code}>$.items[0]</code></td></tr>
+          <tr><td className={td}><code className={code}>[*]</code></td><td className={td}>All array elements (wildcard)</td><td className={td}><code className={code}>$.items[*].id</code></td></tr>
+          <tr><td className={td}><code className={code}>.*</code></td><td className={td}>All children of current node</td><td className={td}><code className={code}>$.user.*</code></td></tr>
+          <tr><td className={td}><code className={code}>..</code></td><td className={td}>Recursive descent — searches all depths</td><td className={td}><code className={code}>$..name</code></td></tr>
+        </tbody>
+      </table>
+
+      <h2 className={h2}>Array slicing</h2>
+      <p className={prose}>JSONPath supports Python-style slice notation <code className={code}>[start:end:step]</code>:</p>
+      <table className={table}>
+        <thead><tr><th className={th}>Expression</th><th className={th}>Result</th></tr></thead>
+        <tbody>
+          <tr><td className={td}><code className={code}>$.a[0:3]</code></td><td className={td}>Elements at index 0, 1, 2</td></tr>
+          <tr><td className={td}><code className={code}>$.a[-1]</code></td><td className={td}>Last element</td></tr>
+          <tr><td className={td}><code className={code}>$.a[::2]</code></td><td className={td}>Every second element (0, 2, 4 …)</td></tr>
+          <tr><td className={td}><code className={code}>$.a[1,3]</code></td><td className={td}>Elements at index 1 and 3 (union)</td></tr>
+        </tbody>
+      </table>
+
+      <h2 className={h2}>Filter expressions</h2>
+      <p className={prose}>Filter expressions use <code className={code}>?(…)</code> syntax to select elements that satisfy a condition. Inside the filter, <code className={code}>@</code> refers to the current array element:</p>
+      <table className={table}>
+        <thead><tr><th className={th}>Expression</th><th className={th}>Selects</th></tr></thead>
+        <tbody>
+          <tr><td className={td}><code className={code}>{`$.items[?(@.price < 10)]`}</code></td><td className={td}>Items where price is less than 10</td></tr>
+          <tr><td className={td}><code className={code}>{`$.users[?(@.active == true)]`}</code></td><td className={td}>Active users</td></tr>
+          <tr><td className={td}><code className={code}>{`$..book[?(@.isbn)]`}</code></td><td className={td}>Any book with an isbn field</td></tr>
+          <tr><td className={td}><code className={code}>{`$.orders[?(@.total >= 100 && @.status == "shipped")]`}</code></td><td className={td}>Shipped orders over $100</td></tr>
+        </tbody>
+      </table>
+
+      <h2 className={h2}>Practical examples</h2>
+      <p className={prose}>Given this document:</p>
+      <pre className="bg-muted rounded-xl p-4 text-xs font-mono overflow-auto my-3"><code>{`{
+  "store": {
+    "books": [
+      { "title": "Clean Code",    "price": 29.99, "inStock": true  },
+      { "title": "Refactoring",   "price": 34.99, "inStock": false },
+      { "title": "The Pragmatic Programmer", "price": 39.99, "inStock": true }
+    ]
+  }
+}`}</code></pre>
+      <table className={table}>
+        <thead><tr><th className={th}>Expression</th><th className={th}>Result</th></tr></thead>
+        <tbody>
+          <tr><td className={td}><code className={code}>$.store.books[*].title</code></td><td className={td}>All three titles</td></tr>
+          <tr><td className={td}><code className={code}>$.store.books[-1].title</code></td><td className={td}><code className={code}>"The Pragmatic Programmer"</code></td></tr>
+          <tr><td className={td}><code className={code}>{`$.store.books[?(@.inStock)].title`}</code></td><td className={td}><code className={code}>"Clean Code"</code>, <code className={code}>"The Pragmatic Programmer"</code></td></tr>
+          <tr><td className={td}><code className={code}>{`$.store.books[?(@.price < 35)].title`}</code></td><td className={td}><code className={code}>"Clean Code"</code>, <code className={code}>"Refactoring"</code></td></tr>
+          <tr><td className={td}><code className={code}>$..price</code></td><td className={td}>All three prices (recursive)</td></tr>
+        </tbody>
+      </table>
+
+      <h2 className={h2}>JSONPath in JavaScript</h2>
+      <p className={prose}>No native browser or Node.js API supports JSONPath — you need a library. The most widely used is <code className={code}>jsonpath-plus</code>:</p>
+      <pre className="bg-muted rounded-xl p-4 text-xs font-mono overflow-auto my-3"><code>{`import { JSONPath } from "jsonpath-plus";
+
+const result = JSONPath({
+  path: "$.store.books[?(@.price < 35)].title",
+  json: document,
+});
+// ["Clean Code", "Refactoring"]`}</code></pre>
+
+      <h2 className={h2}>JSONPath in PostgreSQL</h2>
+      <p className={prose}>PostgreSQL 12+ supports the SQL/JSON standard path language (similar to JSONPath) via <code className={code}>jsonb_path_query</code>:</p>
+      <pre className="bg-muted rounded-xl p-4 text-xs font-mono overflow-auto my-3"><code>{`SELECT jsonb_path_query(data, '$.store.books[*] ? (@.price < 35).title')
+FROM products;`}</code></pre>
+
+      <h2 className={h2}>Gotchas</h2>
+      <ul className={ul}>
+        <li><strong>No universal standard</strong> — RFC 9535 (2024) finally standardised JSONPath, but many tools pre-date it and differ in filter syntax and recursion behaviour. Test your expressions against your specific library.</li>
+        <li><strong>Recursive descent is slow on large documents</strong> — <code className={code}>$..key</code> traverses the entire tree. Use specific paths in performance-sensitive code.</li>
+        <li><strong>Missing nodes return an empty array</strong>, not null — account for this in your error handling.</li>
+      </ul>
+    </div>
+  );
+}
+
+function UrlEncodingExplained() {
+  return (
+    <div className="space-y-4">
+      <p className={prose}>
+        Open your browser's network panel and look at a real URL. You will see strings like <code className={code}>Hello%20World</code>, <code className={code}>price%3D99</code>, or <code className={code}>tag=c%2B%2B</code>. These are percent-encoded characters — a transformation applied because URLs can only safely contain a limited set of ASCII characters.
+      </p>
+
+      <h2 className={h2}>Why URL encoding exists</h2>
+      <p className={prose}>
+        The URI specification (RFC 3986) defines a small set of <strong>unreserved characters</strong> that are always safe in a URL: <code className={code}>A–Z a–z 0–9 - _ . ~</code>. Everything else — spaces, slashes, equals signs, question marks, Unicode characters — must be percent-encoded before being placed in a URL component.
+      </p>
+      <p className={prose}>
+        Percent-encoding works by replacing the character with <code className={code}>%</code> followed by its two-digit hexadecimal UTF-8 byte value. A space (byte 0x20) becomes <code className={code}>%20</code>. The <code className={code}>/</code> character (byte 0x2F) becomes <code className={code}>%2F</code>.
+      </p>
+
+      <h2 className={h2}>Reserved vs unreserved characters</h2>
+      <table className={table}>
+        <thead><tr><th className={th}>Category</th><th className={th}>Characters</th><th className={th}>Rule</th></tr></thead>
+        <tbody>
+          <tr><td className={td}>Unreserved</td><td className={td}><code className={code}>A-Z a-z 0-9 - _ . ~</code></td><td className={td}>Never encoded — always safe</td></tr>
+          <tr><td className={td}>Reserved (general delimiters)</td><td className={td}><code className={code}>: / ? # [ ] @</code></td><td className={td}>Have structural meaning — encode when used as data</td></tr>
+          <tr><td className={td}>Reserved (sub-delimiters)</td><td className={td}><code className={code}>! $ & {"'"} ( ) * + , ; =</code></td><td className={td}>Have component-specific meaning — encode when used as data</td></tr>
+          <tr><td className={td}>Everything else</td><td className={td}>Spaces, Unicode, <code className={code}>{`<>`}</code>, <code className={code}>%</code> itself</td><td className={td}>Must always be encoded</td></tr>
+        </tbody>
+      </table>
+
+      <h2 className={h2}>%20 vs + for spaces</h2>
+      <p className={prose}>
+        You will see both <code className={code}>%20</code> and <code className={code}>+</code> used for spaces, and they are <em>not</em> interchangeable:
+      </p>
+      <ul className={ul}>
+        <li><code className={code}>%20</code> is the correct percent-encoding of a space in any URL component (path, query, fragment)</li>
+        <li><code className={code}>+</code> means a space <strong>only</strong> in <code className={code}>application/x-www-form-urlencoded</code> bodies — the format used by HTML forms. It does NOT mean a space in a path segment.</li>
+      </ul>
+      <p className={prose}>
+        If you are building a URL by hand, always use <code className={code}>%20</code> for spaces. Use <code className={code}>+</code> only when serialising HTML form data.
+      </p>
+
+      <h2 className={h2}>Common percent-encoded characters</h2>
+      <table className={table}>
+        <thead><tr><th className={th}>Character</th><th className={th}>Encoded</th><th className={th}>Where it appears</th></tr></thead>
+        <tbody>
+          <tr><td className={td}>Space</td><td className={td}><code className={code}>%20</code></td><td className={td}>Search queries, file names with spaces</td></tr>
+          <tr><td className={td}><code className={code}>/</code></td><td className={td}><code className={code}>%2F</code></td><td className={td}>Slash inside a path segment (not as path separator)</td></tr>
+          <tr><td className={td}><code className={code}>?</code></td><td className={td}><code className={code}>%3F</code></td><td className={td}>Literal question mark in query value</td></tr>
+          <tr><td className={td}><code className={code}>=</code></td><td className={td}><code className={code}>%3D</code></td><td className={td}>Equals sign in a query value</td></tr>
+          <tr><td className={td}><code className={code}>&</code></td><td className={td}><code className={code}>%26</code></td><td className={td}>Ampersand in a query value</td></tr>
+          <tr><td className={td}><code className={code}>+</code></td><td className={td}><code className={code}>%2B</code></td><td className={td}>Literal plus in query value (to avoid space confusion)</td></tr>
+          <tr><td className={td}><code className={code}>#</code></td><td className={td}><code className={code}>%23</code></td><td className={td}>Hash in a query value (prevents fragment confusion)</td></tr>
+          <tr><td className={td}>€ (U+20AC)</td><td className={td}><code className={code}>%E2%82%AC</code></td><td className={td}>Non-ASCII — UTF-8 bytes, each percent-encoded</td></tr>
+        </tbody>
+      </table>
+
+      <h2 className={h2}>encodeURIComponent vs encodeURI</h2>
+      <p className={prose}>
+        JavaScript has two built-in encoding functions. The key difference is what they leave alone:
+      </p>
+      <ul className={ul}>
+        <li><code className={code}>encodeURIComponent(str)</code> — encodes everything except <code className={code}>A-Z a-z 0-9 - _ . ! ~ * {"'"} ( )</code>. Use this for <strong>individual query parameter values</strong> — it encodes <code className={code}>/</code>, <code className={code}>?</code>, <code className={code}>&</code>, <code className={code}>=</code>, and <code className={code}>#</code>.</li>
+        <li><code className={code}>encodeURI(str)</code> — leaves reserved characters alone (assumes the input is already a complete URL). Use this only if you have a full URL and want to encode stray non-ASCII characters in it without breaking the URL structure.</li>
+      </ul>
+      <pre className="bg-muted rounded-xl p-4 text-xs font-mono overflow-auto my-3"><code>{`// Building a URL with query params — use encodeURIComponent
+const q = encodeURIComponent("C++ programming & design");
+const url = \`https://example.com/search?q=\${q}\`;
+// https://example.com/search?q=C%2B%2B%20programming%20%26%20design
+
+// Using encodeURI on an existing URL — leaves / ? & = intact
+encodeURI("https://example.com/path with spaces?q=hello");
+// https://example.com/path%20with%20spaces?q=hello`}</code></pre>
+
+      <h2 className={h2}>Decoding</h2>
+      <p className={prose}>
+        The reverse functions are <code className={code}>decodeURIComponent()</code> and <code className={code}>decodeURI()</code>. Use <code className={code}>decodeURIComponent()</code> for individual query values. Calling <code className={code}>decodeURIComponent()</code> on a full URL will decode structural characters like <code className={code}>%2F</code> back to <code className={code}>/</code>, which may break path parsing.
+      </p>
+      <p className={prose}>
+        Always decode query values on the server side — never in a browser URL bar. Most server frameworks (Express, FastAPI, Laravel) decode query parameters automatically.
+      </p>
+    </div>
+  );
+}
+
+function AesVsRsaEncryption() {
+  return (
+    <div className="space-y-4">
+      <p className={prose}>
+        AES and RSA are both encryption algorithms, but they solve different problems. You need to understand both — not to choose one over the other, but because real-world systems use them together: RSA to exchange a key, AES to encrypt the actual data. TLS, PGP, and SSH all work this way.
+      </p>
+
+      <h2 className={h2}>AES — symmetric encryption</h2>
+      <p className={prose}>
+        AES (Advanced Encryption Standard) is a <strong>symmetric</strong> cipher: the same key is used to encrypt and decrypt. It operates on fixed-size 128-bit blocks using key sizes of 128, 192, or 256 bits. AES-256 is the current gold standard for data-at-rest encryption.
+      </p>
+      <ul className={ul}>
+        <li><strong>Speed</strong> — extremely fast, hardware-accelerated on modern CPUs (AES-NI instructions). Can encrypt gigabytes per second.</li>
+        <li><strong>Key size</strong> — 128, 192, or 256 bits. AES-256 provides 2²⁵⁶ possible keys — computationally unbreakable.</li>
+        <li><strong>Modes of operation</strong> — the mode determines how blocks are chained. Use GCM (Galois/Counter Mode) for authenticated encryption. Avoid ECB (Electronic Codebook) — it leaks patterns.</li>
+        <li><strong>The problem</strong> — both parties must share the same secret key. How do you securely exchange it with someone you have never met before?</li>
+      </ul>
+
+      <h2 className={h2}>RSA — asymmetric encryption</h2>
+      <p className={prose}>
+        RSA is an <strong>asymmetric</strong> cipher: it uses a key pair — a <strong>public key</strong> that anyone can have, and a <strong>private key</strong> that only you hold. Data encrypted with the public key can only be decrypted with the private key.
+      </p>
+      <ul className={ul}>
+        <li><strong>Speed</strong> — slow. RSA-2048 encryption is roughly 1000× slower than AES-256. Never use RSA to encrypt large payloads directly.</li>
+        <li><strong>Key size</strong> — 2048-bit minimum (4096-bit for long-lived keys). The security comes from the difficulty of factoring large integers.</li>
+        <li><strong>What it solves</strong> — the key distribution problem. You can publish your RSA public key anywhere. Anyone can encrypt a message that only your private key can read.</li>
+        <li><strong>Signatures</strong> — RSA works in reverse for signing: you sign with the private key, anyone with the public key can verify. This is how code signing, SSL certificates, and JWT RS256 work.</li>
+      </ul>
+
+      <h2 className={h2}>Side-by-side comparison</h2>
+      <table className={table}>
+        <thead><tr><th className={th}>Property</th><th className={th}>AES</th><th className={th}>RSA</th></tr></thead>
+        <tbody>
+          <tr><td className={td}>Key type</td><td className={td}>Symmetric (one shared key)</td><td className={td}>Asymmetric (public + private pair)</td></tr>
+          <tr><td className={td}>Speed</td><td className={td}>Very fast (GB/s with AES-NI)</td><td className={td}>Slow (~1 ms per operation)</td></tr>
+          <tr><td className={td}>Max plaintext</td><td className={td}>Unlimited</td><td className={td}>Key size minus padding (~245 bytes for RSA-2048)</td></tr>
+          <tr><td className={td}>Key exchange</td><td className={td}>Requires a secure channel</td><td className={td}>Public key can be distributed openly</td></tr>
+          <tr><td className={td}>Use for</td><td className={td}>Bulk data encryption, file encryption, disk encryption</td><td className={td}>Key exchange, digital signatures, certificates</td></tr>
+          <tr><td className={td}>Common key sizes</td><td className={td}>128, 256 bits</td><td className={td}>2048, 4096 bits</td></tr>
+        </tbody>
+      </table>
+
+      <h2 className={h2}>How TLS combines both</h2>
+      <p className={prose}>
+        TLS (the protocol behind HTTPS) uses RSA (or Elliptic Curve Diffie-Hellman) to establish a shared secret, then switches to AES for the actual data transfer. This is called a <strong>hybrid encryption scheme</strong>:
+      </p>
+      <ol className={ol}>
+        <li>The server sends its RSA public key (in its SSL certificate)</li>
+        <li>The client generates a random AES session key</li>
+        <li>The client encrypts the session key with the server's RSA public key and sends it</li>
+        <li>The server decrypts the session key with its RSA private key</li>
+        <li>Both parties now share a secret AES key — all further communication is AES-encrypted</li>
+      </ol>
+      <p className={prose}>RSA secures the key exchange; AES handles the fast bulk encryption. Neither could replace the other in this flow.</p>
+
+      <h2 className={h2}>Modern alternatives to RSA</h2>
+      <p className={prose}>
+        RSA is being phased out in favour of <strong>Elliptic Curve Cryptography (ECC)</strong>. A 256-bit ECC key provides equivalent security to a 3072-bit RSA key, with much smaller key sizes and faster operations. Specifically:
+      </p>
+      <ul className={ul}>
+        <li><strong>ECDH</strong> (Elliptic Curve Diffie-Hellman) — replaces RSA for key exchange in TLS 1.3</li>
+        <li><strong>Ed25519</strong> — replaces RSA for signatures (SSH keys, JWT EdDSA)</li>
+        <li><strong>X25519</strong> — replaces RSA for key encapsulation in modern protocols</li>
+      </ul>
+      <p className={prose}>AES-256-GCM remains the standard for symmetric encryption regardless of which asymmetric algorithm you choose.</p>
+
+      <h2 className={h2}>When to use each</h2>
+      <ul className={ul}>
+        <li><strong>Use AES-256-GCM</strong> when encrypting files, database fields, or any data where both sides already share a key (e.g. a password-derived key)</li>
+        <li><strong>Use RSA or ECDH</strong> when you need to establish a shared secret with a party you have no pre-shared key with</li>
+        <li><strong>Use RSA or Ed25519 signatures</strong> when you need to prove authenticity without sharing a secret (code signing, JWTs, API request signing)</li>
+        <li><strong>Never use RSA directly for bulk data</strong> — it will fail or produce insecure output for payloads over ~245 bytes</li>
+      </ul>
+    </div>
+  );
+}
+
+function ChmodPermissionsExplained() {
+  return (
+    <div className="space-y-4">
+      <p className={prose}>
+        Every file and directory on a Unix system has a permission set that controls who can read it, write to it, or execute it. When a deployment fails because your web server cannot read a config file, or your CI script is not executable, the fix is usually one <code className={code}>chmod</code> command — once you understand what the numbers mean.
+      </p>
+
+      <h2 className={h2}>The three permission classes</h2>
+      <p className={prose}>Unix permissions apply to three categories of user:</p>
+      <table className={table}>
+        <thead><tr><th className={th}>Class</th><th className={th}>Symbol</th><th className={th}>Who it applies to</th></tr></thead>
+        <tbody>
+          <tr><td className={td}>Owner</td><td className={td}><code className={code}>u</code></td><td className={td}>The user who owns the file</td></tr>
+          <tr><td className={td}>Group</td><td className={td}><code className={code}>g</code></td><td className={td}>Members of the file's group</td></tr>
+          <tr><td className={td}>Others</td><td className={td}><code className={code}>o</code></td><td className={td}>Everyone else</td></tr>
+        </tbody>
+      </table>
+
+      <h2 className={h2}>The three permission bits</h2>
+      <table className={table}>
+        <thead><tr><th className={th}>Permission</th><th className={th}>Symbol</th><th className={th}>On a file</th><th className={th}>On a directory</th></tr></thead>
+        <tbody>
+          <tr><td className={td}>Read</td><td className={td}><code className={code}>r</code></td><td className={td}>View file contents</td><td className={td}>List directory contents (<code className={code}>ls</code>)</td></tr>
+          <tr><td className={td}>Write</td><td className={td}><code className={code}>w</code></td><td className={td}>Modify or delete the file</td><td className={td}>Create, rename, delete files inside</td></tr>
+          <tr><td className={td}>Execute</td><td className={td}><code className={code}>x</code></td><td className={td}>Run as a program</td><td className={td}>Enter the directory (<code className={code}>cd</code>)</td></tr>
+        </tbody>
+      </table>
+
+      <h2 className={h2}>Symbolic notation: rwxr-xr--</h2>
+      <p className={prose}>Run <code className={code}>ls -l</code> and you will see something like <code className={code}>-rwxr-xr--</code>. Reading left to right:</p>
+      <ul className={ul}>
+        <li>Position 1: file type (<code className={code}>-</code> regular file, <code className={code}>d</code> directory, <code className={code}>l</code> symlink)</li>
+        <li>Positions 2–4: <strong>owner</strong> permissions (<code className={code}>rwx</code> = read, write, execute)</li>
+        <li>Positions 5–7: <strong>group</strong> permissions (<code className={code}>r-x</code> = read, no write, execute)</li>
+        <li>Positions 8–10: <strong>others</strong> permissions (<code className={code}>r--</code> = read only)</li>
+      </ul>
+      <p className={prose}>A dash <code className={code}>-</code> in any position means that permission is not granted.</p>
+
+      <h2 className={h2}>Octal notation</h2>
+      <p className={prose}>Each permission triplet maps to a single octal digit (0–7) because there are exactly three bits:</p>
+      <table className={table}>
+        <thead><tr><th className={th}>Binary</th><th className={th}>Octal</th><th className={th}>Symbolic</th><th className={th}>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td className={td}>111</td><td className={td}><code className={code}>7</code></td><td className={td}>rwx</td><td className={td}>Read + write + execute</td></tr>
+          <tr><td className={td}>110</td><td className={td}><code className={code}>6</code></td><td className={td}>rw-</td><td className={td}>Read + write</td></tr>
+          <tr><td className={td}>101</td><td className={td}><code className={code}>5</code></td><td className={td}>r-x</td><td className={td}>Read + execute</td></tr>
+          <tr><td className={td}>100</td><td className={td}><code className={code}>4</code></td><td className={td}>r--</td><td className={td}>Read only</td></tr>
+          <tr><td className={td}>000</td><td className={td}><code className={code}>0</code></td><td className={td}>---</td><td className={td}>No permissions</td></tr>
+        </tbody>
+      </table>
+      <p className={prose}>So <code className={code}>chmod 755</code> means: owner=7(rwx), group=5(r-x), others=5(r-x).</p>
+
+      <h2 className={h2}>Common permission patterns</h2>
+      <table className={table}>
+        <thead><tr><th className={th}>Octal</th><th className={th}>Symbolic</th><th className={th}>Typical use</th></tr></thead>
+        <tbody>
+          <tr><td className={td}><code className={code}>755</code></td><td className={td}><code className={code}>rwxr-xr-x</code></td><td className={td}>Directories, public executables (web server binaries, scripts)</td></tr>
+          <tr><td className={td}><code className={code}>644</code></td><td className={td}><code className={code}>rw-r--r--</code></td><td className={td}>Regular files, HTML, config files (not secret)</td></tr>
+          <tr><td className={td}><code className={code}>600</code></td><td className={td}><code className={code}>rw-------</code></td><td className={td}>Private keys, SSH <code className={code}>id_rsa</code>, secrets (owner read/write only)</td></tr>
+          <tr><td className={td}><code className={code}>700</code></td><td className={td}><code className={code}>rwx------</code></td><td className={td}>Private directories (e.g. <code className={code}>~/.ssh</code>)</td></tr>
+          <tr><td className={td}><code className={code}>777</code></td><td className={td}><code className={code}>rwxrwxrwx</code></td><td className={td}>Avoid — everyone can write. Temporary workaround only.</td></tr>
+        </tbody>
+      </table>
+
+      <h2 className={h2}>Using chmod</h2>
+      <pre className="bg-muted rounded-xl p-4 text-xs font-mono overflow-auto my-3"><code>{`# Set permissions using octal
+chmod 755 deploy.sh
+chmod 644 config.yaml
+chmod 600 ~/.ssh/id_rsa
+
+# Set permissions using symbolic mode
+chmod u+x deploy.sh        # add execute for owner
+chmod go-w sensitive.txt   # remove write from group and others
+chmod a+r public.html      # add read for all (a = all)
+
+# Recursive — apply to directory and all contents
+chmod -R 755 /var/www/html`}</code></pre>
+
+      <h2 className={h2}>Setuid, setgid, and sticky bit</h2>
+      <p className={prose}>A fourth octal digit controls three special bits:</p>
+      <ul className={ul}>
+        <li><strong>Setuid (4xxx)</strong> — executable runs as the file's owner, not the caller. Used by <code className={code}>sudo</code> and <code className={code}>passwd</code>. Example: <code className={code}>chmod 4755 binary</code></li>
+        <li><strong>Setgid (2xxx)</strong> — on files: runs as the file's group. On directories: new files inherit the directory's group, not the creator's. Example: <code className={code}>chmod 2755 shared-dir/</code></li>
+        <li><strong>Sticky bit (1xxx)</strong> — on directories: only the owner can delete their own files, even if others have write permission. Used on <code className={code}>/tmp</code>. Example: <code className={code}>chmod 1777 /tmp</code></li>
+      </ul>
+
+      <h2 className={h2}>Checking current permissions</h2>
+      <pre className="bg-muted rounded-xl p-4 text-xs font-mono overflow-auto my-3"><code>{`ls -la            # show permissions for all files in directory
+stat file.txt     # detailed permissions, owner, size, timestamps
+find . -perm 777  # find world-writable files (security audit)`}</code></pre>
+    </div>
+  );
+}
+
+function DotenvBestPractices() {
+  return (
+    <div className="space-y-4">
+      <p className={prose}>
+        The <code className={code}>.env</code> file pattern is ubiquitous in modern development — it is how applications separate configuration from code. It is also one of the most common ways secrets get accidentally leaked. The rules are simple but they are violated constantly.
+      </p>
+
+      <h2 className={h2}>.env file syntax</h2>
+      <p className={prose}>Each line is a key-value pair in <code className={code}>KEY=value</code> format:</p>
+      <pre className="bg-muted rounded-xl p-4 text-xs font-mono overflow-auto my-3"><code>{`# Database
+DATABASE_URL=postgresql://user:password@localhost:5432/mydb
+
+# API keys
+STRIPE_SECRET_KEY=sk_live_...
+OPENAI_API_KEY=sk-...
+
+# App config
+PORT=3000
+NODE_ENV=production
+
+# Multiline value (most parsers support quoted newlines)
+PRIVATE_KEY="-----BEGIN RSA PRIVATE KEY-----
+MIIEow...
+-----END RSA PRIVATE KEY-----"`}</code></pre>
+      <p className={prose}>Lines starting with <code className={code}>#</code> are comments. Values do not need quotes unless they contain spaces or special characters. Most parsers (<code className={code}>dotenv</code>, <code className={code}>python-dotenv</code>) strip surrounding whitespace from values.</p>
+
+      <h2 className={h2}>Rule 1 — never commit .env to Git</h2>
+      <p className={prose}>
+        Add <code className={code}>.env</code> to your <code className={code}>.gitignore</code> immediately. One committed <code className={code}>.env</code> file containing production secrets can expose your entire infrastructure — even after you delete it, because secrets remain in git history.
+      </p>
+      <pre className="bg-muted rounded-xl p-4 text-xs font-mono overflow-auto my-3"><code>{`# .gitignore
+.env
+.env.local
+.env.production
+.env*.local`}</code></pre>
+      <p className={prose}>If you have already committed a secret, rotating the credential is not enough — rewrite git history with <code className={code}>git filter-repo</code> or BFG Repo Cleaner, and assume the secret is compromised.</p>
+
+      <h2 className={h2}>Rule 2 — commit .env.example</h2>
+      <p className={prose}>
+        Every project should have a <code className={code}>.env.example</code> (or <code className={code}>.env.template</code>) file committed to the repo. It lists all the required environment variables with placeholder values or descriptions — no real secrets:
+      </p>
+      <pre className="bg-muted rounded-xl p-4 text-xs font-mono overflow-auto my-3"><code>{`# .env.example — commit this, not .env
+DATABASE_URL=postgresql://user:password@localhost:5432/mydb
+STRIPE_SECRET_KEY=sk_live_<your_stripe_key>
+OPENAI_API_KEY=sk-<your_openai_key>
+PORT=3000
+NODE_ENV=development`}</code></pre>
+      <p className={prose}>New team members copy this file, fill in their own values, and are immediately productive. They also know exactly which secrets to obtain, without having to reverse-engineer the codebase.</p>
+
+      <h2 className={h2}>Rule 3 — use different files per environment</h2>
+      <ul className={ul}>
+        <li><code className={code}>.env</code> — local development defaults (never secrets you cannot afford to lose)</li>
+        <li><code className={code}>.env.local</code> — local overrides, not committed (per-developer values)</li>
+        <li><code className={code}>.env.test</code> — test environment settings</li>
+        <li><code className={code}>.env.production</code> — production values, never stored in the repo; injected by CI/CD</li>
+      </ul>
+      <p className={prose}>Next.js, Create React App, and Vite all follow this convention, loading files in a defined precedence order.</p>
+
+      <h2 className={h2}>CI/CD: injecting secrets without .env files</h2>
+      <p className={prose}>
+        In production and CI environments, use the platform's native secret management instead of .env files:
+      </p>
+      <table className={table}>
+        <thead><tr><th className={th}>Platform</th><th className={th}>Mechanism</th></tr></thead>
+        <tbody>
+          <tr><td className={td}>GitHub Actions</td><td className={td}>Repository Secrets → accessed as <code className={code}>{"${{ secrets.MY_KEY }}"}</code></td></tr>
+          <tr><td className={td}>Vercel / Netlify</td><td className={td}>Environment variables dashboard → injected at build time</td></tr>
+          <tr><td className={td}>AWS</td><td className={td}>Secrets Manager or Parameter Store → fetched at runtime</td></tr>
+          <tr><td className={td}>Docker</td><td className={td}><code className={code}>--env-file</code> flag or Docker Secrets (Swarm/Kubernetes)</td></tr>
+          <tr><td className={td}>Kubernetes</td><td className={td}>Secrets objects → mounted as env vars or volume files</td></tr>
+        </tbody>
+      </table>
+
+      <h2 className={h2}>Rule 4 — validate required variables at startup</h2>
+      <p className={prose}>
+        Your application should fail fast with a clear error if a required environment variable is missing, rather than crashing later with a cryptic error:
+      </p>
+      <pre className="bg-muted rounded-xl p-4 text-xs font-mono overflow-auto my-3"><code>{`// Node.js — validate at startup
+const required = ["DATABASE_URL", "STRIPE_SECRET_KEY", "JWT_SECRET"];
+
+for (const key of required) {
+  if (!process.env[key]) {
+    throw new Error(\`Missing required environment variable: \${key}\`);
+  }
+}
+
+// Or use a validation library like zod
+import { z } from "zod";
+
+const env = z.object({
+  DATABASE_URL: z.string().url(),
+  STRIPE_SECRET_KEY: z.string().startsWith("sk_"),
+  PORT: z.coerce.number().default(3000),
+}).parse(process.env);`}</code></pre>
+
+      <h2 className={h2}>Common mistakes</h2>
+      <ul className={ul}>
+        <li><strong>Committing .env to a public repo</strong> — automated scanners (like GitHub's secret scanning) will find it immediately, but so will attackers</li>
+        <li><strong>Logging environment variables</strong> — never <code className={code}>console.log(process.env)</code> in production; this prints all secrets to stdout/logs</li>
+        <li><strong>Sharing .env files over Slack or email</strong> — use a password manager or a tool like 1Password Secrets Automation</li>
+        <li><strong>Using the same secrets across environments</strong> — production and staging should have different credentials so a staging breach does not affect production</li>
+        <li><strong>Storing secrets in .env and also in code</strong> — the .env pattern only works if the code truly has no hardcoded fallbacks</li>
+      </ul>
+    </div>
+  );
+}
+
+function SemanticVersioningExplained() {
+  return (
+    <div className="space-y-4">
+      <p className={prose}>
+        If you have ever run <code className={code}>npm install</code> and seen a dependency jump from <code className={code}>2.3.1</code> to <code className={code}>3.0.0</code> and break everything, you have experienced a SemVer violation. Semantic versioning is a contract between package maintainers and their users — when followed correctly, version numbers communicate intent, not just change.
+      </p>
+
+      <h2 className={h2}>The format: MAJOR.MINOR.PATCH</h2>
+      <p className={prose}>A SemVer version has exactly three dot-separated numeric components:</p>
+      <table className={table}>
+        <thead><tr><th className={th}>Component</th><th className={th}>When to increment</th><th className={th}>Example bump</th></tr></thead>
+        <tbody>
+          <tr><td className={td}><strong>MAJOR</strong></td><td className={td}>Breaking changes — existing code will need updating</td><td className={td}><code className={code}>2.4.1 → 3.0.0</code></td></tr>
+          <tr><td className={td}><strong>MINOR</strong></td><td className={td}>New backward-compatible features</td><td className={td}><code className={code}>2.3.1 → 2.4.0</code></td></tr>
+          <tr><td className={td}><strong>PATCH</strong></td><td className={td}>Backward-compatible bug fixes</td><td className={td}><code className={code}>2.3.1 → 2.3.2</code></td></tr>
+        </tbody>
+      </table>
+      <p className={prose}>When you increment MAJOR, reset MINOR and PATCH to 0. When you increment MINOR, reset PATCH to 0.</p>
+
+      <h2 className={h2}>What counts as a breaking change?</h2>
+      <p className={prose}>A change is breaking if existing consumers of the public API need to change their code to keep working:</p>
+      <ul className={ul}>
+        <li>Removing a function, method, class, or exported value</li>
+        <li>Renaming a public API (even a typo fix)</li>
+        <li>Changing a function's signature (parameter types, order, or return type)</li>
+        <li>Changing default behaviour in a way that alters existing results</li>
+        <li>Raising the minimum Node.js / runtime version requirement</li>
+      </ul>
+      <p className={prose}>Adding new optional parameters, adding new exports, or fixing a bug without changing the interface are <em>not</em> breaking changes.</p>
+
+      <h2 className={h2}>Pre-release versions</h2>
+      <p className={prose}>Pre-release identifiers follow the patch number with a hyphen:</p>
+      <table className={table}>
+        <thead><tr><th className={th}>Version</th><th className={th}>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td className={td}><code className={code}>1.0.0-alpha.1</code></td><td className={td}>Early unstable release, no API guarantees</td></tr>
+          <tr><td className={td}><code className={code}>1.0.0-beta.2</code></td><td className={td}>Feature-complete but potentially buggy</td></tr>
+          <tr><td className={td}><code className={code}>1.0.0-rc.1</code></td><td className={td}>Release candidate — API locked, final testing</td></tr>
+        </tbody>
+      </table>
+      <p className={prose}>Pre-release versions have lower precedence than the release: <code className={code}>1.0.0-rc.1 {"<"} 1.0.0</code>. They are not installed by npm unless you explicitly request them or use <code className={code}>@next</code> / <code className={code}>@beta</code> dist-tags.</p>
+
+      <h2 className={h2}>npm version range operators</h2>
+      <p className={prose}>npm's <code className={code}>package.json</code> uses a range syntax to specify which versions are acceptable:</p>
+      <table className={table}>
+        <thead><tr><th className={th}>Operator</th><th className={th}>Meaning</th><th className={th}>Example</th><th className={th}>Installs</th></tr></thead>
+        <tbody>
+          <tr><td className={td}><code className={code}>^</code></td><td className={td}>Compatible — same MAJOR, any higher MINOR/PATCH</td><td className={td}><code className={code}>^2.3.1</code></td><td className={td}><code className={code}>{">=2.3.1 <3.0.0"}</code></td></tr>
+          <tr><td className={td}><code className={code}>~</code></td><td className={td}>Approximately — same MAJOR.MINOR, any higher PATCH</td><td className={td}><code className={code}>~2.3.1</code></td><td className={td}><code className={code}>{">=2.3.1 <2.4.0"}</code></td></tr>
+          <tr><td className={td}><code className={code}>{">=2.0.0 <3.0.0"}</code></td><td className={td}>Explicit range</td><td className={td}><code className={code}>{">=2.0.0 <3.0.0"}</code></td><td className={td}>Any v2.x</td></tr>
+          <tr><td className={td}><code className={code}>2.3.1</code></td><td className={td}>Exact version (pinned)</td><td className={td}><code className={code}>2.3.1</code></td><td className={td}>Exactly 2.3.1</td></tr>
+          <tr><td className={td}><code className={code}>*</code></td><td className={td}>Any version</td><td className={td}><code className={code}>*</code></td><td className={td}>Latest</td></tr>
+        </tbody>
+      </table>
+      <p className={prose}><code className={code}>^</code> is the npm default and usually the right choice for application dependencies. Use <code className={code}>~</code> (or exact pinning) for critical dependencies where unexpected MINOR changes could cause issues.</p>
+
+      <h2 className={h2}>Version 0.x — special case</h2>
+      <p className={prose}>
+        When MAJOR is 0 (e.g. <code className={code}>0.4.2</code>), SemVer specifies that the API is not yet stable. Any version bump may be breaking. Treat each <code className={code}>0.x</code> release like a MAJOR bump. The <code className={code}>^</code> operator reflects this: <code className={code}>^0.4.2</code> only allows <code className={code}>{">=0.4.2 <0.5.0"}</code>, not <code className={code}>0.5.x</code>.
+      </p>
+
+      <h2 className={h2}>Checking compatibility</h2>
+      <pre className="bg-muted rounded-xl p-4 text-xs font-mono overflow-auto my-3"><code>{`# See what version npm would install for a range
+npm info react@"^18.0.0" version
+
+# Check if two versions are compatible
+npx semver -r "^2.3.1" 2.4.0    # exits 0 (match)
+npx semver -r "^2.3.1" 3.0.0    # exits 1 (no match)`}</code></pre>
+    </div>
+  );
+}
+
+function SqlFormattingBestPractices() {
+  return (
+    <div className="space-y-4">
+      <p className={prose}>
+        A well-formatted SQL query communicates intent as clearly as the data it retrieves. Poorly formatted SQL — with mixed casing, unpredictable line breaks, and unexplained aliases — is one of the most common sources of slow code reviews and subtle production bugs. These conventions make queries easier to read, diff, and maintain.
+      </p>
+
+      <h2 className={h2}>Keyword casing — UPPERCASE</h2>
+      <p className={prose}>
+        SQL keywords are case-insensitive, but uppercase keywords are the near-universal convention. They visually separate the structure of a query from its data:
+      </p>
+      <pre className="bg-muted rounded-xl p-4 text-xs font-mono overflow-auto my-3"><code>{`-- Bad
+select id, name from users where active = true order by created_at desc;
+
+-- Good
+SELECT id, name
+FROM users
+WHERE active = true
+ORDER BY created_at DESC;`}</code></pre>
+      <p className={prose}>Identifiers (table names, column names) stay lowercase to match the database schema exactly and avoid quoting issues.</p>
+
+      <h2 className={h2}>One clause per line</h2>
+      <p className={prose}>Place each major clause (<code className={code}>SELECT</code>, <code className={code}>FROM</code>, <code className={code}>WHERE</code>, <code className={code}>GROUP BY</code>, <code className={code}>ORDER BY</code>, <code className={code}>LIMIT</code>) on its own line. This makes diffs readable — a diff that changes one WHERE condition should not touch the entire query.</p>
+
+      <h2 className={h2}>Column lists</h2>
+      <p className={prose}>For queries with multiple columns, put each column on its own line with a leading comma:</p>
+      <pre className="bg-muted rounded-xl p-4 text-xs font-mono overflow-auto my-3"><code>{`SELECT
+    u.id
+  , u.name
+  , u.email
+  , o.total AS order_total
+FROM users u
+JOIN orders o ON o.user_id = u.id
+WHERE u.active = true;`}</code></pre>
+      <p className={prose}>Leading commas (the <em>river</em> style) make it easy to spot a missing comma — it is always at the beginning of the line, never at the end where it hides. Some teams prefer trailing commas; consistency within a project matters more than which style you choose.</p>
+
+      <h2 className={h2}>Aliases</h2>
+      <ul className={ul}>
+        <li>Always use the <code className={code}>AS</code> keyword for aliases — <code className={code}>u.name AS full_name</code> is clearer than <code className={code}>u.name full_name</code></li>
+        <li>Table aliases should be short (1–3 characters) and predictable — <code className={code}>u</code> for <code className={code}>users</code>, <code className={code}>o</code> for <code className={code}>orders</code></li>
+        <li>Avoid single-letter aliases for tables involved in self-joins — use <code className={code}>e</code> and <code className={code}>m</code> (employee and manager) instead of <code className={code}>a</code> and <code className={code}>b</code></li>
+        <li>Column aliases should be snake_case and descriptive — <code className={code}>COUNT(*) AS order_count</code>, not <code className={code}>COUNT(*) AS c</code></li>
+      </ul>
+
+      <h2 className={h2}>JOIN formatting</h2>
+      <pre className="bg-muted rounded-xl p-4 text-xs font-mono overflow-auto my-3"><code>{`SELECT
+    u.name
+  , p.title
+  , c.name AS category_name
+FROM users u
+INNER JOIN posts p
+    ON p.author_id = u.id
+   AND p.published = true
+LEFT JOIN categories c
+    ON c.id = p.category_id
+WHERE u.active = true;`}</code></pre>
+      <p className={prose}>Indent the <code className={code}>ON</code> clause by two more levels than the <code className={code}>JOIN</code>. Put multi-condition joins on separate lines with <code className={code}>AND</code> aligned. This makes complex joins scannable at a glance.</p>
+
+      <h2 className={h2}>CTEs (Common Table Expressions)</h2>
+      <p className={prose}>For queries longer than ~30 lines, use CTEs to name intermediate result sets instead of nesting subqueries:</p>
+      <pre className="bg-muted rounded-xl p-4 text-xs font-mono overflow-auto my-3"><code>{`-- Hard to read — nested subquery
+SELECT u.name, order_counts.total
+FROM users u
+JOIN (
+    SELECT user_id, COUNT(*) AS total
+    FROM orders
+    WHERE created_at > NOW() - INTERVAL '30 days'
+    GROUP BY user_id
+) order_counts ON order_counts.user_id = u.id;
+
+-- Easier to read — CTE
+WITH recent_orders AS (
+    SELECT
+        user_id
+      , COUNT(*) AS total
+    FROM orders
+    WHERE created_at > NOW() - INTERVAL '30 days'
+    GROUP BY user_id
+)
+SELECT
+    u.name
+  , ro.total AS orders_last_30_days
+FROM users u
+JOIN recent_orders ro ON ro.user_id = u.id;`}</code></pre>
+
+      <h2 className={h2}>WHERE conditions</h2>
+      <ul className={ul}>
+        <li>Put each condition on its own line with <code className={code}>AND</code> / <code className={code}>OR</code> at the start</li>
+        <li>Group <code className={code}>OR</code> conditions in parentheses to make precedence explicit: <code className={code}>WHERE (status = 'active' OR status = 'trial') AND plan = 'pro'</code></li>
+        <li>Prefer <code className={code}>IN (…)</code> over long chains of <code className={code}>OR status = 'a' OR status = 'b'</code></li>
+        <li>Avoid functions on indexed columns in WHERE: <code className={code}>WHERE DATE(created_at) = '2026-01-01'</code> prevents index usage; use range comparison instead: <code className={code}>WHERE created_at {">="}  '2026-01-01' AND created_at {"<"} '2026-01-02'</code></li>
+      </ul>
+
+      <h2 className={h2}>Avoid SELECT *</h2>
+      <p className={prose}>
+        <code className={code}>SELECT *</code> fetches every column, including ones your application does not use, breaking silently when the schema changes. Always list the specific columns you need. The one exception is exploratory queries in a database client — never in production application code.
+      </p>
+
+      <h2 className={h2}>Comments in SQL</h2>
+      <pre className="bg-muted rounded-xl p-4 text-xs font-mono overflow-auto my-3"><code>{`-- Single-line comment — explain the WHY, not the WHAT
+
+/*
+  Multi-line comment for longer explanations.
+  Use when documenting a non-obvious business rule
+  or a known performance trade-off.
+*/
+
+SELECT
+    user_id
+  -- Exclude test accounts (emails ending in @example.com)
+  , COUNT(*) AS real_user_events
+FROM events
+WHERE email NOT LIKE '%@example.com'
+GROUP BY user_id;`}</code></pre>
+    </div>
+  );
+}
+
+function MarkdownCheatSheet() {
+  return (
+    <div className="space-y-4">
+      <p className={prose}>
+        Markdown is the universal writing format for developers — README files, documentation, GitHub issues, pull request descriptions, and technical blogs all use it. The syntax is minimal by design: a few punctuation conventions translate to clean HTML. This reference covers standard CommonMark syntax plus the GitHub Flavored Markdown (GFM) extensions that most platforms support.
+      </p>
+
+      <h2 className={h2}>Headings</h2>
+      <pre className="bg-muted rounded-xl p-4 text-xs font-mono overflow-auto my-3"><code>{`# H1 — Page title (use once per document)
+## H2 — Major section
+### H3 — Subsection
+#### H4 — Sub-subsection
+##### H5
+###### H6`}</code></pre>
+      <p className={prose}>Always put a space between the <code className={code}>#</code> and the heading text. Leave a blank line before and after headings.</p>
+
+      <h2 className={h2}>Emphasis</h2>
+      <table className={table}>
+        <thead><tr><th className={th}>Markdown</th><th className={th}>Output</th></tr></thead>
+        <tbody>
+          <tr><td className={td}><code className={code}>**bold**</code></td><td className={td}><strong>bold</strong></td></tr>
+          <tr><td className={td}><code className={code}>*italic*</code> or <code className={code}>_italic_</code></td><td className={td}><em>italic</em></td></tr>
+          <tr><td className={td}><code className={code}>***bold italic***</code></td><td className={td}><strong><em>bold italic</em></strong></td></tr>
+          <tr><td className={td}><code className={code}>~~strikethrough~~</code></td><td className={td}><s>strikethrough</s> (GFM)</td></tr>
+          <tr><td className={td}><code className={code}>`inline code`</code></td><td className={td}><code className={code}>inline code</code></td></tr>
+        </tbody>
+      </table>
+
+      <h2 className={h2}>Lists</h2>
+      <pre className="bg-muted rounded-xl p-4 text-xs font-mono overflow-auto my-3"><code>{`- Unordered item (use - or * or +)
+- Second item
+  - Nested item (indent 2 spaces)
+    - Deeper nested
+
+1. Ordered item
+2. Second item
+   1. Nested ordered
+3. Third item`}</code></pre>
+      <p className={prose}>For consistent rendering, use <code className={code}>-</code> for unordered lists. Do not mix marker characters in the same list. Indent nested items by 2 spaces (CommonMark) or 4 spaces (some older parsers).</p>
+
+      <h2 className={h2}>Task lists (GFM)</h2>
+      <pre className="bg-muted rounded-xl p-4 text-xs font-mono overflow-auto my-3"><code>{`- [x] Completed task
+- [ ] Incomplete task
+- [ ] Another task`}</code></pre>
+
+      <h2 className={h2}>Links and images</h2>
+      <pre className="bg-muted rounded-xl p-4 text-xs font-mono overflow-auto my-3"><code>{`[Link text](https://example.com)
+[Link with title](https://example.com "Tooltip on hover")
+
+![Alt text](image.png)
+![Alt text](https://example.com/image.png "Optional title")
+
+<!-- Reference-style links -->
+[Link text][ref]
+[ref]: https://example.com "Optional title"`}</code></pre>
+
+      <h2 className={h2}>Blockquotes</h2>
+      <pre className="bg-muted rounded-xl p-4 text-xs font-mono overflow-auto my-3"><code>{`> This is a blockquote.
+> It can span multiple lines.
+>
+> Separate paragraphs with a blank quoted line.
+>
+> > Nested blockquote.`}</code></pre>
+
+      <h2 className={h2}>Code blocks</h2>
+      <pre className="bg-muted rounded-xl p-4 text-xs font-mono overflow-auto my-3"><code>{`\`\`\`javascript
+const greeting = "Hello, world!";
+console.log(greeting);
+\`\`\`
+
+\`\`\`python
+def greet(name):
+    return f"Hello, {name}!"
+\`\`\`
+
+\`\`\`sql
+SELECT id, name FROM users WHERE active = true;
+\`\`\``}</code></pre>
+      <p className={prose}>Always specify the language identifier after the opening backticks — it enables syntax highlighting on GitHub, GitLab, and most documentation platforms.</p>
+
+      <h2 className={h2}>Tables (GFM)</h2>
+      <pre className="bg-muted rounded-xl p-4 text-xs font-mono overflow-auto my-3"><code>{`| Column 1 | Column 2 | Column 3 |
+| -------- | :------: | -------: |
+| Left     | Center   | Right    |
+| aligned  | aligned  | aligned  |`}</code></pre>
+      <p className={prose}>The colon in the separator row controls alignment: <code className={code}>:----</code> = left (default), <code className={code}>:----:</code> = center, <code className={code}>----:</code> = right. Pipes at the start and end are optional but recommended for readability.</p>
+
+      <h2 className={h2}>Horizontal rules</h2>
+      <pre className="bg-muted rounded-xl p-4 text-xs font-mono overflow-auto my-3"><code>{`---
+
+***
+
+___`}</code></pre>
+      <p className={prose}>Three or more hyphens, asterisks, or underscores on their own line. Always surround with blank lines to avoid being parsed as an H2 underline.</p>
+
+      <h2 className={h2}>Escaping</h2>
+      <p className={prose}>Backslash-escape any Markdown character to output it literally:</p>
+      <pre className="bg-muted rounded-xl p-4 text-xs font-mono overflow-auto my-3"><code>{`\*not italic\*
+\[not a link\]
+\# not a heading`}</code></pre>
+
+      <h2 className={h2}>HTML in Markdown</h2>
+      <p className={prose}>
+        Most parsers allow raw HTML inline. Use it sparingly for things Markdown cannot express — centered content, custom attributes, or subscript/superscript:
+      </p>
+      <pre className="bg-muted rounded-xl p-4 text-xs font-mono overflow-auto my-3"><code>{`H<sub>2</sub>O and E = mc<sup>2</sup>
+
+<details>
+<summary>Click to expand</summary>
+
+Collapsed content here.
+
+</details>`}</code></pre>
+
+      <h2 className={h2}>Quick reference</h2>
+      <table className={table}>
+        <thead><tr><th className={th}>Element</th><th className={th}>Syntax</th></tr></thead>
+        <tbody>
+          <tr><td className={td}>Heading</td><td className={td}><code className={code}># H1  ## H2  ### H3</code></td></tr>
+          <tr><td className={td}>Bold</td><td className={td}><code className={code}>**text**</code></td></tr>
+          <tr><td className={td}>Italic</td><td className={td}><code className={code}>*text*</code></td></tr>
+          <tr><td className={td}>Inline code</td><td className={td}><code className={code}>`code`</code></td></tr>
+          <tr><td className={td}>Code block</td><td className={td}><code className={code}>```lang … ```</code></td></tr>
+          <tr><td className={td}>Link</td><td className={td}><code className={code}>[text](url)</code></td></tr>
+          <tr><td className={td}>Image</td><td className={td}><code className={code}>![alt](url)</code></td></tr>
+          <tr><td className={td}>Blockquote</td><td className={td}><code className={code}>{"> text"}</code></td></tr>
+          <tr><td className={td}>Unordered list</td><td className={td}><code className={code}>- item</code></td></tr>
+          <tr><td className={td}>Ordered list</td><td className={td}><code className={code}>1. item</code></td></tr>
+          <tr><td className={td}>Horizontal rule</td><td className={td}><code className={code}>---</code></td></tr>
+          <tr><td className={td}>Table (GFM)</td><td className={td}><code className={code}>| col | col |</code></td></tr>
+          <tr><td className={td}>Task list (GFM)</td><td className={td}><code className={code}>- [x] done  - [ ] todo</code></td></tr>
+          <tr><td className={td}>Strikethrough (GFM)</td><td className={td}><code className={code}>~~text~~</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function SplitPdfOnline() {
+  return (
+    <div className="space-y-4">
+      <p className={prose}>
+        Splitting a PDF — extracting a chapter, isolating a single page, or separating a scanned invoice from a contract — is one of the most frequent document tasks. The good news: you can do it entirely in your browser without uploading to a third-party server, or from the command line in a single command.
+      </p>
+
+      <h2 className={h2}>Method 1 — Browser-based (no upload)</h2>
+      <p className={prose}>
+        DevBench's PDF Splitter runs entirely in your browser using PDF.js. Your file is never uploaded to any server:
+      </p>
+      <ol className={ol}>
+        <li>Open the <Link href="/tools/split-pdf" className="text-accent hover:underline">DevBench PDF Splitter</Link></li>
+        <li>Drop your PDF or click to browse</li>
+        <li>Enter the page range — for example <code className={code}>1-3</code> to extract the first three pages, or <code className={code}>5,8,12</code> for individual pages</li>
+        <li>Click Split — the resulting PDF downloads directly to your device</li>
+      </ol>
+      <p className={prose}>Because everything runs client-side, this is safe for confidential documents. There are no file size limits imposed by upload quotas (only browser memory).</p>
+
+      <h2 className={h2}>Page range syntax</h2>
+      <table className={table}>
+        <thead><tr><th className={th}>Input</th><th className={th}>Result</th></tr></thead>
+        <tbody>
+          <tr><td className={td}><code className={code}>1-5</code></td><td className={td}>Pages 1 through 5 (inclusive)</td></tr>
+          <tr><td className={td}><code className={code}>3</code></td><td className={td}>Page 3 only</td></tr>
+          <tr><td className={td}><code className={code}>1,3,7</code></td><td className={td}>Pages 1, 3, and 7 (non-contiguous)</td></tr>
+          <tr><td className={td}><code className={code}>2-4,9-12</code></td><td className={td}>Pages 2–4 and pages 9–12</td></tr>
+          <tr><td className={td}><code className={code}>-3</code></td><td className={td}>Pages 1 through 3 (shorthand)</td></tr>
+        </tbody>
+      </table>
+
+      <h2 className={h2}>Method 2 — macOS Preview (built-in)</h2>
+      <ol className={ol}>
+        <li>Open the PDF in Preview</li>
+        <li>Open the Thumbnails sidebar (<strong>View → Thumbnails</strong>)</li>
+        <li>Select the pages you want to extract (Cmd+click for non-contiguous pages)</li>
+        <li>Drag the selected thumbnails out of the window to your Desktop — this creates a new PDF with just those pages</li>
+      </ol>
+      <p className={prose}>Alternatively, print to PDF: select the pages you want, choose <strong>File → Print</strong>, set the page range, then click <strong>PDF → Save as PDF</strong>.</p>
+
+      <h2 className={h2}>Method 3 — Python (pypdf)</h2>
+      <p className={prose}><code className={code}>pypdf</code> is the standard Python library for PDF manipulation. Install it with <code className={code}>pip install pypdf</code>:</p>
+      <pre className="bg-muted rounded-xl p-4 text-xs font-mono overflow-auto my-3"><code>{`from pypdf import PdfReader, PdfWriter
+
+reader = PdfReader("input.pdf")
+writer = PdfWriter()
+
+# Extract pages 3–7 (0-indexed: 2–6)
+for page_num in range(2, 7):
+    writer.add_page(reader.pages[page_num])
+
+with open("extracted.pdf", "wb") as f:
+    writer.write(f)
+print(f"Extracted {len(writer.pages)} pages")`}</code></pre>
+      <p className={prose}>To split into individual single-page PDFs:</p>
+      <pre className="bg-muted rounded-xl p-4 text-xs font-mono overflow-auto my-3"><code>{`from pypdf import PdfReader, PdfWriter
+
+reader = PdfReader("input.pdf")
+
+for i, page in enumerate(reader.pages):
+    writer = PdfWriter()
+    writer.add_page(page)
+    with open(f"page_{i+1}.pdf", "wb") as f:
+        writer.write(f)`}</code></pre>
+
+      <h2 className={h2}>Method 4 — Ghostscript (command line)</h2>
+      <pre className="bg-muted rounded-xl p-4 text-xs font-mono overflow-auto my-3"><code>{`# Extract pages 3 to 7
+gs -sDEVICE=pdfwrite -dNOPAUSE -dBATCH \
+   -dFirstPage=3 -dLastPage=7 \
+   -sOutputFile=extracted.pdf input.pdf
+
+# macOS/Linux — single page (page 5)
+gs -sDEVICE=pdfwrite -dNOPAUSE -dBATCH \
+   -dFirstPage=5 -dLastPage=5 \
+   -sOutputFile=page5.pdf input.pdf`}</code></pre>
+      <p className={prose}>Ghostscript is pre-installed on many Linux distributions. On macOS, install with <code className={code}>brew install ghostscript</code>.</p>
+
+      <h2 className={h2}>Handling password-protected PDFs</h2>
+      <p className={prose}>
+        If the PDF is password-protected, you need to supply the password before splitting:
+      </p>
+      <pre className="bg-muted rounded-xl p-4 text-xs font-mono overflow-auto my-3"><code>{`from pypdf import PdfReader, PdfWriter
+
+reader = PdfReader("protected.pdf")
+if reader.is_encrypted:
+    reader.decrypt("your-password")
+
+# Now proceed with splitting normally`}</code></pre>
+
+      <h2 className={h2}>When the file size is unexpectedly large after splitting</h2>
+      <p className={prose}>
+        A PDF may embed fonts and images once for the whole document. When you extract a few pages, each output file may still include those full embedded resources. To optimise file size after splitting, run the output through a PDF compressor or use Ghostscript with the <code className={code}>-dPDFSETTINGS=/ebook</code> flag.
+      </p>
+    </div>
+  );
+}
+
+function TimezonesDstForDevelopers() {
+  return (
+    <div className="space-y-4">
+      <p className={prose}>
+        Time zones cause more production bugs than almost any other single source of complexity. Not because they are mysterious, but because developers encounter three different things — Unix timestamps, UTC offsets, and named time zones — and treat them as interchangeable. They are not.
+      </p>
+
+      <h2 className={h2}>The three concepts</h2>
+      <table className={table}>
+        <thead><tr><th className={th}>Concept</th><th className={th}>Example</th><th className={th}>What it represents</th></tr></thead>
+        <tbody>
+          <tr><td className={td}><strong>Unix timestamp</strong></td><td className={td}><code className={code}>1719446400</code></td><td className={td}>Seconds since 1970-01-01 00:00:00 UTC. Absolute, unambiguous, time-zone-free.</td></tr>
+          <tr><td className={td}><strong>UTC offset</strong></td><td className={td}><code className={code}>+05:30</code></td><td className={td}>A fixed offset from UTC. Does NOT account for DST — it is just a number.</td></tr>
+          <tr><td className={td}><strong>Named time zone</strong></td><td className={td}><code className={code}>America/New_York</code></td><td className={td}>A political zone with a history of offsets and DST rules. The IANA database defines ~600 of them.</td></tr>
+        </tbody>
+      </table>
+      <p className={prose}><strong>The critical mistake</strong>: storing <code className={code}>+05:30</code> when you mean <code className={code}>Asia/Kolkata</code>. An offset is a snapshot; a named zone is a policy that changes over time.</p>
+
+      <h2 className={h2}>What DST actually does</h2>
+      <p className={prose}>
+        Daylight Saving Time (DST) shifts clocks forward by one hour in spring and back in autumn. The effect on a fixed UTC offset:
+      </p>
+      <ul className={ul}>
+        <li><code className={code}>America/New_York</code> is UTC−5 in winter (EST) and UTC−4 in summer (EDT)</li>
+        <li><code className={code}>Europe/London</code> is UTC+0 in winter (GMT) and UTC+1 in summer (BST)</li>
+        <li>About 40% of the world does not observe DST — <code className={code}>Asia/Tokyo</code> and <code className={code}>Asia/Kolkata</code> are always UTC+9 and UTC+5:30 respectively</li>
+      </ul>
+
+      <h2 className={h2}>The two DST edge cases that break code</h2>
+      <h3 className={h3}>Gap — spring forward (2:00 AM → 3:00 AM)</h3>
+      <p className={prose}>When clocks spring forward, times between 2:00 and 3:00 AM do not exist. Code that constructs a <code className={code}>DateTime</code> at 2:30 AM on that day is creating an invalid time. Different libraries handle this differently — some throw, some silently shift forward, some shift backward. Know what yours does.</p>
+      <h3 className={h3}>Fold — fall back (2:00 AM → 1:00 AM)</h3>
+      <p className={prose}>When clocks fall back, times between 1:00 and 2:00 AM occur twice. <code className={code}>2026-11-01T01:30:00</code> in <code className={code}>America/New_York</code> is ambiguous — it could be EDT (UTC−4) or EST (UTC−5). A correct representation must specify which fold: <code className={code}>2026-11-01T01:30:00-04:00</code> (first occurrence) or <code className={code}>2026-11-01T01:30:00-05:00</code> (second).</p>
+
+      <h2 className={h2}>Rule: store UTC, display local</h2>
+      <p className={prose}>The universal rule for any application that stores timestamps:</p>
+      <ol className={ol}>
+        <li><strong>Store</strong> all timestamps as UTC (or Unix timestamp integers)</li>
+        <li><strong>Convert to local</strong> only at display time, using the user's time zone</li>
+        <li><strong>Never</strong> store a local time without its time zone information</li>
+      </ol>
+      <p className={prose}>A timestamp stored as <code className={code}>2026-06-15 14:00:00</code> with no time zone is a ticking bug. Is that UTC? The server's local time? The user's local time? Nobody knows.</p>
+
+      <h2 className={h2}>JavaScript: Temporal API vs Date</h2>
+      <p className={prose}>JavaScript's built-in <code className={code}>Date</code> object is notoriously bad at time zones — it only knows UTC and the local system time zone. For anything more complex, use a library or the new <strong>Temporal API</strong> (Stage 3, available in Node 22+ with the <code className={code}>--experimental-vm-modules</code> flag and via polyfill):</p>
+      <pre className="bg-muted rounded-xl p-4 text-xs font-mono overflow-auto my-3"><code>{`// Temporal API — the correct modern approach
+import { Temporal } from "@js-temporal/polyfill";
+
+const utcNow = Temporal.Now.instant();
+
+// Convert to New York time
+const nyTime = utcNow.toZonedDateTimeISO("America/New_York");
+console.log(nyTime.toString());
+// 2026-06-15T10:00:00-04:00[America/New_York]
+
+// Convert to Kolkata time
+const koTime = utcNow.toZonedDateTimeISO("Asia/Kolkata");
+console.log(koTime.toString());
+// 2026-06-15T19:30:00+05:30[Asia/Kolkata]
+
+// Safe arithmetic — skips DST gaps automatically
+const tomorrow = nyTime.add({ days: 1 });`}</code></pre>
+      <p className={prose}>For production code today, use <code className={code}>date-fns-tz</code> or <code className={code}>Luxon</code> — both handle named time zones correctly using the IANA database.</p>
+
+      <h2 className={h2}>PostgreSQL: timestamp vs timestamptz</h2>
+      <p className={prose}>PostgreSQL has two timestamp types:</p>
+      <ul className={ul}>
+        <li><code className={code}>timestamp</code> (without time zone) — stores the value as-is with no zone awareness. Dangerous if your app and DB server are in different zones.</li>
+        <li><code className={code}>timestamptz</code> (with time zone) — always stored as UTC internally, converted to the session time zone on display. <strong>Always use this.</strong></li>
+      </ul>
+      <pre className="bg-muted rounded-xl p-4 text-xs font-mono overflow-auto my-3"><code>{`-- Set session time zone for queries
+SET TIME ZONE 'America/New_York';
+
+-- Always use timestamptz for application timestamps
+CREATE TABLE events (
+  id         BIGSERIAL PRIMARY KEY,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Convert for display
+SELECT created_at AT TIME ZONE 'Asia/Kolkata' AS kolkata_time
+FROM events;`}</code></pre>
+
+      <h2 className={h2}>REST API: ISO 8601 with offset</h2>
+      <p className={prose}>
+        Always include a time zone offset in API timestamps. <code className={code}>2026-06-15T14:00:00Z</code> (the <code className={code}>Z</code> means UTC) is unambiguous. <code className={code}>2026-06-15T14:00:00</code> is not — clients may interpret it as local time, UTC, or refuse to parse it.
+      </p>
+      <ul className={ul}>
+        <li>Use <code className={code}>Z</code> suffix for UTC: <code className={code}>2026-06-15T14:00:00Z</code></li>
+        <li>Use explicit offsets when storing user-local context: <code className={code}>2026-06-15T10:00:00-04:00</code></li>
+        <li>Never return bare local times from an API</li>
+      </ul>
+
+      <h2 className={h2}>Common bugs and fixes</h2>
+      <table className={table}>
+        <thead><tr><th className={th}>Bug</th><th className={th}>Fix</th></tr></thead>
+        <tbody>
+          <tr><td className={td}>Recurring event fires at wrong time after DST change</td><td className={td}>Schedule in named time zone, not UTC offset</td></tr>
+          <tr><td className={td}>Age/duration calculation is off by 1 hour</td><td className={td}>Compute in UTC; convert only for display</td></tr>
+          <tr><td className={td}>Dates jump when server time zone differs from user</td><td className={td}>Use <code className={code}>timestamptz</code> in Postgres; store UTC everywhere</td></tr>
+          <tr><td className={td}><code className={code}>new Date("2026-06-15")</code> returns previous day in US</td><td className={td}>Date-only strings are parsed as UTC midnight; add time component or use a library</td></tr>
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 export const POST_CONTENT: Record<string, React.ReactNode> = {
   "browser-code-playground-privacy": <BrowserCodePlaygroundPrivacy />,
   "how-base64-encoding-works-and-when-not-to-use-it": <Base64EncodingExplained />,
@@ -2372,4 +3490,15 @@ export const POST_CONTENT: Record<string, React.ReactNode> = {
   "loan-emi-calculator": <LoanEmiCalculator />,
   "bmi-calculator": <BmiCalculatorPost />,
   "json-to-csv": <JsonToCsvPost />,
+  "json-schema-validation": <JsonSchemaValidation />,
+  "jsonpath-cheat-sheet": <JsonPathCheatSheet />,
+  "url-encoding-explained": <UrlEncodingExplained />,
+  "aes-vs-rsa-encryption": <AesVsRsaEncryption />,
+  "chmod-permissions-explained": <ChmodPermissionsExplained />,
+  "dotenv-best-practices": <DotenvBestPractices />,
+  "semantic-versioning-explained": <SemanticVersioningExplained />,
+  "sql-formatting-best-practices": <SqlFormattingBestPractices />,
+  "markdown-cheat-sheet": <MarkdownCheatSheet />,
+  "split-pdf-online": <SplitPdfOnline />,
+  "timezones-dst-for-developers": <TimezonesDstForDevelopers />,
 };
