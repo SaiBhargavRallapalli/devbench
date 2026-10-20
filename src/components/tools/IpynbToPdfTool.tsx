@@ -186,7 +186,13 @@ export default function IpynbToPdfTool({ tool }: { tool: Tool }) {
         );
 
     try {
+      // Vercel serverless rejects request bodies over ~4.5 MB with a platform
+      // 413 before our handler ever runs, so uploading a larger notebook is a
+      // guaranteed round-trip failure. Skip straight to the client path there.
+      const withinServerBodyLimit = fileToSend.size <= 4.5 * 1024 * 1024;
+
       try {
+        if (!withinServerBodyLimit) throw new Error("skip-server-payload-too-large");
         const form = new FormData();
         form.append("file", fileToSend);
         form.append("scale", String(scale));

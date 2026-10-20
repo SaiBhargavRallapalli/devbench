@@ -23,8 +23,17 @@ export function downloadBlob(
   const a = document.createElement("a");
   a.href = url;
   a.download = filename;
+  a.rel = "noopener";
+  a.style.display = "none";
+  // Attach to the DOM before clicking. Safari (and some Firefox builds) ignore
+  // programmatic clicks on a detached <a>, which silently produced "converted
+  // but nothing downloaded" even though the PDF bytes were valid.
+  document.body.appendChild(a);
   a.click();
-  URL.revokeObjectURL(url);
+  a.remove();
+  // Defer the revoke. Revoking synchronously right after click() can cancel an
+  // in-flight blob-URL fetch before the download has actually started.
+  window.setTimeout(() => URL.revokeObjectURL(url), 1_000);
   if (tool) {
     const ext = filename.split(".").pop()?.toLowerCase() ?? "bin";
     trackToolDownload(tool, ext);
