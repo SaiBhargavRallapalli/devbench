@@ -233,7 +233,7 @@ export default function ImageFormatConverterTool({ tool }: { tool: Tool }) {
       setLoading(false);
       setDecodingHeic(false);
     }
-  }, [clearOutput]);
+  }, [clearOutput, probeRasterDimensions]);
 
   function onDrop(e: React.DragEvent) {
     e.preventDefault();

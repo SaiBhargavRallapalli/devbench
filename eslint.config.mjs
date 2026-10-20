@@ -13,6 +13,11 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     // Vendored minified third-party files — not our code.
     "public/pdfjs/**",
+    // Desktop packaging build artifacts (gitignored). `npm run build:desktop`
+    // emits a standalone Next server under here; linting its bundled output
+    // produced 800+ false-positive errors and made `npm run lint` fail locally.
+    "packaging/desktop/resources/server/**",
+    "packaging/desktop/dist/**",
   ]),
   {
     rules: {

@@ -408,7 +408,7 @@ export default function NotepadApp({ mode = "workspace", tool }: NotepadAppProps
       { label: "Window", items: windowMenu },
       { label: "Help", items: help },
     ];
-  }, [np, transformSelection]);
+  }, [np, transformSelection, fileInputRef]);
 
   if (!np.activeDoc) return null;
 

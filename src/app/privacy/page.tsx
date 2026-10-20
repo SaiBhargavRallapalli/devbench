@@ -260,6 +260,17 @@ export default function PrivacyPage() {
             </a>
             .
           </p>
+          <p>
+            DevBench also participates in a small number of{" "}
+            <strong className="text-foreground">affiliate (referral) programs</strong>. Some
+            links to third-party products — such as hosting, domain, and developer-tooling
+            recommendations — are referral links. If you follow one and sign up, DevBench may
+            earn a commission at no additional cost to you. These links are marked with{" "}
+            <code className="text-xs bg-muted px-1 py-0.5 rounded">rel=&quot;sponsored&quot;</code>{" "}
+            for search engines. Affiliate placements are editorial recommendations, are kept
+            separate from tool processing, and never affect which tools appear or how they
+            behave. Every DevBench tool remains free to use regardless of these programs.
+          </p>
 
           <h2 className="text-lg font-semibold text-foreground pt-2">4. Cookies and local storage</h2>
           <p>

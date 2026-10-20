@@ -154,7 +154,6 @@ export function useNotepadController() {
         activeId: doc.id,
       });
     } else if (saved) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- hydrate session from localStorage once on mount
       setSession(saved);
     }
     setHydrated(true);
