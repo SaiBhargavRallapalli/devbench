@@ -6,6 +6,7 @@ import { Download, Loader2 } from "lucide-react";
 import type { Tool } from "@/lib/tools-registry";
 import ToolPageHero from "@/components/tools/ToolPageHero";
 import { downloadUint8 } from "@/lib/pdf-download";
+import { toWinAnsiSafe } from "@/lib/win-ansi";
 
 const A4_W = 595.28;
 const A4_H = 841.89;
@@ -69,7 +70,7 @@ export default function TextToPdfTool({ tool }: { tool: Tool }) {
       let page = doc.addPage([A4_W, A4_H]);
       let y = A4_H - MARGIN;
 
-      const paragraphs = text.replace(/\r\n/g, "\n").split("\n");
+      const paragraphs = toWinAnsiSafe(text).replace(/\r\n/g, "\n").split("\n");
 
       const flushPage = () => {
         page = doc.addPage([A4_W, A4_H]);

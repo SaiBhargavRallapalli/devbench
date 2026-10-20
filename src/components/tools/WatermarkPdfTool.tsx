@@ -6,6 +6,7 @@ import { Download, FileUp, Loader2, Trash2 } from "lucide-react";
 import type { Tool } from "@/lib/tools-registry";
 import ToolPageHero from "@/components/tools/ToolPageHero";
 import { downloadUint8 } from "@/lib/pdf-download";
+import { toWinAnsiSafe } from "@/lib/win-ansi";
 
 export default function WatermarkPdfTool({ tool }: { tool: Tool }) {
   const [file, setFile] = useState<File | null>(null);
@@ -48,7 +49,7 @@ export default function WatermarkPdfTool({ tool }: { tool: Tool }) {
       const doc = await PDFDocument.load(buf.slice(0));
       const font = await doc.embedFont(StandardFonts.HelveticaBold);
       const size = 42;
-      const t = text.trim();
+      const t = toWinAnsiSafe(text.trim());
 
       for (const page of doc.getPages()) {
         const { width, height } = page.getSize();
