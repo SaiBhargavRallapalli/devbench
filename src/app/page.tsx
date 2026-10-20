@@ -12,6 +12,7 @@ import { toolGroupSchema } from "@/lib/tool-structured-data";
 import { websiteSchemaWithSearch } from "@/lib/site-organization-schema";
 import { publicHrefForToolSlug } from "@/lib/devbench-workspaces";
 import EngagementHome from "@/components/EngagementHomeLazy";
+import AffiliateRecommendations from "@/components/AffiliateRecommendations";
 
 const homepageToolGroupsSchema = {
   "@context": "https://schema.org",
@@ -168,6 +169,10 @@ export default function HomePage() {
 
         <div className="max-w-3xl mx-auto px-4 py-6">
           <AdSenseSlot placement="home" />
+        </div>
+
+        <div className="max-w-3xl mx-auto px-4 pb-8">
+          <AffiliateRecommendations />
         </div>
 
         <EngagementHome />
