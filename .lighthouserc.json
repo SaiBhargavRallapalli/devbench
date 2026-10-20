@@ -1,9 +1,6 @@
 {
   "ci": {
     "collect": {
-      "startServerCommand": "npm start",
-      "startServerReadyPattern": "localhost",
-      "startServerReadyTimeout": 30000,
       "url": [
         "http://localhost:3000/",
         "http://localhost:3000/json",
