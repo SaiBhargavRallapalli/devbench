@@ -123,7 +123,7 @@ export default function LicenseGeneratorTool({ tool }: { tool: Tool }) {
     const a = author || "[author]";
     const p = project || "[project]";
     return meta.template(y, a, p);
-  }, [licenseId, year, author, project, meta]);
+  }, [year, author, project, meta]);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(licenseText).then(() => {

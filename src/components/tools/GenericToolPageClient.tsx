@@ -282,14 +282,19 @@ export default function GenericToolPageClient({
     setState((s) => ({ ...s, options: { ...s.options, [key]: value } }));
 
   const process = useCallback(async () => {
-    if (!state.input.trim() && !needsNoInput(slug)) {
+    // Destructure only the inputs that affect the result. `runTool` ignores
+    // output/error, so we deliberately avoid depending on the whole `state`
+    // object — its identity changes when we write output below, which would
+    // recreate this callback and retrigger the effect in an infinite loop.
+    const { input, input2, options } = state;
+    if (!input.trim() && !needsNoInput(slug)) {
       setState((s) => ({ ...s, output: "", error: "" }));
       return;
     }
 
     try {
       const { runTool } = await import("@/lib/tool-runner");
-      const result = await runTool(slug, state);
+      const result = await runTool(slug, { input, input2, options, output: "", error: "" });
       const output = typeof result === "string" ? result : result.output || "";
       const error = typeof result === "string" ? "" : result.error || "";
       setState((s) => ({ ...s, output, error }));

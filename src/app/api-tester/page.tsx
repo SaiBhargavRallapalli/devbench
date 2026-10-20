@@ -3,11 +3,11 @@
 import { useState, useCallback, useMemo, useRef, useEffect } from "react";
 import Link from "next/link";
 import {
-  Send, Copy, Check, Trash2, Plus, X, ChevronDown, Clock, Server,
-  FileText, Code2, Shield, Loader2, AlertCircle, Globe, Lock, Braces,
-  Radio, Unplug, PlugZap, Share2, Workflow, FileUp, PanelLeft,
+  Send, Copy, Check, Trash2, Plus, X, ChevronDown, Clock,
+  FileText, Loader2, AlertCircle,
+  Radio, Unplug, PlugZap, FileUp, PanelLeft,
   FolderOpen, Folder, History, Save, Key, Eye, EyeOff, ChevronRight,
-  MoreHorizontal, Settings2, Boxes, Wand2, Search,
+  Boxes, Wand2, Search,
 } from "lucide-react";
 import type { Socket as IoSocket } from "socket.io-client";
 import Header from "@/components/Header";
@@ -397,7 +397,6 @@ export default function ApiTesterPage() {
   const dragRef = useRef({ active: false, startY: 0, startPct: 42 });
   const methodMenuRef = useRef<HTMLDivElement>(null);
   const [showMethodMenu, setShowMethodMenu] = useState(false);
-  const [showTabMenu, setShowTabMenu] = useState<string | null>(null);
 
   // ── Active tab accessors ──────────────────────────────────────────────────
   const activeTab = useMemo(() => tabs.find(t => t.id === activeTabId) ?? tabs[0]!, [tabs, activeTabId]);
