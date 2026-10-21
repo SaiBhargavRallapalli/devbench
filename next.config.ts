@@ -11,6 +11,15 @@ import withBundleAnalyzer from "@next/bundle-analyzer";
 //   - frame-ancestors 'none' blocks clickjacking site-wide.
 const CSP = [
   "default-src 'self'",
+  // NOTE: 'unsafe-eval' is REQUIRED and load-bearing — do not remove it.
+  // Three core sandbox tools execute user-authored JS via `new Function`:
+  //   - src/lib/lambda-runner.ts (Lambda sandbox) — Blob-URL Worker
+  //   - src/lib/transform-runner.ts (JSON transform) — Blob-URL Worker
+  //   - src/lib/playground/sandbox-js-srcdoc.ts (JS playground) — srcdoc iframe
+  // Blob Workers and same-origin srcdoc iframes INHERIT the parent document's
+  // CSP, so they need 'unsafe-eval' here. The isolation guarantee comes from
+  // the Worker/iframe having no DOM/cookie/storage access (see each file), not
+  // from CSP. 'wasm-unsafe-eval' is kept separate for the Pyodide/ONNX WASM runtimes.
   "script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' https://cdn.jsdelivr.net https://www.googletagmanager.com https://*.googletagmanager.com https://pagead2.googlesyndication.com https://*.googlesyndication.com https://*.google.com https://*.google https://*.gstatic.com https://*.doubleclick.net https://va.vercel-scripts.com https://*.vercel-insights.com https://fundingchoicesmessages.google.com",
   "style-src 'self' 'unsafe-inline' https://*.gstatic.com https://cdn.jsdelivr.net",
   "img-src 'self' data: blob: https:",

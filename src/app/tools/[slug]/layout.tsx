@@ -4,6 +4,7 @@ import { TOOL_FAQS } from "@/lib/tool-faqs";
 import { TOOL_PAGE_CONTENT } from "@/lib/tool-page-content";
 import ToolSeoContent from "@/components/tools/ToolSeoContent";
 import ToolFaqSection from "@/components/tools/ToolFaqSection";
+import AffiliateRecommendations from "@/components/AffiliateRecommendations";
 import TrackToolVisit from "@/components/TrackToolVisit";
 import Footer from "@/components/Footer";
 import JsonLd from "@/components/JsonLd";
@@ -145,6 +146,9 @@ export default async function ToolSlugLayout({
           />
         </div>
       )}
+      <div className="max-w-6xl mx-auto px-4 pb-6 w-full">
+        <AffiliateRecommendations />
+      </div>
       <ToolSeoContent slug={slug} />
       <ToolFaqSection slug={slug} />
       <Footer />

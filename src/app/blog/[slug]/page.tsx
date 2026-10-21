@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowLeft, Clock, Tag, ArrowRight, Wrench } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import AffiliateRecommendations from "@/components/AffiliateRecommendations";
 import JsonLd from "@/components/JsonLd";
 import AdSenseSlot from "@/components/ads/AdSenseSlot";
 import { BLOG_POSTS, getBlogPost } from "@/lib/blog";
@@ -230,6 +231,9 @@ export default async function BlogPostPage({
             </div>
           </section>
         )}
+        <div className="max-w-3xl mx-auto px-4 py-10 w-full">
+          <AffiliateRecommendations />
+        </div>
       </main>
 
       {/* JSON-LD BlogPosting — Safe: JSON.stringify + < escape produces no executable content. lgtm[js/xss] */}

@@ -10,6 +10,8 @@ import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import JsonLd from "@/components/JsonLd";
+import StatusToastHost from "@/components/StatusToastHost";
+import ConsentBanner from "@/components/ConsentBanner";
 import { organizationSchema } from "@/lib/site-organization-schema";
 
 const geistSans = Geist({
@@ -120,6 +122,15 @@ export default function RootLayout({
         {/* Inline critical above-the-fold styles to prevent render-blocking on LCP element */}
         {/* CodeQL[js/xss] */}
         <style dangerouslySetInnerHTML={{ __html: `body{background:#fafafa;color:#111111}html.dark body{background:#09090b;color:#fafafa}@media(prefers-color-scheme:dark){html:not(.light) body{background:#09090b;color:#fafafa}}` }} />
+        {/* Google Consent Mode v2 — DENY all by default, before GTM/AdSense load.
+            The <ConsentBanner> later calls gtag('consent','update',…) on a choice.
+            This keeps ad/analytics cookies off for EU/UK until consent is given. */}
+        {/* CodeQL[js/xss] */}
+        <script
+          dangerouslySetInnerHTML={{ // CodeQL[js/xss]
+            __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied'});`,
+          }}
+        />
       </head>
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <JsonLd data={organizationSchema} />
@@ -157,6 +168,8 @@ export default function RootLayout({
           }))}
         />
         <ServiceWorkerRegister />
+        <StatusToastHost />
+        <ConsentBanner />
         <Analytics />
         <SpeedInsights />
       </body>
