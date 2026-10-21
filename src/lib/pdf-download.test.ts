@@ -70,6 +70,18 @@ describe("downloadBlob", () => {
     // Body is empty again after cleanup, but the anchor was wired correctly:
     expect(createObjectURL).toHaveBeenCalledTimes(1);
   });
+
+  it("announces the download via a notify event (no more silent downloads)", () => {
+    const received: string[] = [];
+    const onNotify = (e: Event) => received.push((e as CustomEvent).detail.message);
+    window.addEventListener("devbench:notify", onNotify);
+    try {
+      downloadBlob(new Blob(["x"], { type: "application/pdf" }), "report.pdf");
+    } finally {
+      window.removeEventListener("devbench:notify", onNotify);
+    }
+    expect(received).toEqual(["Downloaded report.pdf"]);
+  });
 });
 
 describe("downloadUint8", () => {
