@@ -153,7 +153,7 @@ export default function ExifViewerTool({ tool }: { tool: Tool }) {
 
           {/* Left: upload + preview */}
           <div className="space-y-4">
-            <label className="block cursor-pointer">
+            <label className="block cursor-pointer focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 rounded-2xl">
               <div className="border-2 border-dashed border-border rounded-2xl p-8 text-center hover:border-accent/50 hover:bg-muted/30 transition-colors">
                 {imgSrc ? (
                   <img src={imgSrc} alt="Preview" className="max-h-52 mx-auto rounded-xl object-contain" />
@@ -168,7 +168,7 @@ export default function ExifViewerTool({ tool }: { tool: Tool }) {
               <input
                 type="file"
                 accept="image/*"
-                className="hidden"
+                className="sr-only"
                 onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }}
               />
             </label>

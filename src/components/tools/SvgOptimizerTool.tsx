@@ -203,10 +203,10 @@ export default function SvgOptimizerTool({ tool }: { tool: Tool }) {
             {/* Input toolbar */}
             <div className="flex items-center gap-2 flex-wrap">
               <span className="text-sm font-medium">SVG Input</span>
-              <label className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg bg-muted text-muted-foreground hover:text-foreground cursor-pointer transition-colors">
+              <label className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg bg-muted text-muted-foreground hover:text-foreground cursor-pointer transition-colors focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
                 <Upload className="w-3.5 h-3.5" />
                 Upload .svg
-                <input type="file" accept=".svg,image/svg+xml" className="hidden" onChange={handleFileUpload} />
+                <input type="file" accept=".svg,image/svg+xml" className="sr-only" onChange={handleFileUpload} />
               </label>
               <button
                 onClick={optimize}

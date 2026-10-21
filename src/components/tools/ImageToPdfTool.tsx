@@ -192,7 +192,7 @@ export default function ImageToPdfTool({ tool }: { tool: Tool }) {
             e.preventDefault();
             pushFiles(e.dataTransfer.files);
           }}
-          className="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-border bg-muted/30 px-6 py-12 text-center transition-colors hover:border-accent/50 hover:bg-muted/50"
+          className="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-border bg-muted/30 px-6 py-12 text-center transition-colors hover:border-accent/50 hover:bg-muted/50 focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2"
         >
           <Upload className="mb-3 h-10 w-10 text-muted-foreground" />
           <p className="text-sm font-medium text-foreground">
@@ -207,7 +207,7 @@ export default function ImageToPdfTool({ tool }: { tool: Tool }) {
             type="file"
             accept="image/*"
             multiple
-            className="hidden"
+            className="sr-only"
             disabled={busy}
             onChange={(e) => {
               const f = e.target.files;
@@ -304,7 +304,10 @@ export default function ImageToPdfTool({ tool }: { tool: Tool }) {
         )}
 
         {error && (
-          <p className="rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive">
+          <p
+            role="alert"
+            className="rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive"
+          >
             {error}
           </p>
         )}

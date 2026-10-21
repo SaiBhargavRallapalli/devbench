@@ -74,14 +74,14 @@ export default function MergePdfTool({ tool }: { tool: Tool }) {
       <ToolPageHero tool={tool} />
 
       <div className="animate-slide-up space-y-6 rounded-2xl border border-border bg-card p-6">
-        <label className="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-border bg-muted/30 px-6 py-10 text-center hover:border-accent/50">
+        <label className="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-border bg-muted/30 px-6 py-10 text-center hover:border-accent/50 focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
           <FileUp className="mb-2 h-8 w-8 text-muted-foreground" />
           <span className="text-sm font-medium">Choose PDFs (multiple)</span>
           <input
             type="file"
             accept="application/pdf,.pdf"
             multiple
-            className="hidden"
+            className="sr-only"
             disabled={busy}
             onChange={(e) => {
               const f = e.target.files;
@@ -110,6 +110,7 @@ export default function MergePdfTool({ tool }: { tool: Tool }) {
                   </span>
                   <button
                     type="button"
+                    aria-label="Move up"
                     disabled={busy || idx === 0}
                     onClick={() => move(idx, -1)}
                     className="rounded-lg p-2 hover:bg-muted disabled:opacity-30"
@@ -118,6 +119,7 @@ export default function MergePdfTool({ tool }: { tool: Tool }) {
                   </button>
                   <button
                     type="button"
+                    aria-label="Move down"
                     disabled={busy || idx === rows.length - 1}
                     onClick={() => move(idx, 1)}
                     className="rounded-lg p-2 hover:bg-muted disabled:opacity-30"
@@ -126,6 +128,7 @@ export default function MergePdfTool({ tool }: { tool: Tool }) {
                   </button>
                   <button
                     type="button"
+                    aria-label="Remove file"
                     disabled={busy}
                     onClick={() => removeAt(idx)}
                     className="rounded-lg p-2 text-destructive hover:bg-destructive/10"
@@ -153,7 +156,10 @@ export default function MergePdfTool({ tool }: { tool: Tool }) {
         )}
 
         {error && (
-          <p className="rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive">
+          <p
+            role="alert"
+            className="rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive"
+          >
             {error}
           </p>
         )}

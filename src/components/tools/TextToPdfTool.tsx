@@ -7,6 +7,7 @@ import type { Tool } from "@/lib/tools-registry";
 import ToolPageHero from "@/components/tools/ToolPageHero";
 import { downloadUint8 } from "@/lib/pdf-download";
 import { toWinAnsiSafe } from "@/lib/win-ansi";
+import { friendlyError } from "@/lib/friendly-error";
 
 const A4_W = 595.28;
 const A4_H = 841.89;
@@ -103,7 +104,7 @@ export default function TextToPdfTool({ tool }: { tool: Tool }) {
       const bytes = await doc.save();
       downloadUint8(bytes, "document-from-text.pdf", "application/pdf", "text-to-pdf");
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Could not build PDF.");
+      setError(friendlyError(e, "Couldn't build the PDF. Please try again."));
     } finally {
       setBusy(false);
     }

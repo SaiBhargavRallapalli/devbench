@@ -27,6 +27,7 @@ import {
 } from "@/lib/notebook-to-html";
 import { notebookToPdf } from "@/lib/notebook-to-pdf";
 import { downloadUint8 } from "@/lib/pdf-download";
+import { friendlyError } from "@/lib/friendly-error";
 
 const TOOL_SLUG = "ipynb-to-pdf";
 
@@ -133,9 +134,9 @@ export default function IpynbToPdfTool({ tool }: { tool: Tool }) {
       setDocTitle(f.name.replace(/\.ipynb$/i, ""));
       trackToolSuccess(TOOL_SLUG, "parse", { cells: nb.cells.length });
     } catch (e) {
-      const msg = e instanceof Error ? e.message : "Could not parse notebook.";
-      setError(msg);
-      trackToolError(TOOL_SLUG, "parse", msg);
+      const raw = e instanceof Error ? e.message : "Could not parse notebook.";
+      setError(friendlyError(e, "That doesn't look like a valid .ipynb file."));
+      trackToolError(TOOL_SLUG, "parse", raw);
     }
   }, []);
 
@@ -218,9 +219,9 @@ export default function IpynbToPdfTool({ tool }: { tool: Tool }) {
       downloadUint8(bytes, outName, "application/pdf", TOOL_SLUG);
       trackToolSuccess(TOOL_SLUG, "download_pdf", { scale, via: "client" });
     } catch (e) {
-      const msg = e instanceof Error ? e.message : "Conversion failed.";
-      setConversionError(msg);
-      trackToolError(TOOL_SLUG, "download_pdf", msg);
+      const raw = e instanceof Error ? e.message : "Conversion failed.";
+      setConversionError(friendlyError(e, "Couldn't convert the notebook to PDF."));
+      trackToolError(TOOL_SLUG, "download_pdf", raw);
     } finally {
       setIsConverting(false);
     }
@@ -355,6 +356,7 @@ export default function IpynbToPdfTool({ tool }: { tool: Tool }) {
               max="1"
               step="0.05"
               value={scale}
+              aria-label="PDF scale"
               onChange={(e) => setScale(parseFloat(e.target.value))}
               className="w-full accent-accent"
             />
@@ -438,9 +440,13 @@ export default function IpynbToPdfTool({ tool }: { tool: Tool }) {
           </div>
 
           {/* Tab bar */}
-          <div className="grid grid-cols-2 gap-1 border-b border-border bg-muted/30 p-1">
+          <div role="tablist" aria-label="Notebook output view" className="grid grid-cols-2 gap-1 border-b border-border bg-muted/30 p-1">
             <button
               type="button"
+              role="tab"
+              id="ipynb-tab-preview"
+              aria-controls="ipynb-tabpanel"
+              aria-selected={tab === "preview"}
               onClick={() => setTab("preview")}
               className={`inline-flex items-center justify-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
                 tab === "preview"
@@ -452,6 +458,10 @@ export default function IpynbToPdfTool({ tool }: { tool: Tool }) {
             </button>
             <button
               type="button"
+              role="tab"
+              id="ipynb-tab-html"
+              aria-controls="ipynb-tabpanel"
+              aria-selected={tab === "html"}
               onClick={() => setTab("html")}
               className={`inline-flex items-center justify-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
                 tab === "html"
@@ -464,7 +474,12 @@ export default function IpynbToPdfTool({ tool }: { tool: Tool }) {
           </div>
 
           {/* Tab content */}
-          <div className="p-4">
+          <div
+            role="tabpanel"
+            id="ipynb-tabpanel"
+            aria-labelledby={tab === "preview" ? "ipynb-tab-preview" : "ipynb-tab-html"}
+            className="p-4"
+          >
             {tab === "preview" ? (
               <iframe
                 ref={iframeRef}

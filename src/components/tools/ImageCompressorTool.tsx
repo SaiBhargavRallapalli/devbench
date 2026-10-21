@@ -6,6 +6,7 @@ import type { Tool } from "@/lib/tools-registry";
 import { trackToolDownload } from "@/lib/analytics-events";
 import { IMAGE_WORKER_LIMITS_HELP, rejectInputImageDimensions } from "@/lib/image-worker-limits";
 import { getImageWorkerUrl, type ImageWorkerResult } from "@/lib/image-worker";
+import { friendlyError } from "@/lib/friendly-error";
 import ToolPageHero from "@/components/tools/ToolPageHero";
 
 type ImgFmt = "image/jpeg" | "image/webp";
@@ -93,7 +94,11 @@ export default function ImageCompressorTool({ tool }: { tool: Tool }) {
       if (workerRef.current === worker) workerRef.current = null;
       worker.terminate();
       if (!e.data.ok) {
-        setError(e.data.error);
+        setError(
+          e.data?.error
+            ? friendlyError(new Error(e.data.error), "Couldn't process this image.")
+            : "Couldn't process this image."
+        );
         return;
       }
       const blob = new Blob([e.data.buffer], { type: format });

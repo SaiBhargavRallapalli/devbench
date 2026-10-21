@@ -28,6 +28,7 @@ import {
   trackToolCopy,
   trackToolShareLink,
 } from "@/lib/analytics-events";
+import { friendlyError } from "@/lib/friendly-error";
 import ToolConnectivityBadge from "@/components/ToolConnectivityBadge";
 import ToolPageActions from "@/components/ToolPageActions";
 import {
@@ -304,9 +305,10 @@ export default function GenericToolPageClient({
         trackToolSuccess(slug, "process");
       }
     } catch (e) {
-      const message = e instanceof Error ? e.message : "An error occurred";
-      setState((s) => ({ ...s, output: "", error: message }));
-      trackToolError(slug, "process", message);
+      // Show safe copy to the user; keep the raw message for analytics/debugging.
+      const raw = e instanceof Error ? e.message : "An error occurred";
+      setState((s) => ({ ...s, output: "", error: friendlyError(e, "Something went wrong while running this tool.") }));
+      trackToolError(slug, "process", raw);
     }
   }, [slug, state.input, state.input2, state.options]);
 

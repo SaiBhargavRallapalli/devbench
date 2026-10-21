@@ -73,13 +73,13 @@ export default function RotatePdfTool({ tool }: { tool: Tool }) {
 
       <div className="animate-slide-up space-y-6 rounded-2xl border border-border bg-card p-6">
         <div className="flex flex-wrap gap-3">
-          <label className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-accent px-4 py-2.5 text-sm font-semibold text-accent-foreground hover:opacity-90">
+          <label className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-accent px-4 py-2.5 text-sm font-semibold text-accent-foreground hover:opacity-90 focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
             <FileUp className="h-4 w-4" />
             Choose PDF
             <input
               type="file"
               accept="application/pdf,.pdf"
-              className="hidden"
+              className="sr-only"
               disabled={busy}
               onChange={(e) => void onFile(e.target.files?.[0] ?? null)}
             />
@@ -135,7 +135,10 @@ export default function RotatePdfTool({ tool }: { tool: Tool }) {
         )}
 
         {error && (
-          <p className="rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive">
+          <p
+            role="alert"
+            className="rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive"
+          >
             {error}
           </p>
         )}

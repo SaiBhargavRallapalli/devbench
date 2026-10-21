@@ -3,6 +3,7 @@
 import { useCallback, useRef, useState } from "react";
 import type { Tool } from "@/lib/tools-registry";
 import { trackToolDownload } from "@/lib/analytics-events";
+import { friendlyError } from "@/lib/friendly-error";
 import ToolPageHero from "@/components/tools/ToolPageHero";
 import { Upload, Download, RotateCcw, ImageIcon, Loader2, CheckCircle2, AlertCircle, SlidersHorizontal } from "lucide-react";
 
@@ -120,8 +121,10 @@ export default function BackgroundRemoverTool({ tool }: { tool: Tool }) {
       setPhase({ status: "done", originalUrl, resultUrl, resultBlob });
     } catch (e) {
       URL.revokeObjectURL(originalUrl);
-      const msg = e instanceof Error ? e.message : "An unexpected error occurred.";
-      setPhase({ status: "error", message: msg });
+      setPhase({
+        status: "error",
+        message: friendlyError(e, "Couldn't remove the background from this image."),
+      });
     }
   }, []);
 
@@ -165,6 +168,10 @@ export default function BackgroundRemoverTool({ tool }: { tool: Tool }) {
             onDragLeave={() => setDragOver(false)}
             onDrop={handleDrop}
             onClick={() => fileInputRef.current?.click()}
+            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); fileInputRef.current?.click(); } }}
+            tabIndex={0}
+            role="button"
+            aria-label="Upload image (JPG, PNG or WebP)"
             className={`group flex cursor-pointer flex-col items-center justify-center gap-4 rounded-2xl border-2 border-dashed p-16 text-center transition-colors ${
               dragOver
                 ? "border-accent bg-accent/5"

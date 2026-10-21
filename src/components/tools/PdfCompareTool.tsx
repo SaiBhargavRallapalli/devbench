@@ -95,13 +95,13 @@ export default function PdfCompareTool({ tool }: { tool: Tool }) {
             <p className="mb-2 text-xs font-semibold uppercase text-muted-foreground">
               PDF A
             </p>
-            <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-muted px-3 py-2 text-sm">
+            <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-muted px-3 py-2 text-sm focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
               <FileUp className="h-4 w-4" />
               {a ? a.name : "Choose file"}
               <input
                 type="file"
                 accept="application/pdf,.pdf"
-                className="hidden"
+                className="sr-only"
                 disabled={busy}
                 onChange={(e) => load("a", e.target.files?.[0] ?? null)}
               />
@@ -120,13 +120,13 @@ export default function PdfCompareTool({ tool }: { tool: Tool }) {
             <p className="mb-2 text-xs font-semibold uppercase text-muted-foreground">
               PDF B
             </p>
-            <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-muted px-3 py-2 text-sm">
+            <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-muted px-3 py-2 text-sm focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
               <FileUp className="h-4 w-4" />
               {b ? b.name : "Choose file"}
               <input
                 type="file"
                 accept="application/pdf,.pdf"
-                className="hidden"
+                className="sr-only"
                 disabled={busy}
                 onChange={(e) => load("b", e.target.files?.[0] ?? null)}
               />
@@ -158,7 +158,10 @@ export default function PdfCompareTool({ tool }: { tool: Tool }) {
         </button>
 
         {error && (
-          <p className="rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive">
+          <p
+            role="alert"
+            className="rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive"
+          >
             {error}
           </p>
         )}

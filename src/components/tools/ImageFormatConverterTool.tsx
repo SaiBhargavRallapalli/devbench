@@ -368,6 +368,10 @@ export default function ImageFormatConverterTool({ tool }: { tool: Tool }) {
         {/* Upload zone */}
         <div
           onClick={() => inputRef.current?.click()}
+          onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); inputRef.current?.click(); } }}
+          tabIndex={0}
+          role="button"
+          aria-label="Upload image (HEIC, SVG, PNG, JPEG, WebP, BMP, GIF, AVIF or TIFF)"
           onDrop={onDrop}
           onDragOver={(e) => e.preventDefault()}
           className="border-2 border-dashed border-border rounded-2xl p-10 text-center cursor-pointer hover:border-accent/50 hover:bg-muted/30 transition-colors"

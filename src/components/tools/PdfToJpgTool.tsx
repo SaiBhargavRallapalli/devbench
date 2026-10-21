@@ -7,6 +7,7 @@ import type { Tool } from "@/lib/tools-registry";
 import ToolPageHero from "@/components/tools/ToolPageHero";
 import { downloadBlob } from "@/lib/pdf-download";
 import { getPdfJsModule } from "@/lib/pdfjs-app";
+import { friendlyError } from "@/lib/friendly-error";
 
 export default function PdfToJpgTool({ tool }: { tool: Tool }) {
   const [file, setFile] = useState<File | null>(null);
@@ -74,9 +75,7 @@ export default function PdfToJpgTool({ tool }: { tool: Tool }) {
       const zipped = await zip.generateAsync({ type: "blob" });
       downloadBlob(zipped, `${base}.zip`, "pdf-to-jpg");
     } catch (e) {
-      setError(
-        e instanceof Error ? e.message : "Export failed (try a smaller PDF)."
-      );
+      setError(friendlyError(e, "Couldn't convert this PDF to images."));
     } finally {
       setBusy(false);
     }
@@ -93,13 +92,13 @@ export default function PdfToJpgTool({ tool }: { tool: Tool }) {
         </p>
 
         <div className="flex flex-wrap gap-3">
-          <label className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-accent px-4 py-2.5 text-sm font-semibold text-accent-foreground hover:opacity-90">
+          <label className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-accent px-4 py-2.5 text-sm font-semibold text-accent-foreground hover:opacity-90 focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
             <FileUp className="h-4 w-4" />
             Choose PDF
             <input
               type="file"
               accept="application/pdf,.pdf"
-              className="hidden"
+              className="sr-only"
               disabled={busy}
               onChange={(e) => void onFile(e.target.files?.[0] ?? null)}
             />
@@ -164,7 +163,10 @@ export default function PdfToJpgTool({ tool }: { tool: Tool }) {
         )}
 
         {error && (
-          <p className="rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive">
+          <p
+            role="alert"
+            className="rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive"
+          >
             {error}
           </p>
         )}

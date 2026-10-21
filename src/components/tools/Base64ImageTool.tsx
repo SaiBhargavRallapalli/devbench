@@ -133,6 +133,10 @@ export default function Base64ImageTool({ tool }: { tool: Tool }) {
               onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
               onDragLeave={() => setDragging(false)}
               onClick={() => fileRef.current?.click()}
+              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); fileRef.current?.click(); } }}
+              tabIndex={0}
+              role="button"
+              aria-label="Upload image (PNG, JPEG, GIF, WebP or SVG)"
               className={`flex flex-col items-center justify-center gap-3 p-12 rounded-xl border-2 border-dashed cursor-pointer transition-colors ${
                 dragging
                   ? "border-accent bg-accent/5"
