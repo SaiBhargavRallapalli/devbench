@@ -40,6 +40,16 @@ export type AffiliateProgram = {
   category: AffiliateCategory;
 };
 
+/**
+ * Master switch for showing affiliate recommendations.
+ *
+ * Currently OFF: the `href`s below are still placeholder referral URLs (they
+ * earn $0), so the cards are hidden across every surface (home, tool pages,
+ * blog) rather than shown as dead links. Flip this to `true` once real tracked
+ * referral URLs are in place — nothing else needs to change.
+ */
+export const AFFILIATE_ENABLED = false;
+
 export const AFFILIATE_PROGRAMS: AffiliateProgram[] = [
   {
     id: "vercel",
@@ -97,6 +107,9 @@ export function affiliateRel(isAffiliate: boolean): string {
 
 /** Programs for a given category, or all programs when category is omitted. */
 export function getAffiliatePrograms(category?: AffiliateCategory): AffiliateProgram[] {
+  // Hidden while AFFILIATE_ENABLED is false — AffiliateRecommendations renders
+  // nothing when this returns empty, so every surface hides at once.
+  if (!AFFILIATE_ENABLED) return [];
   return category
     ? AFFILIATE_PROGRAMS.filter((p) => p.category === category)
     : AFFILIATE_PROGRAMS;
