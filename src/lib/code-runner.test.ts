@@ -9,6 +9,7 @@ import {
   extensionForLanguage,
   normalizeWandboxResponse,
   parseRuntimes,
+  sanitizeRuntimeEntries,
   stripAnsi,
 } from "./code-runner";
 
@@ -285,6 +286,57 @@ describe("parseRuntimes (Wandbox list.json)", () => {
     expect(parseRuntimes(undefined)).toEqual([]);
     expect(parseRuntimes({ name: "bash" })).toEqual([]);
     expect(parseRuntimes([])).toEqual([]);
+  });
+});
+
+describe("sanitizeRuntimeEntries (GET /api/code-run body)", () => {
+  it("passes through valid normalized entries untouched", () => {
+    const entries = [
+      { language: "python", version: "cpython-3.13.8", aliases: ["3.13.8"] },
+      { language: "bash", version: "bash", aliases: ["5.2.21(1)-release"] },
+    ];
+    expect(sanitizeRuntimeEntries(entries)).toEqual(entries);
+  });
+
+  it("does NOT drop normalized entries the way parseRuntimes would", () => {
+    // Regression: the client used to re-run parseRuntimes on the server's
+    // already-normalized output (no `name` field) → 0 entries → permanent
+    // fallback to FALLBACK_RUNTIMES on every page load.
+    const normalized = [
+      { language: "python", version: "cpython-3.13.8", aliases: ["3.13.8"] },
+      { language: "cpp", version: "clang-15.0.7", aliases: ["15.0.7"] },
+    ];
+    expect(parseRuntimes(normalized)).toHaveLength(0); // the old bug…
+    expect(sanitizeRuntimeEntries(normalized)).toHaveLength(2); // …fixed
+  });
+
+  it("rejects non-arrays and drops malformed entries", () => {
+    expect(sanitizeRuntimeEntries(null)).toEqual([]);
+    expect(sanitizeRuntimeEntries({ language: "python" })).toEqual([]);
+    expect(
+      sanitizeRuntimeEntries([
+        null,
+        42,
+        "python",
+        { language: "", version: "x" },
+        { language: "python" }, // missing version
+        { version: "cpython-3.13.8" }, // missing language
+        { language: "python", version: "cpython-3.13.8" },
+      ]),
+    ).toEqual([{ language: "python", version: "cpython-3.13.8", aliases: [] }]);
+  });
+
+  it("dedupes by language@version and sanitizes aliases", () => {
+    const out = sanitizeRuntimeEntries([
+      { language: "python", version: "cpython-3.13.8", aliases: ["3.13.8"] },
+      { language: "python", version: "cpython-3.13.8", aliases: ["dup"] },
+      { language: "go", version: "go-1.23.2", aliases: "not-an-array" },
+      { language: "rust", version: "rust-1.65.0", aliases: ["  ", 7, "1.65.0"] },
+    ]);
+    expect(out).toHaveLength(3);
+    expect(out[0].aliases).toEqual(["3.13.8"]);
+    expect(out[1].aliases).toEqual([]);
+    expect(out[2].aliases).toEqual(["1.65.0"]);
   });
 });
 

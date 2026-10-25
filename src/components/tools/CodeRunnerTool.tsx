@@ -9,7 +9,7 @@ import { trackToolError, trackToolSuccess } from "@/lib/analytics-events";
 import {
   EXAMPLE_SNIPPETS,
   FALLBACK_RUNTIMES,
-  parseRuntimes,
+  sanitizeRuntimeEntries,
   type NormalizedRunResult,
   type RuntimeEntry,
 } from "@/lib/code-runner";
@@ -74,7 +74,7 @@ export default function CodeRunnerTool({ tool }: { tool: Tool }) {
       try {
         const res = await fetch("/api/code-run");
         if (!res.ok) throw new Error(`Runtimes request failed (${res.status})`);
-        const parsed = parseRuntimes(await res.json());
+        const parsed = sanitizeRuntimeEntries(await res.json());
         if (parsed.length === 0) throw new Error("Empty runtimes list");
         if (!cancelled) setRuntimes(parsed);
       } catch {

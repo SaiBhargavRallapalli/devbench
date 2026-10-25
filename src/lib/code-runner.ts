@@ -243,6 +243,34 @@ export function parseRuntimes(raw: unknown): RuntimeEntry[] {
   return out;
 }
 
+/**
+ * Validate the ALREADY-NORMALIZED array served by GET /api/code-run.
+ * The route runs `parseRuntimes` server-side, so the client must NOT re-run
+ * it (it expects raw Wandbox entries with a `name` field and would drop
+ * every normalized entry). This only guards a malformed body (proxy, cache,
+ * service worker) from reaching the UI — valid entries pass through as-is.
+ */
+export function sanitizeRuntimeEntries(data: unknown): RuntimeEntry[] {
+  if (!Array.isArray(data)) return [];
+  const out: RuntimeEntry[] = [];
+  const seen = new Set<string>();
+  for (const item of data) {
+    const rec = asRecord(item);
+    if (!rec) continue;
+    const language = asText(rec.language).trim();
+    const version = asText(rec.version).trim();
+    if (!language || !version) continue;
+    const key = `${language}@${version}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    const aliases = Array.isArray(rec.aliases)
+      ? rec.aliases.map((a) => asText(a).trim()).filter(Boolean)
+      : [];
+    out.push({ language, version, aliases });
+  }
+  return out;
+}
+
 /** First semantic-version-ish number run in a string, as a tuple. */
 function versionTuple(s: string): number[] {
   const match = s.match(/\d+(?:\.\d+)*/);
