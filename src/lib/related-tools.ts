@@ -19,6 +19,19 @@ const CURATED_RELATED: Partial<Record<string, readonly string[]>> = {
   "json-to-tsv": ["tsv-to-json", "json-to-csv", "csv-to-json"],
   "tsv-to-json": ["json-to-tsv", "json-to-csv", "csv-to-json"],
   "json-to-typescript": ["json-formatter", "json-to-csv", "json-to-xml", "xml-to-json"],
+
+  // 2026-10 expansion
+  "code-runner": ["env-validator", "json-formatter", "text-diff", "regex-tester"],
+  "image-compress-target": ["image-compressor", "image-resizer", "image-to-pdf", "compress-pdf"],
+  "image-crop": ["image-resizer", "image-rotate", "image-compressor", "image-merger"],
+  "image-rotate": ["image-crop", "image-resizer", "image-format-converter", "image-compressor"],
+  "image-resize-units": ["image-resizer", "image-compress-target", "passport-photo", "image-to-pdf"],
+  "passport-photo": ["image-resize-units", "image-crop", "background-remover", "image-to-pdf"],
+  "remove-image-metadata": ["exif-viewer", "image-compressor", "image-format-converter", "image-to-pdf"],
+  "favicon-generator": ["image-resizer", "image-format-converter", "base64-image", "qr-code"],
+  "signature-maker": ["image-to-pdf", "text-to-pdf", "pdf-to-text", "image-crop"],
+  "pdf-to-text": ["pdf-to-jpg", "compress-pdf", "merge-pdf", "pdf-page-editor"],
+  "text-to-handwriting": ["text-to-pdf", "word-counter", "notepad-plus-plus", "signature-maker"],
   "json-to-xml": ["xml-to-json", "json-formatter", "json-to-typescript"],
   "xml-to-json": ["json-to-xml", "json-formatter", "xml-suite"],
 

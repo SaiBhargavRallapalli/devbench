@@ -10,6 +10,7 @@ export const SLUGS_NEED_NETWORK = new Set<string>([
   "background-remover",
   "websocket-tester",
   "mermaid-editor",
+  "code-runner",
 ]);
 
 export type ToolConnectivity =
@@ -28,6 +29,9 @@ export function getToolConnectivity(slug: string): ToolConnectivity {
   }
   if (slug === "mermaid-editor") {
     return { mode: "network", detail: "Mermaid.js CDN (first load)" };
+  }
+  if (slug === "code-runner") {
+    return { mode: "network", detail: "Code sent to WandBox compiler cloud" };
   }
   if (slug === "currency-converter") {
     return { mode: "network", detail: "Loads live FX rates (Frankfurter API)" };

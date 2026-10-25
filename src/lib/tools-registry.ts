@@ -477,6 +477,100 @@ export const TOOLS: Tool[] = [
     category: "dev",
     icon: "npm",
   },
+
+  // ── Code execution ──
+  {
+    slug: "code-runner",
+    name: "Multi-Language Code Runner",
+    shortName: "Code Runner",
+    description: "Compile and run code in 30+ languages — C, C++, Java, Python, Rust, Go, PHP, Ruby, TypeScript and more — right in your browser. No install, instant output.",
+    category: "dev",
+    icon: "▶",
+  },
+
+  // ── Image gap-fillers (crop/rotate/physical-units/target-size/ID/EXIF/favicon — verified absent vs pi7.org & toolfk.com) ──
+  {
+    slug: "image-compress-target",
+    name: "Compress Image to Exact Size",
+    shortName: "Compress to KB",
+    description: "Shrink a JPG, PNG, or WebP to an exact target size like 50KB or 100KB — perfect for upload limits on forms and portals",
+    category: "image",
+    icon: "KB",
+  },
+  {
+    slug: "image-crop",
+    name: "Crop Image",
+    shortName: "Crop",
+    description: "Crop images with free, aspect-ratio, or circle presets — precise pixel control with instant preview, all in your browser",
+    category: "image",
+    icon: "✂",
+  },
+  {
+    slug: "image-rotate",
+    name: "Rotate & Flip Image",
+    shortName: "Rotate",
+    description: "Rotate an image by any angle or exact 90° steps, and flip it horizontally or vertically — with background fill options",
+    category: "image",
+    icon: "↻",
+  },
+  {
+    slug: "image-resize-units",
+    name: "Resize Image in cm, mm & Inches",
+    shortName: "Resize Units",
+    description: "Resize images by physical dimensions — centimeters, millimeters, or inches at any DPI (72–600) — for print-perfect output",
+    category: "image",
+    icon: "cm",
+  },
+  {
+    slug: "passport-photo",
+    name: "Passport & ID Photo Maker",
+    shortName: "ID Photo",
+    description: "Create passport, visa, and ID photos in official sizes (US, India, UK, Schengen and more) with exact DPI and background fill",
+    category: "image",
+    icon: "🪪",
+  },
+  {
+    slug: "remove-image-metadata",
+    name: "Remove Image Metadata (EXIF)",
+    shortName: "Strip EXIF",
+    description: "Strip GPS location, camera model, and timestamps from photos before sharing — see exactly what's hidden in your images",
+    category: "image",
+    icon: "EXIF",
+  },
+  {
+    slug: "favicon-generator",
+    name: "Favicon Generator",
+    shortName: "Favicon",
+    description: "Turn any image into a favicon — generates 16px, 32px, 48px PNGs plus a multi-size favicon.ico you can download instantly",
+    category: "image",
+    icon: "ICO",
+  },
+  {
+    slug: "signature-maker",
+    name: "Signature Maker",
+    shortName: "Signature",
+    description: "Draw or type a signature, trim it to content, and export a transparent PNG at standard document sizes like 60×20mm",
+    category: "image",
+    icon: "✒",
+  },
+
+  // ── Documents & text-to-image ──
+  {
+    slug: "pdf-to-text",
+    name: "PDF to Text Extractor",
+    shortName: "PDF → Text",
+    description: "Extract all text from any PDF — choose page ranges, copy or download as .txt — 100% in your browser, nothing uploaded",
+    category: "pdf",
+    icon: "TXT",
+  },
+  {
+    slug: "text-to-handwriting",
+    name: "Text to Handwriting",
+    shortName: "Handwriting",
+    description: "Convert typed text into realistic handwriting on ruled paper — choose fonts, ink colors, and paper styles, then download",
+    category: "text",
+    icon: "✍",
+  },
 ];
 
 export function getToolBySlug(slug: string): Tool | undefined {
