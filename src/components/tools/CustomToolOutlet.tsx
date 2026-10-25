@@ -69,6 +69,17 @@ const ColorConverterTool      = dynamic(() => import("@/components/tools/ColorCo
 const ColorPaletteTool        = dynamic(() => import("@/components/tools/ColorPaletteTool"));
 const ExpenseSplitterTool     = dynamic(() => import("@/components/tools/ExpenseSplitterTool"));
 const VideoConverterTool      = dynamic(() => import("@/components/tools/VideoConverterTool"), { ssr: false });
+const CodeRunnerTool          = dynamic(() => import("@/components/tools/CodeRunnerTool"), { ssr: false });
+const ImageCompressTargetTool = dynamic(() => import("@/components/tools/ImageCompressTargetTool"), { ssr: false });
+const ImageResizeUnitsTool    = dynamic(() => import("@/components/tools/ImageResizeUnitsTool"), { ssr: false });
+const PassportPhotoTool       = dynamic(() => import("@/components/tools/PassportPhotoTool"), { ssr: false });
+const TextToHandwritingTool   = dynamic(() => import("@/components/tools/TextToHandwritingTool"), { ssr: false });
+const SignatureMakerTool      = dynamic(() => import("@/components/tools/SignatureMakerTool"), { ssr: false });
+const PdfToTextTool           = dynamic(() => import("@/components/tools/PdfToTextTool"), { ssr: false });
+const RemoveImageMetadataTool = dynamic(() => import("@/components/tools/RemoveImageMetadataTool"), { ssr: false });
+const FaviconGeneratorTool    = dynamic(() => import("@/components/tools/FaviconGeneratorTool"), { ssr: false });
+const ImageCropTool           = dynamic(() => import("@/components/tools/ImageCropTool"), { ssr: false });
+const ImageRotateTool         = dynamic(() => import("@/components/tools/ImageRotateTool"), { ssr: false });
 
 export default function CustomToolOutlet({ slug, tool }: { slug: string; tool: Tool }) {
   if (FINANCE_TOOL_SLUGS.has(slug))  return <FinanceFormTools tool={tool} />;
@@ -131,6 +142,17 @@ export default function CustomToolOutlet({ slug, tool }: { slug: string; tool: T
     case "expense-splitter":         return <ExpenseSplitterTool tool={tool} />;
     case "video-converter":          return <VideoConverterTool tool={tool} />;
     case "gif-maker":                return <VideoConverterTool tool={tool} />;
+    case "code-runner":              return <CodeRunnerTool tool={tool} />;
+    case "image-compress-target":    return <ImageCompressTargetTool tool={tool} />;
+    case "image-resize-units":       return <ImageResizeUnitsTool tool={tool} />;
+    case "passport-photo":           return <PassportPhotoTool tool={tool} />;
+    case "text-to-handwriting":      return <TextToHandwritingTool tool={tool} />;
+    case "signature-maker":          return <SignatureMakerTool tool={tool} />;
+    case "pdf-to-text":              return <PdfToTextTool tool={tool} />;
+    case "remove-image-metadata":    return <RemoveImageMetadataTool tool={tool} />;
+    case "favicon-generator":        return <FaviconGeneratorTool tool={tool} />;
+    case "image-crop":               return <ImageCropTool tool={tool} />;
+    case "image-rotate":             return <ImageRotateTool tool={tool} />;
     default:                         return null;
   }
 }

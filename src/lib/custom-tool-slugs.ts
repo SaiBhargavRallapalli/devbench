@@ -89,4 +89,16 @@ export const CUSTOM_TOOL_SLUGS: ReadonlySet<string> = new Set([
   "expense-splitter",
   "video-converter",
   "gif-maker",
+  // 2026-10 expansion (code runner + image gap-fillers)
+  "code-runner",
+  "image-compress-target",
+  "image-crop",
+  "image-rotate",
+  "image-resize-units",
+  "passport-photo",
+  "remove-image-metadata",
+  "favicon-generator",
+  "signature-maker",
+  "pdf-to-text",
+  "text-to-handwriting",
 ]);
