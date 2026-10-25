@@ -1,6 +1,13 @@
 import type { Faq } from "./_types";
 
 export const faqsText: Record<string, Faq[]> = {
+  "text-to-handwriting": [
+    { q: "Which handwriting fonts are available, and will they look the same everywhere?", a: "There are seven styles built from fonts that ship with Windows, macOS, and mobile devices — Segoe Script, Bradley Hand, Segoe Print, Brush Script MT, Comic Sans MS, Chalkboard, and a generic system cursive. Rendering depends on fonts installed on YOUR device: if a listed font is missing, the browser falls back to its built-in cursive font, so the exact look can differ between operating systems." },
+    { q: "Is there a limit to how much text I can convert?", a: "There is no fixed character limit. Text wraps to each page's line width (long words are split safely and blank lines are preserved), and anything that doesn't fit continues onto extra pages automatically. Use the previous/next page buttons to review every page and download them one at a time." },
+    { q: "What paper styles and ink colors can I choose from?", a: "Four paper styles — ruled, college ruled, grid, and blank — and three inks: blue, black, and red. The rule and grid lines are actually drawn into the exported PNG, not just the preview. You can also adjust line spacing (18–40px), font size (14–28px), page margins, and add optional Title and Date lines at the top of the first page." },
+    { q: "Is my text uploaded or stored anywhere?", a: "No. Wrapping, canvas rendering, and the PNG export all run in your browser — your text never leaves your device, nothing is sent to a server, and nothing is saved after you leave the page." },
+  ],
+
   "case-converter": [
     { q: "What is camelCase and when is it used?", a: "camelCase starts with a lowercase letter and capitalises the first letter of each subsequent word — for example, firstName or getUserById. It is the standard for JavaScript variable names, function names, and JSON property keys in most style guides." },
     { q: "What is the difference between snake_case and kebab-case?", a: "snake_case uses underscores between words (user_first_name) and is standard in Python, Ruby, SQL column names, and environment variables. kebab-case uses hyphens (user-first-name) and is used in CSS class names, HTML attributes, URL slugs, and some CLI flags. Neither allows spaces — both are lowercase by convention." },

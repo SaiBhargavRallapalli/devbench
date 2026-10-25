@@ -1,6 +1,12 @@
 import type { ToolPageContent } from "./_types";
 
 export const pageContentPdf: Record<string, ToolPageContent> = {
+  "pdf-to-text": {
+    title: "PDF to Text Extractor — Copy or Download Plain Text",
+    metaDescription: "Extract text from any PDF in your browser — choose pages, preview the result, then copy or download a clean .txt file. No upload needed.",
+    openingParagraph: "Turn any PDF into plain, editable text without installing software. This tool reads the embedded text layer of each page right in your browser, so your document is never uploaded to a server. Pick specific pages or extract the whole file, then copy the result or download it as a ready-to-use .txt file. If a PDF turns out to be scanned, the tool tells you so and suggests OCR instead of returning an empty page.",
+  },
+
   "image-to-pdf": {
     title: "Image to PDF — JPG, PNG, WebP to One PDF (Free, Browser-Only)",
     metaDescription:

@@ -1,6 +1,14 @@
 import type { ToolPageContent } from "./_types";
 
 export const pageContentDev: Record<string, ToolPageContent> = {
+  "code-runner": {
+    title: "Multi-Language Code Runner — 30+ Languages",
+    metaDescription:
+      "Run C, C++, Java, Python, Rust, Go and 30+ more languages in your browser. Compile and execute code instantly with stdin support — no install.",
+    openingParagraph:
+      "Compile and run code in 30+ languages — C, C++, Java, Python, Rust, Go, PHP, Ruby, TypeScript and more — without installing anything. Pick a language and version, write your code, optionally feed it through standard input, and get stdout, stderr, compile errors and the exit code back instantly. Runs are rate-limited to keep the shared compiler cloud healthy.",
+  },
+
   "regex-tester": {
     title: "Regex Tester — Test Regular Expressions Online",
     metaDescription:

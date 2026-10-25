@@ -1,6 +1,13 @@
 import type { Faq } from "./_types";
 
 export const faqsPdf: Record<string, Faq[]> = {
+  "pdf-to-text": [
+    { q: "How do I extract text from only certain pages?", a: "Type a range into the Pages to extract field using commas and dashes — for example 1-3,5,7-9 selects pages 1–3, page 5, and pages 7–9. Leave the field empty to extract every page, and values past the end of the document are clamped to the last page. The extraction re-runs automatically as you type." },
+    { q: "Why does it say my PDF looks like a scanned document?", a: "Scanned PDFs are images of pages with no selectable text layer, so there is nothing to extract — the tool detects this (fewer than 10 characters across all pages) and tells you instead of returning an empty result. To get editable text from a scan, run it through OCR (optical character recognition) software first, then extract again." },
+    { q: "Is my PDF uploaded anywhere?", a: "No. Extraction runs entirely in your browser using the same PDF engine as the other tools on this site. The file is read from your device and never sent to a server, so it is safe for confidential or sensitive documents." },
+    { q: "Does it work on password-protected PDFs?", a: "Only if the PDF opens without prompting for a password. If a password is required, remove it in your PDF viewer or editor and upload the file again — the tool shows a friendly message rather than a technical error when a file is encrypted or damaged." },
+  ],
+
   "image-to-pdf": [
     { q: "What image formats can be converted to PDF?", a: "JPEG, PNG, WebP, and GIF are supported. Each image becomes one page in the resulting PDF, sized to fit an A4 page with margins. For best quality, use high-resolution source images." },
     { q: "Can I control the order of pages?", a: "Yes. After adding images, drag them to reorder before generating the PDF. The PDF pages will follow the order shown in the preview." },

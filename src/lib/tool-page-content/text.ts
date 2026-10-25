@@ -1,6 +1,14 @@
 import type { ToolPageContent } from "./_types";
 
 export const pageContentText: Record<string, ToolPageContent> = {
+  "text-to-handwriting": {
+    title: "Text to Handwriting Converter — Write Text in Cursive",
+    metaDescription:
+      "Turn typed text into realistic handwriting online. Choose fonts, ink, ruled or grid paper, add a date, and download a PNG — free, no upload.",
+    openingParagraph:
+      "Turn any typed text into a handwritten page in seconds — paste your notes, letter, or assignment, pick a handwriting style, ink color, and paper, and watch the preview fill up as you type. Everything runs locally in your browser, so your words are never uploaded anywhere. When you're happy with the look, download the current page as a crisp PNG ready for printing or submitting.",
+  },
+
   "text-diff": {
     title: "Text Diff Checker — Compare Text Online",
     metaDescription:

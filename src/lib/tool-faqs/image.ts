@@ -1,6 +1,63 @@
 import type { Faq } from "./_types";
 
 export const faqsImage: Record<string, Faq[]> = {
+  "image-crop": [
+    { q: "How do I crop an image to an exact size?", a: "Upload the image, then type the exact X, Y, width and height values in pixels into the labeled inputs below the aspect-ratio presets. The selection rectangle, the live output dimensions, and the preview all update immediately — no dragging required, so the tool works fully with a keyboard or screen reader." },
+    { q: "What do the aspect ratio presets do?", a: "Presets (1:1, 4:3, 16:9, 3:2 and their portrait variants) lock the crop rectangle to a fixed width-to-height ratio while you drag or type, so the result always matches the target frame. \"Original\" locks to your image's own proportions and \"Free\" removes any constraint. Swapping W/H switches to the matching inverse preset." },
+    { q: "How do I make a circular profile picture?", a: "Tick \"Circle crop\" and the tool applies a circular alpha mask to the selection. The output format is automatically forced to PNG, the only format that preserves the transparent corners (JPEG would fill them with a solid color). For the roundest result, pick the 1:1 preset first so the crop is a perfect square." },
+    { q: "Is my image uploaded to a server?", a: "No. Cropping runs entirely in your browser using the Canvas API — your file is read from your device, processed locally, and never transmitted or stored. You can disconnect from the internet after the page loads and the tool keeps working." },
+  ],
+
+  "image-rotate": [
+    { q: "How do I rotate a photo by exactly 90 degrees?", a: "Use the \"Rotate left\" and \"Rotate right\" buttons — each press turns the image a precise quarter turn. At 90°, 180° and 270° the output dimensions are an exact swap of the original (for example 4000×3000 becomes 3000×4000) with no resampling or added background." },
+    { q: "Why are there empty corners when I rotate slightly?", a: "Rotating by a non-right angle (e.g. 15°) means the rectangle no longer aligns with the canvas, so the output grows to the rotated bounding box. Fill those corners with the Background fill option — Transparent (PNG/WebP), White, or Black. JPEG has no transparency, so transparent areas are filled white automatically." },
+    { q: "What is the difference between flipping and rotating?", a: "Flipping mirrors the image — horizontal flip swaps left and right, vertical flip swaps top and bottom — without changing its dimensions. Rotating turns it around its center: 90° turns swap width and height, while other angles enlarge the canvas. Flips and rotation can be combined freely; flips apply to the final orientation you see in the preview." },
+    { q: "Does rotating an image reduce quality?", a: "The image is decoded once and re-encoded once, so quality loss is limited to a single compression step — choose PNG or 100% quality JPEG/WebP to minimize it. Angles that are multiples of 90° simply rearrange pixels without interpolation, while arbitrary angles involve resampling, which slightly softens fine detail." },
+  ],
+
+  "signature-maker": [
+    { q: "How do I create my signature — do I need to scan or upload anything?", a: "No scanner or upload is needed. Draw directly on the canvas with a mouse, trackpad, or finger, or switch to Type mode and enter your name — Type mode is fully keyboard-operable. Undo removes the last stroke, Clear resets the canvas, and strokes are resampled and smoothed as you draw for cleaner lines." },
+    { q: "What file format and sizes does the download use?", a: "PNG with a transparent background — never a white box. Choose Custom PNG for the natural size, or a preset: Standard 60×20mm, Compact 50×20mm, Narrow 70×15mm, or Small 40×15mm. Presets export at exactly 300 DPI (709×236px for standard) with your signature fitted and centered inside the exact target dimensions." },
+    { q: "What does the 'Trim to content' option do?", a: "It crops away the transparent margins. The tool computes the bounding box of your strokes (or typed text), pads it by the pen width plus a few pixels, and clamps it to the canvas — so you get a snug signature that drops neatly into documents. Turn it off to export the full 900×300px drawing area instead." },
+    { q: "Which size preset should I pick for a form?", a: "Standard 60×20mm matches the typical signature box on contracts, bank forms, and job applications. Use Compact 50×20mm for tighter boxes, Narrow 70×15mm for wide, short fields, and Small 40×15mm for tiny fields. If you are unsure, keep Custom PNG and resize the image in your document — PNGs scale without quality loss." },
+  ],
+
+  "remove-image-metadata": [
+    { q: "What metadata does this tool remove?", a: "Re-encoding the image strips every metadata block: EXIF (camera make and model, lens, date taken, software), GPS coordinates, IPTC, XMP, and ICC profiles. The tool first shows you a list of what it found, including a prominent location row if GPS data is present, so you know exactly what will be removed." },
+    { q: "Does removing metadata change my image quality?", a: "The image is re-encoded through a canvas, so the bytes change even though the visual quality is preserved — at high quality settings differences are imperceptible. The result is usually smaller than the original, and the tool shows a before/after size comparison so you can judge the trade-off yourself." },
+    { q: "How can I tell if my photo contains location data?", a: "Upload it and the tool lists every metadata field it finds before you remove anything. GPS coordinates appear as a 📍 Location row. If you see 'No metadata found — image is already clean', the file has no EXIF data — common for PNGs, screenshots, and images that have already been shared through social networks." },
+    { q: "Which file formats are supported?", a: "JPEG, PNG, and WebP images are supported. You can keep the original format or choose PNG or JPEG as the output — JPEG output composites a white background because JPEG does not support transparency. Processing happens entirely in your browser." },
+  ],
+
+  "favicon-generator": [
+    { q: "What sizes are included in the favicon set?", a: "The tool produces 16×16, 32×32, and 48×48 PNGs plus a single favicon.ico that bundles all three images in one file. Each PNG can be downloaded individually, and the .ico is built with proper directory entries and offsets so browsers and Windows pick the right size automatically." },
+    { q: "My source image isn't square — what happens?", a: "The image is centered on a square canvas whose side matches the longer edge, so nothing is cropped. Padding is transparent by default; enable Fill background and pick a color if you want a solid backdrop (useful for logos with transparency that need to sit on a colored tile)." },
+    { q: "How do I add the favicon to my website?", a: "Download favicon.ico and place it in your site's root directory, then paste the provided snippet — <link rel=\"icon\" href=\"/favicon.ico\"> — into the head of your pages. A Copy button puts the tag on your clipboard. Most modern browsers request /favicon.ico automatically even without the tag, but the link tag is explicit and reliable." },
+    { q: "Why are PNG files stored inside the .ico?", a: "PNG-in-ICO is a valid format for 16, 32, and 48 pixel icons and is supported by all modern browsers and Windows Vista and later. It keeps file sizes small and preserves transparency and antialiasing exactly as they appear in the downloaded PNGs, with no quality loss from re-compression." },
+  ],
+
+  "image-compress-target": [
+    { q: "Why do I need to compress to an exact size?", a: "Many forms and portals reject uploads over a fixed limit (e.g. 50KB for an ID photo or 1MB for a passport scan). This tool automatically finds the quality and dimensions that land on that limit so the upload is accepted on the first try." },
+    { q: "How does the tool reach my target size?", a: "It runs a binary search over encoder quality (about 7 attempts), and if quality alone can't hit the target it downscales the image and resumes the search — at most 12 encode attempts in total. You always see the achieved size honestly, even if the exact target isn't reachable." },
+    { q: "What does 'Closest achievable' mean?", a: "Some images simply can't get as small as your target without being unreadable. When that happens the tool stops at its minimum reasonable quality and shows the smallest size it could safely reach, along with the target for comparison." },
+    { q: "Will my transparent PNG become a black-background JPEG?", a: "No. When outputting JPEG from a PNG or WebP with transparency, the tool composites the image onto a white background first, matching what most design tools do." },
+    { q: "Is my image uploaded to a server?", a: "No. All compression happens in your browser using Web Workers and OffscreenCanvas. Your image never leaves your device." },
+  ],
+
+  "image-resize-units": [
+    { q: "What DPI should I use for printing?", a: "Use 300 DPI for everyday photo prints and 150–200 DPI for large format or posters. 96 DPI is the screen standard and only matters for on-screen use — DPI never changes the visible quality of an on-screen image." },
+    { q: "How do I resize an image to exactly 3.5 × 4.5 cm?", a: "Upload your image, choose cm as the unit, set width to 3.5 and height to 4.5, and pick your DPI (300 recommended). The tool shows the pixel equivalent live — 3.5 × 4.5 cm at 300 DPI is 413 × 531 px — and lets you download the resized file." },
+    { q: "Does resizing in centimeters change my image quality?", a: "Enlarging beyond the original pixel dimensions doesn't add real detail — the browser interpolates, so very large upscales look soft. Shrinking or matching the original size preserves sharpness." },
+    { q: "Is my photo uploaded to a server?", a: "No. All resizing runs in your browser using an off-main-thread worker. Your file is never uploaded, stored, or seen by anyone." },
+  ],
+
+  "passport-photo": [
+    { q: "What size are passport photos for my country?", a: "The tool includes real-world presets: US and Canada 2×2 inch (50.8×50.8 mm), India, Schengen/EU, UK, Japan, Australia and Russia 35×45 mm, China 33×48 mm, Pakistan 35×45 mm, and Bangladesh 45×55 mm. Always double-check your country's current requirements before printing." },
+    { q: "What's the difference between Fit and Fill?", a: "Fit (contain) keeps your whole photo visible and fills the leftover frame area with your chosen background color. Fill (cover) makes the photo fill the entire frame and crops the edges — use it when the subject must occupy the full photo with no border." },
+    { q: "Can this tool remove the background behind me?", a: "No — this tool fills the frame behind your photo with a solid color (white, red, blue, green, or a custom color). For a proper cut-out subject, remove the background with our Background Remover tool first, then place the transparent PNG here." },
+    { q: "How do I print multiple copies at home?", a: "Enable the 'Print sheet' option to build an A4 print sheet (at 200 DPI) with as many copies as fit, spaced 4 mm apart with a white surround. Print it at 100% / 'actual size' — no scaling — and cut along the edges." },
+  ],
+
   "contrast-checker": [
     { q: "What is the WCAG contrast ratio requirement?", a: "WCAG 2.2 Level AA requires a contrast ratio of at least 4.5:1 for normal text (below 18pt or 14pt bold) and 3:1 for large text (18pt+ or 14pt+ bold). Level AAA is stricter: 7:1 for normal text and 4.5:1 for large text. The contrast checker tests both levels and shows a clear pass/fail badge for each." },
     { q: "How is the contrast ratio calculated?", a: "The contrast ratio is (L1 + 0.05) / (L2 + 0.05), where L1 is the lighter relative luminance and L2 is the darker one. Relative luminance uses linearised sRGB values and is defined by the WCAG. A ratio of 1:1 is no contrast (same colour); 21:1 is maximum contrast (black on white)." },

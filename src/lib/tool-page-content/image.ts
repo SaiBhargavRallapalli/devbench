@@ -1,6 +1,70 @@
 import type { ToolPageContent } from "./_types";
 
 export const pageContentImage: Record<string, ToolPageContent> = {
+  "image-crop": {
+    title: "Crop Image Online — Cut, Resize & Circle Crop Free",
+    metaDescription:
+      "Crop any JPG, PNG or WebP right in your browser — drag a selection, lock an aspect ratio, or make a round avatar. Nothing is uploaded, ever.",
+    openingParagraph:
+      "Image Crop lets you cut exactly the part of a photo you need, entirely in your browser. Drag a selection on the preview, fine-tune it with exact X, Y, width and height inputs, and lock aspect ratios from Free and Original to 1:1, 16:9 and more. Export as PNG, JPEG or WebP — or apply a circular mask for perfect round avatars. Nothing is ever uploaded.",
+  },
+
+  "image-rotate": {
+    title: "Rotate & Flip Image Online — Turn Photo Any Angle",
+    metaDescription:
+      "Rotate any photo by 90° or any angle and flip it horizontally or vertically. Choose background fill, PNG/JPEG/WebP output. Runs in your browser.",
+    openingParagraph:
+      "Rotate & Flip Image turns photos by exact angles without leaving your device. Tap 90° left or right for quarter turns, drag the slider from −180° to 180° for fine tilts, and mirror the picture with one-click horizontal and vertical flips. Non-right-angle rotations let you pick a transparent, white, or black background, and everything exports instantly as PNG, JPEG or WebP.",
+  },
+
+  "signature-maker": {
+    title: "Signature Maker — Draw or Type a Signature Online",
+    metaDescription:
+      "Create a handwritten signature online — draw with mouse, finger, or keyboard, then trim and download a transparent PNG. No upload required.",
+    openingParagraph:
+      "Create a handwritten signature without a pen and paper — draw with your mouse, trackpad, or finger, or switch to Type mode and let a script font do the writing for you. The preview sits on a transparent checkerboard so you can see exactly what will export, and everything happens locally in your browser. Trim the whitespace, choose a standard size like 60×20mm at 300 DPI, and download a transparent PNG for documents, forms, and emails.",
+  },
+
+  "remove-image-metadata": {
+    title: "Remove Image Metadata (EXIF) — Strip GPS and Camera Data",
+    metaDescription:
+      "Strip EXIF metadata from photos in your browser — remove GPS location, camera model, and timestamps, then download a clean image.",
+    openingParagraph:
+      "Photos you share often contain hidden EXIF metadata, including the exact GPS coordinates where they were taken. This tool reads that metadata, shows you exactly what will be removed, and re-encodes the image so camera details, timestamps, and location are gone. You can keep the original format or switch to PNG or JPEG, and PNG or WebP files without metadata are reported as already clean. Everything happens in your browser.",
+  },
+
+  "favicon-generator": {
+    title: "Favicon Generator — PNG to ICO Converter",
+    metaDescription:
+      "Turn any image into a favicon set — 16, 32, and 48px PNGs plus a favicon.ico, ready to download and drop into your site.",
+    openingParagraph:
+      "Browsers expect a favicon in a few different sizes, and hand-crafting each one takes time. Upload a logo or icon and this tool pads it onto a square canvas, renders it at 16, 32, and 48 pixels, and packages everything into a single favicon.ico plus the individual PNGs. You also get the HTML link tag to paste into your site's head.",
+  },
+
+  "image-compress-target": {
+    title: "Compress Image to Exact Size (KB/MB)",
+    metaDescription:
+      "Shrink any JPEG, PNG or WebP to a precise KB or MB target — perfect for upload form limits like 50KB or 1MB. Free, private, in-browser.",
+    openingParagraph:
+      "Many upload forms reject photos over a fixed size — 50KB, 100KB, 1MB. This tool automatically searches quality and, if needed, dimensions to land on your exact target size. Everything runs locally in your browser, so your images are never uploaded.",
+  },
+
+  "image-resize-units": {
+    title: "Resize Image in cm, mm & Inches Online",
+    metaDescription:
+      "Resize an image to exact physical dimensions in cm, mm, inches or pixels. Pick any DPI, preview all units live, and download — free, private, in-browser.",
+    openingParagraph:
+      "Pixels aren't the only measure that matters — printers, passports, and product specs ask for centimeters, millimeters, or inches. This resizer converts your image to exact physical dimensions at any DPI, from screen 96 to press-ready 300 or 600. Everything runs locally in your browser, so your photos never leave your device.",
+  },
+
+  "passport-photo": {
+    title: "Passport & ID Photo Maker (35×45mm, 2×2in)",
+    metaDescription:
+      "Make passport and ID photos at exact official sizes — US 2×2in, India/Schengen 35×45mm, China 33×48mm and more. Choose background color, print-ready DPI.",
+    openingParagraph:
+      "Resize any photo to the exact official passport or ID frame — US and Canada 2×2 inch, India, Schengen and UK 35×45 mm, China 33×48 mm, and a dozen more presets. Pick a background color, choose Fit or Fill, and export a print-ready PNG, plus an optional A4 sheet with multiple copies. Everything happens in your browser — nothing is uploaded.",
+  },
+
   "contrast-checker": {
     title: "WCAG Contrast Checker — AA & AAA Ratio Online",
     metaDescription:

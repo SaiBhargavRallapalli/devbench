@@ -1,6 +1,14 @@
 import type { Faq } from "./_types";
 
 export const faqsDev: Record<string, Faq[]> = {
+  "code-runner": [
+    { q: "Which programming languages can I run?", a: "Over 30, including C, C++, C#, Java, Python, JavaScript, Rust, Go, PHP, Ruby, TypeScript, Swift, Lua, Perl, Haskell, Scala, R, Julia, Zig and Bash. The language list is fetched live, so new runtimes appear as soon as the execution engine adds them." },
+    { q: "Is this free and do I need to install anything?", a: "Yes, it's free and runs entirely in your browser. Code executes on a public execution engine — there's nothing to install, sign up for, or configure. Runs are rate-limited (about 10 per minute) to keep the shared engine healthy for everyone." },
+    { q: "Can my program read input?", a: "Yes. Open the \"Standard input (stdin)\" panel below the editor and type the lines your program should read — for example the numbers a competitive-programming problem feeds in. Compiled languages also show compile errors separately from runtime errors." },
+    { q: "What do output, stderr and the exit code mean?", a: "Output shows what your program printed to stdout. Errors (stderr) shows runtime diagnostics such as a Python traceback or a Java stack trace. The exit badge shows the process exit code: 0 means success, anything else means the program finished with an error. Compile errors appear in their own section before any output." },
+    { q: "Is my code private? Can I run anything?", a: "Code runs on a public execution engine, so don't enter secrets, API keys or personal data. There are size limits (up to 100,000 characters) and a 20-second timeout, and only the code you submit is sent for execution — nothing is stored by this site." },
+  ],
+
   "regex-tester": [
     { q: "What regex flavour does this tool use?", a: "The tester uses JavaScript's built-in RegExp engine (ECMAScript 2022+), which supports named capturing groups, lookbehind assertions, Unicode property escapes (\\p{L}), the dotAll (s) flag, and the sticky (y) flag. It does not support PCRE-only features like \\K or recursive patterns." },
     { q: "What does the g (global) flag do?", a: "Without the g flag, a regex stops after the first match. With g, it finds all non-overlapping matches in the string. Most operations in this tester (match count, highlighting, substitution) implicitly behave as if g is set regardless of the flag selection." },
