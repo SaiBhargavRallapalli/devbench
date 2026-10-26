@@ -2715,7 +2715,7 @@ function CurrencyConverterContent() {
   );
 }
 
-const CONTENT_MAP: Record<string, React.FC> = {
+export const CONTENT_MAP: Record<string, React.FC> = {
   "json-formatter": JsonFormatterContent,
   "base64-encode": Base64EncodeContent,
   "base64-decode": Base64DecodeContent,
@@ -3033,6 +3033,13 @@ const CONTENT_MAP: Record<string, React.FC> = {
         </Link>
         .
       </p>
+      <p className={prose}>
+        Step-by-step walkthrough:{" "}
+        <Link href="/blog/compress-photo-under-50kb-for-forms" className="text-accent hover:underline">
+          compressing a photo under 50KB for SSC, UPSC and banking forms
+        </Link>
+        , including why quality beats resolution when the cap is tight.
+      </p>
     </Section>
   )) as React.FC,
   "image-crop": (() => (
@@ -3170,6 +3177,13 @@ const CONTENT_MAP: Record<string, React.FC> = {
         {", and "}
         <Link href="/tools/image-to-pdf" className="text-accent hover:underline">
           Image to PDF
+        </Link>
+        .
+      </p>
+      <p className={prose}>
+        Every mm-to-pixel spec for Indian government portals, in one table:{" "}
+        <Link href="/blog/government-form-photo-specs-india" className="text-accent hover:underline">
+          photo &amp; signature size cheat sheet
         </Link>
         .
       </p>
@@ -3352,6 +3366,13 @@ const CONTENT_MAP: Record<string, React.FC> = {
         </Link>
         .
       </p>
+      <p className={prose}>
+        Country-by-country sizes and the DPI math:{" "}
+        <Link href="/blog/passport-photo-size-for-online-forms" className="text-accent hover:underline">
+          passport photo sizes for online forms
+        </Link>
+        .
+      </p>
     </Section>
   )) as React.FC,
   "signature-maker": (() => (
@@ -3455,6 +3476,13 @@ const CONTENT_MAP: Record<string, React.FC> = {
         </Link>
         .
       </p>
+      <p className={prose}>
+        Why forms specify 60×20mm and how scanning compares to drawing:{" "}
+        <Link href="/blog/signature-size-for-online-forms" className="text-accent hover:underline">
+          the signature size standard, explained
+        </Link>
+        .
+      </p>
     </Section>
   )) as React.FC,
   "text-to-handwriting": (() => (
@@ -3508,6 +3536,1752 @@ const CONTENT_MAP: Record<string, React.FC> = {
         {", and "}
         <Link href="/tools/signature-maker" className="text-accent hover:underline">
           Signature Maker
+        </Link>
+        .
+      </p>
+    </Section>
+  )) as React.FC,
+  // 2026-10 backfill: legacy custom tools
+  "merge-pdf": (() => (
+    <Section>
+      <h2 className={h2}>How to merge PDF files</h2>
+      <ol className={ol}>
+        <li>
+          Click <strong className="text-foreground">Choose PDFs (multiple)</strong> and
+          select two or more files at once — or come back later and add another batch;
+          every upload is appended to the list.
+        </li>
+        <li>
+          Check the numbered rows: order top → bottom is the order of pages in the
+          merged file.
+        </li>
+        <li>
+          Fix mistakes with the up/down arrows on each row, or remove a file with the
+          trash button.
+        </li>
+        <li>
+          Press <strong className="text-foreground">Merge PDF</strong> (enabled from two
+          files upwards) and the combined document downloads as{" "}
+          <code className="font-mono text-xs bg-muted px-1 rounded">merged.pdf</code>.
+        </li>
+      </ol>
+      <h2 className={h2}>One file, assembled in order</h2>
+      <p className={prose}>
+        Each source contributes its pages in sequence, so the result behaves like a
+        single ordinary PDF — exactly what a portal wants when it accepts one
+        attachment but your paperwork arrives as five separate scans. The work happens
+        in your browser; the files are never uploaded to a server, which makes this
+        safe for contracts, ID documents and internal material. An encrypted or
+        damaged file stops the merge with a plain-language error rather than producing
+        a corrupt output.
+      </p>
+      <h2 className={h2}>Getting the order right</h2>
+      <p className={prose}>
+        Order matters most when each file is a single page — application form plus
+        annexures, a signed page plus supporting documents. Set the sequence before
+        merging instead of fixing it afterwards: if pages inside one file are also out
+        of order, run the merged result through Organize PDF, or split first and merge
+        the pieces in the sequence you want. A merge is also a handy first step before
+        Compress PDF when many small files need to land under a portal’s upload cap as
+        one combined document.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/split-pdf" className="text-accent hover:underline">
+          Split PDF
+        </Link>
+        {", "}
+        <Link href="/tools/organize-pdf" className="text-accent hover:underline">
+          Organize PDF
+        </Link>
+        {", and "}
+        <Link href="/tools/compress-pdf" className="text-accent hover:underline">
+          Compress PDF
+        </Link>
+        .
+      </p>
+    </Section>
+  )) as React.FC,
+  "split-pdf": (() => (
+    <Section>
+      <h2 className={h2}>How to split a PDF</h2>
+      <ol className={ol}>
+        <li>
+          Choose a PDF — the page count is read in your browser and shown before
+          anything is produced.
+        </li>
+        <li>
+          Press <strong className="text-foreground">Split into ZIP</strong>. There are
+          no range fields: this tool splits every page into its own single-page PDF.
+        </li>
+        <li>
+          Unzip the download — pages are named like{" "}
+          <code className="font-mono text-xs bg-muted px-1 rounded">report-page-3.pdf</code>,
+          so order survives the trip to disk.
+        </li>
+        <li>
+          Rebuilding a document (or any subset) from the parts takes seconds with
+          Merge PDF.
+        </li>
+      </ol>
+      <h2 className={h2}>One file per page, in one download</h2>
+      <p className={prose}>
+        The most common split need is “give each page of this scan its own file” for
+        portals that accept one page per upload. Packaging every result into a single
+        ZIP keeps it to one click, and the base name keeps pages traceable to their
+        source document. Each output is a real one-page PDF with the original page
+        content — not a screenshot — so text stays selectable and print quality is
+        untouched. Everything runs locally; the document never leaves your device, and
+        an encrypted file gets a clear error instead of a broken archive.
+      </p>
+      <h2 className={h2}>When you want ranges instead</h2>
+      <p className={prose}>
+        Extracting pages 4–8 into one new PDF, deleting a stray page, or duplicating a
+        cover page is not this tool’s job — that is PDF Page Editor. For text-only
+        extraction with custom ranges such as 1-3,5,7-9, PDF to Text Extractor does
+        it without producing any files at all. Use this tool when the goal is truly
+        “one page, one file”. A hundred-page scan becomes a hundred named files,
+        each ready for a portal that rejects multi-page uploads.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/pdf-page-editor" className="text-accent hover:underline">
+          PDF Page Editor
+        </Link>
+        {", "}
+        <Link href="/tools/merge-pdf" className="text-accent hover:underline">
+          Merge PDF
+        </Link>
+        {", and "}
+        <Link href="/tools/pdf-to-text" className="text-accent hover:underline">
+          PDF to Text Extractor
+        </Link>
+        .
+      </p>
+    </Section>
+  )) as React.FC,
+  "compress-pdf": (() => (
+    <Section>
+      <h2 className={h2}>How to compress a PDF</h2>
+      <ol className={ol}>
+        <li>Choose a PDF — the original size in KB is shown immediately.</li>
+        <li>
+          Press <strong className="text-foreground">Download optimized PDF</strong>.
+          The re-save happens in your browser and downloads the result in the same
+          step.
+        </li>
+        <li>
+          Compare the report: original size, optimized size and the change as a
+          percentage, shown with a minus or plus so an increase is never hidden.
+        </li>
+      </ol>
+      <h2 className={h2}>What the optimization actually does</h2>
+      <p className={prose}>
+        The file is re-saved with object streams enabled, which repacks the PDF’s
+        internal structure more tightly. That is compression of the file format, not
+        of your images: text-heavy documents, forms and exports with redundant object
+        data usually shrink noticeably, while files that were already tightly encoded
+        may barely move. The tool is upfront about the outcome either way. Scanned
+        PDFs are essentially photographs of paper — the images inside them are already
+        compressed, so meaningful reduction there means downsampling the images, which
+        this structural pass deliberately does not attempt. No upload, no signup;
+        encrypted files are reported rather than silently mangled.
+      </p>
+      <h2 className={h2}>Getting under a tight upload cap</h2>
+      <p className={prose}>
+        When a portal enforces a hard KB limit and the structural saving is not
+        enough, combine tools: convert the pages with PDF to JPG at a lower quality,
+        then rebuild a smaller document from those images with Image to PDF. For
+        mostly-digital PDFs, though, this one-click re-save is usually the right
+        first move — try it before anything more involved. The original file is never
+        modified either way: the optimized version always arrives as a fresh
+        download, so you can compare results freely.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/pdf-to-jpg" className="text-accent hover:underline">
+          PDF to JPG
+        </Link>
+        {", "}
+        <Link href="/tools/merge-pdf" className="text-accent hover:underline">
+          Merge PDF
+        </Link>
+        {", and "}
+        <Link href="/tools/image-compressor" className="text-accent hover:underline">
+          Image Compressor
+        </Link>
+        .
+      </p>
+    </Section>
+  )) as React.FC,
+  "pdf-to-jpg": (() => (
+    <Section>
+      <h2 className={h2}>How to convert a PDF to JPG</h2>
+      <ol className={ol}>
+        <li>Choose a PDF — the page count is detected in your browser.</li>
+        <li>
+          Set <strong className="text-foreground">JPEG quality</strong> (0.50–0.98,
+          default 0.88) and{" "}
+          <strong className="text-foreground">Render scale</strong> (1×–3×, default
+          2×).
+        </li>
+        <li>
+          Press <strong className="text-foreground">Download ZIP (JPGs)</strong> and
+          unzip to get one image per page:{" "}
+          <code className="font-mono text-xs bg-muted px-1 rounded">deck-page-1.jpg</code>,
+          <code className="font-mono text-xs bg-muted px-1 rounded">deck-page-2.jpg</code>,
+          and so on.
+        </li>
+      </ol>
+      <h2 className={h2}>Quality and scale explained</h2>
+      <p className={prose}>
+        Quality controls JPEG compression on each page — 0.88 suits general sharing,
+        while 0.95+ is worth it when the pages carry fine print. Scale controls pixel
+        resolution rather than compression: 2× doubles each dimension and quadruples
+        the pixel count, which is what you want for print or zooming into diagrams;
+        1× is enough for quick on-screen previews. Text-heavy pages start to lose
+        crispness below about 0.70, so stay toward the top of the range when the
+        words matter more than the file size. Because JPEG has no alpha channel,
+        any transparency in the page is flattened to white.
+      </p>
+      <h2 className={h2}>Rendering happens on your machine</h2>
+      <p className={prose}>
+        Pages are drawn to a canvas with PDF.js entirely in the browser, then packed
+        into a ZIP — nothing is uploaded. Every page exports; there is no page-range
+        picker here (combine with PDF Page Editor when you only need a few pages).
+        Image-heavy PDFs take longer to render, which is the honest trade-off of
+        doing the work locally. Output files keep the source name as a prefix, so
+        pages from different documents never collide in your downloads folder. The
+        result is useful anywhere a JPG is accepted but a
+        PDF is not: slide decks, form uploads, doc previews and quick shares.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/image-to-pdf" className="text-accent hover:underline">
+          Image to PDF
+        </Link>
+        {", "}
+        <Link href="/tools/pdf-to-text" className="text-accent hover:underline">
+          PDF to Text Extractor
+        </Link>
+        {", and "}
+        <Link href="/tools/compress-pdf" className="text-accent hover:underline">
+          Compress PDF
+        </Link>
+        .
+      </p>
+    </Section>
+  )) as React.FC,
+  "rotate-pdf": (() => (
+    <Section>
+      <h2 className={h2}>How to rotate a PDF</h2>
+      <ol className={ol}>
+        <li>
+          Choose a PDF — the page count is reported before any change is made.
+        </li>
+        <li>
+          Pick one of the three options:{" "}
+          <strong className="text-foreground">90° clockwise</strong>,{" "}
+          <strong className="text-foreground">180°</strong>, or{" "}
+          <strong className="text-foreground">90° counter-clockwise</strong>.
+        </li>
+        <li>
+          Press <strong className="text-foreground">Download rotated PDF</strong> and
+          the new file arrives as{" "}
+          <code className="font-mono text-xs bg-muted px-1 rounded">name-rotated.pdf</code>.
+        </li>
+      </ol>
+      <h2 className={h2}>Applied to every page, relative to current rotation</h2>
+      <p className={prose}>
+        The chosen angle is added to each page’s existing rotation rather than
+        replacing it, which is exactly what you want for the classic problem: a
+        document scanned from a landscape booklet where every page lies sideways in
+        the viewer. One pass of 90° fixes the whole file, and applying 90° clockwise
+        followed by 90° counter-clockwise returns to the original orientation — the
+        three buttons wrap around instead of dead-ending at ±180°. The page count and
+        the “relative to each page’s current rotation” note stay visible so there are
+        no surprises about what will change.
+      </p>
+      <h2 className={h2}>What this tool does not do</h2>
+      <p className={prose}>
+        Rotation is uniform: there is no per-page angle control here, so a
+        mixed-orientation file (some pages portrait, some landscape) needs its pages
+        handled individually. Reordering pages belongs to Organize PDF, and removing
+        or extracting pages to PDF Page Editor. All rotation work happens locally in
+        your browser with no upload, and the original file is untouched — the output
+        is always a new download. Rotation is stored as a page property rather than
+        by re-drawing pixels, so no quality is lost in the process: only the
+        orientation flag of each page changes, never the content underneath.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/organize-pdf" className="text-accent hover:underline">
+          Organize PDF
+        </Link>
+        {", "}
+        <Link href="/tools/pdf-page-editor" className="text-accent hover:underline">
+          PDF Page Editor
+        </Link>
+        {", and "}
+        <Link href="/tools/merge-pdf" className="text-accent hover:underline">
+          Merge PDF
+        </Link>
+        .
+      </p>
+    </Section>
+  )) as React.FC,
+  "watermark-pdf": (() => (
+    <Section>
+      <h2 className={h2}>How to watermark a PDF</h2>
+      <ol className={ol}>
+        <li>Choose a PDF — the page count is shown once it loads.</li>
+        <li>
+          Type the watermark text — the field starts at{" "}
+          <strong className="text-foreground">CONFIDENTIAL</strong>, and any short
+          phrase works.
+        </li>
+        <li>
+          Adjust <strong className="text-foreground">Opacity</strong> between 0.08 and
+          0.45 (default 0.18). Lower is subtler; higher is more legible over busy
+          pages.
+        </li>
+        <li>
+          Press <strong className="text-foreground">Download watermarked PDF</strong>.
+        </li>
+      </ol>
+      <h2 className={h2}>How the watermark is drawn</h2>
+      <p className={prose}>
+        Every page gets the same treatment: your text in bold gray Helvetica, tilted
+        −35° and centred, so it reads across the middle of the content without
+        hiding it. Opacity is the one style control — there is a single watermark
+        look per run, chosen to stay readable yet unobtrusive. The text is drawn with
+        the PDF’s built-in font, which covers Latin letters, digits and common
+        punctuation; emoji and non-Latin scripts fall back to a “?” placeholder
+        rather than crashing the download. Everything runs locally in your browser —
+        your document is never uploaded.
+      </p>
+      <h2 className={h2}>A marking, not a lock</h2>
+      <p className={prose}>
+        Be clear about what a watermark is: a visual label that travels with printed
+        and digital copies, telling readers a contract is a draft, a document is
+        confidential, or a form is a specimen copy. It does not encrypt the file or
+        stop anyone from copying or extracting the text underneath, so treat it as
+        communication rather than protection. For drafts that circulate internally
+        before signing, combine it with page numbers so reviewers can quote exact
+        pages, then merge the approved pages into the final document.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/pdf-page-numbers" className="text-accent hover:underline">
+          PDF Page Numbers
+        </Link>
+        {", "}
+        <Link href="/tools/compress-pdf" className="text-accent hover:underline">
+          Compress PDF
+        </Link>
+        {", and "}
+        <Link href="/tools/merge-pdf" className="text-accent hover:underline">
+          Merge PDF
+        </Link>
+        .
+      </p>
+    </Section>
+  )) as React.FC,
+  "organize-pdf": (() => (
+    <Section>
+      <h2 className={h2}>How to reorder PDF pages</h2>
+      <ol className={ol}>
+        <li>
+          Choose a PDF — every page is listed as a row, in the current order.
+        </li>
+        <li>
+          Each row shows where it will land in the output (
+          <strong className="text-foreground">Out #1</strong>,{" "}
+          <strong className="text-foreground">Out #2</strong>, …) alongside its
+          original page number, so position and origin are never confused.
+        </li>
+        <li>
+          Move rows with the up/down buttons until the sequence matches what you want.
+        </li>
+        <li>
+          Press <strong className="text-foreground">Download organized PDF</strong> to
+          export a new document in the new order.
+        </li>
+      </ol>
+      <h2 className={h2}>Reordering only — by design</h2>
+      <p className={prose}>
+        This tool does one job well: it changes page order. It does not delete pages
+        or duplicate them; removing unwanted pages, extracting a selection into a new
+        file, or splitting a range belongs to PDF Page Editor. Keeping the scope narrow
+        makes the safe path obvious — nothing is discarded by accident, and the
+        original file is never modified because the output is always a fresh download.
+        Pages are copied with their content intact, entirely in your browser.
+      </p>
+      <h2 className={h2}>Typical workflows</h2>
+      <p className={prose}>
+        Scanners often spit pages out in the wrong order, especially when scanning a
+        booklet or a pile of receipts; this fixes the sequence before the document is
+        shared. It is also the polite pre-step to Merge PDF: reorder the pages inside
+        each part first, then combine, and the final file needs no post-production.
+        For a scanned file with a stray blank or upside-down page, remove or rotate
+        that page first, then arrange the rest here. The export is a brand-new PDF
+        containing exactly the pages, in exactly the order, you approved on screen.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/pdf-page-editor" className="text-accent hover:underline">
+          PDF Page Editor
+        </Link>
+        {", "}
+        <Link href="/tools/merge-pdf" className="text-accent hover:underline">
+          Merge PDF
+        </Link>
+        {", and "}
+        <Link href="/tools/split-pdf" className="text-accent hover:underline">
+          Split PDF
+        </Link>
+        .
+      </p>
+    </Section>
+  )) as React.FC,
+  "pdf-page-numbers": (() => (
+    <Section>
+      <h2 className={h2}>How to add page numbers to a PDF</h2>
+      <ol className={ol}>
+        <li>Choose a PDF — the page count is read before any change.</li>
+        <li>
+          Leave <strong className="text-foreground">Show “Page X of Y”</strong> ticked
+          for labels like “Page 3 of 12”, or untick it for the bare page number.
+        </li>
+        <li>
+          Press <strong className="text-foreground">Download PDF with page numbers</strong>.
+        </li>
+      </ol>
+      <h2 className={h2}>What the numbering looks like</h2>
+      <p className={prose}>
+        Numbers are drawn at the bottom centre of every page in small gray Helvetica —
+        the same discreet style on all pages, including the first. The “of Y” total
+        is useful when reviewers need to know they have the complete document; the
+        bare number keeps the footer minimal. Position and typeface are fixed rather
+        than configurable: this is a quick, consistent stamp, not a layout editor. The
+        whole pass happens locally with pdf-lib — the file stays on your machine and
+        the result is always a new download, leaving the original untouched. The
+        numbers are drawn as new text on each page, so they survive printing,
+        copying and any later conversion of the document.
+      </p>
+      <h2 className={h2}>When page numbers help</h2>
+      <p className={prose}>
+        Printed reports, tender and legal bundles, academic drafts and any document
+        that will be discussed over email all benefit: “see page 7” only works if
+        pages are numbered. Number the file after the final order is settled — after
+        Organize PDF if pages moved — because reordering a numbered document leaves
+        labels that no longer match. If you need numbering anywhere other than the
+        bottom centre (or a different font), build the page in HTML and print it to
+        PDF instead.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/watermark-pdf" className="text-accent hover:underline">
+          Watermark PDF
+        </Link>
+        {", "}
+        <Link href="/tools/organize-pdf" className="text-accent hover:underline">
+          Organize PDF
+        </Link>
+        {", and "}
+        <Link href="/tools/pdf-page-editor" className="text-accent hover:underline">
+          PDF Page Editor
+        </Link>
+        .
+      </p>
+    </Section>
+  )) as React.FC,
+  "pdf-compare": (() => (
+    <Section>
+      <h2 className={h2}>How to compare two PDFs</h2>
+      <ol className={ol}>
+        <li>
+          Load <strong className="text-foreground">PDF A</strong> (the earlier or
+          reference version) and{" "}
+          <strong className="text-foreground">PDF B</strong> (the newer one) into the
+          two slots.
+        </li>
+        <li>
+          Press <strong className="text-foreground">Compare extracted text</strong> —
+          both files are parsed in your browser.
+        </li>
+        <li>
+          Read the unified diff below: lines prefixed with a minus are removals, lines
+          prefixed with a plus are additions.
+        </li>
+      </ol>
+      <h2 className={h2}>It compares text, not pixels</h2>
+      <p className={prose}>
+        The tool extracts the text of each page — grouped under{" "}
+        <code className="font-mono text-xs bg-muted px-1 rounded">--- Page N ---</code>{" "}
+        markers — and diffs the two extracts. That makes it ideal for revisions of
+        contracts, policies and reports where wording is what changed. It will not
+        flag a re-laid-out page, a changed font colour or a swapped logo, because
+        those are not text changes. Scanned documents have no text layer at all: for
+        those, the tool says so plainly — run OCR elsewhere first if you need a
+        comparison. The output is capped at 500,000 characters for very large files.
+      </p>
+      <h2 className={h2}>Typical uses</h2>
+      <p className={prose}>
+        Checking what actually changed between two exports of the same report,
+        verifying that a redacted draft really dropped the sensitive clauses, or
+        confirming a vendor sent a revised rather than identical agreement. Both
+        extractions and the diff run entirely client-side, so confidential drafts
+        stay on your machine. When you then need to act on the result — removing the
+        changed pages, or re-ordering the final set — the rest of the PDF suite picks
+        up where this leaves off. The diff itself is plain text in a scrollable
+        panel, so copying a hunk into a review comment or a ticket is trivial.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/pdf-to-text" className="text-accent hover:underline">
+          PDF to Text Extractor
+        </Link>
+        {", "}
+        <Link href="/tools/text-diff" className="text-accent hover:underline">
+          Text Diff
+        </Link>
+        {", and "}
+        <Link href="/tools/organize-pdf" className="text-accent hover:underline">
+          Organize PDF
+        </Link>
+        .
+      </p>
+    </Section>
+  )) as React.FC,
+  "text-to-pdf": (() => (
+    <Section>
+      <h2 className={h2}>How to turn plain text into a PDF</h2>
+      <ol className={ol}>
+        <li>
+          Paste or type your text into the editor — it starts with a small example you
+          can simply overwrite.
+        </li>
+        <li>
+          Press <strong className="text-foreground">Download PDF</strong> and the file
+          arrives as{" "}
+          <code className="font-mono text-xs bg-muted px-1 rounded">document-from-text.pdf</code>.
+        </li>
+      </ol>
+      <h2 className={h2}>Layout happens automatically</h2>
+      <p className={prose}>
+        Output is A4 with 11pt Helvetica and comfortable margins. Long lines wrap at
+        the measured page width — no manual line breaks needed — blank lines open
+        paragraph gaps, and content that runs past the bottom flows onto additional
+        pages until it is finished. The result prints and reads like a normal
+        document, which is the point: this is the fastest route from a block of text
+        to something you can attach to an application or hand in. The conversion runs
+        entirely in your browser with pdf-lib; nothing is uploaded anywhere. Wrapping
+        is measured against the real font metrics rather than a character count, so a
+        long unbroken token such as a URL is broken mid-word instead of pushing past
+        the margin.
+      </p>
+      <h2 className={h2}>Plain text means plain — and what that means for Unicode</h2>
+      <p className={prose}>
+        There is no Markdown or rich-text styling here; if you need headings and bold,
+        build the page as HTML and print it with HTML to PDF instead. Character
+        coverage follows the PDF’s built-in Latin font: letters, digits, common
+        punctuation and typographic quotes are safe, while emoji and non-Latin scripts
+        (CJK, Devanagari, and so on) are replaced with a “?” so the download never
+        crashes. For documents that must keep those scripts, route the text through a
+        browser-rendered page instead of this generator.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/html-to-pdf" className="text-accent hover:underline">
+          HTML to PDF
+        </Link>
+        {", "}
+        <Link href="/tools/word-counter" className="text-accent hover:underline">
+          Word Counter
+        </Link>
+        {", and "}
+        <Link href="/tools/text-to-handwriting" className="text-accent hover:underline">
+          Text to Handwriting
+        </Link>
+        .
+      </p>
+    </Section>
+  )) as React.FC,
+  "html-to-pdf": (() => (
+    <Section>
+      <h2 className={h2}>How to save HTML as a PDF</h2>
+      <ol className={ol}>
+        <li>
+          Paste your HTML into the editor — a full document with its own{" "}
+          <code className="font-mono text-xs bg-muted px-1 rounded">&lt;style&gt;</code>{" "}
+          block works, and so does a bare fragment, which gets wrapped with sensible
+          default styling.
+        </li>
+        <li>
+          Watch the live preview below: it re-renders as you type, so the print output
+          is never a mystery.
+        </li>
+        <li>
+          Press <strong className="text-foreground">Print / Save as PDF</strong> and
+          pick <strong className="text-foreground">Save as PDF</strong> as the
+          destination in the dialog.
+        </li>
+        <li>
+          Set margins to “Default” or “Minimum” for a cleaner page, then save.
+        </li>
+      </ol>
+      <h2 className={h2}>Powered by your browser’s print pipeline</h2>
+      <p className={prose}>
+        This tool does not run a headless converter — it prints the sandboxed preview
+        frame through the browser’s own print dialog, which is why the PDF matches
+        what you saw on screen. That also means print headers, footers and margin
+        behaviour follow your browser’s options, and both Chrome and Safari support
+        the Save as PDF destination. It is the right choice when the layout matters:
+        newsletters, one-pagers, invoice templates, or any HTML with fonts and colours
+        that a plain-text generator cannot express. Nothing is uploaded — the HTML
+        never leaves the tab.
+      </p>
+      <h2 className={h2}>Paste HTML you trust</h2>
+      <p className={prose}>
+        The preview runs in a sandboxed iframe, but the usual caution still applies:
+        only paste markup you wrote or copied from a source you trust. If you are
+        starting from Markdown, convert it to HTML first; if you are starting from
+        plain notes, Text to PDF is the quicker path with no styling decisions at
+        all. The editor is plain text with no auto-formatting, so what you paste is
+        exactly what prints.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/text-to-pdf" className="text-accent hover:underline">
+          Text to PDF
+        </Link>
+        {", "}
+        <Link href="/tools/html-preview" className="text-accent hover:underline">
+          HTML Preview
+        </Link>
+        {", and "}
+        <Link href="/tools/markdown-to-html" className="text-accent hover:underline">
+          Markdown → HTML
+        </Link>
+        .
+      </p>
+    </Section>
+  )) as React.FC,
+  "http-status-reference": (() => (
+    <Section>
+      <h2 className={h2}>What the HTTP status reference covers</h2>
+      <p className={prose}>
+        Every status code you meet in real work — 100 through 511 — grouped into
+        colour-coded bands for 1xx Informational, 2xx Success, 3xx Redirection,
+        4xx Client Error and 5xx Server Error. Each row carries the code badge, its
+        official name and a one-line description; click any row to expand a fuller
+        explanation of when servers send it and what the client should do. Alongside
+        the everyday codes sit the ones people look up twice a year: 206 for range
+        requests, 304 caching, 413 payload size, 422 validation failures, 429 rate
+        limits, 503 maintenance windows — and 418, for completeness.
+      </p>
+      <h2 className={h2}>Search by number, name or idea</h2>
+      <p className={prose}>
+        The search box filters as you type and matches on the number, the name, or any
+        phrase in the description — “redirect”, “rate limit”, “authentication”. Only
+        the matching groups remain, so a query like 307 shows the permanent/temporary
+        redirect family without scrolling. It is a quick way to settle the distinctions
+        that bit you: 401 versus 403, 301 versus 308, why a POST became a GET after a
+        302.
+      </p>
+      <h2 className={h2}>A reference that stays out of the way</h2>
+      <p className={prose}>
+        The whole catalogue is embedded in the page — no fetches happen while you
+        browse it, so it is just as fast on a plane as in the office, and nothing about
+        your lookup leaves the browser. Keep the tab open next to your logs: matching a
+        raw status number to its meaning is usually the first step in diagnosing an API
+        failure, and the expandable detail is there when one line is not enough.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/curl-formatter" className="text-accent hover:underline">
+          cURL Formatter
+        </Link>
+        {", "}
+        <Link href="/tools/webhook-simulator" className="text-accent hover:underline">
+          Webhook Payload Simulator
+        </Link>
+        {", and "}
+        <Link href="/tools/json-formatter" className="text-accent hover:underline">
+          JSON Formatter
+        </Link>
+        .
+      </p>
+    </Section>
+  )) as React.FC,
+  "css-box-shadow": (() => (
+    <Section>
+      <h2 className={h2}>How to build a box-shadow visually</h2>
+      <ol className={ol}>
+        <li>
+          Start with the default layer and move the sliders: X and Y offset
+          (−100 to 100px), blur (0–200px), spread (−100 to 100px) and opacity (0–1).
+        </li>
+        <li>
+          Pick a colour with the swatch or type a hex value; tick{" "}
+          <strong className="text-foreground">inset</strong> for an inner shadow that
+          presses the surface in rather than lifting it out.
+        </li>
+        <li>
+          Press <strong className="text-foreground">Add layer</strong> to stack a
+          second shadow on top — layered shadows are how polished “soft UI” cards are
+          built in real CSS.
+        </li>
+        <li>
+          Adjust the preview background and box colours so the shadow is judged
+          against the surface it will live on, then Copy CSS.
+        </li>
+      </ol>
+      <h2 className={h2}>Reading the output</h2>
+      <p className={prose}>
+        The CSS panel shows the complete declaration, with multiple layers joined by
+        commas in the order CSS expects, ready to paste into a stylesheet. A hint
+        below reminds Tailwind users how to carry the value over: either a{" "}
+        <code className="font-mono text-xs bg-muted px-1 rounded">boxShadow</code> entry
+        in the theme config or the arbitrary{" "}
+        <code className="font-mono text-xs bg-muted px-1 rounded">[box-shadow:…]</code>{" "}
+        syntax. The preview square updates on every slider tick, so the number and the
+        eye stay in sync — far quicker than editing hex values and refreshing a page.
+      </p>
+      <h2 className={h2}>Tips for natural-looking shadows</h2>
+      <p className={prose}>
+        Real light rarely makes one hard shadow: a large soft blur at low opacity
+        underneath, plus a tight low-blur layer close to the box, reads as depth
+        rather than a sticker. Keep the colour slightly tinted toward the background
+        instead of pure black, and check the result on both light and dark surfaces
+        using the preview pickers. Everything runs locally in the browser.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/gradient-generator" className="text-accent hover:underline">
+          CSS Gradient Generator
+        </Link>
+        {", "}
+        <Link href="/tools/color-palette" className="text-accent hover:underline">
+          Color Palette Generator
+        </Link>
+        {", and "}
+        <Link href="/tools/contrast-checker" className="text-accent hover:underline">
+          Contrast Checker (WCAG)
+        </Link>
+        .
+      </p>
+    </Section>
+  )) as React.FC,
+  "image-format-converter": (() => (
+    <Section>
+      <h2 className={h2}>Which formats are supported</h2>
+      <p className={prose}>
+        Uploads accepted: HEIC (the iPhone default), SVG, PNG, JPEG, WebP, BMP, GIF,
+        AVIF and TIFF — drop the file or click to browse. Output choices: PNG, JPEG,
+        WebP, or SVG. HEIC files are decoded in your browser by a WebAssembly codec,
+        which is why a photo straight off a phone converts without any desktop
+        software. SVG sources are measured from their viewBox so the raster output
+        lands at the right pixel size.
+      </p>
+      <h2 className={h2}>How the conversion works</h2>
+      <ol className={ol}>
+        <li>
+          Pick the output format; a quality slider (10–100) appears for lossy targets
+          and stays hidden for lossless PNG.
+        </li>
+        <li>
+          Press <strong className="text-foreground">Convert</strong> — the re-encode
+          runs on a canvas in your browser.
+        </li>
+        <li>
+          Compare the result panel: format, size, and the change versus the original
+          as “% smaller” or “% larger”, then download.
+        </li>
+      </ol>
+      <h2 className={h2}>Two conversions worth knowing about</h2>
+      <p className={prose}>
+        Choosing JPEG paints a white background under any transparency first, so a
+        transparent PNG never turns into a black rectangle. Choosing SVG does
+        something different from the others: it traces the pixels into vector paths,
+        which can shrink flat graphics like logos and icons to a fraction of their
+        raster size — but it is not magic, and photographs become stylised artwork
+        rather than faithful copies. Sizes are compared before and after, so a WebP
+        that comes out larger than its PNG source is visible immediately instead of
+        being assumed smaller — a common surprise when converting already-compressed
+        formats. Extreme dimensions are rejected with a clear
+        message instead of freezing the tab. No file is ever uploaded; the whole
+        pipeline is client-side.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/image-compressor" className="text-accent hover:underline">
+          Image Compressor
+        </Link>
+        {", "}
+        <Link href="/tools/svg-optimizer" className="text-accent hover:underline">
+          SVG Optimizer
+        </Link>
+        {", and "}
+        <Link href="/tools/image-resizer" className="text-accent hover:underline">
+          Image Resizer
+        </Link>
+        .
+      </p>
+    </Section>
+  )) as React.FC,
+  "svg-optimizer": (() => (
+    <Section>
+      <h2 className={h2}>How to minify an SVG</h2>
+      <ol className={ol}>
+        <li>
+          Upload an SVG file or paste its markup — either works, and the file never
+          leaves your browser.
+        </li>
+        <li>
+          Seven cleanup toggles are on by default: XML comments; metadata, title and
+          desc elements; Inkscape/Sodipodi editor data; hidden elements; excess
+          whitespace; empty groups; and default attribute values such as{" "}
+          <code className="font-mono text-xs bg-muted px-1 rounded">x=&quot;0&quot;</code>.
+        </li>
+        <li>
+          Read the report: original size, optimized size, percentage saved, and a list
+          of exactly what was stripped.
+        </li>
+        <li>Copy the cleaned markup or download the optimized file.</li>
+      </ol>
+      <h2 className={h2}>Where the bloat comes from</h2>
+      <p className={prose}>
+        SVGs exported by design tools carry luggage the browser ignores: editor
+        namespaces, layer metadata, comments from whoever drew it, and verbose
+        attributes for values that are already the default. Stripping them rarely
+        changes the rendered result but often changes the file size noticeably —
+        useful when the SVG is inlined in a stylesheet or shipped in a bundle where
+        every KB counts. Inline SVGs benefit twice: fewer bytes in the markup, and
+        fewer nodes for the browser to walk when it lays out the page. The removal
+        list tells you what actually went, so a file that barely shrank is
+        diagnosable rather than mysterious.
+      </p>
+      <h2 className={h2}>One accessibility trade-off</h2>
+      <p className={prose}>
+        The metadata toggle also removes <code className="font-mono text-xs bg-muted px-1 rounded">title</code> and{" "}
+        <code className="font-mono text-xs bg-muted px-1 rounded">desc</code> elements —
+        the accessible names screen readers announce for standalone SVGs. If your icon
+        is a meaningful image rather than decoration, turn that toggle off and keep
+        them. This is a text-level optimizer rather than a rendering engine, so give
+        complex artwork a quick visual check afterwards; the copy-and-download loop is
+        fast enough to make that trivial.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/image-format-converter" className="text-accent hover:underline">
+          Image Format Converter
+        </Link>
+        {", "}
+        <Link href="/tools/css-minifier" className="text-accent hover:underline">
+          CSS Minifier
+        </Link>
+        {", and "}
+        <Link href="/tools/html-minifier" className="text-accent hover:underline">
+          HTML Minifier
+        </Link>
+        .
+      </p>
+    </Section>
+  )) as React.FC,
+  "exif-viewer": (() => (
+    <Section>
+      <h2 className={h2}>How to inspect a photo’s EXIF data</h2>
+      <ol className={ol}>
+        <li>
+          Upload a photo — the file is parsed in your browser and shown with a
+          preview.
+        </li>
+        <li>
+          Read the grouped fields: <strong className="text-foreground">Camera</strong>{" "}
+          (make, model, lens),{" "}
+          <strong className="text-foreground">Settings</strong> (exposure, aperture,
+          ISO, flash, white balance),{" "}
+          <strong className="text-foreground">Time</strong> (capture and digitisation
+          timestamps),{" "}
+          <strong className="text-foreground">Image</strong> (dimensions, resolution,
+          orientation) and{" "}
+          <strong className="text-foreground">Other</strong> (artist, copyright,
+          comments).
+        </li>
+        <li>
+          When GPS coordinates are present, a location row includes a Google Maps link
+          computed in-page — one click opens the spot where the photo was taken.
+        </li>
+      </ol>
+      <h2 className={h2}>What EXIF tells you — and what it leaks</h2>
+      <p className={prose}>
+        EXIF is written by the camera or phone at capture time: which device took the
+        picture, with which lens and settings, at exactly what moment — and sometimes
+        where. That is a gift for photographers auditing their technique or
+        archivists identifying unknown hardware, and a liability for anyone sharing
+        photos publicly, because the same rows can hand over a home address or a
+        running route. Screenshots, PNGs and images that have been through a social
+        network are usually clean already; JPEGs straight from the camera rarely are.
+        A file with nothing to show reports that honestly instead of guessing.
+      </p>
+      <h2 className={h2}>The companion to stripping</h2>
+      <p className={prose}>
+        This tool reads; Remove Image Metadata writes. The natural workflow is inspect
+        first — confirm what is actually attached to a specific photo — then run that
+        file through the remover before it goes online. Parsing uses a client-side
+        library, so the photo itself is never uploaded anywhere; the preview is a
+        local object URL that disappears when you clear the file. It is the quickest
+        answer to “what is hidden in this image?”.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/remove-image-metadata" className="text-accent hover:underline">
+          Remove Image Metadata (EXIF)
+        </Link>
+        {", "}
+        <Link href="/tools/image-compressor" className="text-accent hover:underline">
+          Image Compressor
+        </Link>
+        {", and "}
+        <Link href="/tools/image-format-converter" className="text-accent hover:underline">
+          Image Format Converter
+        </Link>
+        .
+      </p>
+    </Section>
+  )) as React.FC,
+  "mermaid-editor": (() => (
+    <Section>
+      <h2 className={h2}>How to edit Mermaid diagrams</h2>
+      <ol className={ol}>
+        <li>
+          Start from one of the seven built-in examples — flowchart, sequence, class,
+          ER, Gantt, state or pie — or paste your own Mermaid source.
+        </li>
+        <li>
+          Edit on the left; the preview re-renders about a quarter of a second after
+          you stop typing. Syntax errors appear as a clear message instead of a blank
+          panel, so the offending line is easy to find.
+        </li>
+        <li>
+          Switch themes between default, dark, neutral and forest — the preview and
+          exports follow the theme.
+        </li>
+        <li>
+          Download the diagram as SVG or as a PNG rendered at 2× with a
+          theme-matching background, or copy the SVG/code straight into a document.
+        </li>
+      </ol>
+      <h2 className={h2}>Safe by construction</h2>
+      <p className={prose}>
+        Mermaid runs with its antiscript security level, and the rendered SVG is
+        sanitized again before it is displayed, so diagram text cannot smuggle
+        scripts into the page. The Mermaid library itself is roughly 1.5MB and is
+        downloaded on demand only when this page opens — the rest of DevBench does not
+        pay for it. All rendering is local: your diagram source never leaves the
+        browser, which makes this a comfortable place to sketch systems that are
+        still confidential.
+      </p>
+      <h2 className={h2}>Why text diagrams beat drawing tools here</h2>
+      <p className={prose}>
+        A Mermaid source is diffable, reviewable in a pull request and editable
+        without nudging arrows back into place — the preview handles layout. That
+        makes this editor useful for README diagrams, architecture docs and API
+        walkthroughs: iterate on the source until the picture reads right, then export
+        the SVG for the docs site or the PNG for a slide. For documentation pipelines,
+        the same source can live in the repo while this page serves as the preview
+        loop.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/markdown-to-html" className="text-accent hover:underline">
+          Markdown → HTML
+        </Link>
+        {", "}
+        <Link href="/tools/markdown-preview" className="text-accent hover:underline">
+          Markdown Preview
+        </Link>
+        {", and "}
+        <Link href="/tools/html-preview" className="text-accent hover:underline">
+          HTML Preview
+        </Link>
+        .
+      </p>
+    </Section>
+  )) as React.FC,
+  "websocket-tester": (() => (
+    <Section>
+      <h2 className={h2}>How to test a WebSocket endpoint</h2>
+      <ol className={ol}>
+        <li>
+          Enter the endpoint — it must start with{" "}
+          <code className="font-mono text-xs bg-muted px-1 rounded">ws://</code> or{" "}
+          <code className="font-mono text-xs bg-muted px-1 rounded">wss://</code> —
+          and, when the server requires them, comma-separated subprotocols such as{" "}
+          <code className="font-mono text-xs bg-muted px-1 rounded">graphql-ws</code>.
+        </li>
+        <li>
+          Press <strong className="text-foreground">Connect</strong>. The log shows
+          the attempt, the negotiated protocol on success, and every message after
+          that with a timestamp, direction and byte size.
+        </li>
+        <li>
+          Type a payload and send it — or press Ctrl/Cmd+Enter from the box. Watch
+          replies arrive in real time; sent and received counters track the session.
+        </li>
+        <li>
+          Export the whole log as a text file when you need it in a bug report.
+        </li>
+      </ol>
+      <h2 className={h2}>Reading binary and close events</h2>
+      <p className={prose}>
+        Text frames appear as-is, truncated in the log past 5,000 characters to keep
+        the panel usable. Blobs are decoded as text when they look like text;
+        ArrayBuffers are shown as a hex dump of the first 64 bytes with the full
+        length. Closing reports the numeric code, the reason string and whether the
+        close was clean — often the most useful clue a server left behind.
+      </p>
+      <h2 className={h2}>Where the connection comes from</h2>
+      <p className={prose}>
+        Your browser connects directly to the URL you enter — DevBench is not a proxy
+        and stores no traffic. The last URL is remembered in local storage only, for
+        convenience. Two practical notes: a page served over https cannot open a plain{" "}
+        <code className="font-mono text-xs bg-muted px-1 rounded">ws://</code> endpoint
+        (mixed-content rules), so most real services need{" "}
+        <code className="font-mono text-xs bg-muted px-1 rounded">wss://</code>; and
+        browsers deliberately hide low-level failure details, so an error line without
+        specifics usually means the connection was refused or the handshake failed.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/http-status-reference" className="text-accent hover:underline">
+          HTTP Status Reference
+        </Link>
+        {", "}
+        <Link href="/tools/webhook-simulator" className="text-accent hover:underline">
+          Webhook Payload Simulator
+        </Link>
+        {", and "}
+        <Link href="/tools/json-formatter" className="text-accent hover:underline">
+          JSON Formatter
+        </Link>
+        .
+      </p>
+    </Section>
+  )) as React.FC,
+  "ipynb-to-pdf": (() => (
+    <Section>
+      <h2 className={h2}>How to convert a Jupyter notebook to PDF</h2>
+      <ol className={ol}>
+        <li>
+          Drag in a <code className="font-mono text-xs bg-muted px-1 rounded">.ipynb</code>{" "}
+          file — or press Try Sample to see the pipeline on a demo notebook before
+          trusting it with your own.
+        </li>
+        <li>
+          Review the rendered preview, and optionally switch off{" "}
+          <strong className="text-foreground">code cells</strong> or{" "}
+          <strong className="text-foreground">outputs</strong> to produce a
+          narrative-only document.
+        </li>
+        <li>
+          Adjust the scale slider (it controls page density — the tool shows an
+          estimated page count) and edit the document title.
+        </li>
+        <li>
+          Use <strong className="text-foreground">Generate PDF</strong> to print the
+          preview via your browser’s Save as PDF, or{" "}
+          <strong className="text-foreground">Download PDF</strong> for a direct file.
+          There is also a Copy HTML button for embedding the rendered notebook.
+        </li>
+      </ol>
+      <h2 className={h2}>What gets preserved</h2>
+      <p className={prose}>
+        Markdown formatting (headings, lists, bold, code), code cells with execution
+        counts, stdout/stderr stream output, HTML tables from pandas DataFrames,
+        embedded PNG/JPEG/SVG figures from matplotlib or seaborn, and error tracebacks
+        with ANSI colour codes stripped. That covers what a shareable notebook export
+        actually needs: the reader sees the same story they would in Jupyter.
+      </p>
+      <h2 className={h2}>Where the conversion runs — stated plainly</h2>
+      <p className={prose}>
+        Preview, Copy HTML and the Generate PDF print path are entirely local. The
+        Download PDF button is different: it first posts the notebook to DevBench’s
+        own conversion endpoint (size-capped at 4.5MB), which renders it with
+        server-side Chromium for maximum HTML fidelity — this is the one round-trip
+        this tool makes, and it is disclosed on our privacy page. If the server is
+        slow, unavailable, or the file is larger than the cap, it silently falls back
+        to an in-browser build, so a PDF always comes out either way. If your
+        notebook contains secrets or private data, skip Download and use the local
+        print path instead.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/text-to-pdf" className="text-accent hover:underline">
+          Text to PDF
+        </Link>
+        {", "}
+        <Link href="/tools/html-to-pdf" className="text-accent hover:underline">
+          HTML to PDF
+        </Link>
+        {", and "}
+        <Link href="/tools/markdown-to-html" className="text-accent hover:underline">
+          Markdown → HTML
+        </Link>
+        .
+      </p>
+    </Section>
+  )) as React.FC,
+  "gitignore-generator": (() => (
+    <Section>
+      <h2 className={h2}>How to generate a .gitignore file</h2>
+      <ol className={ol}>
+        <li>
+          Tick the templates that match your project — every checkbox appends its
+          section to the output immediately.
+        </li>
+        <li>
+          Read the combined result below, with one commented heading per template so
+          it stays readable in the repo.
+        </li>
+        <li>
+          Press <strong className="text-foreground">Copy</strong> or{" "}
+          <strong className="text-foreground">Download as .gitignore</strong> and drop
+          it at the repository root.
+        </li>
+      </ol>
+      <h2 className={h2}>What is inside</h2>
+      <p className={prose}>
+        Five groups cover the usual suspects. Languages and runtimes: Node.js, Python,
+        Java, Go, Rust, Ruby, PHP, C/C++, Swift and Kotlin — virtualenvs,
+        <code className="font-mono text-xs bg-muted px-1 rounded">node_modules/</code>,
+        build outputs and debug logs. Frameworks: React, Next.js, Vue, Angular,
+        Django, Laravel and Spring. Editors: VS Code, JetBrains IDEs, Vim/Neovim and
+        Eclipse, so personal workspace files never land in a shared repo. Operating
+        systems: macOS, Windows and Linux. Tools: Docker, Terraform and Vagrant.
+      </p>
+      <h2 className={h2}>Combine, then review</h2>
+      <p className={prose}>
+        Real projects stack patterns — a Next.js app on a Mac might tick Node.js,
+        Next.js, VS Code and macOS at once, and the output merges them without
+        duplicate blocks. Before the first commit, skim the result: no template list
+        can know your custom build directory or a one-off data folder, and those are
+        added by hand underneath the generated sections. The templates deliberately
+        err towards including too much — dependencies, build output, caches and logs
+        are safe to ignore, and a missing ignore rule is what actually pollutes a
+        commit history. Because the output is plain gitignore syntax, the same file
+        can be copied into any new repository as a starting point. The generator
+        itself runs entirely in the browser; the templates are embedded, so it works
+        offline and nothing is sent anywhere.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/license-generator" className="text-accent hover:underline">
+          License Generator
+        </Link>
+        {", and "}
+        <Link href="/tools/env-validator" className="text-accent hover:underline">
+          .env Validator
+        </Link>
+        .
+      </p>
+    </Section>
+  )) as React.FC,
+  "license-generator": (() => (
+    <Section>
+      <h2 className={h2}>How to generate an open-source license</h2>
+      <ol className={ol}>
+        <li>
+          Pick from the seven licenses: MIT, Apache 2.0, GPL 3.0, BSD 2-Clause, ISC,
+          The Unlicense and Mozilla Public License 2.0 — each card summarises its
+          character in one line.
+        </li>
+        <li>
+          The year is filled in for you; type your name (and, for GPL, the project
+          name) into the fields and the text updates live.
+        </li>
+        <li>
+          Copy the result, or download it as a file named{" "}
+          <code className="font-mono text-xs bg-muted px-1 rounded">LICENSE</code> for
+          the repository root.
+        </li>
+      </ol>
+      <h2 className={h2}>Choosing between the families</h2>
+      <ul className={ul}>
+        <li>
+          <strong className="text-foreground">MIT, BSD 2-Clause, ISC</strong> — short
+          permissive licenses that allow almost anything, including commercial reuse.
+          ISC is functionally equivalent to MIT and popular on npm.
+        </li>
+        <li>
+          <strong className="text-foreground">Apache 2.0</strong> — permissive like
+          MIT but with an explicit patent grant, common in larger corporate projects.
+        </li>
+        <li>
+          <strong className="text-foreground">GPL 3.0</strong> — copyleft: derivative
+          works must ship under the same license.
+        </li>
+        <li>
+          <strong className="text-foreground">MPL 2.0</strong> — weak, file-level
+          copyleft; modified files must be shared, but linking to permissive code is
+          fine.
+        </li>
+        <li>
+          <strong className="text-foreground">The Unlicense</strong> — dedicates the
+          work to the public domain with no conditions.
+        </li>
+      </ul>
+      <h2 className={h2}>Full text versus header — an honest note</h2>
+      <p className={prose}>
+        The MIT, BSD, ISC, Unlicense and MPL outputs are complete texts you can publish
+        as-is. The GPL 3.0 output is the standard short notice that points readers to
+        gnu.org for the full license, and the Apache 2.0 output is the conventional
+        file header that points to apache.org — attach those full licenses alongside
+        your source when you use them. Because the fields update live, you can also
+        preview the text before committing to a choice. Generation happens entirely
+        in your browser; nothing about your project is sent anywhere.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/gitignore-generator" className="text-accent hover:underline">
+          Gitignore Generator
+        </Link>
+        {", and "}
+        <Link href="/tools/env-validator" className="text-accent hover:underline">
+          .env Validator
+        </Link>
+        .
+      </p>
+    </Section>
+  )) as React.FC,
+  "env-validator": (() => (
+    <Section>
+      <h2 className={h2}>How to validate a .env file</h2>
+      <ol className={ol}>
+        <li>
+          Paste your <code className="font-mono text-xs bg-muted px-1 rounded">.env</code>{" "}
+          contents into the left panel — results appear as you type, with no submit
+          button.
+        </li>
+        <li>
+          Errors (unparseable lines, invalid key names) and warnings (empty values,
+          duplicates, weak secrets) are listed with their line numbers in the right
+          panel.
+        </li>
+        <li>
+          Values are masked by default so a screen-share stays safe; toggle{" "}
+          <strong className="text-foreground">Show values</strong> when you need to
+          check them yourself.
+        </li>
+      </ol>
+      <h2 className={h2}>What the checks catch</h2>
+      <ul className={ul}>
+        <li>
+          Lines with no <code className="font-mono text-xs bg-muted px-1 rounded">=</code>{" "}
+          at all — usually a stray line break inside a quoted value.
+        </li>
+        <li>
+          Key names that won’t load: everything must match{" "}
+          <code className="font-mono text-xs bg-muted px-1 rounded">/^[A-Z_][A-Z0-9_]*$/i</code>.
+        </li>
+        <li>
+          Duplicate keys, with every line they appear on — dotenv keeps the last one,
+          which is a classic source of “my config is ignored” bugs.
+        </li>
+        <li>
+          Empty values, and stray whitespace around keys or values that changes the
+          string you think you set.
+        </li>
+        <li>
+          Weak secrets: values under 16 characters on keys that look sensitive
+          (SECRET, PASSWORD, TOKEN, KEY, AUTH, CREDENTIAL).
+        </li>
+      </ul>
+      <h2 className={h2}>Comments, blanks and privacy</h2>
+      <p className={prose}>
+        Comment lines and blanks are skipped the same way a real dotenv loader skips
+        them, and quotes are stripped from values for display, so what you see is
+        close to what your app will receive. Only a matching pair of outer quotes is
+        removed, so an intentional quote inside a value is left alone. The
+        parsed-variable list with line
+        numbers makes long files searchable at a glance. All parsing happens in the
+        tab — your keys and values are never uploaded, which is the only acceptable
+        way to check files that are full of credentials.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/dotenv-parser" className="text-accent hover:underline">
+          .env Parser
+        </Link>
+        {", "}
+        <Link href="/tools/gitignore-generator" className="text-accent hover:underline">
+          Gitignore Generator
+        </Link>
+        {", and "}
+        <Link href="/tools/jwt-debugger" className="text-accent hover:underline">
+          JWT Debugger
+        </Link>
+        .
+      </p>
+    </Section>
+  )) as React.FC,
+  "dns-lookup": (() => (
+    <Section>
+      <h2 className={h2}>How to look up DNS records</h2>
+      <ol className={ol}>
+        <li>
+          Enter a domain, or click one of the popular-domain chips (github.com,
+          google.com, cloudflare.com, npmjs.com) to see a live example.
+        </li>
+        <li>
+          Pick a record type: A, AAAA, MX, TXT, CNAME, NS, SOA, PTR or CAA — then
+          press <strong className="text-foreground">Look up</strong>.
+        </li>
+        <li>
+          Results arrive as a table of name, type, TTL and value, with a copy button
+          that formats the whole set as plain text for tickets and chats.
+        </li>
+        <li>
+          After an A lookup, one extra button fetches AAAA, MX and TXT together, which
+          covers most “is this domain set up properly?” checks in a single click.
+        </li>
+      </ol>
+      <h2 className={h2}>Common checks this answers</h2>
+      <p className={prose}>
+        MX records after configuring email — mail breaks silently when the priority is
+        wrong. TXT records for SPF, DKIM and domain-verification tokens that hosting
+        platforms ask you to paste. NS records after moving a registrar, where
+        propagation delays make it hard to tell “still waiting” from “misconfigured”.
+        CAA records before certificate issuance, and SOA/TTL values when diagnosing
+        refresh behaviour. Errors are reported plainly: “no records found” is a real
+        answer, not a failure screen.
+      </p>
+      <h2 className={h2}>Where the query goes</h2>
+      <p className={prose}>
+        Browsers cannot resolve arbitrary DNS questions on their own, so this tool
+        sends each query to Cloudflare’s public DNS-over-HTTPS endpoint
+        (cloudflare-dns.com) using the standard JSON wire format. That is a genuine
+        network call: Cloudflare sees the domain and record type being queried, and
+        your internet provider sees the connection to the resolver. TTLs and values
+        are returned as the resolver saw them, so results reflect public DNS rather
+        than your machine’s cache.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/ip-info" className="text-accent hover:underline">
+          IP Info
+        </Link>
+        {", "}
+        <Link href="/tools/http-status-reference" className="text-accent hover:underline">
+          HTTP Status Reference
+        </Link>
+        {", and "}
+        <Link href="/tools/curl-formatter" className="text-accent hover:underline">
+          cURL Formatter
+        </Link>
+        .
+      </p>
+    </Section>
+  )) as React.FC,
+  "ip-info": (() => (
+    <Section>
+      <h2 className={h2}>What appears when you open the tool</h2>
+      <p className={prose}>
+        The page immediately asks two public services a question each: api.ipify.org
+        for your current public IP address, then ipapi.co for that address’s details.
+        The result card shows the IP (with a copy button), city, region and country
+        with a flag, approximate coordinates with a Google Maps link, timezone and UTC
+        offset, the network operator (organisation and ASN), local currency and
+        languages. An input field looks up any other IP address or domain instead, and
+        a button re-runs the “what’s my IP” flow — useful after switching networks or
+        connecting a VPN.
+      </p>
+      <h2 className={h2}>How accurate to expect it to be</h2>
+      <p className={prose}>
+        Geolocation comes from the ISP’s registration of the address block, not from
+        GPS. Country and region are usually dependable; city-level results are
+        approximate at best and often point at the nearest network hub. VPN and
+        hosting ranges resolve to the provider’s location, not a person’s — which is
+        exactly what makes this tool handy for checking what your VPN exit node
+        claims, but a poor basis for anything security-critical.
+      </p>
+      <h2 className={h2}>The network calls, stated plainly</h2>
+      <p className={prose}>
+        This is a network tool: unlike most of DevBench, it cannot work offline.
+        ipify necessarily learns the IP your browser is connecting from, and ipapi.co
+        learns whichever IP or domain you query — those are third-party services with
+        their own policies and rate limits, and a “could not fetch” message usually
+        means one of them is throttling. Nothing else is transmitted: no account, no
+        history, and this site stores none of it. For the addresses behind a domain
+        rather than the domain itself, pair it with the DNS lookup.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/dns-lookup" className="text-accent hover:underline">
+          DNS Lookup
+        </Link>
+        {", "}
+        <Link href="/tools/curl-formatter" className="text-accent hover:underline">
+          cURL Formatter
+        </Link>
+        {", and "}
+        <Link href="/tools/http-status-reference" className="text-accent hover:underline">
+          HTTP Status Reference
+        </Link>
+        .
+      </p>
+    </Section>
+  )) as React.FC,
+  "npm-compare": (() => (
+    <Section>
+      <h2 className={h2}>How to compare npm packages</h2>
+      <ol className={ol}>
+        <li>
+          Type package names into the fields — there are two to start and you can add
+          more rows — or click a preset such as React vs Vue vs Svelte, axios vs
+          node-fetch, lodash vs ramda, or moment vs date-fns vs dayjs.
+        </li>
+        <li>
+          Press <strong className="text-foreground">Compare</strong>; each package
+          resolves independently, so slow registries don’t hold the rest hostage.
+        </li>
+        <li>
+          Read the side-by-side metrics: latest version, weekly downloads, license,
+          dependency and dev-dependency counts of that latest release, unpacked size,
+          last published (as relative time) and a homepage link. The best value in
+          each numeric row is highlighted.
+        </li>
+      </ol>
+      <h2 className={h2}>Choosing with the numbers in view</h2>
+      <p className={prose}>
+        Downloads signal ecosystem weight, dependency count hints at supply-chain
+        surface and install cost, unpacked size approximates what you are inviting
+        into node_modules, and last-published tells you whether a package is actively
+        maintained or a zombie. No single column decides anything — moment’s
+        downloads dwarf dayjs while the comparison explains why many projects moved
+        anyway — but the table puts the trade-offs in one glance instead of four
+        browser tabs.
+      </p>
+      <h2 className={h2}>Where the data comes from</h2>
+      <p className={prose}>
+        Each compare sends parallel requests to the public npm registry
+        (registry.npmjs.org) and npm’s downloads API — a genuine network lookup, so
+        package names are visible to npm and unavailable offline. Only public
+        packages resolve: a typo or a private package returns “Package not found”
+        rather than an empty row, and missing fields (some packages declare no
+        license) show as a dash instead of being guessed. Nothing about your query is
+        stored by this site.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/semver-compare" className="text-accent hover:underline">
+          SemVer Comparator
+        </Link>
+        {", "}
+        <Link href="/tools/gitignore-generator" className="text-accent hover:underline">
+          Gitignore Generator
+        </Link>
+        {", and "}
+        <Link href="/tools/json-formatter" className="text-accent hover:underline">
+          JSON Formatter
+        </Link>
+        .
+      </p>
+    </Section>
+  )) as React.FC,
+  "color-palette": (() => (
+    <Section>
+      <h2 className={h2}>How to generate a colour palette</h2>
+      <ol className={ol}>
+        <li>
+          Choose a seed colour with the picker or by typing a hex value — the palette
+          regenerates on every change.
+        </li>
+        <li>
+          Pick one of the six harmony types and read the labelled swatches; click any
+          hex to copy it.
+        </li>
+        <li>
+          Export the set in the format you need — CSS custom properties, a Tailwind
+          theme JSON fragment, or a plain JSON array — with one copy button.
+        </li>
+      </ol>
+      <h2 className={h2}>The six harmony types</h2>
+      <ul className={ul}>
+        <li>
+          <strong className="text-foreground">Complementary</strong> — the seed plus
+          its opposite hue, for bold contrast.
+        </li>
+        <li>
+          <strong className="text-foreground">Analogous</strong> — five swatches
+          stepping ±30° and ±60° around the seed, for a natural, harmonious feel.
+        </li>
+        <li>
+          <strong className="text-foreground">Triadic</strong> and{" "}
+          <strong className="text-foreground">Tetradic</strong> — three or four hues
+          equally spaced on the wheel, vibrant but balanced.
+        </li>
+        <li>
+          <strong className="text-foreground">Split-complementary</strong> — the
+          complement split into two neighbours: most of the contrast, less of the
+          tension.
+        </li>
+        <li>
+          <strong className="text-foreground">Monochromatic</strong> — one hue across
+          five lightness steps from darkest to lightest.
+        </li>
+      </ul>
+      <h2 className={h2}>From swatch to stylesheet</h2>
+      <p className={prose}>
+        The colours are computed deterministically from the seed’s hue, saturation and
+        lightness, so tweaking the seed never reshuffles the relationship — the
+        complement stays the complement. That makes it a quick loop for theming:
+        generate, copy the CSS variables straight into{" "}
+        <code className="font-mono text-xs bg-muted px-1 rounded">:root</code>, and
+        adjust individual hexes later without losing the system. Because the math is
+        all local, the tool doubles as an offline companion to the palette work in
+        CSS Gradient Generator and the shadow builder — and once you have candidate
+        colours, checking text/background pairs against WCAG is the step that keeps
+        the result accessible.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/gradient-generator" className="text-accent hover:underline">
+          CSS Gradient Generator
+        </Link>
+        {", "}
+        <Link href="/tools/contrast-checker" className="text-accent hover:underline">
+          Contrast Checker (WCAG)
+        </Link>
+        {", and "}
+        <Link href="/tools/css-box-shadow" className="text-accent hover:underline">
+          CSS Box Shadow Builder
+        </Link>
+        .
+      </p>
+    </Section>
+  )) as React.FC,
+  "notepad-plus-plus": (() => (
+    <Section>
+      <h2 className={h2}>What the Notepad++ editor includes</h2>
+      <p className={prose}>
+        A full in-browser editor rather than a textarea: multiple tabs side by side,
+        syntax highlighting, find and replace (plain text or regex), go to line with{" "}
+        <kbd className="font-mono text-xs bg-muted px-1 rounded">Ctrl</kbd>+
+        <kbd className="font-mono text-xs bg-muted px-1 rounded">G</kbd>, and
+        bookmarks with next/previous navigation for jumping between anchors in long
+        files. The View options toggle word wrap, a minimap, line numbers, whitespace
+        rendering, a side panel, full screen (F11) and zoom. Indentation settings
+        switch tab width between two and four spaces or hard tabs.
+      </p>
+      <h2 className={h2}>Tabs, diffs and sessions</h2>
+      <p className={prose}>
+        Open a second tab and the Tools menu offers a text diff between it and the
+        active one — handy for comparing two versions of a config without leaving the
+        editor. Sessions can be saved under a name and reset entirely. Session
+        restore works through your browser’s local storage: your files come back next
+        time you open the page on the same browser and profile, and they never sync
+        anywhere else or leave the machine. Printing and downloading go through the
+        browser as usual, so getting text back out is one click.
+      </p>
+      <h2 className={h2}>When to reach for it</h2>
+      <p className={prose}>
+        Cleaning up pasted text, scrubbing a config before it goes into a repo,
+        jotting multi-file notes, or editing on a locked-down machine where installing
+        a desktop editor is not an option. It is deliberately local: no cloud save, no
+        login, no sync — which also means clearing browser data clears unsaved
+        sessions, so download anything important. For surgical edits across large
+        text, the standalone Find & Replace tool covers the same ground without the
+        chrome.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/word-counter" className="text-accent hover:underline">
+          Word Counter
+        </Link>
+        {", "}
+        <Link href="/tools/text-diff" className="text-accent hover:underline">
+          Text Diff
+        </Link>
+        {", and "}
+        <Link href="/tools/find-replace" className="text-accent hover:underline">
+          Find &amp; Replace
+        </Link>
+        .
+      </p>
+    </Section>
+  )) as React.FC,
+  "expense-splitter": (() => (
+    <Section>
+      <h2 className={h2}>How to split a group expense</h2>
+      <ol className={ol}>
+        <li>
+          On the <strong className="text-foreground">Participants</strong> tab, add
+          everyone’s names; a currency selector (USD, EUR, GBP, INR, JPY, AUD, CAD,
+          SGD) sets the symbols used throughout.
+        </li>
+        <li>
+          On the <strong className="text-foreground">Expenses</strong> tab, log each
+          item: description, amount, who paid, and which participants share it — the
+          checkbox list lets one dinner exclude whoever was not there.
+        </li>
+        <li>
+          The <strong className="text-foreground">Settle Up</strong> tab shows
+          everyone’s balance, the total spent, and the list of transfers that clears
+          the debt — with a copy button for the summary you can paste into the group
+          chat.
+        </li>
+      </ol>
+      <h2 className={h2}>How the settlement is computed</h2>
+      <p className={prose}>
+        Each expense is split evenly among the participants selected for it. A
+        person’s balance is what they paid minus what they owed; positive balances are
+        owed money, negative ones owe it. The settle-up list matches debtors to
+        creditors greedily so the number of transfers is as small as possible — in a
+        group of six, three payments usually clear everything instead of the fifteen
+        pairwise transfers people work out by hand. Differences below half a cent are
+        treated as settled, so rounding never produces a phantom ₹0.01 debt.
+      </p>
+      <h2 className={h2}>Trip-ready and private</h2>
+      <p className={prose}>
+        The whole calculation runs in your browser; the amounts and names you enter
+        are never uploaded, which matters for a tool that ends up holding everyone’s
+        spending. It is built for the common case of equal shares among whoever
+        attended — holidays, flatmate bills, group dinners. Unequal shares (half for
+        the kid, double for the room with the balcony) are handled by logging two
+        entries rather than a percentage field. When the trip crosses currencies, the
+        Currency Converter fixes each bill into one shared currency first, then split
+        it here.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/currency-converter" className="text-accent hover:underline">
+          Currency Converter
+        </Link>
+        {", "}
+        <Link href="/tools/gst-calculator" className="text-accent hover:underline">
+          GST / VAT Calculator
+        </Link>
+        {", and "}
+        <Link href="/tools/tip-calculator" className="text-accent hover:underline">
+          Tip Calculator
+        </Link>
+        .
+      </p>
+    </Section>
+  )) as React.FC,
+  "video-converter": (() => (
+    <Section>
+      <h2 className={h2}>How to convert a video file</h2>
+      <ol className={ol}>
+        <li>
+          Drop a video — MP4, WebM, MOV, AVI or MKV are supported (MTS/M2TS too) — or
+          browse to it. A player preview confirms you picked the right clip.
+        </li>
+        <li>
+          Choose the output: <strong className="text-foreground">MP4</strong> (H.264
+          video + AAC audio, with faststart so it streams while downloading) or{" "}
+          <strong className="text-foreground">WebM</strong> (VP9 + Opus).
+        </li>
+        <li>
+          Set quality on the CRF slider (18–35): labelled High, Medium or Low —
+          lower CRF is better quality and a bigger file; 23 is the balanced default.
+        </li>
+        <li>
+          Press Convert and watch the progress bar; download when it finishes.
+        </li>
+      </ol>
+      <h2 className={h2}>Where the encoding happens</h2>
+      <p className={prose}>
+        FFmpeg — the industry-standard converter — runs here compiled to WebAssembly,
+        inside your tab. The engine is about 25MB and is fetched once from a public
+        CDN (jsDelivr) on first use, then cached by your browser; the status line says
+        so rather than leaving you wondering. Crucially, your video file itself is
+        never uploaded anywhere: it is handed straight to the in-page engine and the
+        result is downloaded from memory. That makes it safe for unreleased footage
+        and internal recordings, and it works with no account on any machine with a
+        modern browser.
+      </p>
+      <h2 className={h2}>Practical limits</h2>
+      <p className={prose}>
+        Encoding in the browser costs memory and time in proportion to clip length
+        and resolution — keep the tab open while the progress bar runs, and expect a
+        phone-sized minute-long clip to take roughly that long to re-encode. MOV and
+        MKV containers convert cleanly because FFmpeg rewrites the streams
+        regardless of the wrapper. When the goal is a shareable still or a looping
+        clip rather than a video file, the GIF Maker tab on the same tool handles
+        short segments.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/gif-maker" className="text-accent hover:underline">
+          GIF Maker
+        </Link>
+        {", "}
+        <Link href="/tools/image-format-converter" className="text-accent hover:underline">
+          Image Format Converter
+        </Link>
+        {", and "}
+        <Link href="/tools/mime-lookup" className="text-accent hover:underline">
+          MIME Type Lookup
+        </Link>
+        .
+      </p>
+    </Section>
+  )) as React.FC,
+  "gif-maker": (() => (
+    <Section>
+      <h2 className={h2}>How to make an animated GIF from a video</h2>
+      <ol className={ol}>
+        <li>
+          Drop a clip — MP4, WebM or MOV; segments under 30 seconds work best.
+        </li>
+        <li>
+          Set the start time (in half-second steps) and the duration (1–30 seconds) to
+          carve out the moment you want to loop.
+        </li>
+        <li>
+          Choose the frame rate — 5, 10, 15 or 20 FPS — and the output width: 240,
+          320, 480 or 640 pixels; the height follows the aspect ratio.
+        </li>
+        <li>
+          Create, then download the GIF; a preview plays before you commit.
+        </li>
+      </ol>
+      <h2 className={h2}>Two passes for clean colours</h2>
+      <p className={prose}>
+        GIF’s 256-colour palette is where naive conversions turn skies into bands.
+        This tool avoids that with the standard two-pass technique: first an analysis
+        pass builds an optimal palette from the actual frames (only the ones in your
+        selected range), then a second pass maps every frame through that palette with
+        ordered dithering to smooth the transitions. It takes marginally longer than a
+        single pass and looks markedly better — the same method you would otherwise
+        script with FFmpeg flags by hand.
+      </p>
+      <h2 className={h2}>Sizing expectations, and where it runs</h2>
+      <p className={prose}>
+        GIF bytes grow fast: doubling FPS roughly doubles the size, and width counts
+        twice because both dimensions scale. Start at 10 FPS and 480px for
+        documentation-friendly clips; go lower for text-heavy screen recordings where
+        fewer, sharper frames read better. Encoding runs entirely in your browser via
+        the same FFmpeg.wasm engine as the Video Converter — the ~25MB engine downloads
+        once from a CDN and is cached afterwards, while your video never leaves the
+        device.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/video-converter" className="text-accent hover:underline">
+          Video Converter
+        </Link>
+        {", "}
+        <Link href="/tools/image-format-converter" className="text-accent hover:underline">
+          Image Format Converter
+        </Link>
+        {", and "}
+        <Link href="/tools/image-compressor" className="text-accent hover:underline">
+          Image Compressor
         </Link>
         .
       </p>
