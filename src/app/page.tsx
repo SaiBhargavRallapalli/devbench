@@ -9,7 +9,7 @@ import AdSenseSlot from "@/components/ads/AdSenseSlot";
 import { FOOTER_CATEGORY_ORDER } from "@/lib/site-navigation";
 import { getCategoryHighlightTools } from "@/lib/category-navigation";
 import { toolGroupSchema } from "@/lib/tool-structured-data";
-import { websiteSchemaWithSearch } from "@/lib/site-organization-schema";
+import { websiteSchema } from "@/lib/site-organization-schema";
 import { publicHrefForToolSlug } from "@/lib/devbench-workspaces";
 import EngagementHome from "@/components/EngagementHomeLazy";
 import AffiliateRecommendations from "@/components/AffiliateRecommendations";
@@ -241,7 +241,7 @@ export default function HomePage() {
       </main>
       <Footer />
 
-      <JsonLd data={websiteSchemaWithSearch()} />
+      <JsonLd data={websiteSchema()} />
       <JsonLd data={homepageToolGroupsSchema} />
       <JsonLd data={{
         "@context": "https://schema.org",

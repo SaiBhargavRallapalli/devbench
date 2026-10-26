@@ -25,8 +25,15 @@ export const organizationSchema = {
   },
 };
 
-/** Homepage-only WebSite with sitelinks searchbox — do not duplicate in root layout. */
-export function websiteSchemaWithSearch(): object {
+/**
+ * Homepage-only WebSite node — do not duplicate in root layout.
+ *
+ * No SearchAction: the site has no server-side search endpoint (the homepage
+ * search box is a client-side filter), and Google removed the Sitelinks search
+ * box in 2024 — advertising `?q={search_term_string}` only caused crawlers to
+ * fetch a URL that resolves to the plain homepage (GSC "alternative page").
+ */
+export function websiteSchema(): object {
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",
@@ -35,13 +42,5 @@ export function websiteSchemaWithSearch(): object {
     url: SITE_URL,
     description: `${TOOLS.length}+ free tools in your browser — JSON, PDFs, converters, calculators. No signup.`,
     publisher: { "@id": `${SITE_URL}/#org` },
-    potentialAction: {
-      "@type": "SearchAction",
-      target: {
-        "@type": "EntryPoint",
-        urlTemplate: `${SITE_URL}/?q={search_term_string}`,
-      },
-      "query-input": "required name=search_term_string",
-    },
   };
 }
