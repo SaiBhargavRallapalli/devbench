@@ -14,6 +14,74 @@ export interface BlogPost {
 
 export const BLOG_POSTS: BlogPost[] = [
   {
+    slug: "passport-photo-size-for-online-forms",
+    title: "Passport Photo Size for Online Forms: 35×45mm, 2×2in & Other Official Specs",
+    date: "2026-10-26",
+    excerpt:
+      "Which passport photo size does your form actually want — 35×45mm or 2×2in — and how to convert millimetres to pixels at any DPI. Make a compliant photo in your browser, free.",
+    tags: ["india", "forms", "image", "reference"],
+    readMinutes: 6,
+    relatedToolSlug: "passport-photo",
+    relatedToolLabel: "Passport & ID Photo Maker",
+    relatedToolHref: "/tools/passport-photo",
+    relatedBlogSlugs: [
+      "compress-photo-under-50kb-for-forms",
+      "signature-size-for-online-forms",
+      "government-form-photo-specs-india",
+    ],
+  },
+  {
+    slug: "compress-photo-under-50kb-for-forms",
+    title: "Compress a Photo Below 50KB for SSC, UPSC & Banking Forms (Free, No Upload)",
+    date: "2026-10-26",
+    excerpt:
+      "Government portals reject oversized photos. How JPEG quality and resolution interact, a worked example taking a 2MB phone photo under 50KB, and why browser-only compression keeps your photo private.",
+    tags: ["india", "forms", "image", "compression"],
+    readMinutes: 6,
+    relatedToolSlug: "image-compress-target",
+    relatedToolLabel: "Compress Image to Exact Size",
+    relatedToolHref: "/tools/image-compress-target",
+    relatedBlogSlugs: [
+      "passport-photo-size-for-online-forms",
+      "government-form-photo-specs-india",
+      "signature-size-for-online-forms",
+    ],
+  },
+  {
+    slug: "signature-size-for-online-forms",
+    title: "Signature Size for Online Forms: The 60×20mm Standard, Explained",
+    date: "2026-10-26",
+    excerpt:
+      "Most Indian exam and banking forms ask for a signature between 10KB and 20KB at roughly 60×20mm. The spec, the DPI math, and how to draw one digitally without a scanner.",
+    tags: ["india", "forms", "image", "reference"],
+    readMinutes: 5,
+    relatedToolSlug: "signature-maker",
+    relatedToolLabel: "Signature Maker",
+    relatedToolHref: "/tools/signature-maker",
+    relatedBlogSlugs: [
+      "passport-photo-size-for-online-forms",
+      "compress-photo-under-50kb-for-forms",
+      "government-form-photo-specs-india",
+    ],
+  },
+  {
+    slug: "government-form-photo-specs-india",
+    title: "Photo & Signature Size for Indian Government Forms: A Spec Cheat Sheet",
+    date: "2026-10-26",
+    excerpt:
+      "Passport, SSC, IBPS/SBI, UPSC, income tax and Aadhaar photo and signature specs in one reference table — plus the mm↔px↔DPI conversion and a single workflow that satisfies any portal limit.",
+    tags: ["india", "forms", "image", "reference"],
+    readMinutes: 7,
+    relatedToolSlug: "image-resize-units",
+    relatedToolLabel: "Resize Image in cm/mm/inches",
+    relatedToolHref: "/tools/image-resize-units",
+    relatedBlogSlugs: [
+      "passport-photo-size-for-online-forms",
+      "compress-photo-under-50kb-for-forms",
+      "signature-size-for-online-forms",
+    ],
+  },
+  {
     slug: "choosing-privacy-first-online-developer-tools",
     title: "Choosing privacy-first online developer tools (a practical checklist)",
     date: "2026-07-31",

@@ -3573,7 +3573,268 @@ function ChoosingPrivacyFirstOnlineDeveloperTools() {
   );
 }
 
+function PassportPhotoSizeForOnlineForms() {
+  return (
+    <div className="space-y-4">
+      <p className={prose}>
+        Half of all rejected online applications fail on one thing: the photo. A form asks for a passport-size photo, you upload a perfectly good one, and it comes back “invalid dimensions”. The problem is that passport photo size is not one universal standard — it depends on the country and the portal, and the same photo can be correct for one form and wrong for the next.
+      </p>
+
+      <h2 className={h2}>The two standards you will actually meet</h2>
+      <p className={prose}>
+        Nearly every form in the world uses one of two sizes:
+      </p>
+      <ul className={ul}>
+        <li><strong className="text-foreground">35 × 45 mm</strong> — the metric standard used by India, the entire Schengen area, the UK, Australia, Russia, Japan and most of Asia, Africa and South America.</li>
+        <li><strong className="text-foreground">2 × 2 inches</strong> (51 × 51 mm) — the US and Canadian standard.</li>
+      </ul>
+      <p className={prose}>
+        A few countries have their own variant — China uses 33 × 48 mm, Bangladesh 45 × 55 mm — and some countries accept either. The classic mistake is using a US-style 2×2in photo on a 35×45mm form: 2 inches is 51 mm wide, so the photo is both too wide and too short, and automated validators reject it before a human ever sees it.
+      </p>
+
+      <h2 className={h2}>Millimetres to pixels: the DPI math</h2>
+      <p className={prose}>
+        Online forms do not measure your screen with a ruler — they count pixels. The bridge between the printed size (mm) and the digital size (px) is DPI, dots per inch:
+      </p>
+      <pre className="bg-muted rounded-lg px-4 py-3 text-xs font-mono overflow-x-auto my-3">
+{`pixels = millimetres ÷ 25.4 × DPI
+
+35 mm at 300 DPI = 35 ÷ 25.4 × 300 = 413 px
+45 mm at 300 DPI = 45 ÷ 25.4 × 300 = 531 px`}
+      </pre>
+      <p className={prose}>
+        The same 35×45mm photo at different DPIs:
+      </p>
+      <table className={table}>
+        <thead>
+          <tr>
+            <th className={th}>DPI</th>
+            <th className={th}>35 × 45 mm in pixels</th>
+            <th className={th}>Use</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td className={td}>96 DPI</td><td className={td}>132 × 170 px</td><td className={td}>Screen-only uploads</td></tr>
+          <tr><td className={td}>300 DPI</td><td className={td}>413 × 531 px</td><td className={td}>Print + uploads (the safe default)</td></tr>
+          <tr><td className={td}>600 DPI</td><td className={td}>827 × 1063 px</td><td className={td}>High-quality print sheets</td></tr>
+        </tbody>
+      </table>
+      <p className={prose}>
+        Start at 300 DPI (413 × 531 px). It prints sharply, and every portal that wants smaller dimensions can downscale — but no portal can recover detail from a 132 × 170 px source. Upscaling a small photo is the second most common cause of rejection after wrong dimensions: validators detect the blur.
+      </p>
+
+      <h2 className={h2}>What else makes a photo compliant</h2>
+      <ul className={ul}>
+        <li><strong className="text-foreground">Background</strong> — plain white or light grey for most countries; some Indian portal instructions ask for white specifically. No shadows, no patterns.</li>
+        <li><strong className="text-foreground">Face coverage</strong> — typically 70–80% of the frame height, eyes at roughly two-thirds up.</li>
+        <li><strong className="text-foreground">Format</strong> — JPEG almost everywhere; a few portals accept PNG. No borders, no watermarks, no screenshots of a photo.</li>
+        <li><strong className="text-foreground">Recency</strong> — most forms require a photo taken within the last 3–6 months.</li>
+      </ul>
+
+      <h2 className={h2}>Make a compliant photo free, in your browser</h2>
+      <p className={prose}>
+        The DevBench <Link href="/tools/passport-photo" className="text-accent hover:underline">Passport &amp; ID Photo Maker</Link> encodes all of this: pick a country preset (US 2×2in, India/Schengen/UK 35×45mm, China 33×48mm, and more), choose a DPI — the tool shows the exact pixel dimensions live, e.g. 35×45mm at 300 DPI = 413 × 531 px — and pick a background fill colour. It can lay the result out on an A4 sheet with gaps for cutting, at print-shop quality. The photo never leaves your device; the whole thing runs in your browser.
+      </p>
+      <p className={prose}>
+        A common flow: remove the original background first with the{" "}
+        <Link href="/tools/background-remover" className="text-accent hover:underline">Background Remover</Link>, then place the cut-out on a white 35×45mm frame, then — if the portal has a file-size limit like 50 KB — compress it with{" "}
+        <Link href="/tools/image-compress-target" className="text-accent hover:underline">Compress Image to Exact Size</Link>. For offline forms that want the photo and application merged, <Link href="/tools/image-to-pdf" className="text-accent hover:underline">Image to PDF</Link> builds the attachment in one step.
+      </p>
+    </div>
+  );
+}
+
+function CompressPhotoUnder50KbForForms() {
+  return (
+    <div className="space-y-4">
+      <p className={prose}>
+        You filled the form carefully, attached the photo, and got “file size exceeds limit”. Indian government portals — SSC, UPSC, IBPS, SBI recruitment, income tax services — commonly cap uploaded photos at 20–50 KB and signatures at 10–20 KB, while a modern phone camera produces photos of 2–5 MB. That is a 100× reduction, and doing it wrong is how photos end up blurry and get rejected anyway.
+      </p>
+
+      <h2 className={h2}>Why portals cap file size at all</h2>
+      <p className={prose}>
+        These portals process millions of applications in a few weeks. Every megabyte of photo multiplies their storage and bandwidth cost, so they enforce tight caps and — importantly — validate them automatically before your form reaches anyone. The limit is not personal; it is infrastructure. Which also means the validator checks the exact byte count, not whether the photo “looks small”.
+      </p>
+
+      <h2 className={h2}>The two levers: quality and resolution</h2>
+      <p className={prose}>
+        JPEG size is driven by two things: encoder quality (compression strength) and pixel count. When you need a 100× reduction, the order matters:
+      </p>
+      <ol className={ol}>
+        <li><strong className="text-foreground">Lower quality first.</strong> Dropping JPEG quality from 90 to about 60 usually cuts file size by 60–80% with no visible difference at form-photo scale.</li>
+        <li><strong className="text-foreground">Reduce resolution only if needed.</strong> Once quality is at its floor, shrinking dimensions finishes the job — but each step loses real detail, so take as little as the target allows.</li>
+      </ol>
+      <p className={prose}>
+        Blindly “compressing to 50 KB” with a generic slider either overshoots (photo becomes a muddy 8 KB) or undershoots (54 KB — still rejected). The reliable approach is binary search: try a quality, measure, adjust — about seven attempts to land exactly on target.
+      </p>
+
+      <h2 className={h2}>Worked example: 2 MB → under 50 KB</h2>
+      <p className={prose}>
+        Take a typical phone photo of a passport-size portrait (about 3 MB, 3024 × 4032 px):
+      </p>
+      <ol className={ol}>
+        <li>First crop it to 35×45mm proportions — use the <Link href="/tools/image-crop" className="text-accent hover:underline">Crop tool</Link> or make the whole frame with the <Link href="/tools/passport-photo" className="text-accent hover:underline">Passport Photo Maker</Link>.</li>
+        <li>Open <Link href="/tools/image-compress-target" className="text-accent hover:underline">Compress Image to Exact Size</Link>, drop the photo in, and pick the <strong className="text-foreground">50 KB</strong> preset (or type any exact target).</li>
+        <li>The tool searches encoder quality automatically and, if quality alone cannot reach the target, applies at most one downscale — then reports honestly: “reached 47 KB of 50 KB” or “closest achievable”, so you are never guessing.</li>
+        <li>Download the JPEG. Check the file in Finder or Explorer: size and dimensions, both visible before you upload.</li>
+      </ol>
+      <p className={prose}>
+        Two details worth knowing: if your source is a PNG or has transparency, the compressor composites onto white and exports JPEG/WebP — keep JPEG if the portal validation names it explicitly. And compression happens in a Web Worker on your machine; the photo is never uploaded to DevBench or anyone else.
+      </p>
+
+      <h2 className={h2}>Strip the metadata too</h2>
+      <p className={prose}>
+        Phone photos carry EXIF: camera model, timestamps, sometimes GPS coordinates. It does not affect validation, but it does travel with your photo into a government database. The <Link href="/tools/remove-image-metadata" className="text-accent hover:underline">Strip EXIF tool</Link> shows what is attached (including a prominent GPS row) and removes it by re-encoding — a ten-second habit worth building before any upload.
+      </p>
+
+      <h2 className={h2}>If it still gets rejected</h2>
+      <ul className={ul}>
+        <li>Over the limit but the photo is already small → lower quality further; the validator counts bytes, not pixels.</li>
+        <li>Rejected for “dimensions” not “size” → compressing changed nothing there; resize to the exact pixel spec with <Link href="/tools/image-resize-units" className="text-accent hover:underline">Resize in mm/px</Link>.</li>
+        <li>Portal says “invalid file” → some old portals reject WebP and modern JPEG encodings; re-export plain JPEG.</li>
+      </ul>
+      <p className={prose}>
+        Full dimension and size specs for each Indian portal are in the{" "}
+        <Link href="/blog/government-form-photo-specs-india" className="text-accent hover:underline">photo &amp; signature specs cheat sheet</Link>.
+      </p>
+    </div>
+  );
+}
+
+function SignatureSizeForOnlineForms() {
+  return (
+    <div className="space-y-4">
+      <p className={prose}>
+        The signature box on Indian online forms is surprisingly standardized — and surprisingly strict. Exam portals (SSC, UPSC, banking and insurance recruitment) almost universally want your signature scanned into a tiny file: typically around 60 × 20 mm at 300 DPI, under 10–20 KB. Here is the spec, the math, and how to produce one without owning a scanner.
+      </p>
+
+      <h2 className={h2}>The standard sizes</h2>
+      <table className={table}>
+        <thead>
+          <tr>
+            <th className={th}>Spec</th>
+            <th className={th}>Print size</th>
+            <th className={th}>Pixels @ 300 DPI</th>
+            <th className={th}>Common use</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td className={td}>Standard</td><td className={td}>60 × 20 mm</td><td className={td}>709 × 236 px</td><td className={td}>SSC, most exam forms</td></tr>
+          <tr><td className={td}>Compact</td><td className={td}>50 × 20 mm</td><td className={td}>591 × 236 px</td><td className={td}>Some banking portals</td></tr>
+          <tr><td className={td}>Narrow</td><td className={td}>70 × 15 mm</td><td className={td}>827 × 177 px</td><td className={td}>Wide signature boxes</td></tr>
+          <tr><td className={td}>Pixel-specified</td><td className={td}>—</td><td className={td}>140 × 60 px</td><td className={td}>IBPS/SBI-style uploads</td></tr>
+        </tbody>
+      </table>
+      <p className={prose}>
+        File-size limits are the other half of the spec: signatures are usually capped at 10–20 KB. A signature is mostly flat white with thin strokes, so it compresses extremely well — the challenge is keeping the strokes crisp at those sizes, which is why a clean 300 DPI source matters more than pixel count.
+      </p>
+
+      <h2 className={h2}>Rules that get signatures rejected</h2>
+      <ul className={ul}>
+        <li><strong className="text-foreground">Photographing the signature at an angle</strong> — perspective makes strokes thin and uneven; validators and exam hall staff both compare it against your live signature.</li>
+        <li><strong className="text-foreground">Signatures that overflow the box</strong> — strokes touching the border crop badly after resizing.</li>
+        <li><strong className="text-foreground">Wrong ink colour</strong> — most forms specify black or blue-black ink on white; a few accept blue. Check the notification.</li>
+        <li><strong className="text-foreground">Inconsistent versions</strong> — use one master signature across every form; exam verification compares them later.</li>
+      </ul>
+
+      <h2 className={h2}>Option A: draw it digitally (no scanner needed)</h2>
+      <p className={prose}>
+        The DevBench <Link href="/tools/signature-maker" className="text-accent hover:underline">Signature Maker</Link> lets you draw with a mouse, trackpad, or finger, with stroke smoothing — or type it in a handwriting font if you prefer a clean look. The size presets are exact at 300 DPI: Standard 60×20mm = 709 × 236 px, Compact 50×20mm, Narrow 70×15mm, plus a custom option for portal-specific pixel counts. It trims the transparent margin by default (so no wasted white space pushes strokes out of frame) and exports a transparent PNG. Everything runs in the browser — your signature is not a document you want sitting on a stranger’s server.
+      </p>
+
+      <h2 className={h2}>Option B: scan a paper signature properly</h2>
+      <ol className={ol}>
+        <li>Sign once on plain white paper with a pen you actually use. Do it in one take — pick the version with even pressure.</li>
+        <li>Scan or photograph it <strong className="text-foreground">straight on</strong>, at 300 DPI or higher, filling the frame horizontally.</li>
+        <li>Crop tightly with the <Link href="/tools/image-crop" className="text-accent hover:underline">Crop tool</Link>, leaving a small even margin.</li>
+        <li>Compress to the portal limit with <Link href="/tools/image-compress-target" className="text-accent hover:underline">Compress to Exact Size</Link> — target 10 or 15 KB.</li>
+      </ol>
+      <p className={prose}>
+        For offline forms that need photo and signature together on one page, build the sheet with <Link href="/tools/image-to-pdf" className="text-accent hover:underline">Image to PDF</Link>. Related reading: the{" "}
+        <Link href="/blog/passport-photo-size-for-online-forms" className="text-accent hover:underline">passport photo size guide</Link> covers the other half of every form, and the{" "}
+        <Link href="/blog/government-form-photo-specs-india" className="text-accent hover:underline">specs cheat sheet</Link> lists the numbers per portal.
+      </p>
+    </div>
+  );
+}
+
+function GovernmentFormPhotoSpecsIndia() {
+  return (
+    <div className="space-y-4">
+      <p className={prose}>
+        Every Indian government portal publishes its own photo and signature specification, and no two agree exactly. This page collects the commonly published numbers in one table, gives you the conversion math once, and shows a single workflow that satisfies any of them. Specs are summarised from public notifications — portals revise limits between recruitment cycles, so always verify against the latest official advertisement before submitting.
+      </p>
+
+      <h2 className={h2}>The cheat sheet</h2>
+      <table className={table}>
+        <thead>
+          <tr>
+            <th className={th}>Portal / form</th>
+            <th className={th}>Photo spec</th>
+            <th className={th}>Signature spec</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td className={td}>Passport (Passport Seva)</td><td className={td}>35 × 45 mm, JPEG, commonly 20–200 KB</td><td className={td}>Not uploaded (collected at PSK)</td></tr>
+          <tr><td className={td}>SSC (CGL, CHSL, MTS…)</td><td className={td}>3.5 × 4.5 cm, JPEG, 20–50 KB</td><td className={td}>6 × 2 cm scanned, 10–20 KB</td></tr>
+          <tr><td className={td}>IBPS / SBI / banking</td><td className={td}>~200 × 230 px, 20–50 KB</td><td className={td}>~140 × 60 px, 10–20 KB</td></tr>
+          <tr><td className={td}>UPSC (CDS, NDA, CSE)</td><td className={td}>Passport size (35 × 45 mm), usually under ~100 KB</td><td className={td}>Varies by application</td></tr>
+          <tr><td className={td}>Income tax portal</td><td className={td}>Commonly ~200 × 230 px, small JPEG</td><td className={td}>Scan as specified in the form</td></tr>
+          <tr><td className={td}>Aadhaar updates</td><td className={td}>Recent photo, portal-enforced limit</td><td className={td}>—</td></tr>
+        </tbody>
+      </table>
+      <p className={prose}>
+        Notice the pattern: <strong className="text-foreground">35 × 45 mm</strong> is the physical standard almost everywhere, and the file limits cluster around 20–50 KB for photos and 10–20 KB for signatures. If you keep compliant masters of both, you only ever need to re-export, never re-shoot.
+      </p>
+
+      <h2 className={h2}>The conversion math, once</h2>
+      <pre className="bg-muted rounded-lg px-4 py-3 text-xs font-mono overflow-x-auto my-3">
+{`pixels = millimetres ÷ 25.4 × DPI
+
+35 × 45 mm @ 300 DPI = 413 × 531 px   (print-safe master)
+35 × 45 mm @  96 DPI = 132 × 170 px   (screen uploads)
+60 × 20 mm @ 300 DPI = 709 × 236 px   (signature master)
+200 × 230 px @  96 DPI ≈ 53 × 61 mm   (portal pixel specs)`}
+      </pre>
+      <p className={prose}>
+        When a portal specifies pixels, it almost always means 96-DPI screen units — that is why “200 × 230 px” looks nothing like a millimetre spec. Keep 300 DPI masters and downscale; never upscale.
+      </p>
+
+      <h2 className={h2}>One workflow for any portal</h2>
+      <ol className={ol}>
+        <li><strong className="text-foreground">Make the master photo.</strong> <Link href="/tools/passport-photo" className="text-accent hover:underline">Passport Photo Maker</Link> — 35×45mm preset, white background fill, 300 DPI. Also exports an A4 cut sheet if you need printed copies.</li>
+        <li><strong className="text-foreground">Make the master signature.</strong> <Link href="/tools/signature-maker" className="text-accent hover:underline">Signature Maker</Link> — draw or type, 60×20mm @ 300 DPI, trimmed, transparent.</li>
+        <li><strong className="text-foreground">Resize for the portal.</strong> <Link href="/tools/image-resize-units" className="text-accent hover:underline">Resize in mm/px</Link> — type the exact pixel target (e.g. 200 × 230) with aspect lock off if the portal demands those exact numbers.</li>
+        <li><strong className="text-foreground">Hit the KB limit.</strong> <Link href="/tools/image-compress-target" className="text-accent hover:underline">Compress to Exact Size</Link> — enter the portal’s number (30 KB, 50 KB) and get a file that lands under it and reports the final size honestly.</li>
+        <li><strong className="text-foreground">Strip EXIF before uploading.</strong> <Link href="/tools/remove-image-metadata" className="text-accent hover:underline">Strip EXIF</Link> removes camera and GPS data in one pass.</li>
+      </ol>
+      <p className={prose}>
+        Every step runs in your browser — no account, no upload, no photo of you sitting on a file-sharing server. That matters more here than anywhere: these are identity documents in progress.
+      </p>
+
+      <h2 className={h2}>The rejection checklist</h2>
+      <ul className={ul}>
+        <li>File size over the stated KB limit — the most common failure by far.</li>
+        <li>Wrong dimensions: a 2×2in US photo on a 35×45mm form, or vice versa.</li>
+        <li>Blur — from low resolution or upscaling; always start from a 300 DPI source.</li>
+        <li>Background not plain, or a visible border/shadow around the crop.</li>
+        <li>Signature photographed at an angle, or strokes touching the box edge.</li>
+        <li>Format mismatches: portal demands JPEG, you sent WebP or PNG.</li>
+      </ul>
+      <p className={prose}>
+        Deeper dives: <Link href="/blog/passport-photo-size-for-online-forms" className="text-accent hover:underline">passport photo sizes by country</Link>,{" "}
+        <Link href="/blog/compress-photo-under-50kb-for-forms" className="text-accent hover:underline">compressing photos under 50 KB</Link>, and{" "}
+        <Link href="/blog/signature-size-for-online-forms" className="text-accent hover:underline">the 60×20mm signature standard</Link>.
+      </p>
+    </div>
+  );
+}
+
 export const POST_CONTENT: Record<string, React.ReactNode> = {
+  "passport-photo-size-for-online-forms": <PassportPhotoSizeForOnlineForms />,
+  "compress-photo-under-50kb-for-forms": <CompressPhotoUnder50KbForForms />,
+  "signature-size-for-online-forms": <SignatureSizeForOnlineForms />,
+  "government-form-photo-specs-india": <GovernmentFormPhotoSpecsIndia />,
   "choosing-privacy-first-online-developer-tools": <ChoosingPrivacyFirstOnlineDeveloperTools />,
   "browser-code-playground-privacy": <BrowserCodePlaygroundPrivacy />,
   "how-base64-encoding-works-and-when-not-to-use-it": <Base64EncodingExplained />,
