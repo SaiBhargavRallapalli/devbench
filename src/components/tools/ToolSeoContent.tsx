@@ -2908,6 +2908,611 @@ const CONTENT_MAP: Record<string, React.FC> = {
       </p>
     </Section>
   )) as React.FC,
+  // 2026-10 expansion: dev runner, image editing, documents
+  "code-runner": (() => (
+    <Section>
+      <h2 className={h2}>How to use the Code Runner</h2>
+      <ol className={ol}>
+        <li>
+          Choose a language, then a compiler or runtime version from the second dropdown — the
+          catalog loads from the execution engine when the tool opens.
+        </li>
+        <li>
+          Paste your program and press{" "}
+          <kbd className="font-mono text-xs bg-muted px-1 rounded">Ctrl</kbd>+
+          <kbd className="font-mono text-xs bg-muted px-1 rounded">Enter</kbd> (or{" "}
+          <kbd className="font-mono text-xs bg-muted px-1 rounded">Cmd</kbd>+
+          <kbd className="font-mono text-xs bg-muted px-1 rounded">Enter</kbd> on macOS) to run it;
+          Tab inserts two spaces in the editor.
+        </li>
+        <li>
+          Open <strong className="text-foreground">Standard input (stdin)</strong> below the editor
+          when the program should read lines — contest input, test fixtures, pipe-style data.
+        </li>
+        <li>
+          Read the panels: <strong className="text-foreground">Output</strong> for stdout,{" "}
+          <strong className="text-foreground">Errors</strong> for stderr (tracebacks, stack traces),
+          a separate compile-error block for build failures, and an exit-code badge where{" "}
+          <code className="font-mono text-xs bg-muted px-1 rounded">0</code> means success.
+        </li>
+      </ol>
+      <h2 className={h2}>What the Multi-Language Code Runner does</h2>
+      <p className={prose}>
+        Compiles and runs code in <strong className="text-foreground">30+ languages</strong> — C, C++,
+        C#, Java, Python, JavaScript, TypeScript, Rust, Go, PHP, Ruby, Swift, Lua, Perl, Haskell,
+        Scala, R, Julia, Zig and Bash — with nothing to install. The language and version lists are
+        fetched live from the engine, so new runtimes appear as soon as they are added. Compiled
+        languages report build failures in their own section before any program output, which keeps
+        a compiler diagnostic from hiding behind a runtime stack trace.
+      </p>
+      <h2 className={h2}>Trying a language without installing it</h2>
+      <p className={prose}>
+        Want to know how a snippet from a forum behaves before pulling it into your project? Paste
+        it, pick the language and version, and run — no toolchain downloads, no project scaffolding,
+        no IDE. It is equally handy for checking what an unfamiliar one-liner actually prints, or
+        reproducing a bug report&apos;s sample code exactly as reported. Runs are capped at 24
+        seconds and 100,000 characters, so this is a scratchpad for small programs and test inputs,
+        not a replacement for a long local build.
+      </p>
+      <h2 className={h2}>Where your code runs</h2>
+      <p className={prose}>
+        This is one of the few DevBench tools that uses the network: your source code is sent to the{" "}
+        <strong className="text-foreground">Wandbox public compiler cloud</strong> to be compiled and
+        executed — don&apos;t enter secrets, API keys or personal data. Runs are rate-limited to
+        about 10 per minute to keep the shared engine healthy, and only the code you submit is sent;
+        nothing is stored by this site.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/json-formatter" className="text-accent hover:underline">
+          JSON Formatter
+        </Link>
+        {", "}
+        <Link href="/tools/regex-tester" className="text-accent hover:underline">
+          Regex Tester
+        </Link>
+        {", and "}
+        <Link href="/tools/code-playground" className="text-accent hover:underline">
+          Code Playground
+        </Link>
+        .
+      </p>
+    </Section>
+  )) as React.FC,
+  "image-compress-target": (() => (
+    <Section>
+      <h2 className={h2}>How to compress to an exact size</h2>
+      <ol className={ol}>
+        <li>Upload a JPG, PNG or WebP — it is read in your browser and never uploaded.</li>
+        <li>
+          Pick a preset target — 50KB, 100KB, 200KB, 500KB, 1MB or 2MB — or type a custom KB/MB
+          number. The search starts automatically as you change inputs.
+        </li>
+        <li>
+          Choose JPEG or WebP output. JPEG flattens transparency onto white first, so a
+          transparent PNG never turns into a black background.
+        </li>
+        <li>
+          Read the status line: &quot;Reached X of Y target&quot; means the file landed under your
+          limit; &quot;Closest achievable&quot; reports the smallest safe size when your number is
+          out of reach.
+        </li>
+        <li>Download the result — the achieved size and saving percentage are shown next to it.</li>
+      </ol>
+      <h2 className={h2}>How the target-size search works</h2>
+      <p className={prose}>
+        The tool bisects encoder quality — about 7 attempts bracket the quality that hits your
+        target — and if quality alone cannot get there it downscales the image once and resumes the
+        search. A hard cap of 12 encode attempts per run keeps the loop quick, and within that
+        budget the closest result under the target wins; when nothing fits under, the smallest
+        over-target file is kept. The report stays honest: an image that is already smaller than the
+        target is offered unchanged rather than re-encoded for nothing. All of it runs in a Web
+        Worker on an OffscreenCanvas — no upload, no signup.
+      </p>
+      <h2 className={h2}>Uploading within a 50KB portal limit</h2>
+      <p className={prose}>
+        Government and recruitment portals commonly cap photos at 50KB or 100KB and reject anything
+        larger with a generic error. The manual workaround — export at a guessed quality, check the
+        size, repeat — is exactly what this tool automates: choose the 50KB preset, let the search
+        land under the cap, and upload on the first try. When the form also demands exact pixel
+        dimensions, resize first and then compress; when it wants a single attachment, send the
+        result through Image to PDF.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/image-compressor" className="text-accent hover:underline">
+          Image Compressor
+        </Link>
+        {", "}
+        <Link href="/tools/image-resizer" className="text-accent hover:underline">
+          Image Resizer
+        </Link>
+        {", and "}
+        <Link href="/tools/image-to-pdf" className="text-accent hover:underline">
+          Image to PDF
+        </Link>
+        .
+      </p>
+    </Section>
+  )) as React.FC,
+  "image-crop": (() => (
+    <Section>
+      <h2 className={h2}>How to crop an image</h2>
+      <ol className={ol}>
+        <li>Upload a JPG, PNG or WebP — the preview renders locally, nothing is uploaded.</li>
+        <li>
+          Drag a marquee on the image to select the area, drag inside it to move it, or pull the
+          corner handles to resize.
+        </li>
+        <li>
+          Fine-tune with exact X, Y, Width and Height pixel fields — they are fully
+          keyboard-operable, so the same crop is reachable without a pointer.
+        </li>
+        <li>
+          Download as PNG, JPEG or WebP; the quality slider applies to the lossy formats only.
+        </li>
+      </ol>
+      <h2 className={h2}>Aspect-ratio presets</h2>
+      <p className={prose}>
+        Presets cover <strong className="text-foreground">Free</strong> (no constraint),{" "}
+        <strong className="text-foreground">Original</strong> (the source image&apos;s own ratio),
+        1:1, 4:3, 3:4, 16:9, 9:16, 3:2 and 2:3. Choosing one snaps the selection to that ratio
+        while you drag, so thumbnails, video-style frames and phone-format crops stay exact; Free is
+        the default and leaves both dimensions independent.
+      </p>
+      <h2 className={h2}>Circle crop and output formats</h2>
+      <p className={prose}>
+        The circle toggle masks the selection into a perfect round avatar. A mask needs an alpha
+        channel, so circle mode forces PNG output regardless of the format dropdown — the corners
+        stay transparent instead of turning white. For ordinary rectangular crops, JPEG or WebP
+        keeps files smaller. Everything runs in your browser; the image is never sent anywhere.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/image-resizer" className="text-accent hover:underline">
+          Image Resizer
+        </Link>
+        {", "}
+        <Link href="/tools/image-rotate" className="text-accent hover:underline">
+          Rotate &amp; Flip Image
+        </Link>
+        {", and "}
+        <Link href="/tools/image-compressor" className="text-accent hover:underline">
+          Image Compressor
+        </Link>
+        .
+      </p>
+    </Section>
+  )) as React.FC,
+  "image-rotate": (() => (
+    <Section>
+      <h2 className={h2}>How to rotate or flip an image</h2>
+      <ol className={ol}>
+        <li>Upload a JPG, PNG or WebP — the rotation preview is rendered in your browser.</li>
+        <li>
+          Use the 90° buttons for quarter turns. They wrap instead of dead-ending at ±180°, so 270°
+          and −90° are the same position.
+        </li>
+        <li>
+          For fine tilts, drag the slider or type an exact angle between −180° and 180°.
+        </li>
+        <li>
+          Flip horizontally or vertically with one click — the preview shows exactly the orientation
+          that exports (WYSIWYG).
+        </li>
+        <li>Download as PNG, JPEG or WebP.</li>
+      </ol>
+      <h2 className={h2}>Background fill for non-right angles</h2>
+      <p className={prose}>
+        A 15° tilt grows the canvas to the rotated bounding box, which leaves empty corners.
+        Background fill paints them: <strong className="text-foreground">Transparent</strong> (for
+        PNG and WebP), <strong className="text-foreground">White</strong>, or{" "}
+        <strong className="text-foreground">Black</strong>. JPEG has no transparency, so transparent
+        fill with JPEG output falls back to white automatically — pick PNG if you need the corners
+        to stay see-through. Quarter turns of exactly 90° never need a fill at all.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/image-crop" className="text-accent hover:underline">
+          Crop Image
+        </Link>
+        {", "}
+        <Link href="/tools/image-resizer" className="text-accent hover:underline">
+          Image Resizer
+        </Link>
+        {", and "}
+        <Link href="/tools/image-format-converter" className="text-accent hover:underline">
+          Image Format Converter
+        </Link>
+        .
+      </p>
+    </Section>
+  )) as React.FC,
+  "image-resize-units": (() => (
+    <Section>
+      <h2 className={h2}>How to resize in cm, mm or inches</h2>
+      <ol className={ol}>
+        <li>Upload a JPG, PNG or WebP and pick a unit — px, cm, mm or inches.</li>
+        <li>
+          Type the target width or height; the other dimension follows the aspect lock unless you
+          switch it off.
+        </li>
+        <li>
+          Choose a DPI preset — 72, 96, 150, 300 or 600 — or type any custom value between 10 and
+          1200.
+        </li>
+        <li>
+          Check the cross-unit readout: the target size is listed in every unit at once (px, cm, mm
+          and inches), so the conversion is visible before you commit.
+        </li>
+        <li>
+          Download as PNG, JPEG or WebP — the resize itself runs in a worker, off the main thread.
+        </li>
+      </ol>
+      <h2 className={h2}>Which DPI should I use?</h2>
+      <p className={prose}>
+        DPI is a print concept: it maps pixels to physical size and never changes how sharp an image
+        looks on screen. 96 DPI is the screen standard, 300 DPI the safe default for photo prints
+        and ID documents, 150–200 DPI for large formats and posters, 600 DPI for very fine detail.
+        The tool repeats the rule of thumb under the fields — screen 96, print 300 — and since DPI
+        does not affect on-screen quality, leaving it at the default is fine for web use. Enlarging
+        beyond the source resolution cannot invent detail, so very large upscales come out soft.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/image-resizer" className="text-accent hover:underline">
+          Image Resizer
+        </Link>
+        {", "}
+        <Link href="/tools/passport-photo" className="text-accent hover:underline">
+          Passport Photo Maker
+        </Link>
+        {", and "}
+        <Link href="/tools/image-to-pdf" className="text-accent hover:underline">
+          Image to PDF
+        </Link>
+        .
+      </p>
+    </Section>
+  )) as React.FC,
+  "passport-photo": (() => (
+    <Section>
+      <h2 className={h2}>How to make a passport or ID photo</h2>
+      <ol className={ol}>
+        <li>Upload a portrait and pick a country preset — or Custom for your own millimetre size.</li>
+        <li>
+          DPI defaults to 300 with a live pixel readout: India&apos;s 35×45mm at 300 DPI is
+          413×531px.
+        </li>
+        <li>
+          Choose <strong className="text-foreground">Fit</strong> (whole photo visible, background
+          colour fills the rest) or <strong className="text-foreground">Fill</strong> (photo covers
+          the frame, edges cropped).
+        </li>
+        <li>
+          Pick the background — White, Red, Blue, Green or a custom colour — then download the photo
+          as PNG or JPEG, optionally alongside an A4 print sheet.
+        </li>
+      </ol>
+      <h2 className={h2}>Official sizes included</h2>
+      <ul className={ul}>
+        <li>
+          <strong className="text-foreground">US and Canada</strong> — 2×2 in (50.8×50.8 mm)
+        </li>
+        <li>
+          <strong className="text-foreground">India, Schengen/EU, UK, Japan, Australia, Russia</strong>{" "}
+          — 35×45 mm
+        </li>
+        <li>
+          <strong className="text-foreground">China</strong> — 33×48 mm;{" "}
+          <strong className="text-foreground">Pakistan</strong> — 35×45 mm;{" "}
+          <strong className="text-foreground">Bangladesh</strong> — 45×55 mm
+        </li>
+        <li>
+          <strong className="text-foreground">Custom</strong> — any width × height in mm, editable
+          yourself
+        </li>
+      </ul>
+      <h2 className={h2}>Background fill is not background removal</h2>
+      <p className={prose}>
+        The colour picker fills the frame behind your photo with a solid colour — it does not cut
+        you out of the original scene. For a proper cut-out subject, run the photo through{" "}
+        <Link href="/tools/background-remover" className="text-accent hover:underline">
+          Background Remover
+        </Link>{" "}
+        first, then place the transparent PNG here. The optional print sheet packs copies onto A4 at
+        200 DPI with 4mm gaps and a white surround; print at 100% / actual size with no scaling, then
+        cut along the edges.
+      </p>
+      <h2 className={h2}>Photo sizes for Indian government forms — 35×45mm and 60×20mm signature boxes</h2>
+      <p className={prose}>
+        Indian application portals and printed forms almost always ask for a 35×45mm photo — the
+        India preset matches it exactly (413×531px at 300 DPI) — plus a signature box around 60×20mm,
+        which the{" "}
+        <Link href="/tools/signature-maker" className="text-accent hover:underline">
+          Signature Maker
+        </Link>{" "}
+        exports at the same exact 300 DPI. Fill with white for most portals, stay inside the
+        declared KB cap (see{" "}
+        <Link href="/tools/image-compress-target" className="text-accent hover:underline">
+          Compress to KB
+        </Link>
+        ), and use{" "}
+        <Link href="/tools/image-to-pdf" className="text-accent hover:underline">
+          Image to PDF
+        </Link>{" "}
+        when the form wants one combined upload. Always check the latest official requirements
+        before printing.
+      </p>
+      <p className={prose}>
+        Everything runs in your browser — nothing is uploaded, and no account is needed. Also
+        useful:{" "}
+        <Link href="/tools/image-resize-units" className="text-accent hover:underline">
+          Resize in cm / mm / Inches
+        </Link>
+        .
+      </p>
+    </Section>
+  )) as React.FC,
+  "remove-image-metadata": (() => (
+    <Section>
+      <h2 className={h2}>How to strip metadata from a photo</h2>
+      <ol className={ol}>
+        <li>Upload a JPG, PNG or WebP — the file is read in your browser.</li>
+        <li>
+          Review the tags that were found before anything is removed: camera make and model, capture
+          date, lens, software — and, when present, a prominent 📍 Location row with the GPS
+          coordinates.
+        </li>
+        <li>Choose the output: keep the original format, or switch to PNG or JPEG.</li>
+        <li>
+          Download the cleaned image. If there was nothing to remove, the tool reports the file as
+          already clean instead of re-encoding it.
+        </li>
+      </ol>
+      <h2 className={h2}>What EXIF can reveal</h2>
+      <p className={prose}>
+        Cameras and phones write EXIF at capture time: the exact device and settings, the timestamp,
+        sometimes the software that edited the file — and GPS latitude and longitude, which can
+        place a photo on a street-level map. A casual photo shared online can quietly hand over
+        where you live, where you work, or a route you ran. Screenshots and PNGs are usually clean
+        already; JPEGs straight from a phone rarely are.
+      </p>
+      <h2 className={h2}>What re-encoding does to the file</h2>
+      <p className={prose}>
+        Stripping works by re-encoding the pixels through a canvas, which drops every metadata block
+        — EXIF, IPTC, XMP and ICC alike — in one pass. The picture looks the same to you, but the
+        bytes change: the output is a freshly encoded file with a different size (shown as
+        before/after), not the original with lines deleted. That trade-off is inherent to how these
+        formats store metadata; the tool is upfront about it rather than pretending the file is
+        untouched.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/exif-viewer" className="text-accent hover:underline">
+          EXIF Viewer
+        </Link>
+        {", "}
+        <Link href="/tools/image-compressor" className="text-accent hover:underline">
+          Image Compressor
+        </Link>
+        {", and "}
+        <Link href="/tools/image-format-converter" className="text-accent hover:underline">
+          Image Format Converter
+        </Link>
+        .
+      </p>
+    </Section>
+  )) as React.FC,
+  "favicon-generator": (() => (
+    <Section>
+      <h2 className={h2}>How to generate a favicon</h2>
+      <ol className={ol}>
+        <li>
+          Upload any logo or icon — non-square art is padded onto a square canvas, transparent by
+          default or with a fill colour you pick.
+        </li>
+        <li>
+          The tool renders 16×16, 32×32 and 48×48 versions and previews each at native size and 4×
+          zoom, so you can check legibility before committing.
+        </li>
+        <li>Download the individual PNGs, or the combined multi-size favicon.ico.</li>
+        <li>Copy the ready-made link tag and paste it into your page&apos;s head.</li>
+      </ol>
+      <h2 className={h2}>How the .ico is built</h2>
+      <p className={prose}>
+        The download packs all three PNGs into one favicon.ico. PNG-in-ICO is a valid encoding for
+        16, 32 and 48 pixel icons, supported by every modern browser and by Windows Vista and later,
+        and it preserves transparency and antialiasing exactly as they appear in the individual
+        PNGs — no lossy re-compression. The copyable snippet is{" "}
+        <code className="font-mono text-xs bg-muted px-1 rounded">
+          &lt;link rel=&quot;icon&quot; href=&quot;/favicon.ico&quot;&gt;
+        </code>
+        ; save the file at your site root and modern browsers pick it up from there.
+      </p>
+      <h2 className={h2}>Why padding matters at 16px</h2>
+      <p className={prose}>
+        Favicons render tiny, so a wide or tall source would be distorted to fit a square. Padding it
+        onto a square canvas keeps circles and tall logos proportional; the fill colour toggle is
+        there when you want an opaque tile behind the icon instead of transparency. Preview at 4×
+        zoom to confirm the shape still reads when the detail is gone.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/image-resizer" className="text-accent hover:underline">
+          Image Resizer
+        </Link>
+        {", "}
+        <Link href="/tools/image-format-converter" className="text-accent hover:underline">
+          Image Format Converter
+        </Link>
+        {", and "}
+        <Link href="/tools/base64-image" className="text-accent hover:underline">
+          Base64 Image
+        </Link>
+        .
+      </p>
+    </Section>
+  )) as React.FC,
+  "signature-maker": (() => (
+    <Section>
+      <h2 className={h2}>How to create a signature</h2>
+      <ol className={ol}>
+        <li>
+          <strong className="text-foreground">Draw mode</strong> captures pointer strokes with your
+          mouse, trackpad or finger — strokes are smoothed as you go, and Undo or Clear fix slips.
+        </li>
+        <li>
+          <strong className="text-foreground">Type mode</strong> is fully keyboard-operable: tab
+          into the fields and the preview updates live as you type.
+        </li>
+        <li>
+          The preview sits on a transparent checkerboard so you see exactly what will export, and{" "}
+          <strong className="text-foreground">Trim to content</strong> stays on by default — it
+          crops the empty margin around the ink.
+        </li>
+        <li>Pick a size preset (or Custom PNG) and download the transparent PNG.</li>
+      </ol>
+      <h2 className={h2}>Standard sizes at 300 DPI</h2>
+      <ul className={ul}>
+        <li>
+          <strong className="text-foreground">Standard 60×20mm</strong> — 709×236px, the typical
+          signature box on contracts, bank forms and applications
+        </li>
+        <li>
+          <strong className="text-foreground">Compact 50×20mm</strong> — for tighter fields
+        </li>
+        <li>
+          <strong className="text-foreground">Narrow 70×15mm</strong> — wide, short fields
+        </li>
+        <li>
+          <strong className="text-foreground">Small 40×15mm</strong> — tiny fields
+        </li>
+        <li>
+          <strong className="text-foreground">Custom PNG</strong> — your own pixel dimensions
+        </li>
+      </ul>
+      <p className={prose}>
+        Presets export at exact 300 DPI pixel dimensions, so inserting the PNG into a document at
+        100% scale reproduces the intended physical size. Output is always a transparent PNG — no
+        white box behind the strokes — and everything happens locally in your browser.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/image-to-pdf" className="text-accent hover:underline">
+          Image to PDF
+        </Link>
+        {", "}
+        <Link href="/tools/image-crop" className="text-accent hover:underline">
+          Crop Image
+        </Link>
+        {", and "}
+        <Link href="/tools/text-to-pdf" className="text-accent hover:underline">
+          Text to PDF
+        </Link>
+        .
+      </p>
+    </Section>
+  )) as React.FC,
+  "pdf-to-text": (() => (
+    <Section>
+      <h2 className={h2}>How to extract text from a PDF</h2>
+      <ol className={ol}>
+        <li>
+          Drop in a PDF (up to 50MB) — it is parsed in your browser and never uploaded to a server.
+        </li>
+        <li>Optionally enter a page range; leave the field empty to take every page.</li>
+        <li>Check the stats: pages extracted, word count and character count.</li>
+        <li>Copy the text to the clipboard, or download it as a ready-to-use .txt file.</li>
+      </ol>
+      <h2 className={h2}>Page ranges</h2>
+      <p className={prose}>
+        Type ranges and single pages together, e.g. 1-3,5,7-9. Blank means all pages, numbers past
+        the end are clamped to the real page count (1-99 on a ten-page file still means pages 1-10),
+        duplicates collapse, and a reversed range like 5-3 is rejected with a friendly error instead
+        of silently returning nothing. Pages are joined with a blank line between them, so the
+        result pastes cleanly into an editor.
+      </p>
+      <h2 className={h2}>Scanned, locked and damaged PDFs</h2>
+      <p className={prose}>
+        The tool reads the embedded text layer only. When a file is a scan — no text layer at all —
+        it says so and points you at OCR instead of handing you an empty result. Password-protected
+        or damaged files get a plain-language message rather than a stack trace. Your document stays
+        on the device throughout.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/merge-pdf" className="text-accent hover:underline">
+          Merge PDF
+        </Link>
+        {", "}
+        <Link href="/tools/pdf-page-editor" className="text-accent hover:underline">
+          PDF Page Editor
+        </Link>
+        {", and "}
+        <Link href="/tools/pdf-to-jpg" className="text-accent hover:underline">
+          PDF to JPG
+        </Link>
+        .
+      </p>
+    </Section>
+  )) as React.FC,
+  "text-to-handwriting": (() => (
+    <Section>
+      <h2 className={h2}>How to turn text into handwriting</h2>
+      <ol className={ol}>
+        <li>
+          Paste or type your text — lines wrap onto the paper rules and long text flows onto extra
+          pages.
+        </li>
+        <li>
+          Pick one of the seven handwriting styles, an ink colour (Blue, Black or Red), and a paper
+          style (Ruled, College ruled, Grid or Blank) — the rules are painted into the PNG itself,
+          not overlaid at screen time.
+        </li>
+        <li>
+          Tune line spacing, font size and page margin, and optionally add Title and Date lines at
+          the top of the page.
+        </li>
+        <li>
+          Step through pages with the previous/next controls, then download the current page as a
+          PNG.
+        </li>
+      </ol>
+      <h2 className={h2}>Handwriting styles and font availability</h2>
+      <p className={prose}>
+        The seven styles are built from fonts that commonly ship with Windows, macOS and mobile
+        devices — Segoe Script, Bradley Hand, Segoe Print, Brush Script MT, Comic Sans MS,
+        Chalkboard — plus a generic system cursive fallback. Be aware that rendering depends on the
+        fonts installed on the viewer&apos;s device: if a listed font is missing, the browser falls
+        back to its built-in cursive, so the same text can look slightly different across operating
+        systems. What you download is rendered on your machine, so the PNG matches the preview you
+        approved.
+      </p>
+      <h2 className={h2}>Paper, pages and export</h2>
+      <p className={prose}>
+        Pages are A4-sized (794px wide at 96 DPI), and the paper, header lines and ink are all drawn
+        into the exported canvas — the PNG is self-contained and ready to print or attach. The whole
+        pipeline runs locally in your browser: your words are never uploaded anywhere, and you can
+        review each page with the pagination controls before downloading.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/text-to-pdf" className="text-accent hover:underline">
+          Text to PDF
+        </Link>
+        {", "}
+        <Link href="/tools/word-counter" className="text-accent hover:underline">
+          Word Counter
+        </Link>
+        {", and "}
+        <Link href="/tools/signature-maker" className="text-accent hover:underline">
+          Signature Maker
+        </Link>
+        .
+      </p>
+    </Section>
+  )) as React.FC,
   // Design
   "contrast-checker": ContrastCheckerContent,
   "gradient-generator": GradientGeneratorContent,

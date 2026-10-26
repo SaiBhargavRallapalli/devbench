@@ -6,7 +6,7 @@ export const faqsDev: Record<string, Faq[]> = {
     { q: "Is this free and do I need to install anything?", a: "Yes, it's free and runs entirely in your browser. Code executes on a public execution engine — there's nothing to install, sign up for, or configure. Runs are rate-limited (about 10 per minute) to keep the shared engine healthy for everyone." },
     { q: "Can my program read input?", a: "Yes. Open the \"Standard input (stdin)\" panel below the editor and type the lines your program should read — for example the numbers a competitive-programming problem feeds in. Compiled languages also show compile errors separately from runtime errors." },
     { q: "What do output, stderr and the exit code mean?", a: "Output shows what your program printed to stdout. Errors (stderr) shows runtime diagnostics such as a Python traceback or a Java stack trace. The exit badge shows the process exit code: 0 means success, anything else means the program finished with an error. Compile errors appear in their own section before any output." },
-    { q: "Is my code private? Can I run anything?", a: "Code runs on a public execution engine, so don't enter secrets, API keys or personal data. There are size limits (up to 100,000 characters) and a 20-second timeout, and only the code you submit is sent for execution — nothing is stored by this site." },
+    { q: "Is my code private? Can I run anything?", a: "Code runs on a public execution engine, so don't enter secrets, API keys or personal data. There are size limits (up to 100,000 characters) and a 24-second timeout, and only the code you submit is sent for execution — nothing is stored by this site." },
   ],
 
   "regex-tester": [
