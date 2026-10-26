@@ -1,8 +1,31 @@
 /* DevBench PWA — static assets + optional workspace shells (no HTML/RSC cache). */
 const CACHE_STATIC = "devbench-static-v2";
-const CACHE_SHELL = "devbench-shell-v2";
+const CACHE_SHELL = "devbench-shell-v3";
 
-const SHELL_PATHS = ["/", "/json", "/pdf", "/workflows", "/vault", "/api-tester"];
+const SHELL_PATHS = [
+  "/",
+  "/json",
+  "/pdf",
+  "/image",
+  "/yaml",
+  "/notepad",
+  "/workflows",
+  "/vault",
+  "/api-tester",
+  "/blog",
+  "/changelog",
+  "/jwt-debugger",
+  "/linux-cheatsheet",
+  "/astronomy",
+  "/cron-editor",
+  "/date-calculator",
+  "/graph-calculator",
+  "/webhook-simulator",
+  "/epoch",
+  "/diff-checker",
+  "/compare",
+  "/code-beautify",
+];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(

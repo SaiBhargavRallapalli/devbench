@@ -64,4 +64,10 @@ export const faqsFinance: Record<string, Faq[]> = {
     { q: "What is a good hike percentage in India?", a: "Industry benchmarks vary by sector. In India's IT sector, an average annual hike is 8–12%. Job-change hikes are typically 20–40%. Inflation adjustment hikes (to maintain purchasing power) require at least matching the CPI inflation rate." },
     { q: "Is my salary data safe here?", a: "Yes. Calculation runs in your browser. Nothing is sent to a server." },
   ],
+  "expense-splitter": [
+    { q: "How does the splitter decide who pays whom?", a: "It totals what each person paid versus what each person owed, then matches debtors against creditors to produce the smallest number of transfers needed — usually far fewer than everyone paying everyone individually." },
+    { q: "Can I split an expense unevenly?", a: "Each expense splits evenly among its participants. For custom shares, log separate expenses for smaller groups — for example, one entry for the people who ordered food and another for everyone at the table." },
+    { q: "Is my financial data uploaded anywhere?", a: "No. Every balance and transfer is computed in your browser. Names and amounts never leave your device, and nothing persists after you close the tab." },
+    { q: "Can I share the settlement?", a: "Yes — one click copies a formatted settle-up summary listing each payment to make, ready to paste into a group chat or message." },
+  ],
 };

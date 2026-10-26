@@ -133,4 +133,14 @@ export const faqsImage: Record<string, Faq[]> = {
     { q: "Can I tell where a photo was taken from EXIF?", a: "If the GPS data was recorded at the time the photo was taken, the EXIF viewer shows the latitude and longitude. Many smartphones record GPS in photos by default. Camera apps often have an option to disable location tagging for privacy." },
     { q: "Is my photo safe here?", a: "Yes. EXIF data is read in your browser using the ExifReader library. Your photo is never uploaded to a server — it is read directly from local memory." },
   ],
+  "video-converter": [
+    { q: "Which formats can I convert?", a: "The converter reads common video formats like MOV, AVI, MKV, and WebM and exports MP4 (H.264/AAC) or WebM (VP8/Opus) — the two formats that play almost everywhere on the web." },
+    { q: "Is my video uploaded to a server?", a: "No. Conversion runs entirely in your browser using FFmpeg compiled to WebAssembly. The file never leaves your device — though large videos need time and memory inside the tab, so keep the tab open until the progress bar finishes." },
+    { q: "Why is my converted file larger than the original?", a: "Re-encoding trades size for compatibility. The converter targets web-friendly output, so an already heavily compressed source can come out larger. If size matters more than format, shrink the clip with a shorter segment or lower resolution first." },
+  ],
+  "gif-maker": [
+    { q: "How do I make a smaller GIF?", a: "Lower the frame rate (5 FPS instead of 20) and reduce the output width. GIF file size grows quickly with frames and pixels, so these two controls matter more than anything else." },
+    { q: "How long can my GIF be?", a: "The GIF is built from the segment you select. Longer or higher-FPS clips take more time and memory to encode in the tab, so short segments (a few seconds) give the best results." },
+    { q: "Does the source video leave my device?", a: "No. Frame extraction and GIF encoding happen locally in your browser via FFmpeg in WebAssembly — the video is never uploaded to a server." },
+  ],
 };

@@ -15,7 +15,6 @@ export const organizationSchema = {
   sameAs: [
     `https://github.com/${GITHUB_REPOSITORY}`,
     "https://www.producthunt.com/products/devbench-2",
-    "https://twitter.com/devbench",
   ],
   contactPoint: {
     "@type": "ContactPoint",

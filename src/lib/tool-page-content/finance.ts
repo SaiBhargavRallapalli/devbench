@@ -72,4 +72,11 @@ export const pageContentFinance: Record<string, ToolPageContent> = {
     openingParagraph:
       "Loan EMI Calculator computes the monthly equated installment using the standard EMI formula, then shows total interest payable over the tenure and the total amount paid. Enter principal, annual rate, and tenure in months or years. Works for home loans, car loans, personal loans, and education loans. Runs entirely in your browser.",
   },
+  "expense-splitter": {
+    title: "Expense Splitter — Split Group Bills & Settle Up",
+    metaDescription:
+      "Split group expenses fairly, see who owes whom, and copy a settle-up summary with the fewest transfers. Runs in your browser — nothing is uploaded.",
+    openingParagraph:
+      "Add the people who shared a bill, log each expense with who paid and who took part, and the splitter totals per-person balances automatically. Every expense is split evenly among its participants, people who owe are matched against people who are owed to produce the smallest set of transfers, and one click copies a clean settle-up summary you can paste into a group chat. The entire calculation runs in your browser.",
+  },
 };

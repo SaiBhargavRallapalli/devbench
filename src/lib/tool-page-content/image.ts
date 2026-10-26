@@ -144,4 +144,18 @@ export const pageContentImage: Record<string, ToolPageContent> = {
     openingParagraph:
       "Color Palette Generator builds harmonious color schemes from a single seed — complementary, analogous, triadic, tetradic, split-complementary, and monochromatic. Preview WCAG contrast on each swatch and export as CSS custom properties, Tailwind config, or a JSON array. Runs entirely in your browser.",
   },
+  "video-converter": {
+    title: "Video Converter — Convert to MP4 or WebM Online",
+    metaDescription:
+      "Convert videos to MP4 or WebM straight in your browser — FFmpeg-powered, fully local, no uploads. Free, unlimited, and private by design. No signup.",
+    openingParagraph:
+      "Convert almost any video — MOV, AVI, MKV and more — into MP4 or WebM without installing anything or uploading the file. Conversion runs locally with FFmpeg compiled to WebAssembly, so your footage never leaves the device; you choose the output format, and the finished file downloads straight from the browser tab.",
+  },
+  "gif-maker": {
+    title: "GIF Maker — Turn Video Clips into Animated GIFs",
+    metaDescription:
+      "Create animated GIFs from any video clip in your browser — pick the segment, frame rate and width. Fully local processing, no upload, free, no watermark.",
+    openingParagraph:
+      "Pick a moment from a video, set how long it should loop, and export an animated GIF without leaving the browser. You control frame rate (5 to 20 FPS) and output width, and the clip is rendered locally with FFmpeg in WebAssembly — the source video is never uploaded, and the finished GIF is ready for docs, chats, and issue trackers.",
+  },
 };
