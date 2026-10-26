@@ -3266,6 +3266,13 @@ export const CONTENT_MAP: Record<string, React.FC> = {
         </Link>
         .
       </p>
+      <p className={prose}>
+        Country-by-country sizes and the DPI math:{" "}
+        <Link href="/blog/passport-photo-size-for-online-forms" className="text-accent hover:underline">
+          passport photo sizes for online forms
+        </Link>
+        .
+      </p>
     </Section>
   )) as React.FC,
   "remove-image-metadata": (() => (
@@ -3366,13 +3373,6 @@ export const CONTENT_MAP: Record<string, React.FC> = {
         </Link>
         .
       </p>
-      <p className={prose}>
-        Country-by-country sizes and the DPI math:{" "}
-        <Link href="/blog/passport-photo-size-for-online-forms" className="text-accent hover:underline">
-          passport photo sizes for online forms
-        </Link>
-        .
-      </p>
     </Section>
   )) as React.FC,
   "signature-maker": (() => (
@@ -3433,6 +3433,13 @@ export const CONTENT_MAP: Record<string, React.FC> = {
         </Link>
         .
       </p>
+      <p className={prose}>
+        Why forms specify 60×20mm and how scanning compares to drawing:{" "}
+        <Link href="/blog/signature-size-for-online-forms" className="text-accent hover:underline">
+          the signature size standard, explained
+        </Link>
+        .
+      </p>
     </Section>
   )) as React.FC,
   "pdf-to-text": (() => (
@@ -3473,13 +3480,6 @@ export const CONTENT_MAP: Record<string, React.FC> = {
         {", and "}
         <Link href="/tools/pdf-to-jpg" className="text-accent hover:underline">
           PDF to JPG
-        </Link>
-        .
-      </p>
-      <p className={prose}>
-        Why forms specify 60×20mm and how scanning compares to drawing:{" "}
-        <Link href="/blog/signature-size-for-online-forms" className="text-accent hover:underline">
-          the signature size standard, explained
         </Link>
         .
       </p>
