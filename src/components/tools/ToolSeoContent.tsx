@@ -3442,6 +3442,137 @@ export const CONTENT_MAP: Record<string, React.FC> = {
       </p>
     </Section>
   )) as React.FC,
+  "barcode-generator": (() => (
+    <Section>
+      <h2 className={h2}>How to make a barcode online</h2>
+      <ol className={ol}>
+        <li>
+          Type your content — or exactly 13 digits for EAN-13. Twelve-digit numbers are accepted too
+          and encoded with a leading zero, the UPC-A equivalent.
+        </li>
+        <li>
+          Leave the format on <strong className="text-foreground">Auto</strong> — 12/13 digits become
+          EAN-13, anything else Code 128 — or force a symbology yourself.
+        </li>
+        <li>
+          Set scale (pixels per module), bar height, and the human-readable caption.
+        </li>
+        <li>Download a PNG for print and documents, or an SVG for design tools and the web.</li>
+      </ol>
+      <h2 className={h2}>Will this barcode scan?</h2>
+      <p className={prose}>
+        The encoders follow the published specs: Code 128 uses Start B, one symbol per ASCII
+        character, a modulo-103 checksum and the Stop pattern; EAN-13 uses the official L/G/R code
+        tables, guard bars and the standard check digit, which the tool validates as you type and
+        fixes with one click when it is wrong. Scanners read the output like any other barcode.
+        Whether it scans in the real world also depends on print size, contrast and the quiet zone —
+        print at a sensible size, keep black bars on a light background, and never crop the margins.
+      </p>
+      <h2 className={h2}>Which format should I pick, and what is not supported?</h2>
+      <p className={prose}>
+        Code 128 carries text, URLs and SKU codes of almost any length — the workhorse for labels
+        and inventory; EAN-13 is numeric-only and fixed at 13 digits, as retail product codes
+        require. Only these two symbologies are implemented — there is no QR, ITF,
+        Code 39 or standalone UPC-E here. Code 128 Subset B covers ASCII 32–126, so emoji and
+        accented characters are refused with a clear message instead of being silently mangled.
+        Encoding and rendering happen 100% in your browser; your text is never uploaded.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/qr-code" className="text-accent hover:underline">
+          QR Code Generator
+        </Link>
+        .
+      </p>
+    </Section>
+  )) as React.FC,
+  "image-watermark": (() => (
+    <Section>
+      <h2 className={h2}>How do I watermark an image online?</h2>
+      <ol className={ol}>
+        <li>Upload a PNG, JPEG or WebP photo — it is decoded locally and never uploaded.</li>
+        <li>
+          Type the watermark text, then set font size (in pixels at full resolution), colour with
+          its own alpha slider, overall opacity, and rotation.
+        </li>
+        <li>
+          Pick a layout: <strong className="text-foreground">Tile (diagonal)</strong> repeats the
+          text across the whole picture, or <strong className="text-foreground">Single</strong> places
+          one stamp using the nine-position grid — centre, corners, edges.
+        </li>
+        <li>Choose PNG, JPEG or WebP output (quality slider for the lossy two) and download.</li>
+      </ol>
+      <h2 className={h2}>How do I keep a watermark readable?</h2>
+      <p className={prose}>
+        Busy photos swallow flat text. Turn on the outline-and-shadow toggle: it strokes each letter
+        with the contrasting colour — white over dark text, near-black over bright text — and adds a
+        soft shadow, so the credit stays legible without cranking opacity. For subtle watermarks,
+        leave colour alpha at full and dial the overall opacity down instead; for deterrents, tile
+        at higher opacity so the image cannot simply be cropped free of the mark.
+      </p>
+      <h2 className={h2}>What are the limits?</h2>
+      <p className={prose}>
+        Input images are capped at 16,384px per side and roughly 50 megapixels, the same safe canvas
+        limits as the other image tools. The preview is capped at 1,000px on its longest side so
+        slider changes stay smooth — downloads always render at your image&apos;s original
+        dimensions. PNG and WebP keep transparency; JPEG has none, so transparent areas composite
+        onto white. Text is the only watermark type: there is no image or logo stamp here. Everything
+        runs 100% in your browser.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/image-compressor" className="text-accent hover:underline">
+          Image Compressor
+        </Link>
+        .
+      </p>
+    </Section>
+  )) as React.FC,
+  "image-filters": (() => (
+    <Section>
+      <h2 className={h2}>How do I filter a photo online?</h2>
+      <ol className={ol}>
+        <li>Upload a PNG, JPEG or WebP image — it stays on your device throughout.</li>
+        <li>
+          Move the sliders: grayscale, sepia, invert and blur start at zero, while brightness,
+          contrast and saturation sit at a neutral 100% and move either way.
+        </li>
+        <li>
+          Pixelate sets a pixel block size — useful for redacting names, faces, or serial numbers
+          before sharing a screenshot.
+        </li>
+        <li>
+          Hold the compare button to flash the untouched original, reset when you overshoot, then
+          download as PNG, JPEG or WebP.
+        </li>
+      </ol>
+      <h2 className={h2}>Will my browser support all the filters?</h2>
+      <p className={prose}>
+        Blur, brightness, contrast, saturation, grayscale, sepia and invert are drawn through the
+        Canvas filter property, available in Chrome, Edge, Firefox and Safari 16.4 and later. On an
+        older browser the tool tells you plainly that those filters are skipped rather than quietly
+        ignoring them; pixelate uses plain canvas scaling and works everywhere. Pixelate itself is a
+        downscale followed by a nearest-neighbour upscale, so the blocks are deliberately square and
+        hard-edged instead of blurred.
+      </p>
+      <h2 className={h2}>What should I know before downloading?</h2>
+      <p className={prose}>
+        The preview renders at up to 1,000px on the longest side to keep slider drags responsive —
+        the download re-renders at your image&apos;s full original dimensions, up to the tool&apos;s
+        16,384px / 50-megapixel safety cap. PNG output is lossless and keeps transparency; JPEG and
+        WebP are lossy with a quality slider, and JPEG is composited onto white because it has no
+        alpha channel, so each export is a fresh encode. All processing runs 100% in your browser —
+        nothing is uploaded.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/image-format-converter" className="text-accent hover:underline">
+          Image Format Converter
+        </Link>
+        .
+      </p>
+    </Section>
+  )) as React.FC,
   "pdf-to-text": (() => (
     <Section>
       <h2 className={h2}>How to extract text from a PDF</h2>

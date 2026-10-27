@@ -8,6 +8,8 @@ export const IMAGE_HUB_ORDER = [
   "image-resize-units",
   "image-crop",
   "image-rotate",
+  "image-watermark",
+  "image-filters",
   "passport-photo",
   "image-merger",
   "image-format-converter",
@@ -24,6 +26,7 @@ export const IMAGE_HUB_ORDER = [
   "contrast-checker",
   "color-converter",
   "qr-code",
+  "barcode-generator",
 ] as const;
 
 export type ImageHubFilter =
@@ -39,6 +42,8 @@ const EDIT_SLUGS = new Set<string>([
   "image-resize-units",
   "image-crop",
   "image-rotate",
+  "image-watermark",
+  "image-filters",
   "passport-photo",
   "signature-maker",
   "image-merger",
@@ -54,6 +59,7 @@ const CONVERT_SLUGS = new Set<string>([
   "favicon-generator",
   "base64-image",
   "qr-code",
+  "barcode-generator",
 ]);
 
 const OPTIMIZE_SLUGS = new Set<string>(["image-compressor", "image-compress-target"]);

@@ -143,4 +143,28 @@ export const faqsImage: Record<string, Faq[]> = {
     { q: "How long can my GIF be?", a: "The GIF is built from the segment you select. Longer or higher-FPS clips take more time and memory to encode in the tab, so short segments (a few seconds) give the best results." },
     { q: "Does the source video leave my device?", a: "No. Frame extraction and GIF encoding happen locally in your browser via FFmpeg in WebAssembly — the video is never uploaded to a server." },
   ],
+
+  "barcode-generator": [
+    { q: "Which barcode types can I generate?", a: "Two symbologies only: Code 128 (Subset B) and EAN-13. Code 128 encodes any ASCII text from spaces to tildes (characters 32–126) and is the right choice for URLs, SKUs, and labels. EAN-13 encodes exactly 13 numeric digits and is the standard retail product code. QR codes, ITF, Code 39, and standalone UPC-E are not supported." },
+    { q: "Will this barcode actually scan?", a: "The encoders follow the published specs — Code 128 uses the standard Start B, per-character symbols, a mod-103 checksum, and the Stop pattern; EAN-13 uses the official L/G/R code tables, guards, and check digit — so scanners read them like any other barcode. Whether yours scans in practice also depends on print size, contrast, and the quiet zone: print it large enough, keep black bars on a light background, and don't crop the white margins." },
+    { q: "How does EAN-13 checksum validation work?", a: "The 13th digit of an EAN-13 code is a check digit calculated from the first 12 using alternating weights of 1 and 3. The tool recomputes it as you type and, if the last digit is wrong, shows the expected value with a one-click 'Use check digit' fix. EAN-13 requires exactly 13 digits — 12-digit numbers are encoded with a leading zero, which is the standard UPC-A equivalent that scanners report as UPC-A." },
+    { q: "Can I use emoji or accented characters?", a: "Not in EAN-13 (digits only), and not in Code 128 Subset B, which covers ASCII 32–126. If your text contains emoji, accented letters, or other symbols outside that range, the tool says so instead of generating a barcode that would encode the wrong data." },
+    { q: "Is my input sent anywhere?", a: "No. Encoding and rendering happen 100% in your browser with Canvas — your text or product numbers are never uploaded, logged, or stored." },
+  ],
+
+  "image-watermark": [
+    { q: "Is my photo uploaded to a server?", a: "No. The image is read from your device, drawn onto a canvas, and re-encoded locally — everything runs 100% in your browser and nothing is ever uploaded or stored." },
+    { q: "Which formats are supported?", a: "Input: PNG, JPEG, and WebP images. Output: PNG, JPEG, or WebP with a quality slider for the two lossy formats (the slider does nothing for PNG). PNG and WebP keep transparency; JPEG has none, so transparent areas are composited onto white." },
+    { q: "What is the maximum image size?", a: "Images are capped at 16,384px per side and about 50 megapixels total — the same safe limits the other canvas tools use. The on-screen preview is further capped at 1,000px on its longest side so slider changes stay responsive, but downloads always render at your image's original dimensions." },
+    { q: "When should I use tile versus single mode?", a: "Tile repeats your text diagonally across the entire picture (the angle follows the rotation slider) — best for stock photos and previews you want to be hard to crop out. Single stamps one instance, placed with a nine-position grid from center to corners and edges — best for a signature-style credit or a logo-style label in a corner." },
+    { q: "How do I keep the watermark readable?", a: "Turn on 'Outline & shadow for legibility' — it strokes the text with the contrasting colour (white on light text, dark on bright text) and adds a soft shadow, so the label stays visible on busy backgrounds. Colour alpha and overall opacity are separate sliders: use full alpha with lower opacity for a subtle look." },
+  ],
+
+  "image-filters": [
+    { q: "Which filters are available?", a: "Grayscale, sepia, invert, blur, brightness, contrast, and saturation — each with an intensity slider — plus pixelate, whose slider sets the pixel block size. Grayscale, sepia, invert and blur run from 0 upward; brightness, contrast and saturation sit at a neutral 100% and move either way." },
+    { q: "Is my image uploaded to a server?", a: "No. Filtering runs 100% in your browser using the Canvas API — your photo is decoded, processed, and re-encoded locally and is never uploaded or stored." },
+    { q: "What does 'Hold to compare' do?", a: "Press and hold the button (mouse, touch, or keyboard) to swap the preview back to the untouched original; release to return to the filtered version. It makes it easy to judge whether an intensity is too strong before downloading." },
+    { q: "Which output formats can I download?", a: "PNG, JPEG, or WebP. PNG is lossless and keeps transparency; JPEG and WebP are lossy and expose a quality slider (JPEG is composited onto white because it has no alpha channel). The preview renders at up to 1,000px on the longest side for speed — downloads always render at full original resolution." },
+    { q: "Why does part of my filter do nothing?", a: "Blur, brightness, contrast, saturation, grayscale, sepia and invert use the Canvas filter property, supported in Chrome, Edge, Firefox and Safari 16.4+. On older browsers the tool tells you those filters are skipped instead of silently ignoring them. Pixelate is implemented with plain canvas scaling and works everywhere." },
+  ],
 };

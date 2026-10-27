@@ -553,6 +553,30 @@ export const TOOLS: Tool[] = [
     category: "image",
     icon: "✒",
   },
+  {
+    slug: "barcode-generator",
+    name: "Barcode Generator",
+    shortName: "Barcode",
+    description: "Generate scannable Code 128 and EAN-13 barcodes from text or a 12/13-digit number — live preview, human-readable caption, PNG and SVG download. 100% in your browser.",
+    category: "image",
+    icon: "BAR",
+  },
+  {
+    slug: "image-watermark",
+    name: "Image Watermark",
+    shortName: "Watermark",
+    description: "Stamp text onto any photo — tiled diagonal or single placement with position presets, color, opacity and rotation. PNG, JPEG or WebP export, no upload.",
+    category: "image",
+    icon: "WM",
+  },
+  {
+    slug: "image-filters",
+    name: "Image Filters",
+    shortName: "Filters",
+    description: "Apply grayscale, sepia, invert, blur, pixelate, brightness, contrast and saturation — hold to compare, download at full resolution. Runs in your browser.",
+    category: "image",
+    icon: "FX",
+  },
 
   // ── Documents & text-to-image ──
   {

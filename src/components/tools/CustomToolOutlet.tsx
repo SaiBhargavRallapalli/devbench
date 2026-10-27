@@ -80,6 +80,9 @@ const RemoveImageMetadataTool = dynamic(() => import("@/components/tools/RemoveI
 const FaviconGeneratorTool    = dynamic(() => import("@/components/tools/FaviconGeneratorTool"), { ssr: false });
 const ImageCropTool           = dynamic(() => import("@/components/tools/ImageCropTool"), { ssr: false });
 const ImageRotateTool         = dynamic(() => import("@/components/tools/ImageRotateTool"), { ssr: false });
+const BarcodeGeneratorTool    = dynamic(() => import("@/components/tools/BarcodeGeneratorTool"), { ssr: false });
+const ImageWatermarkTool      = dynamic(() => import("@/components/tools/ImageWatermarkTool"), { ssr: false });
+const ImageFiltersTool        = dynamic(() => import("@/components/tools/ImageFiltersTool"), { ssr: false });
 
 export default function CustomToolOutlet({ slug, tool }: { slug: string; tool: Tool }) {
   if (FINANCE_TOOL_SLUGS.has(slug))  return <FinanceFormTools tool={tool} />;
@@ -153,6 +156,9 @@ export default function CustomToolOutlet({ slug, tool }: { slug: string; tool: T
     case "favicon-generator":        return <FaviconGeneratorTool tool={tool} />;
     case "image-crop":               return <ImageCropTool tool={tool} />;
     case "image-rotate":             return <ImageRotateTool tool={tool} />;
+    case "barcode-generator":        return <BarcodeGeneratorTool tool={tool} />;
+    case "image-watermark":          return <ImageWatermarkTool tool={tool} />;
+    case "image-filters":            return <ImageFiltersTool tool={tool} />;
     default:                         return null;
   }
 }

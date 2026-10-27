@@ -158,4 +158,28 @@ export const pageContentImage: Record<string, ToolPageContent> = {
     openingParagraph:
       "Pick a moment from a video, set how long it should loop, and export an animated GIF without leaving the browser. You control frame rate (5 to 20 FPS) and output width, and the clip is rendered locally with FFmpeg in WebAssembly — the source video is never uploaded, and the finished GIF is ready for docs, chats, and issue trackers.",
   },
+
+  "barcode-generator": {
+    title: "Barcode Generator — Code 128 & EAN-13 Online",
+    metaDescription:
+      "Make scannable Code 128 and EAN-13 barcodes online — live canvas preview, PNG and SVG download, checksum validation with one-click fix. 100% in your browser.",
+    openingParagraph:
+      "Generate scannable Code 128 (Subset B) and EAN-13 barcodes without installing anything — type your text or a 12/13-digit number and the barcode renders live on a canvas. The tool auto-detects numeric codes, validates the EAN-13 check digit with a one-click fix, and lets you toggle a human-readable caption plus scale and bar height. Download a crisp PNG or a scalable SVG — everything runs 100% in your browser.",
+  },
+
+  "image-watermark": {
+    title: "Image Watermark — Add a Text Watermark Online",
+    metaDescription:
+      "Watermark images online with your own text — tile diagonally or place once with position presets. Color, opacity, rotation, PNG/JPEG/WebP export. No upload.",
+    openingParagraph:
+      "Watermark photos entirely on your device — upload a PNG, JPEG or WebP, type your text, and stamp it once or tile it diagonally across the whole picture. Control font size, colour with alpha, overall opacity, rotation, and nine single-placement positions from center to corners. An outline and shadow toggle keeps text legible on busy backgrounds, and you export as PNG, JPEG or WebP with a quality slider for lossy formats.",
+  },
+
+  "image-filters": {
+    title: "Image Filters — Grayscale, Blur & More Online",
+    metaDescription:
+      "Apply grayscale, sepia, invert, blur, pixelate, brightness, contrast and saturation filters online — hold to compare, full-res download. 100% client-side.",
+    openingParagraph:
+      "Apply classic photo filters in your browser — grayscale, sepia, invert, blur, brightness, contrast, and saturation, each with an intensity slider, plus a pixelate effect for redacting details. Press and hold the compare button to flash the untouched original, reset everything in one click, and download a full-resolution PNG, JPEG, or WebP. The preview is capped for speed, but downloads always render at your image's original dimensions.",
+  },
 };

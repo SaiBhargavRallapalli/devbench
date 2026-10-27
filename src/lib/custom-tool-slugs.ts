@@ -101,4 +101,7 @@ export const CUSTOM_TOOL_SLUGS: ReadonlySet<string> = new Set([
   "signature-maker",
   "pdf-to-text",
   "text-to-handwriting",
+  "barcode-generator",
+  "image-watermark",
+  "image-filters",
 ]);
