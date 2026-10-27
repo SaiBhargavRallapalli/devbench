@@ -515,7 +515,7 @@ export default function YamlPage() {
                       <div className="text-xs text-muted-foreground mt-0.5">
                         {errCount > 0 && <span className="text-destructive">{errCount} error{errCount !== 1 ? "s" : ""}</span>}
                         {errCount > 0 && warnCount > 0 && <span> · </span>}
-                        {warnCount > 0 && <span className="text-amber-600 dark:text-amber-400">{warnCount} warning{warnCount !== 1 ? "s" : ""}</span>}
+                        {warnCount > 0 && <span className="text-amber-700 dark:text-amber-400">{warnCount} warning{warnCount !== 1 ? "s" : ""}</span>}
                         {errCount === 0 && warnCount === 0 && <span className="text-green-600 dark:text-green-400">No issues found</span>}
                       </div>
                     )}

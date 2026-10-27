@@ -160,7 +160,7 @@ export default function Footer() {
           <p className="text-xs text-muted-foreground">
             &copy; {new Date().getFullYear()} DevBench. All rights reserved.
           </p>
-          <p className="text-[11px] text-muted-foreground/90">
+          <p className="text-[11px] text-muted-foreground">
             Free forever ·{" "}
             <Link href="/privacy" className="underline-offset-2 hover:underline">
               Supported by ads

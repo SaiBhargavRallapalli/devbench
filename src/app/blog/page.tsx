@@ -40,11 +40,11 @@ const TAG_COLORS: Record<string, string> = {
   web:         "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400",
   urls:        "bg-teal-500/10 text-teal-600 dark:text-teal-400",
   json:        "bg-orange-500/10 text-orange-600 dark:text-orange-400",
-  debugging:   "bg-rose-500/10 text-rose-600 dark:text-rose-400",
+  debugging:   "bg-rose-500/10 text-rose-800 dark:text-rose-400",
   regex:       "bg-violet-500/10 text-violet-600 dark:text-violet-400",
   reference:   "bg-slate-500/10 text-slate-600 dark:text-slate-400",
-  encoding:    "bg-amber-500/10 text-amber-600 dark:text-amber-400",
-  yaml:        "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+  encoding:    "bg-amber-500/10 text-amber-800 dark:text-amber-400",
+  yaml:        "bg-emerald-500/10 text-emerald-800 dark:text-emerald-400",
   config:      "bg-stone-500/10 text-stone-600 dark:text-stone-400",
 };
 

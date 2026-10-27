@@ -218,7 +218,7 @@ export default function CodeRunnerTool({ tool }: { tool: Tool }) {
         </p>
 
         {usingFallback && (
-          <p className="text-xs text-amber-600 dark:text-amber-400" role="status">
+          <p className="text-xs text-amber-700 dark:text-amber-400" role="status">
             Couldn&apos;t load the full language list — showing a built-in
             selection. Runs may fail until the list is reachable again.
           </p>
@@ -400,7 +400,7 @@ export default function CodeRunnerTool({ tool }: { tool: Tool }) {
               <span
                 className={`inline-block rounded-full px-2 py-0.5 font-mono text-xs font-medium ${
                   result.exitCode === 0
-                    ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                    ? "bg-emerald-500/10 text-emerald-800 dark:text-emerald-400"
                     : "bg-red-500/10 text-red-600 dark:text-red-400"
                 }`}
               >

@@ -461,7 +461,7 @@ export default function UnicodeCheckerTool({ tool }: { tool: Tool }) {
                 >
                   <td className="px-3 py-2">
                     {c.isSuspicious ? (
-                      <span title={c.suspiciousReason ?? "Suspicious"} className="inline-flex items-center gap-1 text-amber-600 dark:text-amber-400">
+                      <span title={c.suspiciousReason ?? "Suspicious"} className="inline-flex items-center gap-1 text-amber-700 dark:text-amber-400">
                         <AlertTriangle className="w-3 h-3" />
                         <code className="text-xs bg-amber-100 dark:bg-amber-900/30 px-1 rounded font-mono">
                           {c.codepoint}

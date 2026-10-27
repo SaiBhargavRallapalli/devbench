@@ -10,7 +10,9 @@
   --card-foreground: #111111;
   --border: #e5e7eb;
   --muted: #f3f4f6;
-  --muted-foreground: #6b7280;
+  /* #626975: the old #6b7280 was 4.30–4.39:1 on --muted (#f3f4f6) and the
+     #f1f1f9 hover tint (WCAG AA needs 4.5 for small text). 4.92 worst case. */
+  --muted-foreground: #626975;
   /* #4f46e5 (indigo-600): white-on-accent = 6.3:1 (the old #6366f1 was 4.47,
      a marginal fail), and accent-as-text on white/accent-light now passes too. */
   --accent: #4f46e5;

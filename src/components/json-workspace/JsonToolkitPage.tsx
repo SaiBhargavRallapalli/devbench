@@ -1918,7 +1918,7 @@ export default function JsonToolkitPage({
               </div>
               {bracketOpenLC && bracketCloseLC && bracketOpenLC.line !== bracketCloseLC.line && (
                 <div className="shrink-0 border-t border-border bg-muted/30 px-3 py-1 text-[10px] font-mono text-muted-foreground flex items-center gap-1.5">
-                  <span className="text-sky-600/80 dark:text-sky-400/80">⌥</span>
+                  <span className="text-sky-700 dark:text-sky-400/80">⌥</span>
                   Block: lines {bracketOpenLC.line}–{bracketCloseLC.line}
                   <span className="text-muted-foreground/50">({bracketCloseLC.line - bracketOpenLC.line + 1} lines)</span>
                 </div>
@@ -2100,7 +2100,7 @@ export default function JsonToolkitPage({
               </div>
               {bracketOpenLC && bracketCloseLC && bracketOpenLC.line !== bracketCloseLC.line && (
                 <div className="shrink-0 border-t border-border bg-muted/30 px-3 py-1 text-[10px] font-mono text-muted-foreground flex items-center gap-1.5">
-                  <span className="text-sky-600/80 dark:text-sky-400/80">⌥</span>
+                  <span className="text-sky-700 dark:text-sky-400/80">⌥</span>
                   Block: lines {bracketOpenLC.line}–{bracketCloseLC.line}
                   <span className="text-muted-foreground/50">({bracketCloseLC.line - bracketOpenLC.line + 1} lines)</span>
                 </div>

@@ -394,7 +394,7 @@ export default function WebhookSimulatorPage() {
               <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
                 Webhook Payload Simulator
               </h1>
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[11px] font-medium">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-800 dark:text-emerald-400 text-[11px] font-medium">
                 <Shield className="w-3 h-3" aria-hidden="true" />
                 Secret stays in your browser
               </span>
@@ -1030,7 +1030,7 @@ function VerifyOutput({
             {result.valid ? (
               <>
                 <ShieldCheck className="w-5 h-5 text-emerald-500" aria-hidden="true" />
-                <span className="text-emerald-600 dark:text-emerald-400">Signature valid</span>
+                <span className="text-emerald-700 dark:text-emerald-400">Signature valid</span>
               </>
             ) : (
               <>

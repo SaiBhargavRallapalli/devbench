@@ -283,13 +283,13 @@ export default function WebSocketTesterTool({ tool }: { tool: Tool }) {
             <span
               className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 font-medium ${
                 conn === "open"
-                  ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                  ? "bg-emerald-500/10 text-emerald-800 dark:text-emerald-400"
                   : conn === "connecting"
-                    ? "bg-amber-500/10 text-amber-600 dark:text-amber-400"
+                    ? "bg-amber-500/10 text-amber-800 dark:text-amber-400"
                     : conn === "closing"
                       ? "bg-orange-500/10 text-orange-600 dark:text-orange-400"
                       : conn === "closed"
-                        ? "bg-rose-500/10 text-rose-600 dark:text-rose-400"
+                        ? "bg-rose-500/10 text-rose-800 dark:text-rose-400"
                         : "bg-muted text-muted-foreground"
               }`}
             >
@@ -391,7 +391,7 @@ export default function WebSocketTesterTool({ tool }: { tool: Tool }) {
                         {l.dir === "out" ? (
                           <span className="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400"><ArrowUpFromLine aria-hidden="true" className="h-3 w-3" /> SENT</span>
                         ) : l.dir === "in" ? (
-                          <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400"><ArrowDownToLine aria-hidden="true" className="h-3 w-3" /> RECV</span>
+                          <span className="inline-flex items-center gap-1 text-emerald-700 dark:text-emerald-400"><ArrowDownToLine aria-hidden="true" className="h-3 w-3" /> RECV</span>
                         ) : l.dir === "error" ? (
                           <span className="text-destructive">ERROR</span>
                         ) : (

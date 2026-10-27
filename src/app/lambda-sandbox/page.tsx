@@ -354,7 +354,7 @@ export default function LambdaSandboxPage() {
               <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
                 AWS Lambda Sandbox
               </h1>
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[11px] font-medium">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-800 dark:text-emerald-400 text-[11px] font-medium">
                 <Shield className="w-3 h-3" aria-hidden="true" />
                 Runs in your browser
               </span>
@@ -584,7 +584,7 @@ export default function LambdaSandboxPage() {
                     {result.ok ? (
                       <>
                         <CheckCircle2 className="w-4 h-4 text-emerald-500" aria-hidden="true" />
-                        <span className="text-emerald-600 dark:text-emerald-400">Success</span>
+                        <span className="text-emerald-700 dark:text-emerald-400">Success</span>
                       </>
                     ) : (
                       <>
@@ -739,7 +739,7 @@ function DetailsPanel({
   return (
     <dl className="px-3 py-2 text-[13px] font-mono grid grid-cols-[max-content_1fr] gap-x-4 gap-y-1.5">
       <dt className="text-muted-foreground">Status</dt>
-      <dd className={result.ok ? "text-emerald-600 dark:text-emerald-400" : "text-destructive"}>
+      <dd className={result.ok ? "text-emerald-700 dark:text-emerald-400" : "text-destructive"}>
         {result.ok ? "Succeeded" : "Failed"}
       </dd>
 

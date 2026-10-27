@@ -221,7 +221,7 @@ export default function ImageCompressorTool({ tool }: { tool: Tool }) {
                 {" "}
                 → compressed ~{(outBytes / 1024).toFixed(1)} KB
                 {saved !== null && (
-                  <span className="text-emerald-600 dark:text-emerald-400">
+                  <span className="text-emerald-700 dark:text-emerald-400">
                     {" "}
                     (~{saved}% smaller)
                   </span>

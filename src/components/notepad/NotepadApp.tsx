@@ -632,7 +632,7 @@ export default function NotepadApp({ mode = "workspace", tool }: NotepadAppProps
               <span>{np.encodingLabel(np.activeDoc.encoding)}</span>
               {np.activeDoc.readOnly && <span>RO</span>}
               {np.activeDoc.dirty && (
-                <span className="text-amber-600 dark:text-amber-400">Modified</span>
+                <span className="text-amber-700 dark:text-amber-400">Modified</span>
               )}
               {np.macroRecording && (
                 <span className="text-red-600 dark:text-red-400">REC</span>

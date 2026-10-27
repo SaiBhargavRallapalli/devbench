@@ -3,11 +3,11 @@ import type { LucideIcon } from "lucide-react";
 import { publicHrefForToolSlug } from "@/lib/devbench-workspaces";
 
 const categoryColors: Record<string, { bg: string; text: string; icon: string }> = {
-  json: { bg: "bg-amber-500/10", text: "text-amber-600", icon: "bg-amber-500/15" },
+  json: { bg: "bg-amber-500/10", text: "text-amber-800", icon: "bg-amber-500/15" },
   converter: { bg: "bg-blue-500/10", text: "text-blue-600", icon: "bg-blue-500/15" },
-  encoder: { bg: "bg-emerald-500/10", text: "text-emerald-600", icon: "bg-emerald-500/15" },
+  encoder: { bg: "bg-emerald-500/10", text: "text-emerald-800", icon: "bg-emerald-500/15" },
   generator: { bg: "bg-purple-500/10", text: "text-purple-600", icon: "bg-purple-500/15" },
-  formatter: { bg: "bg-rose-500/10", text: "text-rose-600", icon: "bg-rose-500/15" },
+  formatter: { bg: "bg-rose-500/10", text: "text-rose-800", icon: "bg-rose-500/15" },
   crypto: { bg: "bg-cyan-500/10", text: "text-cyan-600", icon: "bg-cyan-500/15" },
   text: { bg: "bg-orange-500/10", text: "text-orange-600", icon: "bg-orange-500/15" },
   web: { bg: "bg-indigo-500/10", text: "text-indigo-600", icon: "bg-indigo-500/15" },

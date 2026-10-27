@@ -547,7 +547,7 @@ export default function ExpenseSplitterTool({ tool }: { tool: Tool }) {
                           <p
                             className={`text-base font-bold tabular-nums ${
                               isPos
-                                ? "text-emerald-600 dark:text-emerald-400"
+                                ? "text-emerald-700 dark:text-emerald-400"
                                 : isNeg
                                 ? "text-red-600 dark:text-red-400"
                                 : "text-muted-foreground"

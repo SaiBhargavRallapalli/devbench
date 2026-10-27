@@ -128,7 +128,7 @@ export default function Header() {
               className="inline-flex items-center justify-center h-8 w-8 sm:w-auto sm:gap-1.5 sm:px-3 rounded-lg border border-border text-muted-foreground text-sm transition-colors hover:bg-muted hover:text-foreground"
             >
               <Search aria-hidden="true" className="h-4 w-4 shrink-0" />
-              <span className="hidden sm:inline">Search</span>
+              <span className="hidden sm:inline">Search</span>{" "}
               <kbd aria-label="keyboard shortcut Command K" className="hidden sm:inline text-[10px] font-mono text-muted-foreground">⌘K</kbd>
             </button>
 

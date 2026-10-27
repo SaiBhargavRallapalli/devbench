@@ -27,7 +27,7 @@ export default function FavoriteButton({
       type="button"
       onClick={() => setActive(toggleFavorite(slug))}
       className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-medium transition-colors hover:bg-muted ${
-        active ? "text-amber-600 dark:text-amber-400" : "text-muted-foreground hover:text-foreground"
+        active ? "text-amber-700 dark:text-amber-400" : "text-muted-foreground hover:text-foreground"
       } ${className}`}
       aria-pressed={active}
       title={

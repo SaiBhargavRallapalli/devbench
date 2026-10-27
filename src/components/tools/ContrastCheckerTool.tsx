@@ -392,7 +392,7 @@ function Grade({ label, ratio, passed }: { label: string; ratio: string; passed:
       </div>
       <span
         className={`inline-flex items-center gap-1 text-xs font-semibold ${
-          passed ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"
+          passed ? "text-emerald-700 dark:text-emerald-400" : "text-rose-700 dark:text-rose-400"
         }`}
       >
         {passed ? <Check aria-hidden="true" className="h-4 w-4" /> : <X aria-hidden="true" className="h-4 w-4" />}
