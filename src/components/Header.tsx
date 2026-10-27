@@ -124,7 +124,7 @@ export default function Header() {
             <button
               type="button"
               onClick={() => window.dispatchEvent(new Event("devbench:open-palette"))}
-              aria-label="Search tools — open command palette"
+              aria-label="Search ⌘K — open command palette"
               className="inline-flex items-center justify-center h-8 w-8 sm:w-auto sm:gap-1.5 sm:px-3 rounded-lg border border-border text-muted-foreground text-sm transition-colors hover:bg-muted hover:text-foreground"
             >
               <Search aria-hidden="true" className="h-4 w-4 shrink-0" />

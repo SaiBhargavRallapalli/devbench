@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Clock, Tag, ArrowRight, Wrench } from "lucide-react";
+import { Clock, Tag, ArrowRight, Wrench } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import Breadcrumbs from "@/components/Breadcrumbs";
 import AffiliateRecommendations from "@/components/AffiliateRecommendations";
 import JsonLd from "@/components/JsonLd";
 import AdSenseSlot from "@/components/ads/AdSenseSlot";
@@ -100,14 +101,14 @@ export default async function BlogPostPage({
       ])} />
       <main className="flex-1">
         <article className="max-w-3xl mx-auto px-4 py-10 sm:py-16">
-          {/* Back link */}
-          <Link
-            href="/blog"
-            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-8 transition-colors"
-          >
-            <ArrowLeft className="h-3.5 w-3.5" />
-            All articles
-          </Link>
+          {/* Visual breadcrumb — mirrors the BreadcrumbList JSON-LD above */}
+          <Breadcrumbs
+            items={[
+              { label: "Blog", href: "/blog" },
+              { label: post.title },
+            ]}
+            className="mb-8"
+          />
 
           {/* Tags */}
           <div className="flex flex-wrap gap-1.5 mb-4">

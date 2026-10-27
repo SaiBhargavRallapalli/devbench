@@ -16,7 +16,7 @@ const DEVBENCH_APPS = [
   { name: "Form 16", href: "https://form16.devbench.co.in", initial: "F", color: "bg-orange-500" },
   { name: "ITR", href: "https://itr.devbench.co.in", initial: "I", color: "bg-blue-500" },
   { name: "Resume", href: "https://resume.devbench.co.in", initial: "R", color: "bg-purple-500" },
-  { name: "Receipts", href: "https://receipts.devbench.co.in", initial: "Rc", color: "bg-rose-500" },
+  { name: "Receipts", href: "https://receipts.devbench.co.in", initial: "Rc", color: "bg-rose-600" },
 ];
 
 function SaveButton({ tool }: { tool: Tool }) {

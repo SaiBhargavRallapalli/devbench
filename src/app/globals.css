@@ -11,13 +11,15 @@
   --border: #e5e7eb;
   --muted: #f3f4f6;
   --muted-foreground: #6b7280;
-  --accent: #6366f1;
+  /* #4f46e5 (indigo-600): white-on-accent = 6.3:1 (the old #6366f1 was 4.47,
+     a marginal fail), and accent-as-text on white/accent-light now passes too. */
+  --accent: #4f46e5;
   --accent-foreground: #ffffff;
   --accent-light: #eef2ff;
   --destructive: #ef4444;
   --success: #22c55e;
   --warning: #f59e0b;
-  --ring: #6366f1;
+  --ring: #4f46e5;
   --radius: 0.75rem;
 }
 
@@ -30,7 +32,9 @@
   --muted: #18181b;
   --muted-foreground: #a1a1aa;
   --accent: #818cf8;
-  --accent-foreground: #ffffff;
+  /* Dark ink (indigo-950) on the light indigo: white on #818cf8 was 2.98:1
+     (axe failure). #1e1b4b on #818cf8 = 5.4:1; /90 alpha variants stay ≥4.5. */
+  --accent-foreground: #1e1b4b;
   --accent-light: #1e1b4b;
   --destructive: #ef4444;
   --success: #22c55e;
@@ -48,7 +52,7 @@
     --muted: #18181b;
     --muted-foreground: #a1a1aa;
     --accent: #818cf8;
-    --accent-foreground: #ffffff;
+    --accent-foreground: #1e1b4b;
     --accent-light: #1e1b4b;
     --destructive: #ef4444;
     --success: #22c55e;
@@ -88,7 +92,9 @@ body {
 
 ::selection {
   background-color: var(--accent);
-  color: white;
+  /* var, not white: in dark mode the accent is light indigo, so the selection
+     text must flip to the dark ink to stay readable (and vice versa). */
+  color: var(--accent-foreground);
 }
 
 .scrollbar-none {

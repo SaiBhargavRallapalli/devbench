@@ -509,11 +509,11 @@ function ToolSearchInner({ tools }: { tools: Tool[] }) {
             >
               <span className="text-sm font-semibold leading-tight">
                 {allLabel.headline}
-                <span className="font-normal opacity-80"> ({categoryCounts.all})</span>
+                <span className="font-normal opacity-90"> ({categoryCounts.all})</span>
               </span>
               <span
                 className={`text-[11px] leading-tight ${
-                  activeCategory === "all" ? "text-accent-foreground/85" : "text-muted-foreground"
+                  activeCategory === "all" ? "text-accent-foreground/90" : "text-muted-foreground"
                 }`}
               >
                 {allLabel.benefit}
@@ -540,11 +540,11 @@ function ToolSearchInner({ tools }: { tools: Tool[] }) {
                   <span className="flex flex-col gap-0.5 min-w-0">
                     <span className="text-sm font-semibold leading-tight">
                       {cta.headline}
-                      <span className="font-normal opacity-80"> ({count})</span>
+                      <span className="font-normal opacity-90"> ({count})</span>
                     </span>
                     <span
                       className={`text-[11px] leading-tight ${
-                        active ? "text-accent-foreground/85" : "text-muted-foreground"
+                        active ? "text-accent-foreground/90" : "text-muted-foreground"
                       }`}
                     >
                       {cta.benefit}

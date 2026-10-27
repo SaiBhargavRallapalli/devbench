@@ -20,14 +20,16 @@ const CSP = [
   // CSP, so they need 'unsafe-eval' here. The isolation guarantee comes from
   // the Worker/iframe having no DOM/cookie/storage access (see each file), not
   // from CSP. 'wasm-unsafe-eval' is kept separate for the Pyodide/ONNX WASM runtimes.
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' https://cdn.jsdelivr.net https://www.googletagmanager.com https://*.googletagmanager.com https://pagead2.googlesyndication.com https://*.googlesyndication.com https://*.google.com https://*.google https://*.gstatic.com https://*.doubleclick.net https://va.vercel-scripts.com https://*.vercel-insights.com https://fundingchoicesmessages.google.com",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' https://cdn.jsdelivr.net https://www.googletagmanager.com https://*.googletagmanager.com https://pagead2.googlesyndication.com https://*.googlesyndication.com https://*.google.com https://*.google https://*.gstatic.com https://*.doubleclick.net https://va.vercel-scripts.com https://*.vercel-insights.com https://fundingchoicesmessages.google.com https://static.cloudflareinsights.com",
   "style-src 'self' 'unsafe-inline' https://*.gstatic.com https://cdn.jsdelivr.net",
   "img-src 'self' data: blob: https:",
   "font-src 'self' data: https://*.gstatic.com https://cdn.jsdelivr.net",
   // Tool APIs: Cloudflare DoH, ipapi/ipify, npm registry, Frankfurter FX.
   // ws:/wss: — WebSocket tester connects to user-entered endpoints.
   // AdSense: googlesyndication + doubleclick + fundingchoices for consent / ad fetch.
-  "connect-src 'self' https://cdn.jsdelivr.net https://esm.sh https://pypi.org https://files.pythonhosted.org https://*.google.com https://*.google https://*.googletagmanager.com https://*.doubleclick.net https://*.googlesyndication.com https://va.vercel-scripts.com https://*.vercel-insights.com https://fundingchoicesmessages.google.com https://cloudflare-dns.com https://ipapi.co https://api.ipify.org https://registry.npmjs.org https://api.npmjs.org https://api.frankfurter.app ws: wss:",
+  // Cloudflare beacon (static.cloudflareinsights.com) is injected at Cloudflare's
+  // edge, not present in source — without this origin the console logs a CSP error.
+  "connect-src 'self' https://cdn.jsdelivr.net https://esm.sh https://pypi.org https://files.pythonhosted.org https://*.google.com https://*.google https://*.googletagmanager.com https://*.doubleclick.net https://*.googlesyndication.com https://va.vercel-scripts.com https://*.vercel-insights.com https://fundingchoicesmessages.google.com https://cloudflare-dns.com https://ipapi.co https://api.ipify.org https://registry.npmjs.org https://api.npmjs.org https://api.frankfurter.app https://static.cloudflareinsights.com ws: wss:",
   "worker-src 'self' blob: https://cdn.jsdelivr.net",
   "frame-src 'self' https://www.googletagmanager.com https://*.doubleclick.net https://*.google.com https://*.google https://googleads.g.doubleclick.net https://fundingchoicesmessages.google.com",
   "frame-ancestors 'none'",
