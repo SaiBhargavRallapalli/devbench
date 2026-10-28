@@ -817,13 +817,13 @@ export default function RegexTesterTool({ tool }: { tool: Tool }) {
               {activeSection === "substitution" && (
                 <div className="p-4 space-y-3">
                   <div>
-                    <label className="block text-xs font-semibold text-muted-foreground mb-1.5 uppercase tracking-wide">
+                    <label htmlFor="regex-tester-tool-l820" className="block text-xs font-semibold text-muted-foreground mb-1.5 uppercase tracking-wide">
                       Replace with
                       <span className="ml-2 font-normal normal-case text-muted-foreground">
                         ($& = full match · $1 $2 … = groups · $&lt;name&gt; = named group)
                       </span>
                     </label>
-                    <input
+                    <input id="regex-tester-tool-l820"
                       type="text"
                       value={replacement}
                       onChange={(e) => setReplacement(e.target.value)}

@@ -75,8 +75,8 @@ export default function CurrencyConverterTool({ tool }: { tool: Tool }) {
       <div className="animate-slide-up space-y-6 rounded-2xl border border-border bg-card p-6">
         <div className="grid gap-4 sm:grid-cols-3">
           <div>
-            <label className="mb-2 block text-sm font-medium">Amount</label>
-            <input
+            <label htmlFor="currency-converter-tool-l78" className="mb-2 block text-sm font-medium">Amount</label>
+            <input id="currency-converter-tool-l78"
               type="number"
               min={0}
               step={0.01}
@@ -86,8 +86,8 @@ export default function CurrencyConverterTool({ tool }: { tool: Tool }) {
             />
           </div>
           <div>
-            <label className="mb-2 block text-sm font-medium">From</label>
-            <select
+            <label htmlFor="currency-converter-tool-l89" className="mb-2 block text-sm font-medium">From</label>
+            <select id="currency-converter-tool-l89"
               value={from}
               onChange={(e) => setFrom(e.target.value)}
               className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm"
@@ -100,8 +100,8 @@ export default function CurrencyConverterTool({ tool }: { tool: Tool }) {
             </select>
           </div>
           <div>
-            <label className="mb-2 block text-sm font-medium">To</label>
-            <select
+            <label htmlFor="currency-converter-tool-l103" className="mb-2 block text-sm font-medium">To</label>
+            <select id="currency-converter-tool-l103"
               value={to}
               onChange={(e) => setTo(e.target.value)}
               className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm"

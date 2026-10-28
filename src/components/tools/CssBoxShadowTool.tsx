@@ -44,8 +44,8 @@ function SliderRow({
 }) {
   return (
     <div className="grid grid-cols-[90px_1fr_52px] items-center gap-3">
-      <label className="text-xs text-muted-foreground">{label}</label>
-      <input
+      <label htmlFor="css-box-shadow-tool-l47" className="text-xs text-muted-foreground">{label}</label>
+      <input id="css-box-shadow-tool-l47"
         type="range" min={min} max={max} step={step} value={value}
         onChange={(e) => onChange(Number(e.target.value))}
         className="w-full accent-accent"
@@ -168,13 +168,13 @@ export default function CssBoxShadowTool({ tool }: { tool: Tool }) {
               </p>
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid grid-cols-[60px_1fr] items-center gap-2">
-                  <label className="text-xs text-muted-foreground">Background</label>
-                  <input type="color" value={bgColor} onChange={(e) => setBgColor(e.target.value)}
+                  <label htmlFor="css-box-shadow-tool-l171" className="text-xs text-muted-foreground">Background</label>
+                  <input id="css-box-shadow-tool-l171" type="color" value={bgColor} onChange={(e) => setBgColor(e.target.value)}
                     className="w-full h-8 rounded-md border border-border cursor-pointer bg-transparent p-0.5" />
                 </div>
                 <div className="grid grid-cols-[40px_1fr] items-center gap-2">
-                  <label className="text-xs text-muted-foreground">Box</label>
-                  <input type="color" value={boxColor} onChange={(e) => setBoxColor(e.target.value)}
+                  <label htmlFor="css-box-shadow-tool-l176" className="text-xs text-muted-foreground">Box</label>
+                  <input id="css-box-shadow-tool-l176" type="color" value={boxColor} onChange={(e) => setBoxColor(e.target.value)}
                     className="w-full h-8 rounded-md border border-border cursor-pointer bg-transparent p-0.5" />
                 </div>
               </div>

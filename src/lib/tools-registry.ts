@@ -33,7 +33,7 @@ export const CATEGORIES: Record<
   dev: { label: "Dev", color: "bg-amber-500/10 text-amber-800 dark:text-amber-400" },
   image: { label: "Image", color: "bg-rose-500/10 text-rose-800 dark:text-rose-400" },
   pdf: { label: "PDF", color: "bg-orange-500/10 text-orange-800 dark:text-orange-300" },
-  conversion: { label: "Conversion", color: "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400" },
+  conversion: { label: "Conversion", color: "bg-cyan-500/10 text-cyan-800 dark:text-cyan-400" },
   finance: { label: "Finance", color: "bg-green-500/10 text-green-700 dark:text-green-400" },
   health: { label: "Health", color: "bg-red-500/10 text-red-600 dark:text-red-400" },
   math: { label: "Math", color: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400" },

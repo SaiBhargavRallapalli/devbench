@@ -37,7 +37,7 @@ const TAG_COLORS: Record<string, string> = {
   auth:        "bg-purple-500/10 text-purple-600 dark:text-purple-400",
   security:    "bg-red-500/10 text-red-600 dark:text-red-400",
   jwt:         "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400",
-  web:         "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400",
+  web:         "bg-cyan-500/10 text-cyan-800 dark:text-cyan-400",
   urls:        "bg-teal-500/10 text-teal-600 dark:text-teal-400",
   json:        "bg-orange-500/10 text-orange-600 dark:text-orange-400",
   debugging:   "bg-rose-500/10 text-rose-800 dark:text-rose-400",
@@ -66,7 +66,7 @@ export default function BlogPage() {
   return (
     <>
       <Header />
-      <main className="flex-1">
+      <main id="main" className="flex-1">
         {/* Hero */}
         <section className="border-b border-border bg-muted/20">
           <div className="max-w-4xl mx-auto px-4 py-14 sm:py-20">

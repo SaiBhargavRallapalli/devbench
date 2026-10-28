@@ -350,8 +350,8 @@ export default function UnicodeCheckerTool({ tool }: { tool: Tool }) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Input */}
         <div className="flex flex-col gap-2">
-          <label className="text-sm font-medium">Input text</label>
-          <textarea
+          <label htmlFor="unicode-checker-tool-l353" className="text-sm font-medium">Input text</label>
+          <textarea id="unicode-checker-tool-l353"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Paste or type any text…"

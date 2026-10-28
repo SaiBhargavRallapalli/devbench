@@ -29,8 +29,8 @@ export default function GradientGeneratorTool({ tool }: { tool: Tool }) {
       <div className="animate-slide-up space-y-6 rounded-2xl border border-border bg-card p-6">
         <div className="grid gap-4 sm:grid-cols-3">
           <div className="sm:col-span-3">
-            <label className="mb-2 block text-sm font-medium">Angle ({angle}°)</label>
-            <input
+            <label htmlFor="gradient-generator-tool-l32" className="mb-2 block text-sm font-medium">Angle ({angle}°)</label>
+            <input id="gradient-generator-tool-l32"
               type="range"
               min={0}
               max={360}

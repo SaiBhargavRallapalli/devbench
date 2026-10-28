@@ -162,10 +162,10 @@ export default function EnvValidatorTool({ tool }: { tool: Tool }) {
       <div className="animate-slide-up space-y-6 rounded-2xl border border-border bg-card p-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-foreground">
+            <label htmlFor="env-validator-tool-l165" className="text-sm font-medium text-foreground">
               Paste your .env contents
             </label>
-            <textarea
+            <textarea id="env-validator-tool-l165"
               className="w-full font-mono text-sm p-4 rounded-xl border border-border bg-card min-h-[350px] resize-none focus:outline-none focus:ring-2 focus:ring-ring/40"
               placeholder={SAMPLE_ENV}
               value={input}

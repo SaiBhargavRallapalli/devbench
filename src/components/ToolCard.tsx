@@ -8,7 +8,7 @@ const categoryColors: Record<string, { bg: string; text: string; icon: string }>
   encoder: { bg: "bg-emerald-500/10", text: "text-emerald-800", icon: "bg-emerald-500/15" },
   generator: { bg: "bg-purple-500/10", text: "text-purple-600", icon: "bg-purple-500/15" },
   formatter: { bg: "bg-rose-500/10", text: "text-rose-800", icon: "bg-rose-500/15" },
-  crypto: { bg: "bg-cyan-500/10", text: "text-cyan-600", icon: "bg-cyan-500/15" },
+  crypto: { bg: "bg-cyan-500/10", text: "text-cyan-800", icon: "bg-cyan-500/15" },
   text: { bg: "bg-orange-500/10", text: "text-orange-600", icon: "bg-orange-500/15" },
   web: { bg: "bg-indigo-500/10", text: "text-indigo-600", icon: "bg-indigo-500/15" },
 };

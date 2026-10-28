@@ -219,8 +219,8 @@ export default function DnsLookupTool({ tool }: { tool: Tool }) {
         <div className="space-y-4">
           <div className="flex gap-3 items-end flex-wrap">
             <div className="flex flex-col gap-1.5 flex-1 min-w-[200px]">
-              <label className="text-xs font-medium text-muted-foreground">Domain</label>
-              <input
+              <label htmlFor="dns-lookup-tool-l222" className="text-xs font-medium text-muted-foreground">Domain</label>
+              <input id="dns-lookup-tool-l222"
                 type="text"
                 value={domain}
                 onChange={(e) => setDomain(e.target.value)}
@@ -230,8 +230,8 @@ export default function DnsLookupTool({ tool }: { tool: Tool }) {
               />
             </div>
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-medium text-muted-foreground">Record type</label>
-              <select
+              <label htmlFor="dns-lookup-tool-l233" className="text-xs font-medium text-muted-foreground">Record type</label>
+              <select id="dns-lookup-tool-l233"
                 value={recordType}
                 onChange={(e) => setRecordType(e.target.value as RecordType)}
                 className="px-4 py-2.5 rounded-xl border border-border bg-card text-sm focus:outline-none focus:ring-2 focus:ring-ring/40"

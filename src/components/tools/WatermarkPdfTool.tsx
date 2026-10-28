@@ -107,8 +107,8 @@ export default function WatermarkPdfTool({ tool }: { tool: Tool }) {
         {pages > 0 && (
           <>
             <div className="space-y-3">
-              <label className="block text-sm font-medium">Watermark text</label>
-              <input
+              <label htmlFor="watermark-pdf-tool-l110" className="block text-sm font-medium">Watermark text</label>
+              <input id="watermark-pdf-tool-l110"
                 type="text"
                 value={text}
                 onChange={(e) => setText(e.target.value)}

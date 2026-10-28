@@ -114,10 +114,10 @@ export default function XmlSuiteTool({ tool }: { tool: Tool }) {
 
       {(mode === "xpath" || mode === "search") && (
         <div className="mb-4">
-          <label className="mb-1 block text-sm font-medium">
+          <label htmlFor="xml-suite-tool-l117" className="mb-1 block text-sm font-medium">
             {mode === "xpath" ? "XPath expression" : "Search string"}
           </label>
-          <input
+          <input id="xml-suite-tool-l117"
             value={extra}
             onChange={(e) => setExtra(e.target.value)}
             placeholder={
@@ -131,8 +131,8 @@ export default function XmlSuiteTool({ tool }: { tool: Tool }) {
 
       <div className="grid animate-slide-up gap-4 lg:grid-cols-2">
         <div className="flex flex-col">
-          <label className="mb-2 text-sm font-medium">{tool.inputLabel || "XML"}</label>
-          <textarea
+          <label htmlFor="xml-suite-tool-l134" className="mb-2 text-sm font-medium">{tool.inputLabel || "XML"}</label>
+          <textarea id="xml-suite-tool-l134"
             value={xml}
             onChange={(e) => setXml(e.target.value)}
             placeholder="Paste XML here…"

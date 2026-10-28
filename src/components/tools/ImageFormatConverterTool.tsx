@@ -442,10 +442,10 @@ export default function ImageFormatConverterTool({ tool }: { tool: Tool }) {
                 {/* Quality / trace detail — hidden for PNG output */}
                 {outFormat !== "image/png" && (
                   <div className="space-y-1.5 flex-1 min-w-[200px]">
-                    <label className="text-xs text-muted-foreground font-medium">
+                    <label htmlFor="image-format-converter-tool-l445" className="text-xs text-muted-foreground font-medium">
                       {outFormat === "image/svg+xml" ? "Trace detail" : "Quality"} — {quality}%
                     </label>
-                    <input
+                    <input id="image-format-converter-tool-l445"
                       type="range"
                       min={10}
                       max={100}

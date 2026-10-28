@@ -187,8 +187,8 @@ export default function ImageCompressorTool({ tool }: { tool: Tool }) {
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <label className="mb-2 block text-sm font-medium">Output format</label>
-            <select
+            <label htmlFor="image-compressor-tool-l190" className="mb-2 block text-sm font-medium">Output format</label>
+            <select id="image-compressor-tool-l190"
               value={format}
               onChange={(e) => setFormat(e.target.value as ImgFmt)}
               className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm"
@@ -198,10 +198,10 @@ export default function ImageCompressorTool({ tool }: { tool: Tool }) {
             </select>
           </div>
           <div>
-            <label className="mb-2 block text-sm font-medium">
+            <label htmlFor="image-compressor-tool-l201" className="mb-2 block text-sm font-medium">
               Quality ({Math.round(quality * 100)}%)
             </label>
-            <input
+            <input id="image-compressor-tool-l201"
               type="range"
               min={0.4}
               max={0.95}

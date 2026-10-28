@@ -18,6 +18,10 @@ function Section({
   return (
     <section
       id={id}
+      /* aria-label: this section renders OUTSIDE the tool page's <main> (it lives
+         in the route layout), so without a name it isn't a landmark and axe's
+         region rule flags it. A named <section> maps to role=region. */
+      aria-label="Tool guide"
       className="max-w-6xl mx-auto px-4 pb-4 w-full border-t border-border pt-8 mt-2 space-y-3 scroll-mt-24"
     >
       {children}

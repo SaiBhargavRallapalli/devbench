@@ -65,10 +65,11 @@ export default function UuidGeneratorTool({ tool }: { tool: Tool }) {
         {/* Controls */}
         <div className="flex flex-wrap gap-4 p-5 rounded-xl border border-border bg-card">
           <div>
-            <label className="block text-xs font-medium text-muted-foreground mb-1.5">
+            <label htmlFor="uuid-id-type" className="block text-xs font-medium text-muted-foreground mb-1.5">
               ID Type
             </label>
             <select
+              id="uuid-id-type"
               value={idType}
               onChange={(e) => setIdType(e.target.value as IdType)}
               className="px-3 py-2 text-sm rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-ring/40"
@@ -80,10 +81,11 @@ export default function UuidGeneratorTool({ tool }: { tool: Tool }) {
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-muted-foreground mb-1.5">
+            <label htmlFor="uuid-count" className="block text-xs font-medium text-muted-foreground mb-1.5">
               Count
             </label>
             <input
+              id="uuid-count"
               type="number"
               min={1}
               max={25}
@@ -97,10 +99,11 @@ export default function UuidGeneratorTool({ tool }: { tool: Tool }) {
 
           {idType === "nanoid" && (
             <div>
-              <label className="block text-xs font-medium text-muted-foreground mb-1.5">
+              <label htmlFor="uuid-nano-length" className="block text-xs font-medium text-muted-foreground mb-1.5">
                 Length
               </label>
               <input
+                id="uuid-nano-length"
                 type="number"
                 min={4}
                 max={64}

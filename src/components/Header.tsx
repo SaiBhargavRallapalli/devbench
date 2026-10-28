@@ -128,8 +128,14 @@ export default function Header() {
               className="inline-flex items-center justify-center h-8 w-8 sm:w-auto sm:gap-1.5 sm:px-3 rounded-lg border border-border text-muted-foreground text-sm transition-colors hover:bg-muted hover:text-foreground"
             >
               <Search aria-hidden="true" className="h-4 w-4 shrink-0" />
-              <span className="hidden sm:inline">Search</span>{" "}
-              <kbd aria-label="keyboard shortcut Command K" className="hidden sm:inline text-[10px] font-mono text-muted-foreground">⌘K</kbd>
+              {/* kbd lives INSIDE the span: as a sibling, the {" "} between span
+                  and kbd is a whitespace-only flex item, which browsers don't
+                  render — visible text became "Search⌘K" and failed axe's
+                  label-content-name-mismatch against the aria-label. */}
+              <span className="hidden sm:inline">
+                Search{" "}
+                <kbd aria-label="keyboard shortcut Command K" className="text-[10px] font-mono text-muted-foreground">⌘K</kbd>
+              </span>
             </button>
 
             {/* Side nav toggle */}

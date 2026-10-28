@@ -225,10 +225,10 @@ export default function Base64ImageTool({ tool }: { tool: Tool }) {
         {tab === "decode" && (
           <div className="space-y-5">
             <div>
-              <label className="block text-sm font-medium mb-2">
+              <label htmlFor="base64-image-tool-l228" className="block text-sm font-medium mb-2">
                 Paste Base64 string or data URI
               </label>
-              <textarea
+              <textarea id="base64-image-tool-l228"
                 value={decodeInput}
                 onChange={(e) => {
                   setDecodeInput(e.target.value);

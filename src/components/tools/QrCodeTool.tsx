@@ -74,8 +74,8 @@ function GenerateTab() {
   return (
     <div className="space-y-6">
       <div>
-        <label className="mb-2 block text-sm font-medium">Content (URL or text)</label>
-        <textarea
+        <label htmlFor="qr-code-tool-l77" className="mb-2 block text-sm font-medium">Content (URL or text)</label>
+        <textarea id="qr-code-tool-l77"
           value={text}
           onChange={(e) => setText(e.target.value)}
           rows={4}

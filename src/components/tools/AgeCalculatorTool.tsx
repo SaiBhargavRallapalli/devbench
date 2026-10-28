@@ -62,8 +62,8 @@ export default function AgeCalculatorTool({ tool }: { tool: Tool }) {
       <ToolPageHero tool={tool} />
       <div className="animate-slide-up space-y-6 rounded-2xl border border-border bg-card p-6">
         <div className="max-w-xs">
-          <label className="mb-2 block text-sm font-medium">Birth date</label>
-          <input
+          <label htmlFor="age-calculator-tool-l65" className="mb-2 block text-sm font-medium">Birth date</label>
+          <input id="age-calculator-tool-l65"
             type="date"
             value={birth}
             onChange={(e) => setBirth(e.target.value)}

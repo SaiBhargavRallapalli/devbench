@@ -246,8 +246,8 @@ export default function ExpenseSplitterTool({ tool }: { tool: Tool }) {
 
       {/* Currency selector */}
       <div className="mb-4 flex items-center gap-2">
-        <label className="text-sm font-medium">Currency:</label>
-        <select
+        <label htmlFor="expense-splitter-tool-l249" className="text-sm font-medium">Currency:</label>
+        <select id="expense-splitter-tool-l249"
           value={currency}
           onChange={(e) => setCurrency(e.target.value)}
           className={inp}
@@ -355,8 +355,8 @@ export default function ExpenseSplitterTool({ tool }: { tool: Tool }) {
                   </p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-xs font-medium mb-1">Description</label>
-                      <input
+                      <label htmlFor="expense-splitter-tool-l358" className="block text-xs font-medium mb-1">Description</label>
+                      <input id="expense-splitter-tool-l358"
                         type="text"
                         value={expDesc}
                         onChange={(e) => setExpDesc(e.target.value)}
@@ -366,10 +366,10 @@ export default function ExpenseSplitterTool({ tool }: { tool: Tool }) {
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium mb-1">
+                      <label htmlFor="expense-splitter-tool-l369" className="block text-xs font-medium mb-1">
                         Amount ({sym})
                       </label>
-                      <input
+                      <input id="expense-splitter-tool-l369"
                         type="number"
                         min="0.01"
                         step="0.01"
@@ -382,8 +382,8 @@ export default function ExpenseSplitterTool({ tool }: { tool: Tool }) {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium mb-1">Paid by</label>
-                    <select
+                    <label htmlFor="expense-splitter-tool-l385" className="block text-xs font-medium mb-1">Paid by</label>
+                    <select id="expense-splitter-tool-l385"
                       value={expPaidBy}
                       onChange={(e) => setExpPaidBy(e.target.value)}
                       className={`${inp} w-full`}
@@ -596,7 +596,7 @@ export default function ExpenseSplitterTool({ tool }: { tool: Tool }) {
                           </div>
                           <div className="flex items-center gap-1.5">
                             <ArrowRight className="w-3.5 h-3.5 text-muted-foreground" />
-                            <div className="w-6 h-6 rounded-full bg-emerald-500/10 flex items-center justify-center text-[10px] font-bold text-emerald-600 dark:text-emerald-400 shrink-0">
+                            <div className="w-6 h-6 rounded-full bg-emerald-500/10 flex items-center justify-center text-[10px] font-bold text-emerald-800 dark:text-emerald-400 shrink-0">
                               {s.to[0].toUpperCase()}
                             </div>
                             <span className="text-sm font-medium">{s.to}</span>

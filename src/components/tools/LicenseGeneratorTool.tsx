@@ -148,8 +148,8 @@ export default function LicenseGeneratorTool({ tool }: { tool: Tool }) {
       <div className="animate-slide-up space-y-6 rounded-2xl border border-border bg-card p-6">
         <div className="space-y-4">
           <div>
-            <label className="text-sm font-medium mb-1 block">License type</label>
-            <select
+            <label htmlFor="license-generator-tool-l151" className="text-sm font-medium mb-1 block">License type</label>
+            <select id="license-generator-tool-l151"
               value={licenseId}
               onChange={(e) => setLicenseId(e.target.value as LicenseId)}
               className="px-3 py-2 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring/40 w-full"
@@ -165,8 +165,8 @@ export default function LicenseGeneratorTool({ tool }: { tool: Tool }) {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="text-sm font-medium mb-1 block">Year</label>
-              <input
+              <label htmlFor="license-generator-tool-l168" className="text-sm font-medium mb-1 block">Year</label>
+              <input id="license-generator-tool-l168"
                 type="number"
                 value={year}
                 onChange={(e) => setYear(e.target.value)}
@@ -174,8 +174,8 @@ export default function LicenseGeneratorTool({ tool }: { tool: Tool }) {
               />
             </div>
             <div>
-              <label className="text-sm font-medium mb-1 block">Author / Organization</label>
-              <input
+              <label htmlFor="license-generator-tool-l177" className="text-sm font-medium mb-1 block">Author / Organization</label>
+              <input id="license-generator-tool-l177"
                 type="text"
                 value={author}
                 onChange={(e) => setAuthor(e.target.value)}
@@ -185,8 +185,8 @@ export default function LicenseGeneratorTool({ tool }: { tool: Tool }) {
             </div>
             {meta.usesProject && (
               <div className="sm:col-span-2">
-                <label className="text-sm font-medium mb-1 block">Project name</label>
-                <input
+                <label htmlFor="license-generator-tool-l188" className="text-sm font-medium mb-1 block">Project name</label>
+                <input id="license-generator-tool-l188"
                   type="text"
                   value={project}
                   onChange={(e) => setProject(e.target.value)}
