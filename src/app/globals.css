@@ -151,3 +151,23 @@ body {
 .animate-slide-up {
   animation: slide-up 0.4s ease-out;
 }
+
+/* Motion accessibility (WCAG 2.3.3 / user preference): collapse decorative
+   animation and transitions to ~0 when the OS asks for reduced motion.
+   Spinners are exempt — a frozen spinner reads as a hung app, and they
+   convey essential loading state. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .animate-spin {
+    animation-duration: 1s !important;
+    animation-iteration-count: infinite !important;
+  }
+}
