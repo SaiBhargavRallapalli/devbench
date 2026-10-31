@@ -5,6 +5,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { Sun, Moon, Menu, X, Search, Wrench, LayoutGrid } from "lucide-react";
 import DevBenchMark from "@/components/DevBenchMark";
+import CmdKHint from "@/components/CmdKHint";
 import { useExternalNavOrigin } from "@/hooks/use-external-nav-origin";
 import { useFocusTrap } from "@/hooks/use-focus-trap";
 import { resolveToolHref } from "@/lib/site-config";
@@ -137,6 +138,9 @@ export default function Header() {
                 <kbd aria-label="keyboard shortcut Command K" className="text-[10px] font-mono text-muted-foreground">⌘K</kbd>
               </span>
             </button>
+
+            {/* One-time ⌘K discoverability hint; anchors below the sticky header */}
+            <CmdKHint />
 
             {/* Side nav toggle */}
             <button
