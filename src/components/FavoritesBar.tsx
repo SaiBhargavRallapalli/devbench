@@ -24,7 +24,9 @@ export default function FavoritesBar() {
   if (!favSlugs.length && !history.length) return null;
 
   return (
-    <section className="border-b border-border bg-muted/30">
+    // Named section = region landmark; without a name, axe's `region` rule
+    // flags the shortcuts/recent links as content outside all landmarks.
+    <section aria-label="Shortcuts and recently used tools" className="border-b border-border bg-muted/30">
       <div className="mx-auto max-w-6xl px-4 py-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
         {favSlugs.length > 0 && (
           <div className="flex items-center gap-1.5 flex-wrap">
