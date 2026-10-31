@@ -132,6 +132,8 @@ import type {
 const TOOL_SLUG = "json";
 
 import type { JsonWorkspaceTab as Tab } from "@/lib/json-workspace-types";
+import { copyWithFeedback } from "@/lib/clipboard";
+import { notify } from "@/lib/notify";
 
 export type JsonToolkitPageProps = {
   initialTab?: Tab;
@@ -558,10 +560,11 @@ export default function JsonToolkitPage({
       ).join("");
     }
     if (!text || text === "$" || text === "/") text = format === "pointer" ? "/" : "$";
-    navigator.clipboard.writeText(text).then(() => {
+    copyWithFeedback(text).then((ok) => {
+      if (!ok) return;
       setPathCopied(format);
       setTimeout(() => setPathCopied(null), 2000);
-    }).catch(() => {});
+    });
   }
 
   const stats = useMemo(() => (input ? getJsonStats(input) : null), [input]);
@@ -757,9 +760,7 @@ export default function JsonToolkitPage({
 
   const handleCopy = useCallback(async () => {
     const textToCopy = activeTab === "convert" || activeTab === "format" || activeTab === "generate" ? output : input;
-    try {
-      await navigator.clipboard.writeText(textToCopy);
-    } catch {}
+    if (!(await copyWithFeedback(textToCopy))) return;
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
     trackToolCopy(TOOL_SLUG, activeTab);
@@ -789,13 +790,9 @@ export default function JsonToolkitPage({
       return;
     }
     const url = queryUrl ?? `${origin}${pathname}${fragment}`;
-    try {
-      await navigator.clipboard.writeText(url);
-      setShareCopied(true);
-      window.setTimeout(() => setShareCopied(false), 2000);
-    } catch {
-      window.alert("Could not copy to clipboard. Your browser may block clipboard access.");
-    }
+    if (!(await copyWithFeedback(url))) return;
+    setShareCopied(true);
+    window.setTimeout(() => setShareCopied(false), 2000);
   }, [input, schemaText, activeTab, diffLeft, diffRight]);
 
   const saveCurrentJsonPreset = useCallback(() => {
@@ -1131,14 +1128,18 @@ export default function JsonToolkitPage({
     switch (action) {
       case "copy": {
         const val = deepGet(parsedForTree, ctx.path);
-        void navigator.clipboard.writeText(JSON.stringify(val, null, 2)).catch(() => {});
+        void copyWithFeedback(JSON.stringify(val, null, 2)).then((ok) => {
+          if (ok) notify.success("Copied");
+        });
         return;
       }
       case "copyPath": {
         const jsonpath = ctx.path.length === 0 ? "$" : "$" + ctx.path.map((p) =>
           typeof p === "number" ? `[${p}]` : /^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(String(p)) ? `.${p}` : `["${p}"]`
         ).join("");
-        void navigator.clipboard.writeText(jsonpath).catch(() => {});
+        void copyWithFeedback(jsonpath).then((ok) => {
+          if (ok) notify.success("Copied");
+        });
         return;
       }
       case "paste": {

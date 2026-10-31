@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { Copy, Check } from "lucide-react";
 import type { Tool } from "@/lib/tools-registry";
 import ToolPageHero from "@/components/tools/ToolPageHero";
+import { copyWithFeedback } from "@/lib/clipboard";
 
 export default function GradientGeneratorTool({ tool }: { tool: Tool }) {
   const [angle, setAngle] = useState(135);
@@ -17,10 +18,11 @@ export default function GradientGeneratorTool({ tool }: { tool: Tool }) {
   );
 
   const copy = () => {
-    void navigator.clipboard.writeText(`background: ${css};`).then(() => {
+    copyWithFeedback(`background: ${css};`).then((ok) => {
+      if (!ok) return;
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    }).catch(() => {});
+    });
   };
 
   return (

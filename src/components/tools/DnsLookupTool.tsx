@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import { Search, Loader2, Copy, Check, Globe } from "lucide-react";
 import type { Tool } from "@/lib/tools-registry";
 import ToolPageHero from "@/components/tools/ToolPageHero";
+import { copyWithFeedback } from "@/lib/clipboard";
 
 type RecordType = "A" | "AAAA" | "MX" | "TXT" | "CNAME" | "NS" | "SOA" | "PTR" | "CAA";
 
@@ -192,9 +193,7 @@ export default function DnsLookupTool({ tool }: { tool: Tool }) {
 
   const handleCopy = useCallback(async () => {
     if (!results) return;
-    try {
-      await navigator.clipboard.writeText(resultsToText(results));
-    } catch {}
+    if (!(await copyWithFeedback(resultsToText(results)))) return;
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }, [results]);

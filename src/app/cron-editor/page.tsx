@@ -16,6 +16,7 @@ import {
   Zap,
 } from "lucide-react";
 import Header from "@/components/Header";
+import { copyWithFeedback } from "@/lib/clipboard";
 
 // ─── cron parsing engine ──────────────────────────────────────────────
 
@@ -232,7 +233,7 @@ function CopyBtn({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
   return (
     <button
-      onClick={() => { void navigator.clipboard.writeText(text).catch(() => {}); setCopied(true); setTimeout(() => setCopied(false), 1500); }}
+      onClick={() => { void copyWithFeedback(text).then((ok) => { if (ok) { setCopied(true); setTimeout(() => setCopied(false), 1500); } }); }}
       className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-accent transition-colors"
       title="Copy"
     >

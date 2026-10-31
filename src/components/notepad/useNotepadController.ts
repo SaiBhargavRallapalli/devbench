@@ -72,6 +72,7 @@ import {
   generateHash,
   generateUuids,
 } from "@/lib/tool-engines";
+import { copyWithFeedback } from "@/lib/clipboard";
 
 type EngineResult = string | { output: string; error?: string };
 
@@ -413,7 +414,8 @@ export function useNotepadController() {
       return;
     }
     const url = `${window.location.origin}/notepad${fragment}`;
-    void navigator.clipboard.writeText(url).then(() => {
+    void copyWithFeedback(url).then((ok) => {
+      if (!ok) return;
       trackToolShareLink(NOTEPAD_TOOL_SLUG);
       flash("Share link copied");
     });
@@ -701,7 +703,8 @@ export function useNotepadController() {
     },
     copyAll: () => {
       if (!activeDoc) return;
-      void navigator.clipboard.writeText(activeDoc.content).then(() => {
+      void copyWithFeedback(activeDoc.content).then((ok) => {
+        if (!ok) return;
         trackToolCopy(NOTEPAD_TOOL_SLUG, "output");
         flash("Copied to clipboard");
       });

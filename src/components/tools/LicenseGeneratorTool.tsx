@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import { Copy, Check, Download } from "lucide-react";
 import type { Tool } from "@/lib/tools-registry";
 import ToolPageHero from "@/components/tools/ToolPageHero";
+import { copyWithFeedback } from "@/lib/clipboard";
 
 type LicenseId = "mit" | "apache2" | "gpl3" | "bsd2" | "isc" | "unlicense" | "mpl2";
 
@@ -126,10 +127,11 @@ export default function LicenseGeneratorTool({ tool }: { tool: Tool }) {
   }, [year, author, project, meta]);
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(licenseText).then(() => {
+    copyWithFeedback(licenseText).then((ok) => {
+      if (!ok) return;
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    }).catch(() => {});
+    });
   };
 
   const handleDownload = () => {

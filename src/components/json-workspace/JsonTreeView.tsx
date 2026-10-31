@@ -14,6 +14,7 @@ import {
   ClipboardPaste as ClipboardPasteIcon,
 } from "lucide-react";
 import type { ContextMenuState } from "@/lib/json-workspace/types";
+import { copyWithFeedback } from "@/lib/clipboard";
 
 const MAX_TREE_NODES = 10000;
 
@@ -184,10 +185,11 @@ export function InteractiveTreeNode({
     const jsonpath = path.length === 0 ? "$" : "$" + path.map((p) =>
       typeof p === "number" ? `[${p}]` : /^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(String(p)) ? `.${p}` : `["${p}"]`
     ).join("");
-    navigator.clipboard.writeText(jsonpath).then(() => {
+    copyWithFeedback(jsonpath).then((ok) => {
+      if (!ok) return;
       setNodeCopied(true);
       setTimeout(() => setNodeCopied(false), 1500);
-    }).catch(() => {});
+    });
   }
 
   return (

@@ -11,6 +11,7 @@ import {
   trackToolSuccess,
   trackToolCopy,
 } from "@/lib/analytics-events";
+import { copyWithFeedback } from "@/lib/clipboard";
 
 const TOOL_SLUG = "yaml";
 
@@ -220,10 +221,12 @@ function CopyBtn({ text, label }: { text: string; label?: string }) {
   return (
     <button
       onClick={() => {
-        void navigator.clipboard.writeText(text).catch(() => {});
-        setCopied(true);
-        setTimeout(() => setCopied(false), 1500);
-        trackToolCopy(TOOL_SLUG, label);
+        void copyWithFeedback(text).then((ok) => {
+          if (!ok) return;
+          setCopied(true);
+          setTimeout(() => setCopied(false), 1500);
+          trackToolCopy(TOOL_SLUG, label);
+        });
       }}
       className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs bg-muted hover:bg-muted/80 text-muted-foreground transition-colors"
     >

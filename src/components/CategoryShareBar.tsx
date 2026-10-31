@@ -17,6 +17,7 @@ import {
 } from "@/lib/social-share";
 import { CATEGORY_BROWSE_HIGHLIGHTS } from "@/lib/category-navigation";
 import { trackToolShareLink } from "@/lib/analytics-events";
+import { copyWithFeedback } from "@/lib/clipboard";
 
 /** Deterministic display counts for social proof (not live API data). */
 function categoryEngagementCounts(category: ToolCategory) {
@@ -40,14 +41,10 @@ export default function CategoryShareBar({ category }: { category: ToolCategory 
   const featured = featuredSlug ? getToolBySlug(featuredSlug) : undefined;
 
   const copyCategoryLink = useCallback(async () => {
-    try {
-      await navigator.clipboard.writeText(shareUrl);
-      setCopied(true);
-      trackToolShareLink(`category-${category}`);
-      setTimeout(() => setCopied(false), 2200);
-    } catch {
-      /* ignore */
-    }
+    if (!(await copyWithFeedback(shareUrl))) return;
+    setCopied(true);
+    trackToolShareLink(`category-${category}`);
+    setTimeout(() => setCopied(false), 2200);
   }, [category, shareUrl]);
 
   const openShare = useCallback(

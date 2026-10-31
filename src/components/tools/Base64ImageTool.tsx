@@ -4,6 +4,7 @@ import { useState, useCallback, useRef } from "react";
 import { Upload, Copy, Check } from "lucide-react";
 import ToolPageHero from "@/components/tools/ToolPageHero";
 import type { Tool } from "@/lib/tools-registry";
+import { copyWithFeedback } from "@/lib/clipboard";
 
 const CHECKERBOARD =
   "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Crect width='16' height='16' fill='%23e2e8f0'/%3E%3Crect width='8' height='8' fill='%23cbd5e1'/%3E%3Crect x='8' y='8' width='8' height='8' fill='%23cbd5e1'/%3E%3C/svg%3E";
@@ -93,10 +94,11 @@ export default function Base64ImageTool({ tool }: { tool: Tool }) {
   }, [decodeInput]);
 
   const copy = (text: string, id: string) => {
-    navigator.clipboard.writeText(text).then(() => {
+    copyWithFeedback(text).then((ok) => {
+      if (!ok) return;
       setCopied(id);
       setTimeout(() => setCopied(null), 2000);
-    }).catch(() => {});
+    });
   };
 
   const fmtSize = (bytes: number) =>

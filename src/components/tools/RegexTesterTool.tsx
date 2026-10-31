@@ -5,6 +5,7 @@ import { runRegex, type RegexRunResult } from "@/lib/regex-runner";
 import { Copy, Check, ChevronDown, ChevronRight, Code2 } from "lucide-react";
 import ToolPageHero from "@/components/tools/ToolPageHero";
 import type { Tool } from "@/lib/tools-registry";
+import { copyWithFeedback } from "@/lib/clipboard";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -618,10 +619,11 @@ export default function RegexTesterTool({ tool }: { tool: Tool }) {
   );
 
   const copy = useCallback((text: string, which: "code" | "subst") => {
-    navigator.clipboard.writeText(text).then(() => {
+    copyWithFeedback(text).then((ok) => {
+      if (!ok) return;
       if (which === "code") { setCopiedCode(true); setTimeout(() => setCopiedCode(false), 2000); }
       else { setCopiedSubst(true); setTimeout(() => setCopiedSubst(false), 2000); }
-    }).catch(() => {});
+    });
   }, []);
 
   return (

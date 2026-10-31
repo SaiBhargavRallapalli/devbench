@@ -15,6 +15,7 @@ import {
   parsePageRange,
   wordStats,
 } from "@/lib/pdf-text";
+import { copyWithFeedback } from "@/lib/clipboard";
 
 const SLUG = "pdf-to-text";
 const MAX_PDF_BYTES = 50 * 1024 * 1024;
@@ -146,12 +147,9 @@ export default function PdfToTextTool({ tool }: { tool: Tool }) {
 
   async function copy() {
     if (!output) return;
-    try {
-      await navigator.clipboard.writeText(output);
-      notify.success("Copied");
-    } catch {
-      notify.error("Copy failed — select the text and copy manually.");
-    }
+    // copyWithFeedback toasts the same failure message the old catch did,
+    // and adds the execCommand fallback it lacked.
+    if (await copyWithFeedback(output)) notify.success("Copied");
   }
 
   function download() {

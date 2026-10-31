@@ -4,6 +4,7 @@ import { useState, useMemo, useCallback } from "react";
 import { Plus, Trash2, Users, Receipt, ArrowRight, Check, Copy } from "lucide-react";
 import type { Tool } from "@/lib/tools-registry";
 import ToolPageHero from "@/components/tools/ToolPageHero";
+import { copyWithFeedback } from "@/lib/clipboard";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -233,7 +234,7 @@ export default function ExpenseSplitterTool({ tool }: { tool: Tool }) {
   }, [settlements, sym]);
 
   const copySettlement = useCallback(async () => {
-    await navigator.clipboard.writeText(settlementText).catch(() => {});
+    if (!(await copyWithFeedback(settlementText))) return;
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }, [settlementText]);

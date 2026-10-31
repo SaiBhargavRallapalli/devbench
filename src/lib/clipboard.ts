@@ -1,4 +1,24 @@
 // Copyright (c) 2026 DevBench contributors. MIT License.
+import { notify } from "@/lib/notify";
+
+/** Failure toast — every copy failure must explain itself (WCAG-friendly: the toast host is the site's aria-live region). */
+export const COPY_FAILED_MESSAGE = "Copy failed — select the text and copy manually.";
+
+/**
+ * Copy text with a fallback AND guaranteed failure feedback.
+ *
+ * The standard copy primitive for tool UIs: never throws, always resolves to
+ * `ok` so callers can guard their inline success state (showing "Copied!"
+ * when the write actually failed is a lie the old ad-hoc handlers told).
+ * On failure, emits the shared error toast — silent copy failures leave users
+ * clicking a button that appears broken.
+ */
+export async function copyWithFeedback(text: string): Promise<boolean> {
+  const ok = await safeCopyToClipboard(text);
+  if (!ok) notify.error(COPY_FAILED_MESSAGE);
+  return ok;
+}
+
 /**
  * Copy text to the clipboard; resolves true on success, false on failure.
  * Never throws — use this in fire-and-forget contexts.

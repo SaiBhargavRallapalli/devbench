@@ -10,6 +10,8 @@ import { isSandboxChildMessage } from "@/lib/playground/sandbox-js-messages";
 import { transpileTsToJs } from "@/lib/playground/transpile-ts";
 import { buildJsSandboxPreamble } from "@/lib/playground/js-sandbox-preamble";
 import PlaygroundEditorFrame from "@/components/playground/PlaygroundEditorFrame";
+import { copyWithFeedback } from "@/lib/clipboard";
+import { notify } from "@/lib/notify";
 
 let monacoCdnConfigured = false;
 function ensureMonacoCdn(): void {
@@ -99,7 +101,9 @@ export default function JsTsSandboxPanel({ mode, dark }: { mode: WebPlayMode; da
       mode === "typescript" ? "typescript" : mode === "nodejs" ? "nodejs" : "javascript";
     const frag = encodePlaygroundShare({ v: 1, lang, code, stdin });
     const url = `${window.location.origin}${window.location.pathname}${frag}`;
-    void navigator.clipboard.writeText(url);
+    void copyWithFeedback(url).then((ok) => {
+      if (ok) notify.success("Copied");
+    });
   }
 
   useEffect(() => {

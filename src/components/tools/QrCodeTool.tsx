@@ -6,6 +6,7 @@ import { Download, Camera, CameraOff, Copy, Check, Upload, X, ScanLine } from "l
 import type { Tool } from "@/lib/tools-registry";
 import { trackToolDownload } from "@/lib/analytics-events";
 import ToolPageHero from "@/components/tools/ToolPageHero";
+import { copyWithFeedback } from "@/lib/clipboard";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -268,7 +269,7 @@ function ScanTab() {
 
   const copyResult = async () => {
     if (!result) return;
-    await navigator.clipboard.writeText(result).catch(() => {});
+    if (!(await copyWithFeedback(result))) return;
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };

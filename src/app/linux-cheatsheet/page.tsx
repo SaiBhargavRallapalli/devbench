@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Search, Terminal, Copy, Check, ChevronRight } from "lucide-react";
 import Header from "@/components/Header";
 import { LINUX_SECTIONS, flattenCommandsForSearch } from "@/lib/linux-cheatsheet-data";
+import { copyWithFeedback } from "@/lib/clipboard";
 
 function matchesQuery(q: string, cmd: string, desc: string, example: string): boolean {
   const s = q.trim().toLowerCase();
@@ -28,9 +29,11 @@ export default function LinuxCheatsheetPage() {
   }, [flat, query]);
 
   const copyExample = useCallback((text: string, key: string) => {
-    void navigator.clipboard.writeText(text.replace(/\n/g, " ").trim()).catch(() => {});
-    setCopied(key);
-    setTimeout(() => setCopied(null), 1500);
+    void copyWithFeedback(text.replace(/\n/g, " ").trim()).then((ok) => {
+      if (!ok) return;
+      setCopied(key);
+      setTimeout(() => setCopied(null), 1500);
+    });
   }, []);
 
   return (

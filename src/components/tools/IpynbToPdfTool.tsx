@@ -28,6 +28,7 @@ import {
 import { notebookToPdf } from "@/lib/notebook-to-pdf";
 import { downloadUint8 } from "@/lib/pdf-download";
 import { friendlyError } from "@/lib/friendly-error";
+import { copyWithFeedback } from "@/lib/clipboard";
 
 const TOOL_SLUG = "ipynb-to-pdf";
 
@@ -229,11 +230,12 @@ export default function IpynbToPdfTool({ tool }: { tool: Tool }) {
 
   const copyHtml = useCallback(() => {
     if (!html) return;
-    navigator.clipboard.writeText(html).then(() => {
+    copyWithFeedback(html).then((ok) => {
+      if (!ok) return;
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
       trackToolCopy(TOOL_SLUG, "html");
-    }).catch(() => {});
+    });
   }, [html]);
 
   const handleDrop = (e: React.DragEvent) => {

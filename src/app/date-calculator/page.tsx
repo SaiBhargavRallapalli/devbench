@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { CalendarClock, ChevronRight, Copy, Check } from "lucide-react";
 import Header from "@/components/Header";
+import { copyWithFeedback } from "@/lib/clipboard";
 
 /** Calendar-aware add/subtract: years → months → calendar days (weeks×7 + days), local timezone. */
 export function dateCalendarShift(
@@ -137,9 +138,11 @@ export default function DateCalculatorPage() {
               <button
                 type="button"
                 onClick={() => {
-                  void navigator.clipboard.writeText(summary).catch(() => {});
-                  setCopied(true);
-                  setTimeout(() => setCopied(false), 1500);
+                  void copyWithFeedback(summary).then((ok) => {
+                    if (!ok) return;
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 1500);
+                  });
                 }}
                 className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-accent hover:underline"
               >

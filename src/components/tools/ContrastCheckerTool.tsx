@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { ArrowLeftRight, Check, X, Sparkles, Copy } from "lucide-react";
 import type { Tool } from "@/lib/tools-registry";
 import ToolPageHero from "@/components/tools/ToolPageHero";
+import { copyWithFeedback } from "@/lib/clipboard";
 
 // ─── colour utilities ─────────────────────────────────────────────────
 
@@ -168,10 +169,11 @@ export default function ContrastCheckerTool({ tool }: { tool: Tool }) {
   };
 
   const copyHex = (hex: string) => {
-    navigator.clipboard.writeText(hex).then(() => {
+    copyWithFeedback(hex).then((ok) => {
+      if (!ok) return;
       setCopied(hex);
       setTimeout(() => setCopied(null), 1500);
-    }).catch(() => {});
+    });
   };
 
   const applySuggestion = (rgb: RGB) => {

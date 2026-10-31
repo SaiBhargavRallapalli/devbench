@@ -12,6 +12,7 @@ import {
 } from "@/lib/social-share";
 import { trackToolShareLink } from "@/lib/analytics-events";
 import HoverTooltip from "@/components/HoverTooltip";
+import { copyWithFeedback } from "@/lib/clipboard";
 
 const SOCIAL_LABELS: Record<SocialNetwork, string> = {
   twitter: "X (Twitter)",
@@ -31,14 +32,10 @@ export default function ShareToolButton({
 
   const copyLink = useCallback(async () => {
     const url = toolShareUrl(tool);
-    try {
-      await navigator.clipboard.writeText(url);
-      setCopied(true);
-      trackToolShareLink(tool.slug);
-      setTimeout(() => setCopied(false), 2200);
-    } catch {
-      setCopied(false);
-    }
+    if (!(await copyWithFeedback(url))) return;
+    setCopied(true);
+    trackToolShareLink(tool.slug);
+    setTimeout(() => setCopied(false), 2200);
   }, [tool]);
 
   const openSocial = useCallback(

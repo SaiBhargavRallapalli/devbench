@@ -43,6 +43,7 @@ import {
   trackToolError,
   trackToolCopy,
 } from "@/lib/analytics-events";
+import { copyWithFeedback } from "@/lib/clipboard";
 
 const TOOL_SLUG = "webhook-simulator";
 
@@ -90,10 +91,12 @@ function CopyBtn({
       type="button"
       disabled={!text}
       onClick={() => {
-        void navigator.clipboard.writeText(text).catch(() => {});
-        setCopied(true);
-        setTimeout(() => setCopied(false), 1500);
-        trackToolCopy(TOOL_SLUG, what);
+        void copyWithFeedback(text).then((ok) => {
+          if (!ok) return;
+          setCopied(true);
+          setTimeout(() => setCopied(false), 1500);
+          trackToolCopy(TOOL_SLUG, what);
+        });
       }}
       className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-md bg-accent/10 text-accent hover:bg-accent/20 disabled:opacity-40 transition-colors"
     >

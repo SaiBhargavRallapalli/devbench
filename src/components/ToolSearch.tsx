@@ -46,6 +46,7 @@ import { CATEGORY_CTA_LABELS, allToolsCategoryLabel } from "@/lib/category-cta-l
 import CategoryContentDepthHub from "@/components/CategoryContentDepthHub";
 import CategoryShareBar from "@/components/CategoryShareBar";
 import ToolPreviewSidePanel from "@/components/ToolPreviewSidePanel";
+import { copyWithFeedback } from "@/lib/clipboard";
 
 const CATEGORY_ICONS: Record<ToolCategory, React.ElementType> = {
   json: Braces,
@@ -117,7 +118,8 @@ const ExplorerToolCard = memo(function ExplorerToolCard({
 
   function handleCopyLink(e: React.MouseEvent) {
     e.stopPropagation();
-    void navigator.clipboard.writeText(toolShareUrl(tool)).then(() => {
+    copyWithFeedback(toolShareUrl(tool)).then((ok) => {
+      if (!ok) return;
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     });

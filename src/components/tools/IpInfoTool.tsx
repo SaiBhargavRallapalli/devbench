@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { Search, Loader2, Copy, Check, MapPin, Globe, Wifi } from "lucide-react";
 import type { Tool } from "@/lib/tools-registry";
 import ToolPageHero from "@/components/tools/ToolPageHero";
+import { copyWithFeedback } from "@/lib/clipboard";
 
 interface IpData {
   ip: string;
@@ -105,9 +106,7 @@ export default function IpInfoTool({ tool }: { tool: Tool }) {
 
   const handleCopy = async () => {
     if (!data?.ip) return;
-    try {
-      await navigator.clipboard.writeText(data.ip);
-    } catch {}
+    if (!(await copyWithFeedback(data.ip))) return;
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };

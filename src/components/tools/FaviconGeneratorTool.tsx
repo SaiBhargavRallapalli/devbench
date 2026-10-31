@@ -10,6 +10,7 @@ import { notify } from "@/lib/notify";
 import { rejectInputImageDimensions } from "@/lib/image-worker-limits";
 import { trackToolError, trackToolSuccess } from "@/lib/analytics-events";
 import { buildIco, squareTarget } from "@/lib/ico-builder";
+import { copyWithFeedback } from "@/lib/clipboard";
 
 const SLUG = "favicon-generator";
 const MASTER = 48;
@@ -192,12 +193,7 @@ export default function FaviconGeneratorTool({ tool }: { tool: Tool }) {
   }
 
   async function copySnippet() {
-    try {
-      await navigator.clipboard.writeText(SNIPPET);
-      notify.success("Copied");
-    } catch {
-      notify.error("Copy failed — select the code and copy manually.");
-    }
+    if (await copyWithFeedback(SNIPPET)) notify.success("Copied");
   }
 
   return (

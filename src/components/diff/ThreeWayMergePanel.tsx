@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { Copy, Check, Download, GitMerge } from "lucide-react";
 import { computeThreeWayDiff, type ThreeWayLine } from "@/lib/three-way-diff";
+import { copyWithFeedback } from "@/lib/clipboard";
 
 type Resolution = "left" | "right" | "base" | "custom";
 
@@ -93,7 +94,8 @@ export default function ThreeWayMergePanel({
           <button
             type="button"
             onClick={() => {
-              void navigator.clipboard.writeText(merged).then(() => {
+              copyWithFeedback(merged).then((ok) => {
+                if (!ok) return;
                 setCopied(true);
                 setTimeout(() => setCopied(false), 1500);
               });

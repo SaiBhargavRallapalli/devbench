@@ -14,6 +14,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import Header from "@/components/Header";
+import { copyWithFeedback } from "@/lib/clipboard";
 
 // ─── helpers ───────────────────────────────────────────────────────────
 
@@ -113,9 +114,11 @@ function CopyBtn({ text, className = "" }: { text: string; className?: string })
   return (
     <button
       onClick={() => {
-        void navigator.clipboard.writeText(text).catch(() => {});
-        setCopied(true);
-        setTimeout(() => setCopied(false), 1500);
+        void copyWithFeedback(text).then((ok) => {
+          if (!ok) return;
+          setCopied(true);
+          setTimeout(() => setCopied(false), 1500);
+        });
       }}
       className={`inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-accent transition-colors ${className}`}
       title="Copy"

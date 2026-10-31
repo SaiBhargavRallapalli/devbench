@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Copy, Check, Download } from "lucide-react";
 import ToolPageHero from "@/components/tools/ToolPageHero";
 import type { Tool } from "@/lib/tools-registry";
+import { copyWithFeedback } from "@/lib/clipboard";
 
 interface Template {
   id: string;
@@ -360,9 +361,7 @@ export default function GitignoreGeneratorTool({ tool }: { tool: Tool }) {
 
   async function handleCopy() {
     if (!output) return;
-    try {
-      await navigator.clipboard.writeText(output);
-    } catch {}
+    if (!(await copyWithFeedback(output))) return;
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }

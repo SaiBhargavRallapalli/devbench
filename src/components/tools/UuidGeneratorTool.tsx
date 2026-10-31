@@ -5,6 +5,7 @@ import { RefreshCw, Copy, Check } from "lucide-react";
 import ToolPageHero from "@/components/tools/ToolPageHero";
 import type { Tool } from "@/lib/tools-registry";
 import * as engines from "@/lib/tool-engines";
+import { copyWithFeedback } from "@/lib/clipboard";
 
 type IdType = "uuid" | "ulid" | "nanoid";
 
@@ -45,17 +46,19 @@ export default function UuidGeneratorTool({ tool }: { tool: Tool }) {
   }, [idType, count, nanoSize]);
 
   const copyOne = (id: string, idx: number) => {
-    navigator.clipboard.writeText(id).then(() => {
+    copyWithFeedback(id).then((ok) => {
+      if (!ok) return;
       setCopiedIdx(idx);
       setTimeout(() => setCopiedIdx(null), 2000);
-    }).catch(() => {});
+    });
   };
 
   const copyAll = () => {
-    navigator.clipboard.writeText(ids.join("\n")).then(() => {
+    copyWithFeedback(ids.join("\n")).then((ok) => {
+      if (!ok) return;
       setCopiedAll(true);
       setTimeout(() => setCopiedAll(false), 2000);
-    }).catch(() => {});
+    });
   };
 
   return (

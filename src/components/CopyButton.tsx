@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react";
 import { Clipboard, Check } from "lucide-react";
 import { trackToolCopy } from "@/lib/analytics-events";
+import { copyWithFeedback } from "@/lib/clipboard";
 
 interface CopyButtonProps {
   text: string;
@@ -24,22 +25,14 @@ export default function CopyButton({
   const [copied, setCopied] = useState(false);
 
   const handleCopy = useCallback(async () => {
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      const textarea = document.createElement("textarea");
-      textarea.value = text;
-      textarea.style.position = "fixed";
-      textarea.style.opacity = "0";
-      document.body.appendChild(textarea);
-      textarea.select();
-      document.execCommand("copy");
-      document.body.removeChild(textarea);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
+    // copyWithFeedback = shared execCommand fallback + failure toast.
+    // Only show "Copied!" (and track the event) when the write actually
+    // succeeded — the old fallback showed success even when execCommand
+    // returned false.
+    const ok = await copyWithFeedback(text);
+    if (!ok) return;
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
     if (toolSlug) trackToolCopy(toolSlug, copyLabel);
   }, [text, toolSlug, copyLabel]);
 

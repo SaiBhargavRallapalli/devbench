@@ -18,6 +18,7 @@ import {
   deleteSavedPipeline,
   type SavedPipeline,
 } from "@/lib/pipeline-storage";
+import { copyWithFeedback } from "@/lib/clipboard";
 
 export default function WorkflowsPage() {
   const [input, setInput] = useState('{\n  "hello": "world"\n}');
@@ -208,7 +209,8 @@ export default function WorkflowsPage() {
             <button
               type="button"
               onClick={() => {
-                void navigator.clipboard.writeText(output).then(() => {
+                copyWithFeedback(output).then((ok) => {
+                  if (!ok) return;
                   setCopied(true);
                   setTimeout(() => setCopied(false), 2000);
                 });

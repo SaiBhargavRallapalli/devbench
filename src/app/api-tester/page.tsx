@@ -14,6 +14,7 @@ import Header from "@/components/Header";
 import ApiImportPanel, { type ApiImportApply } from "@/components/ApiImportPanel";
 import type { ImportedRequest } from "@/lib/api-import";
 import { trackToolSuccess, trackToolError } from "@/lib/analytics-events";
+import { copyWithFeedback } from "@/lib/clipboard";
 
 const TOOL_SLUG = "api-tester";
 
@@ -280,7 +281,7 @@ function CopyBtn({ text, label, size = "sm" }: { text: string; label?: string; s
   const [copied, setCopied] = useState(false);
   return (
     <button
-      onClick={() => { void navigator.clipboard.writeText(text).catch(() => {}); setCopied(true); setTimeout(() => setCopied(false), 1500); }}
+      onClick={() => { void copyWithFeedback(text).then((ok) => { if (ok) { setCopied(true); setTimeout(() => setCopied(false), 1500); } }); }}
       className={`inline-flex items-center gap-1 rounded font-medium transition-colors bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground ${size === "xs" ? "px-2 py-0.5 text-[11px]" : "px-2.5 py-1 text-xs"}`}
     >
       {copied ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}

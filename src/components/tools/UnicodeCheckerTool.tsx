@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { Copy, Check, AlertTriangle, Search } from "lucide-react";
 import ToolPageHero from "@/components/tools/ToolPageHero";
 import type { Tool } from "@/lib/tools-registry";
+import { copyWithFeedback } from "@/lib/clipboard";
 
 // ─── Unicode helpers ──────────────────────────────────────────────────────────
 
@@ -247,9 +248,11 @@ function analyzeText(text: string): CharInfo[] {
 function CopyBtn({ text, small }: { text: string; small?: boolean }) {
   const [copied, setCopied] = useState(false);
   const copy = () => {
-    void navigator.clipboard.writeText(text).catch(() => {});
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
+    void copyWithFeedback(text).then((ok) => {
+      if (!ok) return;
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    });
   };
   return (
     <button

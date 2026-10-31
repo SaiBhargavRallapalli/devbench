@@ -11,6 +11,7 @@ import {
   xmlSuiteXPath,
   xmlSuiteSearch,
 } from "@/lib/tool-engines";
+import { copyWithFeedback } from "@/lib/clipboard";
 
 type Mode = "validate" | "pretty" | "minify" | "xpath" | "search";
 
@@ -69,10 +70,11 @@ export default function XmlSuiteTool({ tool }: { tool: Tool }) {
 
   const copyOut = () => {
     if (!out) return;
-    void navigator.clipboard.writeText(out).then(() => {
+    copyWithFeedback(out).then((ok) => {
+      if (!ok) return;
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    }).catch(() => {});
+    });
   };
 
   const tabs: { id: Mode; label: string; hint: string }[] = [

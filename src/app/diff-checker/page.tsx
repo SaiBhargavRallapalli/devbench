@@ -19,6 +19,7 @@ import {
 import Header from "@/components/Header";
 import { trackToolSuccess } from "@/lib/analytics-events";
 import ThreeWayMergePanel from "@/components/diff/ThreeWayMergePanel";
+import { copyWithFeedback } from "@/lib/clipboard";
 
 const TOOL_SLUG = "diff-checker";
 
@@ -268,18 +269,9 @@ function formatBytes(bytes: number): string {
 function CopyBtn({ text, label, className = "" }: { text: string; label?: string; className?: string }) {
   const [copied, setCopied] = useState(false);
   const handleCopy = useCallback(async () => {
-    try {
-      await navigator.clipboard.writeText(text);
-    } catch {
-      const ta = document.createElement("textarea");
-      ta.value = text;
-      ta.style.position = "fixed";
-      ta.style.opacity = "0";
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand("copy");
-      document.body.removeChild(ta);
-    }
+    // copyWithFeedback = the same execCommand fallback this duplicated inline,
+    // but checking its result — plus a failure toast.
+    if (!(await copyWithFeedback(text))) return;
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
   }, [text]);

@@ -5,6 +5,7 @@ import { Copy, Check, Download, Upload, Sparkles } from "lucide-react";
 import ToolPageHero from "@/components/tools/ToolPageHero";
 import type { Tool } from "@/lib/tools-registry";
 import { trackToolDownload, trackToolCopy } from "@/lib/analytics-events";
+import { copyWithFeedback } from "@/lib/clipboard";
 
 interface OptimizeResult {
   output: string;
@@ -157,11 +158,12 @@ export default function SvgOptimizerTool({ tool }: { tool: Tool }) {
 
   const copy = useCallback(() => {
     if (!result) return;
-    navigator.clipboard.writeText(result.output).then(() => {
+    copyWithFeedback(result.output).then((ok) => {
+      if (!ok) return;
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
       trackToolCopy("svg-optimizer", "output");
-    }).catch(() => {});
+    });
   }, [result]);
 
   function download() {

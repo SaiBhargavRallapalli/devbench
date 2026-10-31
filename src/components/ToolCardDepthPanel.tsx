@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import { ChevronDown, Copy, Download, Check } from "lucide-react";
 import type { Tool } from "@/lib/tools-registry";
 import { getToolCardDepth } from "@/lib/tool-card-depth";
+import { copyWithFeedback } from "@/lib/clipboard";
 
 export default function ToolCardDepthPanel({ tool }: { tool: Tool }) {
   const [open, setOpen] = useState(false);
@@ -12,13 +13,9 @@ export default function ToolCardDepthPanel({ tool }: { tool: Tool }) {
 
   const copyPayload = useCallback(async () => {
     if (!depth.examplePayload) return;
-    try {
-      await navigator.clipboard.writeText(depth.examplePayload);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      /* clipboard denied */
-    }
+    if (!(await copyWithFeedback(depth.examplePayload))) return;
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   }, [depth.examplePayload]);
 
   return (

@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import { Plus, Trash2, Copy, Check, Eye } from "lucide-react";
 import ToolPageHero from "@/components/tools/ToolPageHero";
 import type { Tool } from "@/lib/tools-registry";
+import { copyWithFeedback } from "@/lib/clipboard";
 
 interface Shadow {
   id: number;
@@ -84,10 +85,11 @@ export default function CssBoxShadowTool({ tool }: { tool: Tool }) {
   }, []);
 
   function copy() {
-    navigator.clipboard.writeText(fullCss).then(() => {
+    copyWithFeedback(fullCss).then((ok) => {
+      if (!ok) return;
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    }).catch(() => {});
+    });
   }
 
   return (

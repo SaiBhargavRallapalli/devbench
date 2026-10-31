@@ -36,6 +36,7 @@ import {
   verifyJws,
   type JwtAlgorithm,
 } from "@/lib/jwt-crypto";
+import { copyWithFeedback } from "@/lib/clipboard";
 
 const TOOL_SLUG = "jwt-debugger";
 
@@ -138,10 +139,12 @@ function relativeTime(epochSec: number): string {
 function CopyBtn({ text, label, className = "" }: { text: string; label?: string; className?: string }) {
   const [copied, setCopied] = useState(false);
   const handleCopy = useCallback(() => {
-    void navigator.clipboard.writeText(text).catch(() => {});
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
-    trackToolCopy(TOOL_SLUG, label);
+    void copyWithFeedback(text).then((ok) => {
+      if (!ok) return;
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+      trackToolCopy(TOOL_SLUG, label);
+    });
   }, [text, label]);
   return (
     <button

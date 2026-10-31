@@ -8,6 +8,7 @@ import {
   trackToolCopy,
   trackToolShareLink,
 } from "@/lib/analytics-events";
+import { copyWithFeedback } from "@/lib/clipboard";
 
 const TOOL_SLUG = "timezone-converter";
 
@@ -162,11 +163,12 @@ export default function TimezoneConverterTool({ tool }: { tool: Tool }) {
     if (!utcDate) return;
     const v = displayInZone(utcDate, zone);
     const text = `${v.date} · ${v.time} (${v.offset}) — ${zone}`;
-    navigator.clipboard.writeText(text).then(() => {
+    copyWithFeedback(text).then((ok) => {
+      if (!ok) return;
       setCopied(zone);
       setTimeout(() => setCopied(null), 1500);
       trackToolCopy(TOOL_SLUG, "moment");
-    }).catch(() => {});
+    });
   };
 
   const copyShareLink = () => {
@@ -177,11 +179,12 @@ export default function TimezoneConverterTool({ tool }: { tool: Tool }) {
       to: targets.join(","),
     });
     const url = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
-    navigator.clipboard.writeText(url).then(() => {
+    copyWithFeedback(url).then((ok) => {
+      if (!ok) return;
       setCopied("__share");
       setTimeout(() => setCopied(null), 1500);
       trackToolShareLink(TOOL_SLUG);
-    }).catch(() => {});
+    });
   };
 
   // Restore from URL params on mount. State-setters here are correct: this is

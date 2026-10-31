@@ -11,6 +11,7 @@ import {
   trackToolCopy,
 } from "@/lib/analytics-events";
 import { sanitizeSvg } from "@/lib/sanitize-html";
+import { copyWithFeedback } from "@/lib/clipboard";
 
 const TOOL_SLUG = "mermaid-editor";
 
@@ -205,11 +206,12 @@ export default function MermaidEditorTool({ tool }: { tool: Tool }) {
   const copyTo = (what: "svg" | "code") => {
     const text = what === "svg" ? svg : code;
     if (!text) return;
-    navigator.clipboard.writeText(text).then(() => {
+    copyWithFeedback(text).then((ok) => {
+      if (!ok) return;
       setCopied(what);
       setTimeout(() => setCopied(null), 1500);
       trackToolCopy(TOOL_SLUG, what);
-    }).catch(() => {});
+    });
   };
 
   const charCount = useMemo(() => code.length, [code]);
