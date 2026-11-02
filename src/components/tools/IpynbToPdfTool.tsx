@@ -385,7 +385,7 @@ export default function IpynbToPdfTool({ tool }: { tool: Tool }) {
 
       {/* Preview section */}
       {notebook && (
-        <section className="mt-6 rounded-2xl border border-border bg-card">
+        <section key={file?.name ?? "sample"} className="animate-result-flash mt-6 rounded-2xl border border-border bg-card">
           <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border px-5 py-3">
             <div>
               <h2 className="text-sm font-semibold">PDF Preview</h2>

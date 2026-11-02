@@ -56,7 +56,7 @@ export default function StatusToastHost() {
         <div
           key={t.id}
           role="status"
-          className="pointer-events-auto flex w-full max-w-md items-start gap-3 rounded-xl border border-border bg-card px-4 py-3 text-sm shadow-lg"
+          className="animate-toast-in pointer-events-auto flex w-full max-w-md items-start gap-3 rounded-xl border border-border bg-card px-4 py-3 text-sm shadow-lg"
         >
           <span className="mt-0.5 shrink-0">{iconFor(t.kind)}</span>
           <span className="flex-1 text-foreground">{t.message}</span>

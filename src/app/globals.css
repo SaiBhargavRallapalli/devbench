@@ -152,6 +152,87 @@ body {
   animation: slide-up 0.4s ease-out;
 }
 
+/* ── Interaction motion ─────────────────────────────────────────────────
+   Functional micro-feedback only (see R4 verdict): every animation here
+   confirms an action or reveals fresh output; nothing exceeds 400ms; all
+   of it collapses under prefers-reduced-motion via the block below. */
+
+/* Press tactility: buttons visibly depress (~3% scale) while held. One
+   global rule instead of 160 tools' worth of active: utilities. Scale is
+   declared on :active only, so the release snaps back like a hardware
+   button and nothing transitions while idle. */
+button:not(:disabled):active,
+[role="button"]:not([aria-disabled="true"]):active {
+  transform: scale(0.97);
+  transition: transform 80ms ease-out;
+}
+
+/* Toasts slide up into the live region instead of popping into place. */
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-toast-in {
+  animation: toast-in 0.15s ease-out;
+}
+
+/* Success micro-celebration: a check that mounts into (or flips to) a
+   success state pops once. Covers CopyButton and the ad-hoc copy sites
+   without touching their markup — the ternary swap remounts the icon. */
+@keyframes check-pop {
+  0% { transform: scale(0); }
+  60% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+.animate-check-pop,
+.text-success svg,
+svg.text-success {
+  animation: check-pop 0.2s ease-out;
+}
+
+/* Result flash: a freshly generated result pulses with the accent tint so
+   the eye lands on what changed. Only safe on containers that remount per
+   generation (keyed) — never on live-typing updates, which would flash
+   constantly. Ends at var(--card) (not transparent) because --card and
+   --background differ — ending transparent would snap the card's own
+   background one frame after the animation. */
+@keyframes result-flash {
+  0% { background-color: color-mix(in srgb, var(--accent) 14%, var(--card)); }
+  100% { background-color: var(--card); }
+}
+
+.animate-result-flash {
+  animation: result-flash 0.3s ease-out;
+}
+
+/* Staggered batch reveal: rows of a fresh generation cascade in 25ms
+   apart. Delays cap at 350ms (14th child onward) so big batches never
+   keep the user waiting — the last row starts within the 400ms budget.
+   Rows must be direct children of .batch-stagger; remount the container
+   (generation key) to replay the cascade on re-generate. */
+.batch-stagger > * {
+  opacity: 0;
+  animation: fade-in 0.3s ease-out forwards;
+}
+
+.batch-stagger > *:nth-child(1) { animation-delay: 0ms; }
+.batch-stagger > *:nth-child(2) { animation-delay: 25ms; }
+.batch-stagger > *:nth-child(3) { animation-delay: 50ms; }
+.batch-stagger > *:nth-child(4) { animation-delay: 75ms; }
+.batch-stagger > *:nth-child(5) { animation-delay: 100ms; }
+.batch-stagger > *:nth-child(6) { animation-delay: 125ms; }
+.batch-stagger > *:nth-child(7) { animation-delay: 150ms; }
+.batch-stagger > *:nth-child(8) { animation-delay: 175ms; }
+.batch-stagger > *:nth-child(9) { animation-delay: 200ms; }
+.batch-stagger > *:nth-child(10) { animation-delay: 225ms; }
+.batch-stagger > *:nth-child(11) { animation-delay: 250ms; }
+.batch-stagger > *:nth-child(12) { animation-delay: 275ms; }
+.batch-stagger > *:nth-child(13) { animation-delay: 300ms; }
+.batch-stagger > *:nth-child(14) { animation-delay: 325ms; }
+.batch-stagger > *:nth-child(n + 15) { animation-delay: 350ms; }
+
 /* Motion accessibility (WCAG 2.3.3 / user preference): collapse decorative
    animation and transitions to ~0 when the OS asks for reduced motion.
    Spinners are exempt — a frozen spinner reads as a hung app, and they

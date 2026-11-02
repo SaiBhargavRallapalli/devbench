@@ -132,7 +132,9 @@ export default function UuidGeneratorTool({ tool }: { tool: Tool }) {
 
         {/* Results */}
         {ids.length > 0 && (
-          <div className="rounded-xl border border-border bg-card overflow-hidden">
+          /* key={ids[0]} remounts the card on every generation so the
+             flash + staggered row cascade replay (ids[0] is always fresh). */
+          <div key={ids[0]} className="animate-result-flash rounded-xl border border-border bg-card overflow-hidden">
             <div className="flex items-center justify-between px-4 py-2.5 border-b border-border bg-muted/50">
               <span className="text-xs font-medium text-muted-foreground">
                 {ids.length} {TYPE_INFO[idType].label} IDs
@@ -141,11 +143,11 @@ export default function UuidGeneratorTool({ tool }: { tool: Tool }) {
                 onClick={copyAll}
                 className="flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded-lg bg-accent/10 text-accent hover:bg-accent/20 transition-colors"
               >
-                {copiedAll ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                {copiedAll ? <Check className="animate-check-pop w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
                 {copiedAll ? "Copied all!" : "Copy all"}
               </button>
             </div>
-            <div className="divide-y divide-border">
+            <div className="batch-stagger divide-y divide-border">
               {ids.map((id, idx) => (
                 <div
                   key={idx}
@@ -157,7 +159,7 @@ export default function UuidGeneratorTool({ tool }: { tool: Tool }) {
                     className="shrink-0 p-1.5 rounded-lg text-muted-foreground hover:text-accent hover:bg-accent/10 transition-colors"
                   >
                     {copiedIdx === idx ? (
-                      <Check className="w-3.5 h-3.5 text-accent" />
+                      <Check className="animate-check-pop w-3.5 h-3.5 text-accent" />
                     ) : (
                       <Copy className="w-3.5 h-3.5" />
                     )}

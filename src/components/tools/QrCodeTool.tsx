@@ -366,7 +366,7 @@ function ScanTab() {
 
       {/* Result */}
       {result && (
-        <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-4 space-y-3">
+        <div key={result} className="animate-slide-up rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-4 space-y-3">
           <div className="flex items-center justify-between gap-2">
             <p className="text-xs font-semibold uppercase tracking-wide text-emerald-700 dark:text-emerald-400">
               QR Code Decoded
