@@ -17,10 +17,13 @@ That push triggers the **Release** workflow (`on: push: tags: v*`), which builds
 **If you are not an admin:**
 
 - Ask an admin to push the tag, or
-- Settings → **Rules** → **protect-releases** → add **GitHub Actions** as a bypass actor (Integration), or
-- Run **Actions → Release** after an admin has created tag `v0.1.0` once.
+- Run **Actions → Release → Run workflow** *after* the tag exists (see below).
 
-`GITHUB_TOKEN` in Actions **cannot** create tags while the ruleset blocks it unless Actions is in the bypass list. Uploading release assets still works once the tag exists.
+**Verified 2026-11-02 — do not retry these dead ends:**
+
+- Adding **GitHub Actions** (Integration, actor id `15368`) as a bypass actor is rejected on this personal-account repo: `422 Actor GitHub Actions integration must be part of the ruleset source or owner organization`.
+- `GITHUB_TOKEN` therefore **cannot** create `v*` tags here (observed: GH013 `pre_receive Repository rule violations`, run 27461834178), so **`workflow_dispatch` fails whenever the tag doesn't exist yet** — the publish step dies creating it.
+- What works: admin tag push (ruleset bypass, message above), or dispatch **with a pre-existing tag** (the publish step then skips tag creation). Uploading release assets works either way once the tag exists.
 
 ---
 
@@ -36,6 +39,8 @@ Add under **Settings → Secrets and variables → Actions**:
 | `APPLE_ID` | For notarization | Apple ID email |
 | `APPLE_APP_SPECIFIC_PASSWORD` | For notarization | [App-specific password](https://appleid.apple.com) |
 | `APPLE_TEAM_ID` | For notarization | Team ID from Apple Developer |
+
+**Status (2026-11-02): no secrets are configured yet** — `gh secret list` is empty and the `Preview`/`Production` environments have none either. Until `HOMEBREW_TAP_GITHUB_TOKEN` exists, the Homebrew job logs a warning and skips the tap push (the run stays green); without `CSC_LINK`, DMGs are ad-hoc signed.
 
 **Never commit tokens or certificates to the repo.** If a PAT was pasted in chat or committed, **revoke it immediately** and create a new one.
 
@@ -66,13 +71,14 @@ Copy `README.md` from [`packaging/homebrew/tap-README.example.md`](../packaging/
 
 ## 4. Ship release
 
+Primary (verified) — admin tag push triggers the pipeline:
+
 ```bash
-# After rules are fixed (optional):
-git tag v0.1.0
-git push origin v0.1.0
+git tag v0.1.1 origin/main   # or the release commit
+git push origin v0.1.1       # expect: "Bypassed rule violations for refs/tags/v0.1.1"
 ```
 
-Or use **Actions → Release → Run workflow** as above.
+Secondary — **Actions → Release → Run workflow** with the `version` input, but only when that tag already exists (§1).
 
 Verify:
 

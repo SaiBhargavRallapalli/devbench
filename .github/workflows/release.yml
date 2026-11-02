@@ -1,9 +1,11 @@
 # Build signed/notarized macOS DMGs, publish GitHub Release, update Homebrew tap.
 #
-# If `git push origin v*` fails with GH013 (tag creation restricted), use either:
-#   • Actions → Release → Run workflow (recommended), or
-#   • GitHub → Releases → Publish (triggers release: published), or
-#   • Relax tag rulesets for admins / github-actions[bot] (see .github/RELEASE_SETUP.md)
+# Tag rules (protect-releases) block GITHUB_TOKEN tag creation, and GitHub rejects
+# adding github-actions as a bypass actor on this personal-account repo (422), so:
+#   • Push the tag as an admin (ruleset bypass) — the push itself triggers this
+#     workflow, or
+#   • workflow_dispatch, but only when the tag already exists (the publish step
+#     then skips tag creation). Details: .github/RELEASE_SETUP.md
 name: Release
 
 on:
