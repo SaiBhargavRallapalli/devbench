@@ -2,9 +2,203 @@
 
 > Generated from git log. Refresh with `npm run changelog` or the **Update changelog** GitHub Action.
 
+## 2026-11-03
+
+### Changed
+- Bump all GitHub Actions to current majors (`921861a`)
+
+## 2026-11-02
+
+### Added
+- Add functional interaction motion across the tools (`ff6bb63`)
+
+### Changed
+- Document the verified release constraints; drop the impossible fix (`e6ae0cf`)
+
+## 2026-10-31
+
+### Added
+- Add one-time ⌘K palette hint in the header (`cbece01`)
+
+### Changed
+- Name the shortcuts/recents section so it is a region landmark (`44c8bb4`)
+- Standardize clipboard feedback: copyWithFeedback everywhere (`7233715`)
+- Honor prefers-reduced-motion: collapse decorative animation/transitions (`d932502`)
+
+## 2026-10-29
+
+### Changed
+- Fix remaining axe findings: cyan chips, search label text, landmarks, 36 label associations (`a8298f1`)
+
+## 2026-10-28
+
+### Changed
+- Fix light-mode contrast: muted token, category chips, status texts, search label space (`0a0ecde`)
+
+## 2026-10-27
+
+### Added
+- Add 3 zero-dependency image tools: barcode-generator, image-watermark, image-filters (`3a3b4d3`)
+
+### Changed
+- Fix a11y audit failures: accent contrast, CSP beacon, search label, blog breadcrumbs (`dc1fdc3`)
+
+## 2026-10-26
+
+### Added
+- Add IndexNow: daily cron submits live sitemap to Bing/Naver/Yandex (`5e56150`)
+- Add bespoke SEO content for the 11 new tools; fix stale FAQ timeout (`32d813e`)
+
+### Changed
+- Fix guide-link placement: blog links were anchored into the wrong entries (`d608517`)
+- Backfill bespoke SEO content for 30 legacy custom tools; add wiring-integrity test suite (`554d1b1`)
+- Quality sweep: generated llms.txt, SW shell coverage 6→22, SEO metadata gaps, schema cleanup (`da3291e`)
+- Blog: India form photo/signature spec cluster (4 posts) (`b771e8c`)
+- Fix GSC crawl-budget leaks: robots rules, dead SearchAction, dead file (`c6f16e2`)
+
+## 2026-10-25
+
+### Added
+- page content + FAQs for the 11 new tools (`eaae7d7`)
+- route the 11 new slugs through CustomToolOutlet (`85196d8`)
+- build 11 new tools — code runner (Wandbox), crop/rotate/target-compress/physical-units/passport/EXIF/favicon/signature, PDF text, handwriting (`c1b047c`)
+- register 11 new tools — hub slots, connectivity, related links, sitemap lastmod (`f26caa7`)
+
+### Fixed
+- client must not re-parse GET /api/code-run — double normalization dropped every runtime and silently pinned the UI to 12 fallback languages (`63cce73`)
+
+## 2026-10-21
+
+### Added
+- Consent Mode v2 + consent banner + affiliate placements (`34f9cd5`)
+- add friendly-error + global toast feedback; wire download notify (`2ecc52a`)
+
+### Fixed
+- keyboard-operable uploads, role=alert banners, sanitize raw errors (`7fa1ed0`)
+
+### Performance
+- server-render FAQ/SEO content, add loading skeletons (`61aa5e5`)
+
+### Chore
+- hide affiliate recommendations until real referral URLs exist (`d69fdda`)
+
+## 2026-10-20
+
+### Added
+- Add a compliant affiliate-link system as the first revenue channel. (`ac9320e`)
+
+### Changed
+- Fix Text-to-PDF and Watermark crashing on non-Latin text (download failed). (`7c69ee0`)
+- Fix ipynb→PDF download failing in non-Chromium browsers. (`c17d6b0`)
+- Fix Lighthouse never running in CI due to a port collision. (`e8a54bd`)
+- Cursor/notebook pdf html rendering (#27) (`090f27e`)
+- Fix lint gate failing locally and remove dead Lighthouse config. (`84edd8d`)
+
+## 2026-08-07
+
+### Changed
+- Fix notebook PDF rendering so Jupyter HTML markdown is readable. (`9402af3`)
+
+## 2026-08-06
+
+### Changed
+- Fix client notebook PDF download failing on emoji/Unicode. (`318e5ad`)
+
+## 2026-08-04
+
+### Changed
+- Fix ipynb→PDF download with client fallback and serverless-safe sanitize. (`bf0eb5b`)
+
+## 2026-08-01
+
+### Changed
+- Fix next/dynamic build failure by using object-literal options. (`3e6464b`)
+
+## 2026-07-31
+
+### Added
+- Add AdSense display slots while keeping DevBench free for users. (`c6c94c0`)
+- Add DOMPurify sanitization and dialog focus traps. (`00cd002`)
+
+### Changed
+- Fix React hooks lint errors blocking CI on main. (`2cf43b1`)
+- Cut initial JS with deferred palette and tool code-splitting. (`0a2d3c7`)
+- Restore Google AdSense verification and strengthen publisher content. (`0b376eb`)
+
+## 2026-07-29
+
+### Fixed
+- harden proxy SSRF, XSS, CSP, and workspace redirects (#26) (`cf472a6`)
+- harden proxy SSRF, XSS surfaces, CSP, and workspace redirects (`22a591a`)
+
+### Changed
+- Harden API relays and align privacy UX after ads removal. (`28c6d45`)
+- Remove affiliate monetization and simplify tool discovery UX. (`e6059a0`)
+
+## 2026-06-28
+
+### Added
+- Add new blog posts on JSON Schema, JSONPath, URL Encoding, Encryption, chmod, dotenv, Semantic Versioning, SQL Formatting, Markdown, PDF splitting, and Time Zones (`5fbde30`)
+
+## 2026-06-26
+
+### Fixed
+- standardize quotation marks in blog post data (`965efc4`)
+
+## 2026-06-25
+
+### Added
+- add related blog posts to tools and enhance FAQ section on homepage (`e7272cf`)
+
+### Changed
+- update structured data schemas and improve JSON-LD integration (`7f6c797`)
+
+## 2026-06-20
+
+### Added
+- add API for converting Jupyter notebooks to PDF (`5d1b50a`)
+
+### Chore
+- bump Node.js from 20 to 22 across all workflows (`d26b52b`)
+
+## 2026-06-17
+
+### Added
+- add Video Converter and GIF Maker tools with FFmpeg integration (`78c5a0b`)
+
+## 2026-06-15
+
+### Added
+- add Expense Splitter tool and integrate into tool registry (`4958585`)
+
+### Fixed
+- suppress react-hooks/set-state-in-effect lint errors in QrCodeTool (`9f8eebe`)
+
+## 2026-06-13
+
+### Fixed
+- handle tag creation blocked by repository rules (`fcc1426`)
+
+### Changed
+- update label for affiliate links on HomePage (`bbf5d35`)
+- streamline EngagementHome import and remove dynamic loading (`39c45ab`)
+- optimize component imports and enhance AdSense integration (`0064872`)
+
+## 2026-06-07
+
+### Added
+- enhance accessibility and add new blog posts (`06d2075`)
+
+## 2026-06-06
+
+### Fixed
+- harden postMessage and share protocols against inflation bugs (#25) (`a808e0b`)
+- harden postMessage and share protocols against inflation bugs (`e0795f1`)
+
 ## 2026-06-02
 
 ### Fixed
+- simplify release assets glob patterns and set fail_on_unmatched_files to false (`ecef625`)
 - release workflow homebrew checksum paths; tap job non-blocking (`75f764a`)
 - compute Homebrew cask checksums from published release DMGs (`718a68b`)
 - macOS Gatekeeper damaged-app guidance and ad-hoc signing (`7eff834`)
@@ -12,6 +206,9 @@
 
 ### Changed
 - conditionally display macOS app download options (`dfae871`)
+
+### Chore
+- update CHANGELOG.md (`8f8437f`)
 
 ### Docs
 - tag bypass instructions; faster homebrew tap bootstrap (`de23778`)
