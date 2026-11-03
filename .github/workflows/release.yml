@@ -81,12 +81,12 @@ jobs:
         arch: [arm64, x64]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: "22"
           cache: "npm"
@@ -173,7 +173,7 @@ jobs:
           ls -la DevBench*.dmg
 
       - name: Upload DMG artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: dmg-${{ matrix.arch }}
           path: |
@@ -191,7 +191,7 @@ jobs:
       (github.event_name == 'workflow_dispatch' && github.event.inputs.publish_release == 'true')
     steps:
       - name: Download DMG artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           pattern: dmg-*
           merge-multiple: true
@@ -202,7 +202,7 @@ jobs:
 
       - name: Publish release
         id: publish
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ needs.resolve-version.outputs.tag }}
           target_commitish: ${{ github.sha }}
@@ -239,7 +239,7 @@ jobs:
       )
     steps:
       - name: Checkout application repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Compute checksums from published release assets
         id: checksums
@@ -281,7 +281,7 @@ jobs:
           SHA256_DMG_X64: ${{ steps.checksums.outputs.sha256_dmg_x64 }}
 
       - name: Upload generated Homebrew files
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: homebrew-tap-files
           path: dist/homebrew/
