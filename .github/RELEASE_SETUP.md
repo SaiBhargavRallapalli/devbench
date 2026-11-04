@@ -40,7 +40,7 @@ Add under **Settings → Secrets and variables → Actions**:
 | `APPLE_APP_SPECIFIC_PASSWORD` | For notarization | [App-specific password](https://appleid.apple.com) |
 | `APPLE_TEAM_ID` | For notarization | Team ID from Apple Developer |
 
-**Status (2026-11-02): no secrets are configured yet** — `gh secret list` is empty and the `Preview`/`Production` environments have none either. Until `HOMEBREW_TAP_GITHUB_TOKEN` exists, the Homebrew job logs a warning and skips the tap push (the run stays green); without `CSC_LINK`, DMGs are ad-hoc signed.
+**Status (2026-11-04): `HOMEBREW_TAP_GITHUB_TOKEN` is configured and verified** — the Homebrew job pushes tap updates by itself (proven on run 41685439404: it caught the tap up from 0.1.0 → 0.1.1 unprompted). Signing secrets (`CSC_LINK` et al.) are deliberately **not** configured — the Apple Developer Program is paid, so DMGs stay ad-hoc signed (users right-click → Open on first launch). Caveat: the Homebrew job is `continue-on-error`, so a failed tap push still shows a **green run** — always read the `Push to Homebrew tap` step logs.
 
 **Never commit tokens or certificates to the repo.** If a PAT was pasted in chat or committed, **revoke it immediately** and create a new one.
 
