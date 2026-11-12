@@ -33,7 +33,7 @@ Add under **Settings → Secrets and variables → Actions**:
 
 | Secret | Required | Purpose |
 |--------|----------|---------|
-| `HOMEBREW_TAP_GITHUB_TOKEN` | For tap auto-update | PAT with `contents: write` on `homebrew-devbench` |
+| `HOMEBREW_TAP_GITHUB_TOKEN` | For tap auto-update | Classic PAT, `repo` scope (covers contents-write on `homebrew-devbench`), 90-day expiry — rotate before it lapses |
 | `CSC_LINK` | For signed DMGs | Base64-encoded `.p12` Developer ID Application cert |
 | `CSC_KEY_PASSWORD` | With `CSC_LINK` | Certificate export password |
 | `APPLE_ID` | For notarization | Apple ID email |
@@ -42,7 +42,9 @@ Add under **Settings → Secrets and variables → Actions**:
 
 **Status (2026-11-04): `HOMEBREW_TAP_GITHUB_TOKEN` is configured and verified** — the Homebrew job pushes tap updates by itself (proven on run 41685439404: it caught the tap up from 0.1.0 → 0.1.1 unprompted). Signing secrets (`CSC_LINK` et al.) are deliberately **not** configured — the Apple Developer Program is paid, so DMGs stay ad-hoc signed (users right-click → Open on first launch). Caveat: the Homebrew job is `continue-on-error`, so a failed tap push still shows a **green run** — always read the `Push to Homebrew tap` step logs.
 
-**Never commit tokens or certificates to the repo.** If a PAT was pasted in chat or committed, **revoke it immediately** and create a new one.
+**Rotation (2026-11-13): the PAT that had been pasted in chat was revoked** (its API calls now return 401) and replaced. The secret now holds a fresh classic token — note `devbench-tap-push`, scope `repo` only — **expiring 2027-02-10**. Rotate before then: an expired token surfaces only as a failing tap push behind a green run.
+
+**Never commit tokens or certificates to the repo.** If a PAT was pasted in chat or committed, **revoke it immediately** and create a new one — this rule was applied on 2026-11-13 (see rotation note above).
 
 ### Encode certificate for `CSC_LINK`
 
