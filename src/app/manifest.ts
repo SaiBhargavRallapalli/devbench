@@ -4,9 +4,9 @@ import type { MetadataRoute } from "next";
  * PWA manifest — served at /manifest.webmanifest.
  *
  * Drives "Add to Home Screen" UX on mobile, plus app-like display on Chrome
- * desktop. Icons reference the existing `src/app/icon.svg` (Next.js auto-serves
- * it at `/icon.svg`). SVG icons work in Chrome 99+ and Edge; older browsers
- * fall back to the favicon.
+ * desktop. Icons: rasterized PNGs (icon-192/icon-512, generated from the
+ * artwork in `src/app/icon.svg`) for universal support, plus the SVG itself
+ * (auto-served at `/icon.svg`) for browsers that prefer it.
  */
 export default function manifest(): MetadataRoute.Manifest {
   return {
@@ -23,7 +23,27 @@ export default function manifest(): MetadataRoute.Manifest {
     lang: "en",
     dir: "ltr",
     categories: ["productivity", "utilities", "developer"],
+    // PNG first (universal support — incl. install prompts that skip SVG),
+    // then the crisp SVG for browsers that take it.
     icons: [
+      {
+        src: "/icon-192.png",
+        sizes: "192x192",
+        type: "image/png",
+        purpose: "any",
+      },
+      {
+        src: "/icon-512.png",
+        sizes: "512x512",
+        type: "image/png",
+        purpose: "any",
+      },
+      {
+        src: "/icon-512.png",
+        sizes: "512x512",
+        type: "image/png",
+        purpose: "maskable",
+      },
       {
         src: "/icon.svg",
         sizes: "any",

@@ -17,7 +17,7 @@ export default function PrivacyPage() {
           Back to home
         </Link>
         <h1 className="text-3xl font-bold tracking-tight">Privacy Policy</h1>
-        <p className="mt-2 text-sm text-muted-foreground">Last updated: July 2026</p>
+        <p className="mt-2 text-sm text-muted-foreground">Last updated: November 2026</p>
         <div className="mt-6 space-y-6 text-muted-foreground leading-relaxed">
 
           <p>
@@ -285,6 +285,13 @@ export default function PrivacyPage() {
             set their own cookies. These are governed by their respective privacy policies,
             which are linked in sections 2 and 3 above.
           </p>
+          <p>
+            You can change or withdraw your cookie consent at any time using{" "}
+            <strong className="text-foreground">Cookie settings</strong> in the site
+            footer: it clears your stored choice and reopens this banner so you can
+            accept or decline again. Until you accept, advertising and analytics stay
+            off.
+          </p>
 
           <h2 className="text-lg font-semibold text-foreground pt-2">5. Hosting and server logs</h2>
           <p>
@@ -333,6 +340,14 @@ export default function PrivacyPage() {
             contacted us and wish to have your message deleted from our records, please reach
             out and we will honour that request promptly.
           </p>
+          <p>
+            If you are in the EEA, the UK, or another region with data-protection laws,
+            you additionally have the right to withdraw consent at any time (via Cookie
+            settings in the footer), to object to processing, to request a copy of your
+            data in a portable format, and to lodge a complaint with your local
+            supervisory authority. To exercise any of these rights, contact us through
+            the contact page.
+          </p>
 
           <h2 className="text-lg font-semibold text-foreground pt-2">9. Changes to this policy</h2>
           <p>
@@ -340,6 +355,95 @@ export default function PrivacyPage() {
             tools or features are added. The &ldquo;last updated&rdquo; date at the top of
             this page reflects the most recent revision. Continued use of DevBench after a
             change constitutes acceptance of the updated policy.
+          </p>
+
+          <h2 className="text-lg font-semibold text-foreground pt-2">
+            10. Legal basis for processing (GDPR)
+          </h2>
+          <p>
+            If you are in the European Economic Area or the United Kingdom, we rely on
+            the following legal bases under the GDPR:
+          </p>
+          <ul className="list-disc list-inside space-y-1.5 text-sm">
+            <li>
+              <strong className="text-foreground">Consent</strong> — advertising and
+              analytics scripts run only after you accept the consent banner. You can
+              withdraw consent at any time via Cookie settings in the footer, with no
+              effect on your ability to use the tools.
+            </li>
+            <li>
+              <strong className="text-foreground">Legitimate interests</strong> —
+              security and fraud prevention through hosting logs (section 5) and
+              remembering basic preferences such as your colour theme. These are
+              necessary to run a safe, usable site and do not override your rights.
+            </li>
+            <li>
+              <strong className="text-foreground">Performance of a contract or legal
+              obligation</strong> — replying to messages you send us and meeting
+              applicable legal requirements.
+            </li>
+          </ul>
+
+          <h2 className="text-lg font-semibold text-foreground pt-2">
+            11. Third parties and data sharing
+          </h2>
+          <p>
+            We do not sell or rent personal data. The only third parties that receive
+            data in connection with DevBench are:
+          </p>
+          <ul className="list-disc list-inside space-y-1.5 text-sm">
+            <li>
+              <strong className="text-foreground">Google</strong> (AdSense, Analytics,
+              Tag Manager) — advertising and analytics, only after consent, processed
+              under Google&apos;s data processing terms and privacy policy (sections 2
+              and 3).
+            </li>
+            <li>
+              <strong className="text-foreground">Vercel</strong> — hosting, CDN, and
+              the server logs described in section 5.
+            </li>
+          </ul>
+          <p>
+            Where a provider processes data on our behalf, we rely on its contractual
+            data-processing terms — for example, Google&apos;s data processing terms
+            for AdSense publishers — rather than a separately negotiated agreement,
+            because DevBench is a small, free service with no dedicated processor
+            contracts. The contact form opens your own email client, so no email
+            processor sees your message before you choose to send it.
+          </p>
+
+          <h2 className="text-lg font-semibold text-foreground pt-2">12. Data security</h2>
+          <p>
+            DevBench serves all traffic over HTTPS/TLS, is hosted on Vercel&apos;s
+            hardened infrastructure, and by design keeps almost nothing about you:
+            most tools never transmit your input to a server at all. The few systems
+            that do exist (the relay endpoints in section 1 and the contact inbox) are
+            access-restricted. No method of transmission or storage is 100% secure,
+            but these measures keep the risk proportionate to the very small amount of
+            data involved.
+          </p>
+
+          <h2 className="text-lg font-semibold text-foreground pt-2">
+            13. Data breach procedure
+          </h2>
+          <p>
+            If we become aware of a security breach affecting personal data, we will
+            contain it, assess the impact, and — where the law requires it (for
+            example, the GDPR&apos;s 72-hour notification window) — notify the
+            relevant supervisory authority and any affected individuals without undue
+            delay, explaining what happened and what we are doing about it. Every
+            incident is recorded and reviewed so the same cause does not recur.
+          </p>
+
+          <h2 className="text-lg font-semibold text-foreground pt-2">
+            14. Marketing communications
+          </h2>
+          <p>
+            We send <strong className="text-foreground">no marketing</strong> emails,
+            SMS, or push notifications — there is no newsletter and no mailing list to
+            join. The only messages we ever send are direct replies to enquiries you
+            initiate through the contact page. If that ever changes, we will ask for
+            your consent first.
           </p>
 
           <p className="pt-2">

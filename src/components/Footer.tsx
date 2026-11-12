@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { Shield, ExternalLink } from "lucide-react";
 import DevBenchMark from "@/components/DevBenchMark";
+import CookieSettingsButton from "@/components/CookieSettingsButton";
 import FooterAd from "@/components/ads/FooterAd";
 import {
   footerCategoryLinks,
@@ -135,6 +136,13 @@ export default function Footer() {
             >
               Privacy
             </Link>
+            <Link
+              href="/terms"
+              className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+            >
+              Terms
+            </Link>
+            <CookieSettingsButton />
             <a
               href="https://github.com/saibhargavrallapalli/devbench/issues/new?template=tool-request.md&title=Tool+request%3A+"
               target="_blank"

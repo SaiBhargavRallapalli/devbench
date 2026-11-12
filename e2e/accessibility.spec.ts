@@ -2,7 +2,7 @@ import { type Page, expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
 // Pages that are primarily static/SSR — highest value a11y targets.
-const STATIC_PAGES = ["/", "/blog", "/about", "/privacy"];
+const STATIC_PAGES = ["/", "/blog", "/about", "/privacy", "/terms"];
 
 // Tool pages: generic I/O tools that render the full textarea UI.
 const TOOL_PAGES = [
