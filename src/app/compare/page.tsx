@@ -24,6 +24,23 @@ export default function CompareIndexPage() {
         <p className="mt-3 text-muted-foreground leading-relaxed">
           Pick the right utility when two tools overlap. Every linked tool runs in your browser.
         </p>
+
+        <section className="mt-8 space-y-4 text-sm text-muted-foreground leading-relaxed">
+          <p>
+            Overlapping tools are a good problem to have — until you waste ten minutes in the
+            wrong one. These guides explain where each pair of DevBench utilities diverges: what
+            the inputs accept, how the output differs, and which one matches your task. Each
+            comparison includes a feature table, worked guidance on when to choose which side,
+            and answers to the questions people actually hit while converting files.
+          </p>
+          <p>
+            All of the tools compared here share the same ground rules: they run entirely in
+            your browser, require no account, and never upload your data. That makes it easy to
+            switch between them mid-task — a CSV that fails to import in one converter can go
+            straight into the other without leaving the page.
+          </p>
+        </section>
+
         <ul className="mt-8 space-y-4">
           {TOOL_COMPARISONS.map((c) => (
             <li key={c.slug}>
@@ -33,10 +50,35 @@ export default function CompareIndexPage() {
               >
                 <span className="font-semibold text-foreground">{c.title}</span>
                 <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{c.deck}</p>
+                <span className="mt-3 inline-block text-xs text-accent">
+                  {c.table.rows.length} comparison points · {c.faq.length} FAQ →
+                </span>
               </Link>
             </li>
           ))}
         </ul>
+
+        <section className="mt-10 rounded-2xl border border-border bg-muted/30 p-5 text-sm text-muted-foreground leading-relaxed">
+          <h2 className="font-semibold text-foreground">How to use these guides</h2>
+          <p className="mt-2">
+            Start with the table — it answers most questions at a glance. If your case is less
+            obvious, the sections below it walk through real scenarios (database exports,
+            re-formatted API payloads, Kubernetes manifests). When both tools genuinely fit,
+            either works: they share the same client-side engine, so the only difference is the
+            interface you prefer.
+          </p>
+          <p className="mt-3">
+            Missing a comparison?{" "}
+            <Link href="/contact" className="text-accent hover:underline">
+              Request one
+            </Link>{" "}
+            — or open the{" "}
+            <Link href="/" className="text-accent hover:underline">
+              full tool index
+            </Link>{" "}
+            to browse everything DevBench offers.
+          </p>
+        </section>
       </main>
       <Footer />
     </>

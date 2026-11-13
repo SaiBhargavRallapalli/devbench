@@ -36,6 +36,18 @@ export default async function CompareArticlePage({ params }: Props) {
   const comp = TOOL_COMPARISONS.find((c) => c.slug === slug);
   if (!comp) notFound();
 
+  const faqSchema = comp.faq.length
+    ? {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: comp.faq.map((f) => ({
+          "@type": "Question",
+          name: f.q,
+          acceptedAnswer: { "@type": "Answer", text: f.a },
+        })),
+      }
+    : null;
+
   return (
     <>
       <Header />
@@ -43,6 +55,7 @@ export default async function CompareArticlePage({ params }: Props) {
         { name: "Compare tools", path: "/compare" },
         { name: comp.title, path: `/compare/${comp.slug}` },
       ])} />
+      {faqSchema && <JsonLd data={faqSchema} />}
       <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-10 sm:px-6">
         <nav className="mb-6 text-sm text-muted-foreground">
           <Link href="/compare" className="hover:text-accent">
@@ -54,6 +67,14 @@ export default async function CompareArticlePage({ params }: Props) {
         <article>
           <h1 className="text-3xl font-bold tracking-tight">{comp.title}</h1>
           <p className="mt-4 text-muted-foreground leading-relaxed">{comp.deck}</p>
+
+          <section className="mt-8 space-y-4">
+            {comp.intro.map((p, i) => (
+              <p key={i} className="text-sm text-muted-foreground leading-relaxed">
+                {p}
+              </p>
+            ))}
+          </section>
 
           <section className="mt-10 space-y-8">
             <div>
@@ -80,6 +101,52 @@ export default async function CompareArticlePage({ params }: Props) {
             </div>
           </section>
 
+          <section className="mt-10 overflow-x-auto">
+            <table className="w-full text-sm border-collapse">
+              <caption className="mb-3 text-left font-semibold text-foreground">
+                {comp.table.caption}
+              </caption>
+              <thead>
+                <tr className="border-b border-border text-left">
+                  {comp.table.headers.map((h) => (
+                    <th key={h} className="py-2 pr-4 font-medium text-foreground align-top">
+                      {h}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {comp.table.rows.map((row) => (
+                  <tr key={row[0]} className="border-b border-border/60 align-top">
+                    {row.map((cell, i) => (
+                      <td
+                        key={i}
+                        className={`py-2.5 pr-4 leading-relaxed ${
+                          i === 0 ? "font-medium text-foreground" : "text-muted-foreground"
+                        }`}
+                      >
+                        {cell}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </section>
+
+          <section className="mt-10 space-y-8">
+            {comp.sections.map((s) => (
+              <div key={s.h2}>
+                <h2 className="text-lg font-semibold">{s.h2}</h2>
+                {s.p.map((para, i) => (
+                  <p key={i} className="mt-3 text-sm text-muted-foreground leading-relaxed">
+                    {para}
+                  </p>
+                ))}
+              </div>
+            ))}
+          </section>
+
           <p className="mt-10 rounded-xl border border-border bg-muted/30 px-4 py-3 text-sm leading-relaxed text-muted-foreground">
             {comp.summary}
           </p>
@@ -98,6 +165,25 @@ export default async function CompareArticlePage({ params }: Props) {
               Open {comp.b.name}
             </Link>
           </div>
+
+          <section className="mt-12">
+            <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+              Frequently Asked Questions
+            </h2>
+            <div className="mt-3 flex flex-col divide-y divide-border rounded-xl border border-border overflow-hidden">
+              {comp.faq.map((f) => (
+                <details key={f.q} className="group bg-card">
+                  <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden w-full flex items-center justify-between gap-4 px-4 py-3.5 text-left hover:bg-muted/40 transition-colors">
+                    <span className="text-sm font-medium text-foreground">{f.q}</span>
+                    <span className="text-muted-foreground transition-transform duration-200 group-open:rotate-45">
+                      +
+                    </span>
+                  </summary>
+                  <p className="px-4 pb-4 text-sm text-muted-foreground leading-relaxed">{f.a}</p>
+                </details>
+              ))}
+            </div>
+          </section>
         </article>
       </main>
       <Footer />

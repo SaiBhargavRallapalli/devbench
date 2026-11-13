@@ -232,6 +232,55 @@ export default function WorkflowsPage() {
         <p className="text-[11px] text-muted-foreground">
           Share input state: <code className="rounded bg-muted px-1">{sharePreview}…</code>
         </p>
+
+        <section className="space-y-4 border-t border-border pt-8 text-sm text-muted-foreground leading-relaxed">
+          <h2 className="text-base font-semibold text-foreground">
+            What tool pipelines are — and when to use one
+          </h2>
+          <p>
+            A pipeline is a chain of DevBench transformations run back to back on one piece of
+            input. Instead of converting in tool A, copying the result, pasting it into tool B,
+            and repeating until you lose track of which step mangled the data, you stack the
+            steps once and press <strong className="text-foreground">Run pipeline</strong>. Each
+            step&apos;s output becomes the next step&apos;s input automatically, the log under
+            the button reports ok or the exact failure per step, and the final output lands in
+            the copy box at the bottom.
+          </p>
+          <p>
+            Everything runs <strong className="text-foreground">client-side</strong> — the chain
+            never leaves your browser, so a pipeline that starts with a customer CSV and ends
+            in an API payload handles the whole journey locally. Common chains: format then
+            minify JSON, decode Base64 then URL-decode, convert YAML to JSON then to TypeScript
+            types, or hash a string and slugify the result. The{" "}
+            <strong className="text-foreground">presets</strong> above the editor load a few
+            ready-made examples; the <strong className="text-foreground">+ Add step</strong>{" "}
+            dropdown lists the full catalog — format, minify, encode, decode, escape, hash,
+            slugify, Markdown↔HTML, and the JSON↔YAML↔CSV↔XML converters.
+          </p>
+
+          <h3 className="text-sm font-semibold text-foreground">Saving and sharing chains</h3>
+          <p>
+            <strong className="text-foreground">Save pipeline</strong> stores the step sequence
+            in your browser so it appears in the Saved row next time — rebuild-free reuse for
+            the transformations you run weekly. The share link encodes the current input in the
+            URL hash (<code className="rounded bg-muted px-1">/workflows#state=…</code>), which
+            makes it easy to hand a colleague the exact starting data without a file
+            attachment; the steps themselves are reconstructed on their side from the preset or
+            saved name. Removing a step is one click, reordering happens as you add them, and a
+            failing step does not abort the log — you see precisely where the chain broke.
+          </p>
+
+          <h3 className="text-sm font-semibold text-foreground">Pipelines vs. the individual tools</h3>
+          <p>
+            Use a single tool page when the task is one-shot — you need one conversion and you
+            are done. Use a pipeline when the same sequence recurs or when intermediate copies
+            are where mistakes creep in: pasting the wrong tab, trimming a character, or
+            re-running an earlier step on stale data. If a chain becomes part of your daily
+            workflow, save it; if you also want the input persisted rather than only the steps,
+            the <Link href="/vault" className="text-accent hover:underline">project vault</Link>{" "}
+            stores pipeline I/O alongside your other drafts.
+          </p>
+        </section>
       </main>
     </>
   );

@@ -207,6 +207,60 @@ export default function VaultPage() {
             </ul>
           )}
         </section>
+
+        <section className="space-y-4 border-t border-border pt-8 text-sm text-muted-foreground leading-relaxed">
+          <h2 className="text-base font-semibold text-foreground">
+            What the project vault is — and where your drafts live
+          </h2>
+          <p>
+            The vault is DevBench&apos;s local-first scratch space. Use it to keep the inputs
+            and outputs you reuse — a JSON payload you test against every day, a regex you
+            refine over a week, a pipeline input you do not want to rebuild from scratch. Each
+            entry stores a title, the tool it belongs to, and the draft text itself, and the
+            external-link button on every saved row reopens that tool with the draft loaded
+            straight back in.
+          </p>
+          <p>
+            Drafts are written to{" "}
+            <strong className="text-foreground">IndexedDB in your browser</strong> — not to
+            DevBench servers. There is no account, no sync, and no network request when you
+            save: clearing site data or switching machines means the vault is gone unless you
+            exported a bundle first. That design is deliberate. Anything you paste here can be
+            a token, a customer record, or an internal config, and the only place it should
+            exist is on your device.
+          </p>
+
+          <h3 className="text-sm font-semibold text-foreground">Backup and transfer</h3>
+          <p>
+            <strong className="text-foreground">Export bundle</strong> downloads every entry as
+            a single{" "}
+            <code className="rounded bg-muted px-1">devbench-vault-YYYY-MM-DD.devbench.json</code>{" "}
+            file you can commit to a private repo, stash in a password manager, or move to
+            another browser. <strong className="text-foreground">Import (merge)</strong> adds
+            the bundle&apos;s entries to what is already saved, keeping both;{" "}
+            <strong className="text-foreground">Import (replace all)</strong> wipes the current
+            vault and loads the bundle exactly — use it when restoring on a fresh machine.
+            Imports are validated before they touch storage, so a malformed file is rejected
+            with an error instead of corrupting your existing drafts.
+          </p>
+
+          <h3 className="text-sm font-semibold text-foreground">Good to know</h3>
+          <p>
+            The vault is per-browser and per-profile: Chrome and Firefox each keep their own
+            copy, and private windows usually keep theirs only until the session ends. It has
+            no size limit beyond your browser&apos;s storage quota (typically hundreds of
+            megabytes), and entries are listed newest-first by update time. If a draft ever
+            needs to become permanent documentation rather than a local note, the{" "}
+            <Link href="/notepad" className="text-accent hover:underline">
+              notepad
+            </Link>{" "}
+            keeps multi-tab working copies you can export as files, and{" "}
+            <Link href="/workflows" className="text-accent hover:underline">
+              tool pipelines
+            </Link>{" "}
+            can save reusable step chains alongside them.
+          </p>
+        </section>
       </main>
     </>
   );

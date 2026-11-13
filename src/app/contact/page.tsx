@@ -287,7 +287,44 @@ export default function ContactPage() {
                     No. The form only builds a mailto link; your email client sends the message.
                   </dd>
                 </div>
+                <div>
+                  <dt className="font-medium">Where do privacy and data requests go?</dt>
+                  <dd className="mt-1 text-sm text-muted-foreground">
+                    Pick &quot;Privacy concern&quot; and describe the request — deletion,
+                    clarification about what a tool stores, or a question about the privacy
+                    policy. These are handled manually and may take longer than a normal reply.
+                  </dd>
+                </div>
+                <div>
+                  <dt className="font-medium">Is there a faster channel for tool requests?</dt>
+                  <dd className="mt-1 text-sm text-muted-foreground">
+                    Yes — GitHub issues are public and tracked in the project backlog. Use the
+                    contact form instead for anything private, including security reports and
+                    account or billing concerns from partner programs.
+                  </dd>
+                </div>
               </dl>
+            </section>
+
+            <section className="mt-14 border-t border-border pt-10 space-y-3 text-sm text-muted-foreground leading-relaxed">
+              <h2 className="text-lg font-semibold text-foreground">Before you write</h2>
+              <p>
+                DevBench is a browser-first toolkit: every utility runs client-side, no account
+                is required, and no tool stores your input on a server. That shapes what
+                support can and cannot do. Because your data never reaches us, we cannot
+                recover a draft cleared from the{" "}
+                <Link href="/vault" className="text-accent hover:underline">project vault</Link>,
+                restore an export you did not download, or see the input that triggered a
+                problem — for those, include a reproducible sample when you report the issue.
+              </p>
+              <p>
+                Bug reports move fastest with a concrete chain: the tool URL, the exact input
+                (or a sanitised version of it), what you expected, what happened instead, and
+                your browser and operating system. Feature ideas are prioritised when they fit
+                the product&apos;s constraints — free to use, no signup, and processing that
+                stays on the user&apos;s device. If you are reporting a security issue,
+                say so in the subject line so it can be triaged ahead of ordinary bugs.
+              </p>
             </section>
           </div>
 
