@@ -47,6 +47,7 @@ const CURATED_RELATED: Partial<Record<string, readonly string[]>> = {
   "binary-to-text": ["text-to-binary", "hex-to-text", "base64-decode"],
   "base64-image": ["base64-encode", "base64-decode", "image-compressor"],
   "speed-test": ["dns-lookup", "ip-info", "websocket-tester", "http-status-reference"],
+  "down-detector": ["dns-lookup", "ip-info", "http-status-reference", "speed-test"],
   "spin-wheel": ["uuid-generator", "password-generator", "qr-code"],
   rot13: ["morse-code", "base64-encode", "text-to-hex"],
   "morse-code": ["rot13", "text-to-hex", "base64-encode"],

@@ -85,6 +85,7 @@ const ImageWatermarkTool      = dynamic(() => import("@/components/tools/ImageWa
 const ImageFiltersTool        = dynamic(() => import("@/components/tools/ImageFiltersTool"), { ssr: false });
 const SpeedTestTool           = dynamic(() => import("@/components/tools/SpeedTestTool"), { ssr: false });
 const SpinWheelTool           = dynamic(() => import("@/components/tools/SpinWheelTool"), { ssr: false });
+const DownDetectorTool        = dynamic(() => import("@/components/tools/DownDetectorTool"), { ssr: false });
 
 export default function CustomToolOutlet({ slug, tool }: { slug: string; tool: Tool }) {
   if (FINANCE_TOOL_SLUGS.has(slug))  return <FinanceFormTools tool={tool} />;
@@ -114,6 +115,7 @@ export default function CustomToolOutlet({ slug, tool }: { slug: string; tool: T
     case "qr-code":                  return <QrCodeTool tool={tool} />;
     case "speed-test":               return <SpeedTestTool tool={tool} />;
     case "spin-wheel":               return <SpinWheelTool tool={tool} />;
+    case "down-detector":            return <DownDetectorTool tool={tool} />;
     case "age-calculator":           return <AgeCalculatorTool tool={tool} />;
     case "bmi-calculator":           return <BmiCalculatorTool tool={tool} />;
     case "compound-interest":        return <CompoundInterestTool tool={tool} />;

@@ -65,6 +65,14 @@ export const pageContentDev: Record<string, ToolPageContent> = {
       "Internet Speed Test measures latency, jitter, download and upload throughput against Cloudflare's public speed endpoints. Ten small pings establish latency, then six parallel download streams and three upload streams saturate the line for about ten seconds while a live graph plots throughput. The final result uses the best consecutive one-second window, so connection ramp-up never distorts the number. The nearest edge location is shown with your results, and nothing runs until you press Start.",
   },
 
+  "down-detector": {
+    title: "Down Detector — Is Jio, Swiggy, WhatsApp Down Right Now?",
+    metaDescription:
+      "Check if Jio, Swiggy, IRCTC, WhatsApp, Instagram, GitHub and 90+ popular sites are down. Live reachability, response time and HTTP codes — India and worldwide.",
+    openingParagraph:
+      "Down Detector checks whether 90+ of the most-watched services — Jio, Airtel, IRCTC, Swiggy, Zomato, Flipkart, WhatsApp, Instagram, YouTube, GitHub and the global giants — are reachable right now. Each check sends a HEAD request with a three-second timeout and reports up, degraded (5xx) or down, with the HTTP status code and response time. Filter by category or region, re-check in one click, and see results from a quick auto-check the moment the page opens. No signup, and only the status of well-known public sites is probed.",
+  },
+
   "curl-to-fetch": {
     title: "cURL to JavaScript Fetch Converter",
     metaDescription:

@@ -2850,6 +2850,78 @@ export const CONTENT_MAP: Record<string, React.FC> = {
   "aes-encrypt-decrypt": AesEncryptContent,
   "qr-code": QrCodeContent,
   "speed-test": SpeedTestContent,
+  "down-detector": (() => (
+    <Section>
+      <h2 className={h2}>How to check if a site is down</h2>
+      <ol className={ol}>
+        <li>
+          The tool auto-checks the full catalog the moment it opens — 96 services
+          across telecom, social, streaming, food, shopping, banking, travel,
+          government, cloud/dev and gaming, Indian services first in each category.
+        </li>
+        <li>
+          Narrow the view with a category chip (for example{" "}
+          <strong className="text-foreground">Food &amp; Grocery</strong>) and the
+          region toggle (<strong className="text-foreground">India</strong> or{" "}
+          <strong className="text-foreground">Worldwide</strong>), then press{" "}
+          <strong className="text-foreground">Check now</strong> to re-probe just
+          what is on screen.
+        </li>
+        <li>
+          Every card shows a status pill — Up (green), Degraded (amber), Down
+          (red) — plus the HTTP status code and the response time in milliseconds.
+          The summary line above the grid totals the results and stamps the time
+          of the last check.
+        </li>
+        <li>
+          Filters, results and the last-checked time persist in local storage, so
+          a re-visit during an outage opens on the same view with the previous
+          statuses still visible while the refresh runs.
+        </li>
+      </ol>
+      <h2 className={h2}>What the statuses actually mean</h2>
+      <p className={prose}>
+        Each probe is a HEAD request with a three-second timeout that follows no
+        redirects. <strong className="text-foreground">Up</strong> means the host
+        answered with anything below 500 — including 403 and 405, which many
+        sites deliberately return to datacenter requests; a response is still a
+        response, and treating it as an outage would produce false alarms.
+        <strong className="text-foreground"> Degraded</strong> means a 5xx answer:
+        reachable, but the origin is erroring, which is the classic
+        partially-down state. <strong className="text-foreground">Down</strong>{" "}
+        means nothing came back at all — timeout, DNS failure or refused
+        connection, which are indistinguishable to the caller and all count as
+        unreachable.
+      </p>
+      <h2 className={h2}>Reading a check honestly</h2>
+      <p className={prose}>
+        The probe runs from DevBench&apos;s servers, so it answers &quot;is this
+        service reachable from the internet?&quot; — not &quot;is my connection
+        working?&quot;. If every card is green but one site fails for you, look
+        local first: your ISP, DNS resolver, VPN or the site blocking your
+        network. If a service flips between Degraded and Up across a few checks,
+        an incident is likely in progress — re-check in a minute to watch it
+        settle. Results cache in this browser only, and the request allowlist is
+        fixed: the tool probes exactly these well-known public hostnames and
+        nothing else.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/dns-lookup" className="text-accent hover:underline">
+          DNS Lookup
+        </Link>
+        {", "}
+        <Link href="/tools/ip-info" className="text-accent hover:underline">
+          IP Info
+        </Link>
+        {", and "}
+        <Link href="/tools/http-status-reference" className="text-accent hover:underline">
+          HTTP Status Reference
+        </Link>
+        .
+      </p>
+    </Section>
+  )) as React.FC,
   "spin-wheel": SpinWheelContent,
   "url-parser": UrlParserContent,
   "base-converter": BaseConverterContent,

@@ -5,6 +5,7 @@
 export const SLUGS_NEED_NETWORK = new Set<string>([
   "currency-converter",
   "dns-lookup",
+  "down-detector",
   "ip-info",
   "npm-compare",
   "background-remover",
@@ -19,6 +20,9 @@ export type ToolConnectivity =
 
 export function getToolConnectivity(slug: string): ToolConnectivity {
   if (slug === "dns-lookup") return { mode: "network", detail: "Cloudflare DoH" };
+  if (slug === "down-detector") {
+    return { mode: "network", detail: "HEAD probes via DevBench API" };
+  }
   if (slug === "ip-info") return { mode: "network", detail: "ipapi.co" };
   if (slug === "npm-compare") return { mode: "network", detail: "registry.npmjs.org" };
   if (slug === "background-remover") {

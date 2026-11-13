@@ -112,6 +112,7 @@ export const TOOLS: Tool[] = [
   { slug: "password-generator", name: "Password Generator", shortName: "Pass", description: "Generate secure random passwords", category: "dev", icon: "🔑" },
   { slug: "qr-code", name: "QR Code Generator", shortName: "QR", description: "Generate QR codes from text or URLs, with custom logo overlay and position control", category: "dev", icon: "▣" },
   { slug: "speed-test", name: "Internet Speed Test", shortName: "Speed Test", description: "Measure ping, jitter, download and upload speed against Cloudflare's nearest edge — live graph, honest ratings", category: "dev", icon: "📶" },
+  { slug: "down-detector", name: "Down Detector", shortName: "Is It Down?", description: "Check if Jio, Swiggy, IRCTC, WhatsApp, GitHub and 90+ popular sites are down right now — live reachability from India and worldwide", category: "dev", icon: "📡" },
   { slug: "url-parser", name: "URL Parser", shortName: "URL", description: "Parse URLs into components", category: "dev", icon: "🔗" },
   { slug: "base-converter", name: "Base Converter", shortName: "Base", description: "Convert between decimal, hex, binary, octal", category: "dev", icon: "N" },
   { slug: "css-minifier", name: "CSS Minifier", shortName: "CSS Min", description: "Minify and compress CSS", category: "dev", icon: "CSS" },
