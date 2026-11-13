@@ -3265,41 +3265,44 @@ function SplitPdfOnline() {
   return (
     <div className="space-y-4">
       <p className={prose}>
-        Splitting a PDF — extracting a chapter, isolating a single page, or separating a scanned invoice from a contract — is one of the most frequent document tasks. The good news: you can do it entirely in your browser without uploading to a third-party server, or from the command line in a single command.
+        Splitting a PDF — extracting a chapter, isolating a single page, or separating a scanned
+        invoice from a contract — is one of the most frequent document tasks. If you have a
+        browser open, the no-install path is covered in the companion guide:{" "}
+        <Link href="/blog/split-pdf-document" className="text-accent hover:underline">how to split a PDF document in your browser</Link> covers the two
+        client-side workflows (whole document to a ZIP of single-page files, or a chosen range
+        extracted in one click). This article is about the other half of the toolbox — the
+        methods that work offline, in a script, or with tools that are already on your machine.
       </p>
 
-      <h2 className={h2}>Method 1 — Browser-based (no upload)</h2>
+      <h2 className={h2}>Method 1 — macOS Preview (built in)</h2>
+      <ol className={ol}>
+        <li>Open the PDF in Preview and show the thumbnails sidebar (<strong>View → Thumbnails</strong>).</li>
+        <li>Select the pages you want to keep (Cmd-click for non-contiguous pages).</li>
+        <li>Drag the selected thumbnails out of the window to your Desktop — this creates a new PDF containing just those pages, leaving the original intact.</li>
+        <li>Alternatively, print a subset: <strong>File → Print</strong>, enter the page range, then <strong>PDF → Save as PDF</strong>.</li>
+      </ol>
       <p className={prose}>
-        DevBench's PDF Splitter runs entirely in your browser using PDF.js. Your file is never uploaded to any server:
+        Preview is pre-installed, works with no network at all, and handles password-protected
+        files once you supply the password — which makes it the sensible default on a Mac when
+        the document is confidential.
+      </p>
+
+      <h2 className={h2}>Method 2 — Windows: print a page range to a new PDF</h2>
+      <p className={prose}>
+        Windows ships no PDF editor, but it does ship a PDF printer, and every PDF viewer that
+        can print can extract a range:
       </p>
       <ol className={ol}>
-        <li>Open the <Link href="/tools/split-pdf" className="text-accent hover:underline">DevBench PDF Splitter</Link></li>
-        <li>Drop your PDF or click to browse</li>
-        <li>Enter the page range — for example <code className={code}>1-3</code> to extract the first three pages, or <code className={code}>5,8,12</code> for individual pages</li>
-        <li>Click Split — the resulting PDF downloads directly to your device</li>
+        <li>Open the PDF in Microsoft Edge (or Chrome).</li>
+        <li><strong>Ctrl+P</strong> → printer: <strong>Microsoft Print to PDF</strong>.</li>
+        <li>Under Pages, choose the range — for example <code className={code}>12-24</code> — and print.</li>
+        <li>Windows saves the range as a new PDF file you pick the location for.</li>
       </ol>
-      <p className={prose}>Because everything runs client-side, this is safe for confidential documents. There are no file size limits imposed by upload quotas (only browser memory).</p>
-
-      <h2 className={h2}>Page range syntax</h2>
-      <table className={table}>
-        <thead><tr><th className={th}>Input</th><th className={th}>Result</th></tr></thead>
-        <tbody>
-          <tr><td className={td}><code className={code}>1-5</code></td><td className={td}>Pages 1 through 5 (inclusive)</td></tr>
-          <tr><td className={td}><code className={code}>3</code></td><td className={td}>Page 3 only</td></tr>
-          <tr><td className={td}><code className={code}>1,3,7</code></td><td className={td}>Pages 1, 3, and 7 (non-contiguous)</td></tr>
-          <tr><td className={td}><code className={code}>2-4,9-12</code></td><td className={td}>Pages 2–4 and pages 9–12</td></tr>
-          <tr><td className={td}><code className={code}>-3</code></td><td className={td}>Pages 1 through 3 (shorthand)</td></tr>
-        </tbody>
-      </table>
-
-      <h2 className={h2}>Method 2 — macOS Preview (built-in)</h2>
-      <ol className={ol}>
-        <li>Open the PDF in Preview</li>
-        <li>Open the Thumbnails sidebar (<strong>View → Thumbnails</strong>)</li>
-        <li>Select the pages you want to extract (Cmd+click for non-contiguous pages)</li>
-        <li>Drag the selected thumbnails out of the window to your Desktop — this creates a new PDF with just those pages</li>
-      </ol>
-      <p className={prose}>Alternatively, print to PDF: select the pages you want, choose <strong>File → Print</strong>, set the page range, then click <strong>PDF → Save as PDF</strong>.</p>
+      <p className={prose}>
+        The same trick works on macOS with any printer dialog&apos;s PDF button, and in Chrome
+        the destination <strong>Save as PDF</strong> does the same job cross-platform. It is
+        the fastest built-in route when you want one contiguous range and nothing else.
+      </p>
 
       <h2 className={h2}>Method 3 — Python (pypdf)</h2>
       <p className={prose}><code className={code}>pypdf</code> is the standard Python library for PDF manipulation. Install it with <code className={code}>pip install pypdf</code>:</p>
@@ -3352,7 +3355,541 @@ if reader.is_encrypted:
 
       <h2 className={h2}>When the file size is unexpectedly large after splitting</h2>
       <p className={prose}>
-        A PDF may embed fonts and images once for the whole document. When you extract a few pages, each output file may still include those full embedded resources. To optimise file size after splitting, run the output through a PDF compressor or use Ghostscript with the <code className={code}>-dPDFSETTINGS=/ebook</code> flag.
+        A PDF may embed fonts and images once for the whole document. When you extract a few
+        pages, each output file may still include those full embedded resources. To optimise
+        file size after splitting, run the output through the{" "}
+        <Link href="/tools/compress-pdf" className="text-accent hover:underline">PDF Compressor</Link> — it works client-side like the rest of the toolkit — or use
+        Ghostscript with the <code className={code}>-dPDFSETTINGS=/ebook</code> flag.
+      </p>
+
+      <h2 className={h2}>Choosing a method</h2>
+      <table className={table}>
+        <thead>
+          <tr>
+            <th className={th}>Method</th>
+            <th className={th}>Best for</th>
+            <th className={th}>Needs install?</th>
+            <th className={th}>Scriptable?</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td className={td}>Browser (DevBench)</td>
+            <td className={td}>Quick interactive splits with no upload; per-page ZIPs and chosen ranges</td>
+            <td className={td}>No</td>
+            <td className={td}>No</td>
+          </tr>
+          <tr>
+            <td className={td}>macOS Preview</td>
+            <td className={td}>Offline Mac use, password-protected files, drag-to-extract</td>
+            <td className={td}>Built in</td>
+            <td className={td}>No</td>
+          </tr>
+          <tr>
+            <td className={td}>Print to PDF</td>
+            <td className={td}>One contiguous range, any OS, zero tools</td>
+            <td className={td}>Built in</td>
+            <td className={td}>No</td>
+          </tr>
+          <tr>
+            <td className={td}>Python (pypdf)</td>
+            <td className={td}>Batch jobs, non-contiguous pages, integrating into a pipeline</td>
+            <td className={td}><code className={code}>pip install pypdf</code></td>
+            <td className={td}>Yes</td>
+          </tr>
+          <tr>
+            <td className={td}>Ghostscript</td>
+            <td className={td}>Shell one-liners, Linux servers, split plus compress in one pass</td>
+            <td className={td}><code className={code}>brew install ghostscript</code></td>
+            <td className={td}>Yes</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 className={h2}>FAQ</h2>
+      <h3 className={h3}>Which method is safest for confidential documents?</h3>
+      <p className={prose}>
+        Any method that never uploads the file: the browser workflows, Preview, Print to PDF
+        and the command-line tools all process locally. Avoid upload-based converter websites
+        for contracts and IDs — once a file is on someone else&apos;s server you are trusting
+        their retention policy, deletion story and breach history.
+      </p>
+      <h3 className={h3}>Can I split a PDF without installing anything?</h3>
+      <p className={prose}>
+        Yes — the browser method in the{" "}
+        <Link href="/blog/split-pdf-document" className="text-accent hover:underline">companion guide</Link> needs no installation, and Preview or Print to PDF covers
+        the offline case on a stock machine.
+      </p>
+      <h3 className={h3}>How do I split many documents with the same rule?</h3>
+      <p className={prose}>
+        Script it. A pypdf loop over a directory (extract the same range from every file) or a
+        shell loop over Ghostscript does in seconds what would take an hour of clicking. For
+        one-off files, the browser tool is faster than writing the script.
+      </p>
+      <h3 className={h3}>Removing pages instead of extracting them?</h3>
+      <p className={prose}>
+        Deletion is the complement of extraction — keep everything except the pages you drop.
+        The <Link href="/blog/remove-page-from-pdf" className="text-accent hover:underline">remove-a-page guide</Link> covers that direction step by step, including
+        odd/even pages and what happens to bookmarks afterwards.
+      </p>
+    </div>
+  );
+}
+
+function RemovePageFromPdf() {
+  return (
+    <div className="space-y-4">
+      <p className={prose}>
+        A PDF with one wrong page is still a problem: the double-scanned page at the front of a
+        form, a blank sheet wedged into a contract, a draft page left in a report that is about
+        to be sent to a client. You do not need Acrobat or an account to fix it — removing pages
+        is a local operation, and a browser can do it while the file never leaves your device.
+        This guide shows the fastest in-browser method first, then the built-in alternatives on
+        macOS, Windows, phones and tablets, and finishes with the edge cases that actually trip
+        people up: password-protected files, broken bookmarks, stale page numbers, and file
+        size.
+      </p>
+
+      <h2 className={h2}>Method 1 — remove pages in your browser (recommended)</h2>
+      <p className={prose}>
+        The <Link href="/tools/pdf-page-editor" className="text-accent hover:underline">DevBench PDF Page Editor</Link> loads your file, shows every page as a tick-box, and writes a
+        new PDF with the selected pages dropped. It uses pdf-lib inside the page — no upload, no
+        signup, no watermark:
+      </p>
+      <ol className={ol}>
+        <li>
+          Open the <Link href="/tools/pdf-page-editor" className="text-accent hover:underline">PDF Page Editor</Link> and click <strong>Choose PDF</strong>. Your file is read
+          directly from disk into browser memory.
+        </li>
+        <li>
+          The page count loads and a grid of checkboxes appears — <code className={code}>Page 1</code>, <code className={code}>Page 2</code>, and so on. Tick every page you want to
+          delete.
+        </li>
+        <li>
+          Click <strong>Download PDF (remove selected pages)</strong>. The edited file downloads
+          as <code className={code}>yourfile-removed-pages.pdf</code>; the original is untouched.
+        </li>
+      </ol>
+      <p className={prose}>
+        Because the bytes never move, this is safe for tax documents, contracts, ID scans and
+        anything under an NDA — the network tab stays empty apart from loading the page itself.
+      </p>
+
+      <h3 className={h3}>Removing a single page</h3>
+      <p className={prose}>
+        Tick exactly one checkbox — the page you want gone — and hit remove. This is the common
+        case: one stray page at the start or end of a scan. The output keeps every other page in
+        its original order, with the original dimensions and images intact.
+      </p>
+
+      <h3 className={h3}>Removing a page range</h3>
+      <p className={prose}>
+        Tick the first and last page of the unwanted stretch — every checkbox in between counts
+        as part of the range, so a five-page removal is five ticks. The{" "}
+        <strong>Select all</strong> and <strong>Clear selection</strong> buttons above the grid
+        reset the selection in one click when you are working through a long document. The grid
+        covers documents of up to 60 pages; for larger files the tool suggests splitting the
+        file first (see the <Link href="/blog/split-pdf-document" className="text-accent hover:underline">splitting guide</Link>) or using a desktop editor.
+      </p>
+
+      <h3 className={h3}>Removing odd or even pages</h3>
+      <p className={prose}>
+        This is the fix for a very specific annoyance: double-sided scans that produce a blank
+        page between every real one. Click <strong>Clear selection</strong>, then tick every
+        second page — 2, 4, 6, 8 … — and remove them. To keep only the even pages instead,
+        invert the selection: tick the odds and remove those. Either direction takes one pass
+        over the grid.
+      </p>
+
+      <h3 className={h3}>The inverse: keep only what you select</h3>
+      <p className={prose}>
+        The second button, <strong>Download PDF (selected pages only)</strong>, does the
+        opposite job: it exports the ticked pages as a new file and leaves everything else
+        behind. When you want pages 12–24 out of a 300-page report, selecting what to{" "}
+        <em>keep</em> is fewer clicks than selecting 276 pages to delete. Both buttons produce
+        a standard PDF — the difference is only which set of pages survives.
+      </p>
+
+      <h2 className={h2}>Method 2 — macOS Preview (built in)</h2>
+      <ol className={ol}>
+        <li>Open the PDF in Preview and show the thumbnails sidebar (<strong>View → Thumbnails</strong>).</li>
+        <li>Select the pages to delete — click the first, then Shift-click a range or Cmd-click non-adjacent pages.</li>
+        <li>Press <strong>Delete</strong> (or Edit → Delete). The thumbnails disappear immediately.</li>
+        <li>Save with <strong>Cmd+S</strong>, or export a copy with File → Export to keep the original untouched.</li>
+      </ol>
+      <p className={prose}>
+        Preview is the quickest offline option on a Mac. One caveat: you cannot delete every
+        page (a PDF must contain at least one), and Preview edits the file in place unless you
+        export — export a copy when the original matters.
+      </p>
+
+      <h2 className={h2}>Method 3 — desktop and mobile apps</h2>
+      <ul className={ul}>
+        <li>
+          <strong>Adobe Acrobat Pro</strong> (Windows/Mac): open the Page Thumbnails panel,
+          select pages, press Delete. Acrobat also has Remove Pages under the Organize Pages
+          tool, and it handles password-protected files once you supply the password.
+        </li>
+        <li>
+          <strong>Windows 10/11</strong> ships no built-in PDF page editor. Edge can view and
+          annotate but not delete pages — for a one-off removal, the browser method above is
+          genuinely faster than installing anything; for repeat work, Acrobat or a trusted
+          desktop suite is the investment.
+        </li>
+        <li>
+          <strong>Phones and tablets</strong>: the Adobe Acrobat Reader mobile app has an
+          Organize Pages view — select a thumbnail, tap Delete, save a copy. Files stay on the
+          device unless you explicitly share them, and it works on iPad and Android alike.
+        </li>
+      </ul>
+
+      <h2 className={h2}>Edge cases: passwords, scans, bookmarks and size</h2>
+
+      <h3 className={h3}>Password-protected PDFs</h3>
+      <p className={prose}>
+        If the file is encrypted, the editor reports{" "}
+        <em>&quot;Could not read this PDF. It may be encrypted&quot;</em> and stops. That is a
+        deliberate limitation — pdf-lib does not decrypt files in the browser. Unlock it first:
+        open the document with its password in Acrobat (File → Properties → Security → set the
+        security to None and save) or in any desktop tool that lets an owner remove security
+        with the password in hand, then run the removal on the unlocked copy. If you do not
+        know the password, no editor — local or online — can remove its pages; the password
+        protects the whole file, pages included.
+      </p>
+
+      <h3 className={h3}>Scanned documents</h3>
+      <p className={prose}>
+        Removing pages from a scan needs no OCR. Each scanned page is just an image inside a
+        page object, and deleting the object deletes the image with it. The one thing to check
+        first is rotation: if your scanner produced sideways pages, rotate them before or after
+        the edit with the <Link href="/tools/rotate-pdf" className="text-accent hover:underline">Rotate PDF tool</Link>, which turns every page in one pass.
+      </p>
+
+      <h3 className={h3}>Bookmarks, internal links and page numbers</h3>
+      <p className={prose}>
+        Page removal edits the page tree, but it does not rewrite everything that points into
+        it. After the download, open the result and check three things: the{" "}
+        <strong>bookmarks panel</strong> (entries that pointed at a removed page now jump to the
+        wrong place or nowhere), <strong>internal links</strong> such as &quot;see page 7&quot;
+        annotations, and any <strong>footer page numbers</strong> — with pages gone, &quot;Page
+        14 of 52&quot; is now a lie. Renumbering is a second quick pass: the{" "}
+        <Link href="/tools/pdf-page-numbers" className="text-accent hover:underline">PDF Page Numbers tool</Link> stamps fresh footers after the edit. If bookmarks are
+        critical (a legal filing, a thesis), verify them before you send the file on.
+      </p>
+
+      <h3 className={h3}>File size after removing pages</h3>
+      <p className={prose}>
+        Removing pages removes their content, so a mostly-image document shrinks roughly in
+        proportion to what you deleted. Text-heavy files shrink less: fonts are typically
+        embedded once for the whole document and stay embedded even when the pages that used
+        them are gone. If the result still trips an upload limit — government portals often cap
+        at 1–2 MB — run it through the <Link href="/tools/compress-pdf" className="text-accent hover:underline">PDF Compressor</Link>, which downsamples images and
+        subsets fonts client-side.
+      </p>
+
+      <h2 className={h2}>Troubleshooting</h2>
+      <table className={table}>
+        <thead>
+          <tr>
+            <th className={th}>Symptom</th>
+            <th className={th}>Cause and fix</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td className={td}>&quot;Could not read this PDF…&quot;</td>
+            <td className={td}>The file is encrypted or damaged. Unlock it first (above); if it is corrupt, open and re-save it in Preview or Acrobat, which usually repairs the structure.</td>
+          </tr>
+          <tr>
+            <td className={td}>&quot;You cannot remove every page&quot;</td>
+            <td className={td}>A PDF must contain at least one page. Untick one page, or if the goal is a different subset, use <strong>Download PDF (selected pages only)</strong> to export just what you want.</td>
+          </tr>
+          <tr>
+            <td className={td}>No checkboxes appear</td>
+            <td className={td}>Documents over 60 pages hide the grid — split out the section you need first, or use a desktop editor for very large files.</td>
+          </tr>
+          <tr>
+            <td className={td}>Nothing happens when I click</td>
+            <td className={td}>JavaScript is disabled or blocked by an extension. The editor is a client-side app — enable JS for the page and reload.</td>
+          </tr>
+          <tr>
+            <td className={td}>Output looks shifted or cropped</td>
+            <td className={td}>Unusual page sizes and rotated pages are preserved as-is; if the source was sideways, rotate before or after with the Rotate tool.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 className={h2}>FAQ</h2>
+      <h3 className={h3}>Is removing pages here really free?</h3>
+      <p className={prose}>
+        Yes — there is no account, no file-count quota and no watermark on the output. The
+        processing runs in your browser, so the cost to operate the service is close to zero,
+        and your document is never sent anywhere.
+      </p>
+      <h3 className={h3}>Do my files get uploaded when I edit them?</h3>
+      <p className={prose}>
+        No. The file is read into browser memory with the File API, edited by pdf-lib, and
+        written back as a download. Nothing is posted to a server — which is exactly why this
+        works for confidential material where an upload-based editor would be off the table.
+      </p>
+      <h3 className={h3}>Can I remove pages from a scanned or image-only PDF?</h3>
+      <p className={prose}>
+        Yes. Scanned pages are images inside page objects; deleting the page removes the image
+        with it. No text layer or OCR is involved in either direction.
+      </p>
+      <h3 className={h3}>What is the difference between deleting and extracting?</h3>
+      <p className={prose}>
+        Deleting keeps everything <em>except</em> the ticked pages; extracting (the second
+        button) keeps <em>only</em> the ticked pages. For small unwanted sections, deleting is
+        fewer ticks; for keeping a small section out of a large file, extracting is. The result
+        is a valid PDF either way.
+      </p>
+      <h3 className={h3}>Will this work on a phone?</h3>
+      <p className={prose}>
+        The editor is responsive and the checkboxes are tappable, so short documents work fine
+        on a phone or tablet. For a 40-page grid, a desktop screen (or the Acrobat mobile app&apos;s
+        thumbnail view) will be more comfortable.
+      </p>
+
+      <p className={prose}>
+        Ready to try it? Open the{" "}
+        <Link href="/tools/pdf-page-editor" className="text-accent hover:underline">PDF Page Editor</Link>, tick the pages you do not want, and download the
+        clean copy — or press <code className={code}>⌘K</code> anywhere on DevBench and search
+        for any tool by name. If the job is the other way around — pulling pages{" "}
+        <em>out</em> instead of dropping them — the{" "}
+        <Link href="/blog/split-pdf-document" className="text-accent hover:underline">PDF splitting guide</Link> covers ranges, single-page files and rebuilding page
+        order.
+      </p>
+    </div>
+  );
+}
+
+function SplitPdfDocument() {
+  return (
+    <div className="space-y-4">
+      <p className={prose}>
+        Splitting a PDF comes up constantly: you need to share chapter 4 without the other 300
+        pages, a portal refuses a 40 MB upload, a scanned contract has one invoice buried inside
+        it, or every page of a deck has to become its own file. The usual advice — install a
+        desktop suite or upload your document to a converter website — is unnecessary. Both
+        common splits work entirely in the browser, with no signup, no installation, and no
+        file ever leaving your machine.
+      </p>
+      <p className={prose}>
+        There are two browser-based paths, and which one you need depends on the question you
+        are asking. &quot;One PDF per page, all of them&quot; is a single button. &quot;Pages 12
+        through 24 only&quot; is a tick-box selection. Both live on DevBench&apos;s PDF hub at{" "}
+        <Link href="/pdf" className="text-accent hover:underline">/pdf</Link>.
+      </p>
+
+      <h2 className={h2}>Path A — split a whole document into single-page files</h2>
+      <p className={prose}>
+        Use this when every page becomes its own artifact — uploading slides individually,
+        archiving a scanned binder, or forwarding one page you will locate by its number:
+      </p>
+      <ol className={ol}>
+        <li>
+          Open the <Link href="/tools/split-pdf" className="text-accent hover:underline">Split PDF tool</Link> and click <strong>Choose PDF</strong>.
+        </li>
+        <li>
+          The tool reports the page count — <em>&quot;N pages — download one PDF per page inside
+          a ZIP&quot;</em> — so you can sanity-check that the right file loaded.
+        </li>
+        <li>
+          Click <strong>Split into ZIP</strong>. Everything is generated in memory and a single
+          download arrives as <code className={code}>yourfile-split.zip</code>.
+        </li>
+        <li>
+          Unzip it: inside are <code className={code}>yourfile-page-1.pdf</code>,{" "}
+          <code className={code}>yourfile-page-2.pdf</code> and so on — one valid, standalone PDF
+          per page.
+        </li>
+      </ol>
+      <p className={prose}>
+        The ZIP keeps a thousand downloads from landing in your folder at once, and the
+        per-page names follow the original filename, so a document called{" "}
+        <code className={code}>invoice-march.pdf</code> produces{" "}
+        <code className={code}>invoice-march-page-7.pdf</code> — already halfway to a useful
+        name.
+      </p>
+
+      <h2 className={h2}>Path B — extract a page range or section</h2>
+      <p className={prose}>
+        Use this when you want <em>one</em> output containing specific pages — a chapter, a
+        form&apos;s three pages, the signed portion of an agreement. The{" "}
+        <Link href="/tools/pdf-page-editor" className="text-accent hover:underline">PDF Page Editor</Link> does it by selection rather than range syntax:
+      </p>
+      <ol className={ol}>
+        <li>
+          Open the Page Editor and <strong>Choose PDF</strong>. A grid of checkboxes appears
+          (documents up to 60 pages show the grid).
+        </li>
+        <li>
+          Tick the pages you want to keep — for a chapter, the first and last page of the
+          stretch plus everything between.
+        </li>
+        <li>
+          Click <strong>Download PDF (selected pages only)</strong>. The result downloads as{" "}
+          <code className={code}>yourfile-extract.pdf</code> with those pages in their original
+          order.
+        </li>
+      </ol>
+      <p className={prose}>
+        The other button — <strong>Download PDF (remove selected pages)</strong> — is the same
+        operation viewed from the opposite side: tick what to <em>drop</em> instead of what to
+        keep. If your mental model is &quot;delete page 7,&quot; that button is literally{" "}
+        <Link href="/blog/remove-page-from-pdf" className="text-accent hover:underline">how to remove a page from a PDF</Link>, covered step by step in the companion
+        guide.
+      </p>
+
+      <h2 className={h2}>Recipes for common jobs</h2>
+      <h3 className={h3}>Extract one page from a long PDF</h3>
+      <p className={prose}>
+        Path B with a single tick: page 42 in, <em>selected pages only</em> out. (If you would
+        rather have every page available and pick afterwards, Path A gives you the whole set as
+        individual files — delete the ones you do not keep.)
+      </p>
+      <h3 className={h3}>Split out odd or even pages</h3>
+      <p className={prose}>
+        Run Path B twice: tick the odd pages, extract, then <strong>Clear selection</strong>,
+        tick the evens, extract again. This handles two-sided scans where each side needs a
+        separate destination, and interleaved book pages that read in two passes.
+      </p>
+      <h3 className={h3}>Rebuild a document in a different order</h3>
+      <p className={prose}>
+        Extract the pieces with Path B, then reassemble: <Link href="/tools/organize-pdf" className="text-accent hover:underline">Organize PDF</Link> moves pages up or down inside one file,{" "}
+        <Link href="/tools/merge-pdf" className="text-accent hover:underline">Merge PDF</Link> joins several files in the order you drag them. Extract → reorder →
+        merge is the three-step answer to &quot;this report is in the wrong order and half of
+        it does not belong.&quot;
+      </p>
+      <h3 className={h3}>Split several documents in a row</h3>
+      <p className={prose}>
+        Nothing is uploaded, so there is no upload queue to manage — reload the tool, choose
+        the next file, split, repeat. Because each pass is seconds rather than minutes (no
+        server round trip), working through a stack of documents is rhythm rather than
+        ceremony. The <Link href="/pdf" className="text-accent hover:underline">PDF hub</Link> also has a batch panel for the operations that genuinely
+        batch — merging many files or inspecting page counts in one go.
+      </p>
+
+      <h2 className={h2}>Tips that save a second round trip</h2>
+      <ul className={ul}>
+        <li>
+          <strong>Name files before you upload anywhere.</strong> Split outputs inherit the
+          source name plus a page number — rename before publishing to a CMS or attaching to a
+          form; spaces and capitals cause more rejections than people expect.
+        </li>
+        <li>
+          <strong>Large files are a memory game.</strong> Splitting runs on your device, so the
+          practical ceiling is your RAM, not a server quota. A multi-hundred-page text PDF is
+          routine; a 300-page scan of photographs may want fewer browser tabs open first.
+        </li>
+        <li>
+          <strong>Scanned PDFs need no special handling.</strong> Pages are images — splitting
+          copies them byte-for-byte, no OCR, no quality loss, no re-encoding.
+        </li>
+        <li>
+          <strong>Confidential files are fine.</strong> The File API reads the document into
+          memory and the ZIP is built in the browser; the network tab shows no document traffic
+          at all.
+        </li>
+        <li>
+          <strong>Check the page order after extracting.</strong> A PDF&apos;s internal order is
+          the document&apos;s order — if the source was assembled oddly, verify the extract
+          before sending it on (fix order with Organize PDF).
+        </li>
+      </ul>
+
+      <h2 className={h2}>After the split: companion operations</h2>
+      <ul className={ul}>
+        <li>
+          <strong>Rebuild:</strong> <Link href="/tools/merge-pdf" className="text-accent hover:underline">Merge PDF</Link> combines the pieces back in any order — the
+          undo path if you split too far.
+        </li>
+        <li>
+          <strong>Shrink:</strong> extracted files can still trip upload limits because fonts
+          and images stay embedded — <Link href="/tools/compress-pdf" className="text-accent hover:underline">Compress PDF</Link> downsamples for portals with 1–2 MB caps.
+        </li>
+        <li>
+          <strong>Convert:</strong> <Link href="/tools/pdf-to-jpg" className="text-accent hover:underline">PDF to JPG</Link> turns pages into images for slides or email,
+          and <Link href="/tools/image-to-pdf" className="text-accent hover:underline">Image to PDF</Link> goes the other way when a form demands one combined file.
+        </li>
+      </ul>
+
+      <h2 className={h2}>Troubleshooting</h2>
+      <table className={table}>
+        <thead>
+          <tr>
+            <th className={th}>Symptom</th>
+            <th className={th}>Cause and fix</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td className={td}>&quot;Could not read this PDF&quot; or &quot;file may be
+            encrypted&quot;</td>
+            <td className={td}>The document is password-protected. Open it with its password
+            in Acrobat or another desktop tool, save an unlocked copy, and split that — browser
+            libraries deliberately do not decrypt files.</td>
+          </tr>
+          <tr>
+            <td className={td}>Split stops partway or the ZIP is incomplete</td>
+            <td className={td}>The source is probably damaged. Open it in Preview or Acrobat,
+            re-save it (that usually repairs the structure), then split the re-saved copy.</td>
+          </tr>
+          <tr>
+            <td className={td}>Pages come out in the wrong order</td>
+            <td className={td}>The original&apos;s internal order is wrong. Reorder with
+            Organize PDF before splitting, or fix the output with a quick merge.</td>
+          </tr>
+          <tr>
+            <td className={td}>The output file is barely smaller</td>
+            <td className={td}>Embedded fonts and shared resources carry over. Run the result
+            through Compress PDF when a portal enforces an upload limit.</td>
+          </tr>
+          <tr>
+            <td className={td}>No checkboxes for my file</td>
+            <td className={td}>The Page Editor grid covers up to 60 pages. For larger
+            documents, Path A (one PDF per page, as a ZIP) has no such limit — or split out the
+            section with a desktop editor first.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 className={h2}>FAQ</h2>
+      <h3 className={h3}>Which tool should I use — Split PDF or the Page Editor?</h3>
+      <p className={prose}>
+        Split PDF when you want the <em>entire</em> document as individual page files (one
+        button, always produces every page). The Page Editor when you want{" "}
+        <em>specific</em> pages in one output — a range, a chapter, a selection. Both are free
+        and client-side; the choice is just all-pages-as-files versus chosen-pages-as-one-file.
+      </p>
+      <h3 className={h3}>Is there a limit on pages or file size?</h3>
+      <p className={prose}>
+        No server-side limit exists because there is no server in the path — the ceiling is
+        your device&apos;s memory. Typical documents process in seconds; very large scanned
+        files are the ones to watch, and closing other tabs frees memory if a split feels slow.
+      </p>
+      <h3 className={h3}>Does splitting reduce the quality of the pages?</h3>
+      <p className={prose}>
+        No. Vector text, fonts and images are copied at the byte level — there is no rendering
+        step to lose quality from. Scanned pages move as they are. Size can drop slightly
+        because per-page resources are pruned, but nothing is re-encoded.
+      </p>
+      <h3 className={h3}>Are my files uploaded anywhere?</h3>
+      <p className={prose}>
+        Never. The browser reads the PDF, pdf-lib rewrites it, and JSZip packages the result —
+        all in memory on your machine. It is a safe way to handle contracts, IDs and internal
+        documents, and the reason DevBench is worth bookmarking for this kind of task.
+      </p>
+
+      <p className={prose}>
+        Try it now: <Link href="/tools/split-pdf" className="text-accent hover:underline">Split PDF</Link> for one-file-per-page, or{" "}
+        <Link href="/tools/pdf-page-editor" className="text-accent hover:underline">PDF Page Editor</Link> for a chosen range — or press <code className={code}>⌘K</code> on
+        any DevBench page and type the tool&apos;s name. Deleting pages rather than extracting
+        them? The{" "}
+        <Link href="/blog/remove-page-from-pdf" className="text-accent hover:underline">remove-a-page guide</Link> walks through that in detail, and{" "}
+        <Link href="/blog/split-pdf-online" className="text-accent hover:underline">the desktop and CLI methods</Link> cover Preview, Python and Ghostscript when
+        you are offline or scripting.
       </p>
     </div>
   );
@@ -3870,5 +4407,7 @@ export const POST_CONTENT: Record<string, React.ReactNode> = {
   "sql-formatting-best-practices": <SqlFormattingBestPractices />,
   "markdown-cheat-sheet": <MarkdownCheatSheet />,
   "split-pdf-online": <SplitPdfOnline />,
+  "remove-page-from-pdf": <RemovePageFromPdf />,
+  "split-pdf-document": <SplitPdfDocument />,
   "timezones-dst-for-developers": <TimezonesDstForDevelopers />,
 };
