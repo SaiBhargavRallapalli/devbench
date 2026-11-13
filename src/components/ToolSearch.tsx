@@ -24,6 +24,7 @@ import {
   Heart,
   Sigma,
   CalendarDays,
+  PartyPopper,
   Clock,
   Pin,
   FileStack,
@@ -60,6 +61,7 @@ const CATEGORY_ICONS: Record<ToolCategory, React.ElementType> = {
   health: Heart,
   math: Sigma,
   datetime: CalendarDays,
+  fun: PartyPopper,
 };
 
 function toolHref(slug: string): string {

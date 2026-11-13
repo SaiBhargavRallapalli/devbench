@@ -22,6 +22,7 @@ const CATEGORY_COMPARISONS: Record<ToolCategory, string> = {
   health: "Instant what-if calculations with no health data stored; use for estimates, not medical records.",
   math: "Quick numeric answers without installing a CAS; use dev tools when you need programmatic formats.",
   datetime: "Timezone math in one place instead of guessing OS clock settings; pair with cron tools for schedules.",
+  fun: "Lighthearted decision-making that still runs locally — nothing to install, no ads, no data leaves the tab.",
 };
 
 const TOOL_CARD_DEPTH_OVERRIDES: Record<string, ToolCardDepth> = {

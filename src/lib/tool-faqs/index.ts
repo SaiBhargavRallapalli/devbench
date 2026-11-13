@@ -13,6 +13,7 @@ import { faqsImage } from "./image";
 import { faqsMath } from "./math";
 import { faqsPdf } from "./pdf";
 import { faqsMisc } from "./misc";
+import { faqsFun } from "./fun";
 
 export const TOOL_FAQS: Record<string, Faq[]> = {
   ...faqsEncoding,
@@ -27,4 +28,5 @@ export const TOOL_FAQS: Record<string, Faq[]> = {
   ...faqsMath,
   ...faqsPdf,
   ...faqsMisc,
+  ...faqsFun,
 };

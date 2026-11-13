@@ -54,6 +54,8 @@ export const CUSTOM_TOOL_SLUGS: ReadonlySet<string> = new Set([
   "html-to-pdf",
   "xml-suite",
   "qr-code",
+  "speed-test",
+  "spin-wheel",
   "age-calculator",
   "bmi-calculator",
   "compound-interest",

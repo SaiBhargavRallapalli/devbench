@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import QRCode from "qrcode";
-import { Download, Camera, CameraOff, Copy, Check, Upload, X, ScanLine } from "lucide-react";
+import { Download, Camera, CameraOff, Copy, Check, Upload, X, ScanLine, ImagePlus } from "lucide-react";
 import type { Tool } from "@/lib/tools-registry";
 import { trackToolDownload } from "@/lib/analytics-events";
 import ToolPageHero from "@/components/tools/ToolPageHero";
@@ -26,51 +26,175 @@ declare global {
 
 // ─── Generate Tab ─────────────────────────────────────────────────────────────
 
+type LogoPos = "tl" | "tc" | "tr" | "ml" | "mc" | "mr" | "bl" | "bc" | "br";
+
+/** 3×3 position picker; col/row are fractions of the scannable inner area. */
+const LOGO_POSITIONS: readonly { id: LogoPos; label: string; col: 0 | 0.5 | 1; row: 0 | 0.5 | 1 }[] = [
+  { id: "tl", label: "Top left", col: 0, row: 0 },
+  { id: "tc", label: "Top centre", col: 0.5, row: 0 },
+  { id: "tr", label: "Top right", col: 1, row: 0 },
+  { id: "ml", label: "Middle left", col: 0, row: 0.5 },
+  { id: "mc", label: "Centre", col: 0.5, row: 0.5 },
+  { id: "mr", label: "Middle right", col: 1, row: 0.5 },
+  { id: "bl", label: "Bottom left", col: 0, row: 1 },
+  { id: "bc", label: "Bottom centre", col: 0.5, row: 1 },
+  { id: "br", label: "Bottom right", col: 1, row: 1 },
+];
+
+/** Preview/download edge target; actual canvas snaps to whole modules for crisp pixels. */
+const QR_TARGET_PX = 1024;
+/** Quiet zone in modules (spec minimum is 4). */
+const QR_MARGIN = 4;
+/** Modules kept clear at every edge so finder/timing/alignment patterns survive the logo. */
+const QR_SAFE_EDGE = 8;
+
+function roundRectPath(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
+  const rad = Math.max(0, Math.min(r, w / 2, h / 2));
+  ctx.beginPath();
+  ctx.moveTo(x + rad, y);
+  ctx.arcTo(x + w, y, x + w, y + h, rad);
+  ctx.arcTo(x + w, y + h, x, y + h, rad);
+  ctx.arcTo(x, y + h, x, y, rad);
+  ctx.arcTo(x, y, x + w, y, rad);
+  ctx.closePath();
+}
+
+function loadImage(src: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error("logo failed to load"));
+    img.src = src;
+  });
+}
+
 function GenerateTab() {
   const [text, setText] = useState("https://");
-  const [dataUrl, setDataUrl] = useState<string | null>(null);
   const [err, setErr] = useState("");
+  const [ready, setReady] = useState(false);
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const [logoName, setLogoName] = useState("");
+  const [logoPos, setLogoPos] = useState<LogoPos>("mc");
+  const [logoSize, setLogoSize] = useState(20);
+  const [shrunk, setShrunk] = useState(false);
 
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  // Draw QR (and optional logo) straight onto the canvas so preview and PNG are identical.
   useEffect(() => {
     let cancelled = false;
+    const canvas = canvasRef.current;
+    const ctx = canvas?.getContext("2d");
+    if (!canvas || !ctx) return;
     const t = text.trim();
     if (!t) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      setDataUrl(null);
+      setReady(false);
       setErr("");
       return;
     }
-    QRCode.toDataURL(t, {
-      width: 280,
-      margin: 2,
-      errorCorrectionLevel: "M",
-      color: { dark: "#000000", light: "#ffffff" },
-    })
-      .then((url) => {
-        if (!cancelled) {
-          setDataUrl(url);
-          setErr("");
+    (async () => {
+      try {
+        const qr = QRCode.create(t, { errorCorrectionLevel: logoUrl ? "H" : "M" });
+        const size = qr.modules.size;
+        const data = qr.modules.data;
+        const scale = Math.max(1, Math.floor(QR_TARGET_PX / (size + QR_MARGIN * 2)));
+        const dim = scale * (size + QR_MARGIN * 2);
+        canvas.width = dim;
+        canvas.height = dim;
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, dim, dim);
+        ctx.fillStyle = "#000000";
+        for (let y = 0; y < size; y++) {
+          for (let x = 0; x < size; x++) {
+            if (data[y * size + x]) {
+              ctx.fillRect((x + QR_MARGIN) * scale, (y + QR_MARGIN) * scale, scale, scale);
+            }
+          }
         }
-      })
-      .catch(() => {
-        if (!cancelled) {
-          setDataUrl(null);
-          setErr("Could not generate QR for this input.");
+        let didShrink = false;
+        if (logoUrl) {
+          const img = await loadImage(logoUrl);
+          if (cancelled) return;
+          const pos = LOGO_POSITIONS.find((p) => p.id === logoPos) ?? LOGO_POSITIONS[4];
+          // Desired logo box (image + white backing pad), clamped to the scannable area.
+          let logoPx = Math.round((dim * logoSize) / 100);
+          let pad = Math.max(4, Math.round(logoPx * 0.12));
+          let box = logoPx + pad * 2;
+          const safe = (size - QR_SAFE_EDGE * 2) * scale;
+          if (box > safe) {
+            const k = safe / box;
+            logoPx = Math.max(1, Math.floor(logoPx * k));
+            pad = Math.max(2, Math.floor(pad * k));
+            box = logoPx + pad * 2;
+            didShrink = true;
+          }
+          const safeOrigin = (QR_MARGIN + QR_SAFE_EDGE) * scale;
+          const bx = Math.round(safeOrigin + pos.col * (safe - box));
+          const by = Math.round(safeOrigin + pos.row * (safe - box));
+          ctx.fillStyle = "#ffffff";
+          roundRectPath(ctx, bx, by, box, box, Math.max(2, pad));
+          ctx.fill();
+          ctx.drawImage(img, bx + pad, by + pad, logoPx, logoPx);
         }
-      });
+        if (cancelled) return;
+        setShrunk(didShrink);
+        setReady(true);
+        setErr("");
+      } catch {
+        if (cancelled) return;
+        setReady(false);
+        setErr("Could not generate QR for this input.");
+      }
+    })();
     return () => {
       cancelled = true;
     };
-  }, [text]);
+  }, [text, logoUrl, logoPos, logoSize]);
 
   const download = () => {
-    if (!dataUrl) return;
-    const a = document.createElement("a");
-    a.href = dataUrl;
-    a.download = "qrcode.png";
-    a.click();
-    trackToolDownload("qr-code", "png");
+    const canvas = canvasRef.current;
+    if (!canvas || !ready) return;
+    canvas.toBlob((blob) => {
+      if (!blob) return;
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "qrcode.png";
+      a.click();
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+      trackToolDownload("qr-code", "png");
+    }, "image/png");
   };
+
+  const handleLogoFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      setErr("Please choose an image file for the logo.");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      setLogoUrl(String(reader.result));
+      setLogoName(file.name);
+      setErr("");
+    };
+    reader.onerror = () => setErr("Could not read the logo image.");
+    reader.readAsDataURL(file);
+  };
+
+  const clearLogo = () => {
+    setLogoUrl(null);
+    setLogoName("");
+  };
+
+  const sizeHint = shrunk
+    ? "Shrunk to fit this code's scannable area — smaller codes can't host a big logo."
+    : logoSize > 25
+      ? "Big logos can hurt scannability — 20–25% is the safe zone."
+      : "High (H) error correction keeps the code scannable with the logo.";
 
   return (
     <div className="space-y-6">
@@ -89,21 +213,114 @@ function GenerateTab() {
           {err}
         </p>
       )}
+
+      {/* Logo overlay */}
+      <div className="space-y-4 rounded-xl border border-border bg-muted/30 p-4">
+        <div className="flex flex-wrap items-center gap-3">
+          <label className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-border bg-background px-4 py-2.5 text-sm font-medium transition-colors hover:bg-muted">
+            <ImagePlus className="h-4 w-4" />
+            {logoUrl ? "Replace logo" : "Add logo"}
+            <input type="file" accept="image/*" className="sr-only" onChange={handleLogoFile} />
+          </label>
+          {logoUrl && (
+            <button
+              type="button"
+              onClick={clearLogo}
+              className="inline-flex items-center gap-1.5 rounded-xl px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+            >
+              <X className="h-4 w-4" />
+              Remove logo
+            </button>
+          )}
+          {logoName && (
+            <span className="max-w-40 truncate text-xs text-muted-foreground" title={logoName}>
+              {logoName}
+            </span>
+          )}
+        </div>
+        {!logoUrl && (
+          <p className="text-xs text-muted-foreground">
+            Optional — put your own logo inside the code. Error correction switches to high (H) so it still scans.
+          </p>
+        )}
+        {logoUrl && (
+          <div className="flex flex-wrap items-start gap-6">
+            <div>
+              <p id="qr-code-logo-pos" className="mb-2 block text-sm font-medium">
+                Position
+              </p>
+              <div role="group" aria-labelledby="qr-code-logo-pos" className="grid grid-cols-3 gap-1.5">
+                {LOGO_POSITIONS.map((p) => (
+                  <button
+                    key={p.id}
+                    type="button"
+                    aria-label={p.label}
+                    aria-pressed={logoPos === p.id}
+                    title={p.label}
+                    onClick={() => setLogoPos(p.id)}
+                    className={`flex h-9 w-9 items-center justify-center rounded-lg border transition-colors ${
+                      logoPos === p.id
+                        ? "border-accent bg-accent/15"
+                        : "border-border bg-background hover:bg-muted"
+                    }`}
+                  >
+                    <span
+                      className={`h-2 w-2 rounded-full ${
+                        logoPos === p.id ? "bg-accent" : "bg-muted-foreground/40"
+                      }`}
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="min-w-56 flex-1">
+              <label htmlFor="qr-code-logo-size" className="mb-2 block text-sm font-medium">
+                Logo size: <span className="text-accent">{logoSize}%</span>
+              </label>
+              <input
+                id="qr-code-logo-size"
+                type="range"
+                min={10}
+                max={30}
+                step={1}
+                value={logoSize}
+                onChange={(e) => setLogoSize(Number(e.target.value))}
+                className="w-full accent-accent"
+              />
+              <p
+                className={`mt-1.5 text-xs ${
+                  shrunk || logoSize > 25 ? "text-amber-600 dark:text-amber-400" : "text-muted-foreground"
+                }`}
+              >
+                {sizeHint}
+              </p>
+            </div>
+          </div>
+        )}
+      </div>
+
       <div className="flex flex-wrap items-start gap-8">
         <div className="rounded-xl border border-border bg-white p-4 dark:bg-white">
-          {dataUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={dataUrl} alt="QR code" width={280} height={280} className="block" />
-          ) : (
-            <div className="flex h-[280px] w-[280px] items-center justify-center text-sm text-muted-foreground">
-              Enter text to generate
-            </div>
-          )}
+          <div className="relative h-[280px] w-[280px]">
+            <canvas
+              ref={canvasRef}
+              width={QR_TARGET_PX}
+              height={QR_TARGET_PX}
+              role="img"
+              aria-label="QR code preview"
+              className={`block h-[280px] w-[280px] ${ready ? "" : "hidden"}`}
+            />
+            {!ready && (
+              <div className="absolute inset-0 flex items-center justify-center text-sm text-muted-foreground">
+                Enter text to generate
+              </div>
+            )}
+          </div>
         </div>
         <div className="space-y-3">
           <button
             type="button"
-            disabled={!dataUrl}
+            disabled={!ready}
             onClick={download}
             className="inline-flex items-center gap-2 rounded-xl bg-accent px-4 py-2.5 text-sm font-semibold text-accent-foreground disabled:opacity-40"
           >
@@ -111,7 +328,9 @@ function GenerateTab() {
             Download PNG
           </button>
           <p className="max-w-sm text-xs text-muted-foreground">
-            Generated entirely in your browser. Large payloads may hit QR version limits.
+            {logoUrl
+              ? "Generated entirely in your browser — logo composited onto a 1024px PNG."
+              : "Generated entirely in your browser. Large payloads may hit QR version limits."}
           </p>
         </div>
       </div>

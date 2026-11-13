@@ -1618,9 +1618,9 @@ function QrCodeContent() {
       <h2 className={h2}>How to use the QR Code Generator</h2>
       <ol className={ol}>
         <li>Type or paste any text or URL into the input field — the QR code renders instantly.</li>
-        <li>Adjust <strong>Error correction level</strong>: use <strong>H (30%)</strong> if you plan to add a logo over the code; use <strong>L (7%)</strong> for maximum data density.</li>
-        <li>Set the <strong>size</strong> to match your use case — 200 px for web, 500+ px for print.</li>
-        <li>Click <strong>Download PNG</strong> for raster output, or <strong>Download SVG</strong> for a scalable vector version suitable for print at any size.</li>
+        <li>Optional: click <strong>Add logo</strong> to composite your own image inside the code. Pick one of the <strong>nine positions</strong> and drag the size slider; error correction switches to <strong>H (30%)</strong> automatically so the code still scans.</li>
+        <li>Keep the logo between <strong>10–25%</strong> — bigger overlays can cover too many modules. If the code is small, the logo is clamped to the scannable area with a &quot;Shrunk to fit&quot; hint.</li>
+        <li>Click <strong>Download PNG</strong> for a crisp 1024 px raster image ready for web, print, or slides.</li>
       </ol>
       <h2 className={h2}>QR code generator</h2>
       <p className={prose}>
@@ -1633,14 +1633,16 @@ function QrCodeContent() {
         <li>
           <strong>Error correction levels:</strong> L (7%), M (15%), Q (25%), H
           (30%) — higher levels make the code larger but scannable even if
-          partially obscured.
+          partially obscured. This tool uses M normally and switches to H
+          whenever a logo is present.
         </li>
         <li>
           For URLs, keep them short — longer content requires a denser QR code
           which is harder to scan at small sizes.
         </li>
         <li>
-          Download as PNG or SVG for use in print, presentations, or web pages.
+          Everything is generated on a canvas in your browser and downloaded as
+          a 1024 px PNG — nothing is uploaded to a server.
         </li>
       </ul>
     </Section>
@@ -2719,6 +2721,90 @@ function CurrencyConverterContent() {
   );
 }
 
+function SpeedTestContent() {
+  return (
+    <Section>
+      <h2 className={h2}>How to use the Internet Speed Test</h2>
+      <ol className={ol}>
+        <li>Pause heavy downloads and uploads, then click <strong>Start speed test</strong> — nothing runs until you do.</li>
+        <li>Watch the <strong>ping</strong> phase (ten small samples), then the live graph during <strong>download</strong> and <strong>upload</strong>.</li>
+        <li>Read the final cards: ping, jitter, download, upload, plus your nearest Cloudflare edge location.</li>
+        <li>Click <strong>Test again</strong> for another run, <strong>Stop</strong> to cancel mid-test, or <strong>Copy results</strong> to share them.</li>
+      </ol>
+      <h2 className={h2}>Internet speed test</h2>
+      <p className={prose}>
+        Measures your connection&apos;s <strong>latency, jitter, download
+        throughput and upload throughput</strong> against Cloudflare&apos;s
+        public speed endpoints — the same edge network serving a large share
+        of the web. The final number is the steady-state average (best
+        consecutive one-second window), so connection ramp-up never distorts
+        the result.
+      </p>
+      <ul className={ul}>
+        <li>
+          <strong>Ping vs jitter:</strong> ping is the round-trip time to the
+          nearest server; jitter is how much it varies between samples. Low,
+          stable numbers matter for gaming and video calls.
+        </li>
+        <li>
+          <strong>Why results differ from other speed sites:</strong> each site
+          tests different servers and connection counts — run any test two or
+          three times with other traffic paused for a fair comparison.
+        </li>
+        <li>
+          Upload is usually much slower than download on home connections —
+          that asymmetry is normal.
+        </li>
+      </ul>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/dns-lookup" className="text-accent hover:underline">DNS Lookup</Link>
+        {", "}
+        <Link href="/tools/ip-info" className="text-accent hover:underline">IP Info</Link>
+        {", "}
+        <Link href="/tools/websocket-tester" className="text-accent hover:underline">WebSocket Tester</Link>.
+      </p>
+    </Section>
+  );
+}
+
+function SpinWheelContent() {
+  return (
+    <Section>
+      <h2 className={h2}>How to use the Spin Wheel</h2>
+      <ol className={ol}>
+        <li>Pick a preset (Yes/No, 1–10, colours, food, icebreaker) or type your own options — one per row.</li>
+        <li>Set a <strong>weight</strong> per option to grow its slice: weight 3 wins three times as often as weight 1.</li>
+        <li>Press <strong>SPIN</strong> — or focus the button and hit Space/Enter. The pointer ticks as the wheel slows and the winner is announced.</li>
+        <li>Enable <strong>elimination mode</strong> for tournaments: each winner leaves the wheel until one remains, then start a <strong>New round</strong>.</li>
+        <li>Export the wheel as a <strong>PNG</strong> to share the result.</li>
+      </ol>
+      <h2 className={h2}>Spin wheel</h2>
+      <p className={prose}>
+        A customizable <strong>weighted random picker</strong> for fair, fun
+        decisions: parties, giveaways, game nights, classrooms, and team
+        icebreakers. Slice size and odds come from the same weights, so what
+        you see is exactly what you get.
+      </p>
+      <ul className={ul}>
+        <li>
+          <strong>Presets</strong> cover common lists; add up to 40 options with
+          labels up to 60 characters each.
+        </li>
+        <li>
+          <strong>Sound</strong> plays a tick on every slice crossing and a
+          chime on the winner — toggle it off any time.
+        </li>
+        <li>
+          Your options, weights, sound preference, duration and the last 30
+          results are saved in this browser&apos;s storage only — nothing is
+          uploaded. Reduced-motion users get an instant result with no spin.
+        </li>
+      </ul>
+    </Section>
+  );
+}
+
 export const CONTENT_MAP: Record<string, React.FC> = {
   "json-formatter": JsonFormatterContent,
   "base64-encode": Base64EncodeContent,
@@ -2763,6 +2849,8 @@ export const CONTENT_MAP: Record<string, React.FC> = {
   // Dev
   "aes-encrypt-decrypt": AesEncryptContent,
   "qr-code": QrCodeContent,
+  "speed-test": SpeedTestContent,
+  "spin-wheel": SpinWheelContent,
   "url-parser": UrlParserContent,
   "base-converter": BaseConverterContent,
   "css-minifier": CssMinifierContent,

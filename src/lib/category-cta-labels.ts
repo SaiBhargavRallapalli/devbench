@@ -17,6 +17,7 @@ export const CATEGORY_CTA_LABELS: Record<
   health: { headline: "Health", benefit: "BMI, Calories, Age" },
   math: { headline: "Math", benefit: "Calc, Percent, Prime" },
   datetime: { headline: "Date & time", benefit: "Zones, Epoch, Age" },
+  fun: { headline: "Fun", benefit: "Spin Wheel, Decide" },
 };
 
 export function allToolsCategoryLabel(toolCount: number): {

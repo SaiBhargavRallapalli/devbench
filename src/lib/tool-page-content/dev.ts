@@ -52,9 +52,17 @@ export const pageContentDev: Record<string, ToolPageContent> = {
   "qr-code": {
     title: "QR Code Generator — Free Online Tool",
     metaDescription:
-      "Generate QR codes from any text or URL online. Choose error correction level, size, and download as PNG or SVG. No signup, 100% in your browser.",
+      "Generate QR codes from any text or URL online. Add a custom logo with position control, adjust size, and download as PNG. No signup, 100% in your browser.",
     openingParagraph:
-      "QR Code Generator creates a scannable QR code from any text, URL, vCard, or Wi-Fi credentials instantly in your browser. Adjust the error correction level (L to H), output size, and foreground and background colours. Download the result as a high-resolution PNG for web use or a scalable SVG for print at any size. All processing is client-side — no data leaves your browser.",
+      "QR Code Generator creates a scannable QR code from any text, URL, vCard, or Wi-Fi credentials instantly in your browser. Add your own logo anywhere in the code — the tool switches to high error correction and keeps the code scannable — then pick from nine logo positions and a size slider. Downloads come as a crisp 1024px PNG. All processing is client-side — no data leaves your browser.",
+  },
+
+  "speed-test": {
+    title: "Internet Speed Test — Ping, Download & Upload Online",
+    metaDescription:
+      "Measure ping, jitter, download and upload speed against Cloudflare's nearest edge — live graph, honest ratings, no signup. Free, 100% in your browser.",
+    openingParagraph:
+      "Internet Speed Test measures latency, jitter, download and upload throughput against Cloudflare's public speed endpoints. Ten small pings establish latency, then six parallel download streams and three upload streams saturate the line for about ten seconds while a live graph plots throughput. The final result uses the best consecutive one-second window, so connection ramp-up never distorts the number. The nearest edge location is shown with your results, and nothing runs until you press Start.",
   },
 
   "curl-to-fetch": {

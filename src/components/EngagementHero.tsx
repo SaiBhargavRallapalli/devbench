@@ -13,6 +13,7 @@ import {
   Sigma,
   CalendarDays,
   FileStack,
+  PartyPopper,
   Star,
   ExternalLink,
   TrendingUp,
@@ -40,6 +41,7 @@ const CATEGORY_ICONS: Record<ToolCategory, React.ElementType> = {
   health: Heart,
   math: Sigma,
   datetime: CalendarDays,
+  fun: PartyPopper,
 };
 
 function CategoryTile({

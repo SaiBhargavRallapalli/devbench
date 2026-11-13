@@ -244,4 +244,46 @@ export const CATEGORY_CONTENT_DEPTH: Partial<
       },
     ],
   },
+  fun: {
+    useCases: [
+      {
+        title: "Settle a decision fairly",
+        when: "Pick dinner, game-night order, or who goes next without an argument.",
+        toolSlugs: ["spin-wheel"],
+      },
+      {
+        title: "Run a giveaway or raffle",
+        when: "Spin through entrants with equal or weighted odds — elimination mode whittles it down to one winner.",
+        toolSlugs: ["spin-wheel"],
+      },
+      {
+        title: "Classroom and team icebreakers",
+        when: "Load preset questions and let the wheel choose who answers next.",
+        toolSlugs: ["spin-wheel"],
+      },
+    ],
+    quickStart: {
+      checklist: [
+        "Pick a preset or type your own options — one per row.",
+        "Set weights so some options win more often than others.",
+        "Press SPIN (or focus the button and hit Space/Enter).",
+        "Turn on elimination mode to keep going until one winner remains.",
+      ],
+      sampleInput: "Pizza\nSushi\nTacos",
+      sampleOutput: "Winner: Sushi",
+    },
+    featuredGuides: [
+      {
+        slug: "spin-wheel",
+        title: "Weighted spin-off workflow",
+        steps: [
+          "Open the Spin Wheel and start from a preset or your own list.",
+          "Give one option weight 3 to make it three times as likely to win — the slice grows to match.",
+          "Choose a spin duration and press SPIN; the pointer ticks as it slows.",
+          "Enable elimination mode for tournaments: winners leave the wheel until one remains.",
+          "Export the final wheel as a PNG to share the result.",
+        ],
+      },
+    ],
+  },
 };

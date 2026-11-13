@@ -12,6 +12,7 @@ import { pageContentHealth } from "./health";
 import { pageContentImage } from "./image";
 import { pageContentMath } from "./math";
 import { pageContentPdf } from "./pdf";
+import { pageContentFun } from "./fun";
 
 export const TOOL_PAGE_CONTENT: Record<string, ToolPageContent> = {
   ...pageContentEncoding,
@@ -25,4 +26,5 @@ export const TOOL_PAGE_CONTENT: Record<string, ToolPageContent> = {
   ...pageContentImage,
   ...pageContentMath,
   ...pageContentPdf,
+  ...pageContentFun,
 };

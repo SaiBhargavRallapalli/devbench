@@ -21,7 +21,8 @@ export type ToolCategory =
   | "finance"
   | "health"
   | "math"
-  | "datetime";
+  | "datetime"
+  | "fun";
 
 export const CATEGORIES: Record<
   ToolCategory,
@@ -38,6 +39,7 @@ export const CATEGORIES: Record<
   health: { label: "Health", color: "bg-red-500/10 text-red-600 dark:text-red-400" },
   math: { label: "Math", color: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400" },
   datetime: { label: "Date & time", color: "bg-sky-500/10 text-sky-800 dark:text-sky-400" },
+  fun: { label: "Fun", color: "bg-fuchsia-500/10 text-fuchsia-700 dark:text-fuchsia-400" },
 };
 
 export const TOOLS: Tool[] = [
@@ -108,7 +110,8 @@ export const TOOLS: Tool[] = [
   { slug: "unix-timestamp", name: "Unix Timestamp", shortName: "Time", description: "Convert Unix timestamps to dates and back", category: "dev", icon: "⏱" },
   { slug: "cron-parser", name: "Cron Parser", shortName: "Cron", description: "Parse cron expressions with plain-English description", category: "dev", icon: "⏰" },
   { slug: "password-generator", name: "Password Generator", shortName: "Pass", description: "Generate secure random passwords", category: "dev", icon: "🔑" },
-  { slug: "qr-code", name: "QR Code Generator", shortName: "QR", description: "Generate QR codes from text or URLs", category: "dev", icon: "▣" },
+  { slug: "qr-code", name: "QR Code Generator", shortName: "QR", description: "Generate QR codes from text or URLs, with custom logo overlay and position control", category: "dev", icon: "▣" },
+  { slug: "speed-test", name: "Internet Speed Test", shortName: "Speed Test", description: "Measure ping, jitter, download and upload speed against Cloudflare's nearest edge — live graph, honest ratings", category: "dev", icon: "📶" },
   { slug: "url-parser", name: "URL Parser", shortName: "URL", description: "Parse URLs into components", category: "dev", icon: "🔗" },
   { slug: "base-converter", name: "Base Converter", shortName: "Base", description: "Convert between decimal, hex, binary, octal", category: "dev", icon: "N" },
   { slug: "css-minifier", name: "CSS Minifier", shortName: "CSS Min", description: "Minify and compress CSS", category: "dev", icon: "CSS" },
@@ -594,6 +597,16 @@ export const TOOLS: Tool[] = [
     description: "Convert typed text into realistic handwriting on ruled paper — choose fonts, ink colors, and paper styles, then download",
     category: "text",
     icon: "✍",
+  },
+
+  // ── Fun ──
+  {
+    slug: "spin-wheel",
+    name: "Spin Wheel",
+    shortName: "Spin Wheel",
+    description: "Customizable weighted spin wheel — presets, elimination mode, tick sound and PNG export for fair, fun decisions",
+    category: "fun",
+    icon: "🎡",
   },
 ];
 

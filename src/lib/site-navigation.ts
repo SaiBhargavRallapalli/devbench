@@ -37,6 +37,7 @@ export const FOOTER_CATEGORY_ORDER: ToolCategory[] = [
   "health",
   "math",
   "datetime",
+  "fun",
 ];
 
 export function footerCategoryLinks(): { href: string; label: string }[] {

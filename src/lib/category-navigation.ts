@@ -96,6 +96,7 @@ export const CATEGORY_BROWSE_HIGHLIGHTS: Record<ToolCategory, readonly string[]>
     "date-calculator",
     "age-calculator",
   ],
+  fun: ["spin-wheel"],
 };
 
 export function getCategoryHighlightTools(

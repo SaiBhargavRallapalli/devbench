@@ -20,6 +20,7 @@ const CATEGORY_ORDER: { category: ToolCategory; heading: string }[] = [
   { category: "health", heading: "Health Calculators" },
   { category: "math", heading: "Math Tools" },
   { category: "datetime", heading: "Date & Time Tools" },
+  { category: "fun", heading: "Fun & Party Tools" },
 ];
 
 export async function GET() {
