@@ -195,6 +195,7 @@ export const TOOLS: Tool[] = [
   { slug: "custom-calendar", name: "Custom Calendar", shortName: "My Calendar", description: "Personal calendar with your own events — mark dates, see days until each one, stored in your browser", category: "datetime", icon: "📋" },
   { slug: "on-this-day", name: "On This Day", shortName: "On This Day", description: "What happened on this date in history — events, births and deaths from Wikipedia, plus holidays", category: "datetime", icon: "📜" },
   { slug: "date-pattern", name: "Date Pattern Checker", shortName: "Patterns", description: "See your date as digits — palindrome, repeating and sequential patterns, calendar facts and the next palindrome dates", category: "datetime", icon: "🔢" },
+  { slug: "moon-phases", name: "Moon Phases", shortName: "Moon Phase", description: "Current moon phase and illumination with the next new, first quarter, full and last quarter times — accurate phase disc", category: "datetime", icon: "🌙" },
   { slug: "jwt-debugger", name: "JWT Debugger", shortName: "JWT", description: "Decode, inspect, and verify JSON Web Tokens — header, payload, signature, expiry check", category: "dev", icon: "JWT" },
 
   // Dev / design extras

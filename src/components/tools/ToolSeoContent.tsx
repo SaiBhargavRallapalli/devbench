@@ -3018,6 +3018,64 @@ function DatePatternContent() {
   );
 }
 
+function MoonPhasesContent() {
+  return (
+    <Section>
+      <h2 className={h2}>How to read the Moon phase display</h2>
+      <ol className={ol}>
+        <li>
+          The tool opens on the current instant. The disc shows exactly how
+          much of the Moon&apos;s face is lit — a slim crescent near new
+          moon, a full circle at full moon — with the phase name,
+          illuminated percentage, waxing or waning direction, moon age and
+          distance beside it.
+        </li>
+        <li>
+          The <strong className="text-foreground">Next phases</strong> list
+          gives the next six principal instants (new, first quarter, full,
+          last quarter) with local date, time and a live countdown from the
+          selected moment. The highlighted full-moon row answers the
+          question everyone actually has.
+        </li>
+        <li>
+          Change the date and time to look at any moment — past or future —
+          and the disc, statistics and event list all recompute. Press{" "}
+          <strong className="text-foreground">Now</strong> to jump back to
+          the present.
+        </li>
+      </ol>
+      <h2 className={h2}>Where the phase times come from</h2>
+      <p className={prose}>
+        The instants are solved from the Moon&apos;s ecliptic longitude
+        crossing the Sun&apos;s — conjunction for new moon, opposition for
+        full, quadrature for the quarters — using the truncated lunar theory
+        of Meeus chapters 47–48, the same mathematics behind official
+        almanac phase times. A bracketed binary search pins each crossing to
+        about a millisecond, so the times you see typically sit within a
+        minute or two of the published ones. Illumination comes from the
+        Sun–Moon–Earth angle, which is why it rarely lands on exactly 0% or
+        100%: the Moon&apos;s orbit is tilted, so perfect alignment only
+        happens during eclipses.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/date-pattern" className="text-accent hover:underline">
+          Date Pattern Checker
+        </Link>
+        {", "}
+        <Link href="/tools/on-this-day" className="text-accent hover:underline">
+          On This Day
+        </Link>
+        {", and "}
+        <Link href="/tools/timezone-converter" className="text-accent hover:underline">
+          Time Zone Converter
+        </Link>
+        .
+      </p>
+    </Section>
+  );
+}
+
 function FunHolidaysContent() {
   return (
     <Section>
@@ -3400,6 +3458,7 @@ export const CONTENT_MAP: Record<string, React.FC> = {
   "custom-calendar": CustomCalendarContent,
   "on-this-day": OnThisDayContent,
   "date-pattern": DatePatternContent,
+  "moon-phases": MoonPhasesContent,
   "world-clock": TimezoneConverterContent,
   // Image / file tools
   "background-remover": (() => (

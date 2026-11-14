@@ -100,6 +100,7 @@ export const CATEGORY_BROWSE_HIGHLIGHTS: Record<ToolCategory, readonly string[]>
     "date-calculator",
     "age-calculator",
     "date-pattern",
+    "moon-phases",
     "custom-calendar",
   ],
   fun: ["spin-wheel", "fun-holidays"],

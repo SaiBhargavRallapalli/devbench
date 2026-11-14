@@ -160,4 +160,12 @@ export const faqsDatetime: Record<string, Faq[]> = {
     { q: "What do the calendar facts mean?", a: "Day of year counts 1 January as day 1. ISO week uses the international week numbering where week 1 always contains 4 January — useful for business reporting — and the ISO year can differ from the calendar year at the end of December. Next occurrence counts the days until this day and month comes around again." },
     { q: "Is my date sent anywhere?", a: "No. Every calculation — the digit formatting, the pattern checks, the calendar facts and the palindrome scan — runs in your browser with no network calls at all." },
   ],
+
+  "moon-phases": [
+    { q: "How accurate are the phase times?", a: "The times are computed from the truncated lunar theory of Meeus chapters 47–48 — the same geometry the US Naval Observatory and major almanacs publish conjunction and opposition instants from — so they typically land within a minute or two of the official times. Minor differences can appear because some published tables round to the minute or apply topocentric corrections." },
+    { q: "What do the four phases mean?", a: "New Moon (Sun and Moon aligned, disc dark), First Quarter (half lit, waxing), Full Moon (Earth between Sun and Moon, fully lit) and Last Quarter (half lit, waning). Between them sit the crescent and gibbous shapes. The four principal phases recur roughly every 7.4 days, and a full lunation — new moon back to new moon — averages 29.53 days." },
+    { q: "Why does the illumination rarely reach exactly 0% or 100%?", a: "The Moon's orbit is tilted about 5° to the ecliptic, so at new and full moons the Sun and Moon are usually a few degrees apart in latitude rather than perfectly aligned. The disc then shows a hair of illumination at 'new' or misses a hair at 'full' — perfect alignment only happens during eclipses." },
+    { q: "What do waxing and waning mean?", a: "Waxing means the illuminated fraction is growing — the Moon moves from new towards full, lit on the right in the Northern Hemisphere. Waning means it is shrinking — full back towards new, lit on the left. The Moon age figure is the time elapsed since the last new moon." },
+    { q: "Can I check the phase for a past or future date?", a: "Yes — the date and time picker accepts any instant. Pick a birthday, a holiday or a night you are planning a walk for and the disc, illumination and the six upcoming phase events all recompute for that moment. The Now button returns to the current instant." },
+  ],
 };

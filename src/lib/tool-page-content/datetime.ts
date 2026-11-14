@@ -112,4 +112,12 @@ export const pageContentDatetime: Record<string, ToolPageContent> = {
     openingParagraph:
       "Date Pattern Checker reveals how a date looks as pure numbers and which patterns it satisfies: palindromes that read the same backwards, single digits repeated across the whole string, and ascending or descending runs like 01234567. It also prints the calendar facts around the date — weekday, day of the year, ISO week number, leap-year status — and scans forward to list the next five palindrome dates with the formats they match in. Everything runs locally in your browser.",
   },
+
+  "moon-phases": {
+    title: "Moon Phases — Phase, Illumination and Next Phase Times",
+    metaDescription:
+      "See the Moon's current phase, illuminated percentage and distance, plus the exact times of the next new moon, first quarter, full moon and last quarter. Free online.",
+    openingParagraph:
+      "Moon Phases shows where the Moon is in its lunation right now — a precise phase disc with the illuminated percentage, waxing or waning direction, the Moon's age and its distance from Earth — and lists the next six phase instants: new moon, first quarter, full moon and last quarter, each with a live countdown. Pick any date and time to see the phase then, or jump to now. The astronomy runs entirely in your browser using the same lunar theory the USNO publishes phase times from, so no network calls, no trackers, no signup.",
+  },
 };

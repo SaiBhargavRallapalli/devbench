@@ -64,6 +64,7 @@ export const CUSTOM_TOOL_SLUGS: ReadonlySet<string> = new Set([
   "custom-calendar",
   "on-this-day",
   "date-pattern",
+  "moon-phases",
   "fun-holidays",
   "age-calculator",
   "bmi-calculator",

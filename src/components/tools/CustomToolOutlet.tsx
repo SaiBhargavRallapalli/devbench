@@ -91,6 +91,7 @@ const CalendarTools           = dynamic(() => import("@/components/tools/Calenda
 const OnThisDayTool           = dynamic(() => import("@/components/tools/OnThisDayTool"), { ssr: false });
 const FunHolidaysTool         = dynamic(() => import("@/components/tools/FunHolidaysTool"), { ssr: false });
 const DatePatternTool         = dynamic(() => import("@/components/tools/DatePatternTool"), { ssr: false });
+const MoonPhasesTool          = dynamic(() => import("@/components/tools/MoonPhasesTool"), { ssr: false });
 
 export default function CustomToolOutlet({ slug, tool }: { slug: string; tool: Tool }) {
   if (FINANCE_TOOL_SLUGS.has(slug))  return <FinanceFormTools tool={tool} />;
@@ -128,6 +129,7 @@ export default function CustomToolOutlet({ slug, tool }: { slug: string; tool: T
     case "custom-calendar":          return <CalendarTools tool={tool} />;
     case "on-this-day":              return <OnThisDayTool tool={tool} />;
     case "date-pattern":             return <DatePatternTool tool={tool} />;
+    case "moon-phases":              return <MoonPhasesTool tool={tool} />;
     case "fun-holidays":             return <FunHolidaysTool tool={tool} />;
     case "age-calculator":           return <AgeCalculatorTool tool={tool} />;
     case "bmi-calculator":           return <BmiCalculatorTool tool={tool} />;

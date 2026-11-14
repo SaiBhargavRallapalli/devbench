@@ -55,6 +55,7 @@ const CURATED_RELATED: Partial<Record<string, readonly string[]>> = {
   "custom-calendar": ["calendar-generator", "countdown-creator", "date-calculator", "days-between-dates"],
   "on-this-day": ["date-pattern", "calendar-generator", "days-between-dates", "custom-calendar"],
   "date-pattern": ["on-this-day", "unix-timestamp", "week-number-calculator", "days-between-dates"],
+  "moon-phases": ["timezone-converter", "date-pattern", "countdown-creator", "on-this-day"],
   "fun-holidays": ["on-this-day", "spin-wheel", "countdown-creator", "calendar-generator"],
   "spin-wheel": ["uuid-generator", "password-generator", "qr-code"],
   rot13: ["morse-code", "base64-encode", "text-to-hex"],
