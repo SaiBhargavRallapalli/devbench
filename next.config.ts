@@ -30,7 +30,7 @@ const CSP = [
   // AdSense: googlesyndication + doubleclick + fundingchoices for consent / ad fetch.
   // Cloudflare beacon (static.cloudflareinsights.com) is injected at Cloudflare's
   // edge, not present in source — without this origin the console logs a CSP error.
-  "connect-src 'self' https://cdn.jsdelivr.net https://esm.sh https://pypi.org https://files.pythonhosted.org https://*.google.com https://*.google https://*.googletagmanager.com https://*.doubleclick.net https://*.googlesyndication.com https://va.vercel-scripts.com https://*.vercel-insights.com https://fundingchoicesmessages.google.com https://cloudflare-dns.com https://speed.cloudflare.com https://ipapi.co https://api.ipify.org https://registry.npmjs.org https://api.npmjs.org https://api.frankfurter.app https://static.cloudflareinsights.com ws: wss:",
+  "connect-src 'self' https://cdn.jsdelivr.net https://esm.sh https://pypi.org https://files.pythonhosted.org https://*.google.com https://*.google https://*.googletagmanager.com https://*.doubleclick.net https://*.googlesyndication.com https://va.vercel-scripts.com https://*.vercel-insights.com https://fundingchoicesmessages.google.com https://cloudflare-dns.com https://speed.cloudflare.com https://ipapi.co https://api.ipify.org https://registry.npmjs.org https://api.npmjs.org https://api.frankfurter.app https://api.wikimedia.org https://static.cloudflareinsights.com ws: wss:",
   "worker-src 'self' blob: https://cdn.jsdelivr.net",
   "frame-src 'self' https://www.googletagmanager.com https://*.doubleclick.net https://*.google.com https://*.google https://googleads.g.doubleclick.net https://fundingchoicesmessages.google.com",
   "frame-ancestors 'none'",

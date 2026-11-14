@@ -193,6 +193,8 @@ export const TOOLS: Tool[] = [
   { slug: "countdown-creator", name: "Countdown Creator", shortName: "Countdown", description: "Live countdown to any date and time with a custom label and a shareable link — events, launches, milestones", category: "datetime", icon: "⌛" },
   { slug: "calendar-generator", name: "Calendar Generator", shortName: "Calendar", description: "Printable calendar for any month or year — choose the first weekday, add a title, today highlighted", category: "datetime", icon: "🗓" },
   { slug: "custom-calendar", name: "Custom Calendar", shortName: "My Calendar", description: "Personal calendar with your own events — mark dates, see days until each one, stored in your browser", category: "datetime", icon: "📋" },
+  { slug: "on-this-day", name: "On This Day", shortName: "On This Day", description: "What happened on this date in history — events, births and deaths from Wikipedia, plus holidays", category: "datetime", icon: "📜" },
+  { slug: "date-pattern", name: "Date Pattern Checker", shortName: "Patterns", description: "See your date as digits — palindrome, repeating and sequential patterns, calendar facts and the next palindrome dates", category: "datetime", icon: "🔢" },
   { slug: "jwt-debugger", name: "JWT Debugger", shortName: "JWT", description: "Decode, inspect, and verify JSON Web Tokens — header, payload, signature, expiry check", category: "dev", icon: "JWT" },
 
   // Dev / design extras
@@ -613,6 +615,14 @@ export const TOOLS: Tool[] = [
     description: "Customizable weighted spin wheel — presets, elimination mode, tick sound and PNG export for fair, fun decisions",
     category: "fun",
     icon: "🎡",
+  },
+  {
+    slug: "fun-holidays",
+    name: "Fun Holidays",
+    shortName: "Fun Days",
+    description: "What's today's fun holiday? Browse quirky, cultural and international fixed-date days with a surprise button",
+    category: "fun",
+    icon: "🎉",
   },
 ];
 

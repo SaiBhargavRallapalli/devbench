@@ -2914,6 +2914,160 @@ function CustomCalendarContent() {
   );
 }
 
+function OnThisDayContent() {
+  return (
+    <Section>
+      <h2 className={h2}>How to use On This Day</h2>
+      <ol className={ol}>
+        <li>
+          The date defaults to today — change it with the picker to look up any
+          other day, or press{" "}
+          <strong className="text-foreground">Today</strong> to jump back.
+        </li>
+        <li>
+          Switch between the four tabs:{" "}
+          <strong className="text-foreground">Events</strong>,{" "}
+          <strong className="text-foreground">Births</strong>,{" "}
+          <strong className="text-foreground">Deaths</strong> and{" "}
+          <strong className="text-foreground">Holidays</strong>. Each shows its
+          entry count as soon as that section has loaded.
+        </li>
+        <li>
+          Entries appear oldest first with the year badged beside them. Thirty
+          rows show at a time — press{" "}
+          <strong className="text-foreground">Show more</strong> to page through
+          the rest, and follow any Wikipedia link for the full article.
+        </li>
+      </ol>
+      <h2 className={h2}>Where the entries come from</h2>
+      <p className={prose}>
+        Everything is served by Wikipedia&apos;s On This Day API: events,
+        births, deaths and holidays recorded against the selected date, with
+        thumbnails and article links where Wikipedia has them. Sections fetch on
+        demand and cache in memory per date, so a date with two hundred births
+        never blocks the event list, and flipping between dates is instant.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/date-pattern" className="text-accent hover:underline">
+          Date Pattern Checker
+        </Link>
+        {", "}
+        <Link href="/tools/calendar-generator" className="text-accent hover:underline">
+          Calendar Generator
+        </Link>
+        {", and "}
+        <Link href="/tools/days-between-dates" className="text-accent hover:underline">
+          Days Between Dates
+        </Link>
+        .
+      </p>
+    </Section>
+  );
+}
+
+function DatePatternContent() {
+  return (
+    <Section>
+      <h2 className={h2}>How to check a date for patterns</h2>
+      <ol className={ol}>
+        <li>
+          Pick a date — it defaults to today. The first panel renders it in
+          five numeric formats (MM/DD/YYYY, DD/MM/YYYY, YYYYMMDD and the two
+          two-digit-year forms), with matching formats highlighted and badged.
+        </li>
+        <li>
+          The <strong className="text-foreground">Patterns found</strong> panel
+          explains every match in plain words: a palindrome reads the same
+          backwards, repeating digits means one digit fills the whole string,
+          and ascending or descending runs step by one each position.
+        </li>
+        <li>
+          The calendar facts strip shows the weekday, day of the year, ISO week
+          number, leap-year status and the days until this date comes round
+          again — then the scanner lists the next five palindrome dates with
+          the formats they match in.
+        </li>
+      </ol>
+      <h2 className={h2}>Why palindrome dates are rare but predictable</h2>
+      <p className={prose}>
+        In DD/MM/YYYY the digits are day, month, then year — so the date is a
+        palindrome exactly when the day mirrors the end of the year and the
+        month mirrors the start. That constraint is solvable, which is why the
+        tool can scan forward and hand you the next match (for a date in 2026
+        the next one is 3 February 2030) instead of guessing. Each format is
+        tested independently, so one calendar date can be a palindrome in one
+        order and ordinary in another.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/on-this-day" className="text-accent hover:underline">
+          On This Day
+        </Link>
+        {", "}
+        <Link href="/tools/unix-timestamp" className="text-accent hover:underline">
+          Unix Timestamp Converter
+        </Link>
+        {", and "}
+        <Link href="/tools/week-number-calculator" className="text-accent hover:underline">
+          ISO Week Number Calculator
+        </Link>
+        .
+      </p>
+    </Section>
+  );
+}
+
+function FunHolidaysContent() {
+  return (
+    <Section>
+      <h2 className={h2}>How to find today&apos;s fun holiday</h2>
+      <ol className={ol}>
+        <li>
+          The tool opens on today&apos;s date: if the collection has an entry
+          for it, the holiday name and a one-line primer appear immediately —
+          otherwise you get the next three holidays coming up instead.
+        </li>
+        <li>
+          Press <strong className="text-foreground">Surprise me</strong> for a
+          random holiday from the whole collection, then jump the date picker
+          to it with one click. Every entry in the month list does the same.
+        </li>
+        <li>
+          The <strong className="text-foreground">Every holiday in [month]</strong>{" "}
+          panel lists the month&apos;s entries in date order with the selected
+          date highlighted — handy for planning themed days, parties or
+          classroom events.
+        </li>
+      </ol>
+      <h2 className={h2}>Fixed dates only — so nothing is ever wrong</h2>
+      <p className={prose}>
+        The collection deliberately contains only observances that fall on the
+        same date every year: Star Wars Day on 4 May, Pi Day on 14 March,
+        Halloween on 31 October. Floating days — Mother&apos;s Day, Thanksgiving,
+        Diwali — move with the calendar and would be wrong in most years if
+        hard-coded, so they are left out. Everything is a plain bundled dataset
+        read locally: no requests, no accounts, nothing stored.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/on-this-day" className="text-accent hover:underline">
+          On This Day
+        </Link>
+        {", "}
+        <Link href="/tools/spin-wheel" className="text-accent hover:underline">
+          Spin Wheel
+        </Link>
+        {", and "}
+        <Link href="/tools/countdown-creator" className="text-accent hover:underline">
+          Countdown Creator
+        </Link>
+        .
+      </p>
+    </Section>
+  );
+}
+
 // ── Design ───────────────────────────────────────────────────────────────────
 
 function ContrastCheckerContent() {
@@ -3177,6 +3331,7 @@ export const CONTENT_MAP: Record<string, React.FC> = {
     </Section>
   )) as React.FC,
   "spin-wheel": SpinWheelContent,
+  "fun-holidays": FunHolidaysContent,
   "url-parser": UrlParserContent,
   "base-converter": BaseConverterContent,
   "css-minifier": CssMinifierContent,
@@ -3243,6 +3398,8 @@ export const CONTENT_MAP: Record<string, React.FC> = {
   "countdown-creator": CountdownCreatorContent,
   "calendar-generator": CalendarGeneratorContent,
   "custom-calendar": CustomCalendarContent,
+  "on-this-day": OnThisDayContent,
+  "date-pattern": DatePatternContent,
   "world-clock": TimezoneConverterContent,
   // Image / file tools
   "background-remover": (() => (

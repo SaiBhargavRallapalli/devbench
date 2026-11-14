@@ -96,4 +96,20 @@ export const pageContentDatetime: Record<string, ToolPageContent> = {
     openingParagraph:
       "Custom Calendar turns a plain month grid into your schedule. Click any day to move the date picker there, give the event a name, and it appears both as a dot on that date and in the month's event list with a live days-until label — today, tomorrow, in 12 days, or 3 days ago. Navigate months with the arrows, flip the week start, and print the grid with its event list. Events persist in this browser's local storage and never leave your device.",
   },
+
+  "on-this-day": {
+    title: "On This Day — History, Births and Deaths for Any Date",
+    metaDescription:
+      "What happened on this day in history? Browse events, famous births, deaths and holidays for any date, sourced from Wikipedia. Free, no signup.",
+    openingParagraph:
+      "On This Day answers the question everyone asks at some point: what happened on this date in history? Pick any day of the year and read what was recorded — historical events with their years, famous births, notable deaths and observed holidays, all sourced from Wikipedia's On This Day API. Sections load on demand so a date with hundreds of entries stays fast, every row links to its Wikipedia article for the full story, and the whole tool runs in your browser.",
+  },
+
+  "date-pattern": {
+    title: "Date Pattern Checker — Palindrome Dates and Digit Patterns",
+    metaDescription:
+      "Check any date for palindrome, repeating and sequential digit patterns — plus weekday, day of year, ISO week and the next palindrome dates. Free online.",
+    openingParagraph:
+      "Date Pattern Checker reveals how a date looks as pure numbers and which patterns it satisfies: palindromes that read the same backwards, single digits repeated across the whole string, and ascending or descending runs like 01234567. It also prints the calendar facts around the date — weekday, day of the year, ISO week number, leap-year status — and scans forward to list the next five palindrome dates with the formats they match in. Everything runs locally in your browser.",
+  },
 };

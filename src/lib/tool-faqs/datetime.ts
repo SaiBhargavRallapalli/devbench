@@ -144,4 +144,20 @@ export const faqsDatetime: Record<string, Faq[]> = {
     { q: "Can I print my calendar?", a: "Yes — the Print button prints the month grid (with event dots) and the event list, while the navigation arrows, form controls and delete buttons stay off the paper. Your browser's dialog also lets you save the result as a PDF." },
     { q: "Is there a limit to how many events I can add?", a: "Practically no — hundreds of events render fine, and the list is capped at 500 stored entries as a sanity bound on local storage. One-off dates, recurring-looking series (add each occurrence) and long-term plans all work." },
   ],
+
+  "on-this-day": [
+    { q: "Where does the historical data come from?", a: "Wikipedia's On This Day API (api.wikimedia.org), which returns events, births, deaths and holidays recorded on the selected date. Each row links to the Wikipedia article behind it, and the data is available under Wikipedia's free licences — this page just presents it in a browseable form." },
+    { q: "Why does the Deaths section have so many entries?", a: "Wikipedia records far more deaths than births for most dates — around a hundred is typical, and some dates pass two hundred. That is why sections load on demand and show 30 rows at a time: switch tabs or press Show more to page through the rest without waiting for the whole list." },
+    { q: "Are the years next to each entry accurate?", a: "The year is the one Wikipedia attaches to the entry — for events the year it happened, for births the year someone was born, for deaths the year they died. Entries are sorted oldest first. When Wikipedia has no year for an entry, the badge is simply omitted." },
+    { q: "Can I look up any date, or only today?", a: "Any date. The date picker accepts any day of the year — pick a birthday, an anniversary or a random Tuesday and the sections reload for that day. Results are cached in memory per date, so flipping back and forth between dates is instant." },
+    { q: "Do you store what I look up?", a: "Nothing leaves your browser except the request to Wikipedia itself, and the entries you have already loaded stay in the page's memory only. There is no account, no server-side history and no tracking of which dates you check." },
+  ],
+
+  "date-pattern": [
+    { q: "What counts as a palindrome date?", a: "A date whose digits read the same forwards and backwards in a given order. For example 1 February 2010 is a palindrome in DD/MM/YYYY (01022010) and 2 February 2020 is one in MM/DD/YYYY (02022020). The checker tests all five common numeric formats and badges every one that matches." },
+    { q: "Which patterns does it detect?", a: "Four: palindromes (same forwards and backwards), repeating digits (one digit across the whole string, like 11111111), ascending runs (01234567) and descending runs (87654321). A date can match several at once — 11/11/1111 is both repeating and a palindrome — and every true statement is badged." },
+    { q: "How does it find the next palindrome dates?", a: "It scans forward one day at a time from your date and re-analyses each one in DD/MM/YYYY, MM/DD/YYYY and YYYYMMDD, collecting the first five that match. A century of scanning is only tens of thousands of string checks, so the answer appears instantly." },
+    { q: "What do the calendar facts mean?", a: "Day of year counts 1 January as day 1. ISO week uses the international week numbering where week 1 always contains 4 January — useful for business reporting — and the ISO year can differ from the calendar year at the end of December. Next occurrence counts the days until this day and month comes around again." },
+    { q: "Is my date sent anywhere?", a: "No. Every calculation — the digit formatting, the pattern checks, the calendar facts and the palindrome scan — runs in your browser with no network calls at all." },
+  ],
 };

@@ -95,12 +95,14 @@ export const CATEGORY_BROWSE_HIGHLIGHTS: Record<ToolCategory, readonly string[]>
     "timer",
     "days-between-dates",
     "calendar-generator",
+    "on-this-day",
     "unix-timestamp",
     "date-calculator",
     "age-calculator",
+    "date-pattern",
     "custom-calendar",
   ],
-  fun: ["spin-wheel"],
+  fun: ["spin-wheel", "fun-holidays"],
 };
 
 export function getCategoryHighlightTools(

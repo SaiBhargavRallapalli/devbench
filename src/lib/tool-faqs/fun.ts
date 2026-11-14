@@ -9,4 +9,12 @@ export const faqsFun: Record<string, Faq[]> = {
     { q: "Can I save or share the wheel?", a: "Yes — the PNG button exports the wheel as an image (pointer and current slices included), ready to drop into a slide, chat or social post. Your live options and history persist across visits automatically." },
     { q: "Does it respect reduced-motion settings?", a: "Yes. If your operating system or browser requests reduced motion, the wheel skips the spin animation entirely and jumps straight to the result — you still get the winner, history and sound cues without any movement." },
   ],
+
+  "fun-holidays": [
+    { q: "How is today's holiday chosen?", a: "The collection is keyed by month and day, so the page simply looks up the MM-DD of the date you have selected and shows every entry stored against it. If the day has nothing in the collection, it offers the next three holidays coming up instead — the tool never invents a holiday for a bare date." },
+    { q: "Why only fixed-date holidays?", a: "Floating observances like Mother's Day, Diwali or Thanksgiving move every year, so a static dataset would be wrong in most years. Only days that fall on the same date annually are included — that way what you read is never out of date, and the list stays honest." },
+    { q: "What does the Surprise me button do?", a: "It picks one of the holidays in the collection at random and shows it as a dismissible card with its date and blurb. From the card you can jump the date picker straight to that day and see everything else stored around it." },
+    { q: "Can I browse a whole month at once?", a: "Yes — the Every holiday in [month] list shows every entry for the currently selected month in date order, with the current date highlighted. Clicking any row moves the date picker to that day, so it doubles as a month-at-a-glance view." },
+    { q: "Is my data sent anywhere?", a: "No. The holiday collection ships with the page as a plain dataset and every lookup happens locally — no requests, no accounts, nothing stored." },
+  ],
 };
