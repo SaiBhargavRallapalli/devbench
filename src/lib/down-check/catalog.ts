@@ -58,10 +58,9 @@ export const DOWN_CHECK_SERVICES: ServiceDef[] = [
   { id: "airtel", name: "Airtel", host: "www.airtel.in", category: "telecom", region: "IN" },
   { id: "vi", name: "Vi (Vodafone Idea)", host: "www.myvi.in", category: "telecom", region: "IN" },
   { id: "bsnl", name: "BSNL", host: "www.bsnl.co.in", category: "telecom", region: "IN" },
-  { id: "act-fibernet", name: "ACT Fibernet", host: "www.actfiber.net", category: "telecom", region: "IN" },
+  { id: "act-fibernet", name: "ACT Fibernet", host: "actcorp.in", category: "telecom", region: "IN" },
   { id: "tata-play", name: "Tata Play", host: "www.tataplay.com", category: "telecom", region: "IN" },
   { id: "hathway", name: "Hathway", host: "www.hathway.com", category: "telecom", region: "IN" },
-  { id: "jio-fiber", name: "JioFiber", host: "www.jiofiber.com", category: "telecom", region: "IN" },
 
   // ── Social & Messaging ───────────────────────────────────────────
   { id: "truecaller", name: "Truecaller", host: "www.truecaller.com", category: "social", region: "IN" },
@@ -108,6 +107,7 @@ export const DOWN_CHECK_SERVICES: ServiceDef[] = [
   { id: "ajio", name: "AJIO", host: "www.ajio.com", category: "shopping", region: "IN" },
   { id: "nykaa", name: "Nykaa", host: "www.nykaa.com", category: "shopping", region: "IN" },
   { id: "meesho", name: "Meesho", host: "www.meesho.com", category: "shopping", region: "IN" },
+  { id: "jiomart", name: "JioMart", host: "www.jiomart.com", category: "shopping", region: "IN" },
   { id: "snapdeal", name: "Snapdeal", host: "www.snapdeal.com", category: "shopping", region: "IN" },
   { id: "tata-cliq", name: "Tata CLiQ", host: "www.tatacliq.com", category: "shopping", region: "IN" },
   { id: "croma", name: "Croma", host: "www.croma.com", category: "shopping", region: "IN" },

@@ -176,6 +176,9 @@ export default function DownDetectorTool({ tool }: { tool: Tool }) {
     [category, region],
   );
 
+  // Chunks fly in parallel but land at different times (cold starts), so each
+  // chunk merges its results into the grid the moment it arrives instead of
+  // hiding everything behind the slowest batch.
   const runCheck = useCallback(async (services: ServiceDef[]) => {
     if (services.length === 0) return;
     setChecking(true);
@@ -185,9 +188,14 @@ export default function DownDetectorTool({ tool }: { tool: Tool }) {
     for (let i = 0; i < hosts.length; i += CHUNK_SIZE) {
       chunks.push(hosts.slice(i, i + CHUNK_SIZE));
     }
-    try {
-      const settled = await Promise.allSettled(
-        chunks.map(async (chunk) => {
+
+    let failed = 0;
+    let lastError: string | null = null;
+    let completed = 0;
+
+    await Promise.allSettled(
+      chunks.map(async (chunk) => {
+        try {
           const res = await fetch("/api/down-check", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -197,36 +205,33 @@ export default function DownDetectorTool({ tool }: { tool: Tool }) {
             | { results?: ApiProbe[]; error?: string }
             | null;
           if (!res.ok) throw new Error(body?.error ?? `HTTP ${res.status}`);
-          return body?.results ?? [];
-        }),
-      );
-      const next: Record<string, Probe> = {};
-      let failed = 0;
-      let lastError: string | null = null;
-      for (const s of settled) {
-        if (s.status === "fulfilled") {
-          for (const p of s.value) next[p.host] = p;
-        } else {
+          const incoming = body?.results ?? [];
+          if (incoming.length > 0) {
+            setResults((prev) => {
+              const merged = { ...prev };
+              for (const p of incoming) merged[p.host] = p;
+              return merged;
+            });
+            setLastChecked(Date.now());
+          }
+        } catch (e) {
           failed++;
-          lastError = s.reason instanceof Error ? s.reason.message : "Check failed";
+          lastError = e instanceof Error ? e.message : "Check failed";
+        } finally {
+          completed++;
+          if (completed === chunks.length) {
+            setChecking(false);
+            if (failed > 0) {
+              setError(
+                failed === chunks.length
+                  ? (lastError ?? "Check failed.")
+                  : `Partial results — ${failed} batch${failed > 1 ? "es" : ""} failed (${lastError ?? "error"}).`,
+              );
+            }
+          }
         }
-      }
-      if (Object.keys(next).length > 0) {
-        setResults((prev) => ({ ...prev, ...next }));
-        setLastChecked(Date.now());
-      }
-      if (failed > 0) {
-        setError(
-          failed === chunks.length
-            ? (lastError ?? "Check failed.")
-            : `Partial results — ${failed} batch${failed > 1 ? "es" : ""} failed (${lastError ?? "error"}).`,
-        );
-      }
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Check failed.");
-    } finally {
-      setChecking(false);
-    }
+      }),
+    );
   }, []);
 
   // Auto-check the catalog on first load: a down-detector that needs a button

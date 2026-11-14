@@ -2855,7 +2855,7 @@ export const CONTENT_MAP: Record<string, React.FC> = {
       <h2 className={h2}>How to check if a site is down</h2>
       <ol className={ol}>
         <li>
-          The tool auto-checks the full catalog the moment it opens — 96 services
+          The tool auto-checks the full catalog the moment it opens — 108 services
           across telecom, social, streaming, food, shopping, banking, travel,
           government, cloud/dev and gaming, Indian services first in each category.
         </li>

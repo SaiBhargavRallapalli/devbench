@@ -2,8 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { clientIp, createRateLimiter, isAllowedOrigin } from "@/lib/api-guard";
 import { DOWN_CHECK_HOSTS } from "@/lib/down-check/catalog";
 
-// Probing ~96 hosts at concurrency 8 with a 3s cap per host needs headroom.
-export const maxDuration = 30;
+// Probing ~108 hosts at concurrency 8 with a 3s cap per host needs headroom:
+// observed cold starts on this route run ~25s, so 30s could kill a batch
+// mid-flight (cron and convert-notebook already run at 60 on this account).
+export const maxDuration = 60;
 
 const TIMEOUT_MS = 3_000;
 /** Max hosts per request — the client chunks its batches to match. */
@@ -11,7 +13,7 @@ export const MAX_HOSTS = 32;
 const CONCURRENCY = 8;
 
 // Sliding-window rate limiter: 30 req/min per IP. A full catalog check is
-// ceil(96/32) = 3 requests, so ~10 complete checks per minute are allowed.
+// ceil(108/32) = 4 requests, so ~7 complete checks per minute are allowed.
 // In-memory — per warm instance. Adequate for serverless abuse prevention.
 const isRateLimited = createRateLimiter(30);
 
