@@ -45,17 +45,26 @@ function Stopwatch() {
   const baseRef = useRef(0);
   const startRef = useRef(0);
 
-  // rAF loop only while running — functional (the display IS the tool), and
-  // it stops dead on pause/unmount.
+  // Dual driver while running: rAF gives smooth centiseconds when the window
+  // paints, and a 250ms interval keeps the display moving when the browser
+  // suspends rAF (occluded/background windows do exactly that). Both compute
+  // from the same timestamps, so whichever fires the value stays exact.
   useEffect(() => {
     if (!running) return;
     let raf = 0;
     const tick = () => {
       setElapsed(baseRef.current + (performance.now() - startRef.current));
-      raf = requestAnimationFrame(tick);
     };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
+    const frame = () => {
+      tick();
+      raf = requestAnimationFrame(frame);
+    };
+    raf = requestAnimationFrame(frame);
+    const iv = window.setInterval(tick, 250);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.clearInterval(iv);
+    };
   }, [running]);
 
   const start = () => {
