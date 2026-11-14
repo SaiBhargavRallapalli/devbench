@@ -51,6 +51,8 @@ const CURATED_RELATED: Partial<Record<string, readonly string[]>> = {
   "stopwatch": ["timer", "countdown-creator", "countdown-calculator", "world-clock"],
   "timer": ["stopwatch", "countdown-creator", "countdown-calculator", "days-between-dates"],
   "countdown-creator": ["countdown-calculator", "timer", "days-between-dates", "world-clock"],
+  "calendar-generator": ["custom-calendar", "days-between-dates", "countdown-creator", "date-calculator"],
+  "custom-calendar": ["calendar-generator", "countdown-creator", "date-calculator", "days-between-dates"],
   "spin-wheel": ["uuid-generator", "password-generator", "qr-code"],
   rot13: ["morse-code", "base64-encode", "text-to-hex"],
   "morse-code": ["rot13", "text-to-hex", "base64-encode"],

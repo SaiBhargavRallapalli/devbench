@@ -2812,6 +2812,108 @@ function CountdownCreatorContent() {
   );
 }
 
+function CalendarGeneratorContent() {
+  return (
+    <Section>
+      <h2 className={h2}>How to generate a printable calendar</h2>
+      <ol className={ol}>
+        <li>
+          Enter a year (1900–2200) and pick the range: a full twelve-month
+          sheet, or a single month with the month dropdown.
+        </li>
+        <li>
+          Choose whether weeks start on{" "}
+          <strong className="text-foreground">Sunday</strong> or{" "}
+          <strong className="text-foreground">Monday</strong> — every date
+          re-aligns to the right column instantly — and optionally give the
+          calendar a title that prints above the grid.
+        </li>
+        <li>
+          Press <strong className="text-foreground">Print calendar</strong>.
+          The print layout excludes the site navigation, form fields and
+          buttons, so the paper (or PDF, from the same dialog) carries only the
+          grid and your title, with each month kept intact across pages.
+        </li>
+      </ol>
+      <h2 className={h2}>Leap years and weekday alignment</h2>
+      <p className={prose}>
+        Each month is laid out from the date itself using full Gregorian rules:
+        February holds 29 days in 2024, 2028 and 2000, but not in 1900 or 2100,
+        and the first of every month lands in the correct weekday column
+        whatever week start you choose. Today&apos;s date is highlighted in the
+        grid when the visible year matches.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/custom-calendar" className="text-accent hover:underline">
+          Custom Calendar
+        </Link>
+        {", "}
+        <Link href="/tools/countdown-creator" className="text-accent hover:underline">
+          Countdown Creator
+        </Link>
+        {", and "}
+        <Link href="/tools/days-between-dates" className="text-accent hover:underline">
+          Days Between Dates
+        </Link>
+        .
+      </p>
+    </Section>
+  );
+}
+
+function CustomCalendarContent() {
+  return (
+    <Section>
+      <h2 className={h2}>How to build your own calendar</h2>
+      <ol className={ol}>
+        <li>
+          Click any day in the month grid — the date picker jumps to it — type
+          a name in{" "}
+          <strong className="text-foreground">Event name</strong> and press{" "}
+          <strong className="text-foreground">Add event</strong>. The date
+          picker also works directly if you prefer typing the date.
+        </li>
+        <li>
+          Events show up twice: as an accent dot on the date in the grid, and
+          as a row under the calendar with its distance from today — today,
+          tomorrow, in 12 days, or 3 days ago. A per-cell label counts events
+          when a date holds more than one.
+        </li>
+        <li>
+          Move between months with the arrows, jump back with{" "}
+          <strong className="text-foreground">Today</strong>, and print the
+          grid plus its event list — navigation, forms and delete buttons stay
+          off the paper.
+        </li>
+      </ol>
+      <h2 className={h2}>Where your events live</h2>
+      <p className={prose}>
+        Events are kept in this browser&apos;s local storage under a
+        DevBench-specific key and never leave your device — there is no account
+        and no sync, so clearing site data for devbench.co.in removes them.
+        Everything else (weekday alignment, days-until labels, print layout)
+        runs in the page.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/calendar-generator" className="text-accent hover:underline">
+          Calendar Generator
+        </Link>
+        {", "}
+        <Link href="/tools/date-calculator" className="text-accent hover:underline">
+          Date Calculator
+        </Link>
+        {", and "}
+        <Link href="/tools/countdown-creator" className="text-accent hover:underline">
+          Countdown Creator
+        </Link>
+        .
+      </p>
+    </Section>
+  );
+}
+
 // ── Design ───────────────────────────────────────────────────────────────────
 
 function ContrastCheckerContent() {
@@ -3139,6 +3241,8 @@ export const CONTENT_MAP: Record<string, React.FC> = {
   "stopwatch": StopwatchContent,
   "timer": TimerContent,
   "countdown-creator": CountdownCreatorContent,
+  "calendar-generator": CalendarGeneratorContent,
+  "custom-calendar": CustomCalendarContent,
   "world-clock": TimezoneConverterContent,
   // Image / file tools
   "background-remover": (() => (

@@ -252,3 +252,15 @@ svg.text-success {
     animation-iteration-count: infinite !important;
   }
 }
+
+/* Printing a page should yield its content, not the site chrome: navigation,
+   footer and cookie overlays stay off paper. Tool components additionally tag
+   their own interactive controls with print:hidden (calendars, timers). */
+@media print {
+  header,
+  footer,
+  [role="banner"],
+  [role="contentinfo"] {
+    display: none !important;
+  }
+}

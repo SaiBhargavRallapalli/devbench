@@ -60,6 +60,8 @@ export const CUSTOM_TOOL_SLUGS: ReadonlySet<string> = new Set([
   "stopwatch",
   "timer",
   "countdown-creator",
+  "calendar-generator",
+  "custom-calendar",
   "age-calculator",
   "bmi-calculator",
   "compound-interest",

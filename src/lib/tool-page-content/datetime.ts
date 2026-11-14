@@ -80,4 +80,20 @@ export const pageContentDatetime: Record<string, ToolPageContent> = {
     openingParagraph:
       "Countdown Creator turns any future moment into a ticking countdown: give it a label, a date and a time, and watch the days, hours, minutes and seconds fall in real time. Copy the share link and anyone who opens it sees the same countdown pre-filled — ideal for birthdays, product launches, exams and holidays. The target is interpreted in your local timezone, and the whole tool runs in your browser with no signup or server.",
   },
+
+  "calendar-generator": {
+    title: "Calendar Generator — Printable Calendars Online",
+    metaDescription:
+      "Generate a printable calendar for any month or year — pick the first weekday, add a title, today highlighted. Leap-year accurate. No signup, 100% in your browser.",
+    openingParagraph:
+      "Calendar Generator lays out any month or full year on a clean grid you can print: choose whether weeks start on Sunday or Monday, switch between a twelve-month sheet and a single month, and give the calendar a title for the header. Today's date is highlighted, leap years are handled automatically, and printing strips away the site navigation so only the calendar reaches the paper. Runs entirely in your browser.",
+  },
+
+  "custom-calendar": {
+    title: "Custom Calendar — Mark Your Own Dates Online",
+    metaDescription:
+      "Build a personal calendar: click a day, add event names, see days until each one. Month navigation, printable, stored in your browser. No signup.",
+    openingParagraph:
+      "Custom Calendar turns a plain month grid into your schedule. Click any day to move the date picker there, give the event a name, and it appears both as a dot on that date and in the month's event list with a live days-until label — today, tomorrow, in 12 days, or 3 days ago. Navigate months with the arrows, flip the week start, and print the grid with its event list. Events persist in this browser's local storage and never leave your device.",
+  },
 };

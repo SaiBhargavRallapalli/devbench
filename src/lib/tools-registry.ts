@@ -191,6 +191,8 @@ export const TOOLS: Tool[] = [
   { slug: "stopwatch", name: "Stopwatch", shortName: "Stopwatch", description: "Centisecond lap stopwatch with split times and fastest-lap highlighting — stays accurate in background tabs", category: "datetime", icon: "⏱" },
   { slug: "timer", name: "Online Timer", shortName: "Timer", description: "Countdown timer with presets, live progress bar and an audible alert — cooking, workouts, exams", category: "datetime", icon: "⏲" },
   { slug: "countdown-creator", name: "Countdown Creator", shortName: "Countdown", description: "Live countdown to any date and time with a custom label and a shareable link — events, launches, milestones", category: "datetime", icon: "⌛" },
+  { slug: "calendar-generator", name: "Calendar Generator", shortName: "Calendar", description: "Printable calendar for any month or year — choose the first weekday, add a title, today highlighted", category: "datetime", icon: "🗓" },
+  { slug: "custom-calendar", name: "Custom Calendar", shortName: "My Calendar", description: "Personal calendar with your own events — mark dates, see days until each one, stored in your browser", category: "datetime", icon: "📋" },
   { slug: "jwt-debugger", name: "JWT Debugger", shortName: "JWT", description: "Decode, inspect, and verify JSON Web Tokens — header, payload, signature, expiry check", category: "dev", icon: "JWT" },
 
   // Dev / design extras

@@ -94,9 +94,11 @@ export const CATEGORY_BROWSE_HIGHLIGHTS: Record<ToolCategory, readonly string[]>
     "stopwatch",
     "timer",
     "days-between-dates",
+    "calendar-generator",
     "unix-timestamp",
     "date-calculator",
     "age-calculator",
+    "custom-calendar",
   ],
   fun: ["spin-wheel"],
 };

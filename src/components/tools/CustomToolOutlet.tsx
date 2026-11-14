@@ -87,6 +87,7 @@ const SpeedTestTool           = dynamic(() => import("@/components/tools/SpeedTe
 const SpinWheelTool           = dynamic(() => import("@/components/tools/SpinWheelTool"), { ssr: false });
 const DownDetectorTool        = dynamic(() => import("@/components/tools/DownDetectorTool"), { ssr: false });
 const StopwatchTimerTools     = dynamic(() => import("@/components/tools/StopwatchTimerTools"), { ssr: false });
+const CalendarTools           = dynamic(() => import("@/components/tools/CalendarTools"), { ssr: false });
 
 export default function CustomToolOutlet({ slug, tool }: { slug: string; tool: Tool }) {
   if (FINANCE_TOOL_SLUGS.has(slug))  return <FinanceFormTools tool={tool} />;
@@ -120,6 +121,8 @@ export default function CustomToolOutlet({ slug, tool }: { slug: string; tool: T
     case "stopwatch":                return <StopwatchTimerTools tool={tool} />;
     case "timer":                    return <StopwatchTimerTools tool={tool} />;
     case "countdown-creator":        return <StopwatchTimerTools tool={tool} />;
+    case "calendar-generator":       return <CalendarTools tool={tool} />;
+    case "custom-calendar":          return <CalendarTools tool={tool} />;
     case "age-calculator":           return <AgeCalculatorTool tool={tool} />;
     case "bmi-calculator":           return <BmiCalculatorTool tool={tool} />;
     case "compound-interest":        return <CompoundInterestTool tool={tool} />;

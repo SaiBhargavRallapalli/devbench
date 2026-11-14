@@ -128,4 +128,20 @@ export const faqsDatetime: Record<string, Faq[]> = {
     { q: "What happens when the countdown reaches zero?", a: "The cards are replaced with a green The moment has arrived! banner showing the label and the target date. If you open the link after the moment has passed, you see that same banner instead of a negative countdown." },
     { q: "Is my data sent anywhere?", a: "No. The countdown, the target parsing and the link generation all happen in your browser. The share link contains your target and label because you chose to share it — nothing else is transmitted." },
   ],
+
+  "calendar-generator": [
+    { q: "Can I choose which day the week starts on?", a: "Yes — Sunday or Monday, from the toggle above the grid. Sunday-first matches Indian and US wall calendars; Monday-first matches ISO 8601 and most European calendars. The day columns reorder instantly and every date shifts into the right cell." },
+    { q: "Are leap years handled correctly?", a: "Yes. The generator uses the full Gregorian rules: 2024 and 2028 have a 29th of February, 1900 and 2100 do not, and 2000 does. February's length and every month's weekday alignment are computed from the date itself, so grids never drift." },
+    { q: "How do I print just the calendar?", a: "Press Print calendar — the browser's print dialog opens with the site navigation, footer, form fields and buttons excluded, so what prints (or saves as PDF from the dialog) is the calendar grid and your title. The twelve-month sheet paginates across pages with each month kept intact." },
+    { q: "Can I add events or holidays to the calendar?", a: "This generator produces clean printable grids. To mark your own dates — deadlines, shifts, appointments — use the Custom Calendar, which shows event dots on days, a per-month event list with days-until labels, and prints the same way." },
+    { q: "Is my data sent anywhere?", a: "No. Grid layout, weekday maths and printing all happen in your browser. Nothing is uploaded and no account is needed." },
+  ],
+
+  "custom-calendar": [
+    { q: "How do I add an event?", a: "Click a day in the grid — the date picker jumps there — type a name in Event name and press Add event (or Enter). The event appears as a dot on that date in the grid and as a row in the month's event list with a relative label like tomorrow or in 12 days." },
+    { q: "Where are my events stored?", a: "In this browser's local storage, under a DevBench-specific key. They are never sent to a server and never shared across devices or browsers. Clearing site data for devbench.co.in removes them, so export anything critical elsewhere if you rely on the list." },
+    { q: "What do the day labels mean?", a: "Each event shows its distance from today computed against local midnight: today, tomorrow, in 12 days, yesterday, 3 days ago. Future events are highlighted in the accent colour so upcoming commitments stand out at a glance." },
+    { q: "Can I print my calendar?", a: "Yes — the Print button prints the month grid (with event dots) and the event list, while the navigation arrows, form controls and delete buttons stay off the paper. Your browser's dialog also lets you save the result as a PDF." },
+    { q: "Is there a limit to how many events I can add?", a: "Practically no — hundreds of events render fine, and the list is capped at 500 stored entries as a sanity bound on local storage. One-off dates, recurring-looking series (add each occurrence) and long-term plans all work." },
+  ],
 };
