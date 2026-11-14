@@ -3126,6 +3126,164 @@ function FunHolidaysContent() {
   );
 }
 
+function CoinFlipContent() {
+  return (
+    <Section>
+      <h2 className={h2}>How to flip the coin</h2>
+      <ol className={ol}>
+        <li>
+          Press <strong className="text-foreground">Flip coin</strong> — the
+          coin spins once and lands on heads or tails, announced to screen
+          readers as it changes.
+        </li>
+        <li>
+          The tally underneath counts heads versus tails across your session,
+          and the chip strip keeps the last twenty flips (newest first) so a
+          best-of-three or best-of-five keeps its score without a
+          notepad. <strong className="text-foreground">Clear</strong> resets
+          the strip for the next match.
+        </li>
+        <li>
+          Flip as often as you like — every result is a fresh independent
+          draw, so a run of tails tells you nothing about the next flip.
+        </li>
+      </ol>
+      <h2 className={h2}>Why the coin is genuinely fair</h2>
+      <p className={prose}>
+        Each flip takes one value from your browser&apos;s random number
+        generator: the lower half of the range becomes heads, the upper half
+        tails — an even split with no weighting and no memory of previous
+        results. Nothing is sent to a server, nothing is stored, and the
+        animation is a single 380&nbsp;ms spin that disappears entirely when
+        your system requests reduced motion. For decisions with more than two
+        outcomes, the Spin Wheel is the same idea with slices.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/dice-roller" className="text-accent hover:underline">
+          Dice Roller
+        </Link>
+        {", "}
+        <Link href="/tools/spin-wheel" className="text-accent hover:underline">
+          Spin Wheel
+        </Link>
+        {", and "}
+        <Link href="/tools/magic-8-ball" className="text-accent hover:underline">
+          Magic 8-Ball
+        </Link>
+        .
+      </p>
+    </Section>
+  );
+}
+
+function DiceRollerContent() {
+  return (
+    <Section>
+      <h2 className={h2}>How to roll the dice</h2>
+      <ol className={ol}>
+        <li>
+          Pick how many dice you need — one to six — then press{" "}
+          <strong className="text-foreground">Roll</strong>. The dice pop in
+          with their pips and the total appears beside them, announced live
+          for screen readers.
+        </li>
+        <li>
+          The breakdown under the dice shows the arithmetic (4 + 1 + 6 = 11),
+          and the history keeps the last ten rolls newest-first with each
+          roll&apos;s full set of faces — handy for settling who rolled what
+          in a long game.
+        </li>
+        <li>
+          Switching the dice count never re-rolls: the current result stays
+          until you press Roll again, and{" "}
+          <strong className="text-foreground">Clear</strong> empties the
+          history whenever the table wants a fresh start.
+        </li>
+      </ol>
+      <h2 className={h2}>Fair dice, no server</h2>
+      <p className={prose}>
+        Every face is an independent uniform draw from 1 to 6 straight out of
+        your browser&apos;s random number generator — rolling six at once is
+        exactly equivalent to rolling one die six times, and no die can
+        influence another. The pips follow the standard layout (opposite faces
+        on a real die sum to seven), the roll animation is a single sub-second
+        pop that honours reduced-motion settings, and no roll ever leaves the
+        page.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/coin-flip" className="text-accent hover:underline">
+          Coin Flip
+        </Link>
+        {", "}
+        <Link href="/tools/spin-wheel" className="text-accent hover:underline">
+          Spin Wheel
+        </Link>
+        {", and "}
+        <Link href="/tools/uuid-generator" className="text-accent hover:underline">
+          UUID Generator
+        </Link>
+        .
+      </p>
+    </Section>
+  );
+}
+
+function Magic8BallContent() {
+  return (
+    <Section>
+      <h2 className={h2}>How to ask the 8-Ball</h2>
+      <ol className={ol}>
+        <li>
+          Type a yes-or-no question and press{" "}
+          <strong className="text-foreground">Ask</strong> (or hit Enter). The
+          answer appears in the ball&apos;s white window, colour-coded:
+          green-leaning for yes, red for no, amber for the hazy replies.
+        </li>
+        <li>
+          The last eight exchanges stay listed below the ball so you can look
+          back at its guidance, and{" "}
+          <strong className="text-foreground">Clear</strong> forgets
+          everything. Each draw is independent — asking twice changes nothing
+          about the deck.
+        </li>
+        <li>
+          The ball answers only within its fixed deck of twenty, so it will
+          never say anything it has not said since 1950 — and never anything
+          useful it has not said either.
+        </li>
+      </ol>
+      <h2 className={h2}>The twenty-answer deck</h2>
+      <p className={prose}>
+        The canonical Magic 8-Ball deck splits ten affirmative answers
+        (&ldquo;It is certainly so&rdquo;, &ldquo;Yes&rdquo;,
+        &ldquo;Signs point to yes&rdquo;), five negative (&ldquo;Don&apos;t
+        count on it&rdquo;, &ldquo;Very doubtful&rdquo;) and five deliberate
+        non-answers that bounce the decision back to you (&ldquo;Reply hazy
+        — try again&rdquo;, &ldquo;Concentrate and ask again&rdquo;). One is
+        drawn uniformly at random per question, in your browser, with nothing
+        stored — the ball is a toy, and it behaves like one.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/coin-flip" className="text-accent hover:underline">
+          Coin Flip
+        </Link>
+        {", "}
+        <Link href="/tools/dice-roller" className="text-accent hover:underline">
+          Dice Roller
+        </Link>
+        {", and "}
+        <Link href="/tools/spin-wheel" className="text-accent hover:underline">
+          Spin Wheel
+        </Link>
+        .
+      </p>
+    </Section>
+  );
+}
+
 // ── Design ───────────────────────────────────────────────────────────────────
 
 function ContrastCheckerContent() {
@@ -3390,6 +3548,9 @@ export const CONTENT_MAP: Record<string, React.FC> = {
   )) as React.FC,
   "spin-wheel": SpinWheelContent,
   "fun-holidays": FunHolidaysContent,
+  "coin-flip": CoinFlipContent,
+  "dice-roller": DiceRollerContent,
+  "magic-8-ball": Magic8BallContent,
   "url-parser": UrlParserContent,
   "base-converter": BaseConverterContent,
   "css-minifier": CssMinifierContent,

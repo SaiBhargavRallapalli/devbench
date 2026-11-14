@@ -625,6 +625,30 @@ export const TOOLS: Tool[] = [
     category: "fun",
     icon: "🎉",
   },
+  {
+    slug: "coin-flip",
+    name: "Coin Flip",
+    shortName: "Coin Flip",
+    description: "Flip a virtual coin for heads or tails — instant result, session stats and the last 20 flips for best-of challenges",
+    category: "fun",
+    icon: "🪙",
+  },
+  {
+    slug: "dice-roller",
+    name: "Dice Roller",
+    shortName: "Dice",
+    description: "Roll 1 to 6 fair six-sided dice with one click — totals, per-die pips and roll history for board games and D&D",
+    category: "fun",
+    icon: "🎲",
+  },
+  {
+    slug: "magic-8-ball",
+    name: "Magic 8-Ball",
+    shortName: "8-Ball",
+    description: "Ask the Magic 8-Ball a yes-or-no question — the classic 20-answer deck with question history, free online",
+    category: "fun",
+    icon: "🔮",
+  },
 ];
 
 export function getToolBySlug(slug: string): Tool | undefined {

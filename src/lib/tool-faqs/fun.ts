@@ -17,4 +17,28 @@ export const faqsFun: Record<string, Faq[]> = {
     { q: "Can I browse a whole month at once?", a: "Yes — the Every holiday in [month] list shows every entry for the currently selected month in date order, with the current date highlighted. Clicking any row moves the date picker to that day, so it doubles as a month-at-a-glance view." },
     { q: "Is my data sent anywhere?", a: "No. The holiday collection ships with the page as a plain dataset and every lookup happens locally — no requests, no accounts, nothing stored." },
   ],
+
+  "coin-flip": [
+    { q: "Is the coin flip really fair?", a: "Yes. Each flip draws one value from your browser's random number generator and maps the lower half to heads, the upper half to tails — a 50/50 split with no weighting, no memory and no pattern. The coin does not try to balance your recent results, because a coin has no idea what they were." },
+    { q: "Can I use it for best-of-three or best-of-five?", a: "That is exactly what the history strip is for — the last twenty flips stay on screen as H/T chips with a running heads-versus-tails tally, so the score of an ongoing series is always visible. Press Clear when the match is over." },
+    { q: "Does it work on a phone?", a: "Yes — the coin, button and history all resize to a narrow screen, and the flip animation is a single quick spin that respects your operating system's reduced-motion setting (with reduced motion on, the result simply appears)." },
+    { q: "Are my flips saved or sent anywhere?", a: "No. Results live in the page's memory only: reload or leave and the history is gone. There is no account, no server-side record and nothing to reset — refreshing gives you a completely fresh coin." },
+    { q: "Heads or tails — which should I pick?", a: "Pick whichever side you would have chosen anyway; the coin exists to end the discussion, not to improve the odds. For multi-option decisions the Spin Wheel is the grown-up version of this tool." },
+  ],
+
+  "dice-roller": [
+    { q: "Are the rolls fair?", a: "Each die draws an independent integer from your browser's random number generator, uniform across 1–6, and dice never influence each other — rolling six at once is the same as rolling one six times. No server is involved, so nothing can seed or tamper with the outcome." },
+    { q: "How many dice can I roll at once?", a: "One to six in a single click — one for a binary decision, two for most board games, four to six for games like Yahtzee or Farkle. The dice count buttons switch the roll instantly; the total and the per-die breakdown update together." },
+    { q: "What does the history keep?", a: "The last ten rolls, newest first, each showing the dice count, every individual face and the total — so a long session never loses track of who rolled what. Clear empties it whenever the table wants a fresh start." },
+    { q: "Can I roll other dice, like a d20?", a: "Not yet — this roller ships with classic six-sided dice with pips, which covers board games, classroom use and most party games. Tabletop systems needing d8/d12/d20 sets are a natural next step for the tool." },
+    { q: "Do my rolls get stored anywhere?", a: "No. Rolls and history live in the page's memory only — nothing is written to local storage, sent to a server or recorded. Reload the page and the slate is clean." },
+  ],
+
+  "magic-8-ball": [
+    { q: "How many answers does the 8-Ball have?", a: "Twenty — the canonical deck: ten affirmative replies ('It is certain', 'Yes', 'Signs point to yes'), five negative ('Don't count on it', 'Very doubtful') and five hazy non-answers ('Reply hazy — try again', 'Concentrate and ask again'). One is drawn uniformly at random on every ask." },
+    { q: "What kind of questions should I ask?", a: "Yes-or-no questions — that is what the deck is built for. Decisions, dares, 'should I have dessert', 'will it ship today': the ball commits to an answer or pointedly refuses to. Open-ended questions get one of the same twenty replies, which is part of the charm." },
+    { q: "Why are some answers vague?", a: "Five of the twenty are deliberate non-answers that bounce the question back to you — the ball's way of saying the decision is still yours. They appear in amber, with green for yes-leaning and red for no-leaning replies, so the outlook is readable at a glance." },
+    { q: "Does the ball remember my previous questions?", a: "Only on screen: the last eight exchanges are listed under the ball so you can look back at its guidance. The deck itself is stateless — every draw is independent, and clearing the history forgets everything the ball has ever said." },
+    { q: "Is anything I ask stored or sent anywhere?", a: "No. Questions and answers stay in the page's memory; nothing leaves your browser, nothing is written to local storage and there is no account. It is a toy, and it behaves like one." },
+  ],
 };

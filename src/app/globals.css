@@ -207,6 +207,37 @@ svg.text-success {
   animation: result-flash 0.3s ease-out;
 }
 
+/* Fun-tools feedback: the coin spins once on its vertical axis (perspective
+   comes from the wrapper), a fresh roll pops the dice into place, and a new
+   8-Ball answer scales in. Single-shot, ≤380ms, no loops — all collapsed
+   to ~0 by the reduced-motion block below. */
+@keyframes coin-flip {
+  from { transform: rotateY(0turn); }
+  to { transform: rotateY(1turn); }
+}
+
+.animate-coin-flip {
+  animation: coin-flip 0.38s ease-in-out;
+}
+
+@keyframes dice-pop {
+  0% { transform: scale(0.55); opacity: 0.3; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.animate-dice-pop {
+  animation: dice-pop 0.3s ease-out;
+}
+
+@keyframes answer-in {
+  0% { transform: scale(0.7); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.animate-answer-in {
+  animation: answer-in 0.3s ease-out;
+}
+
 /* Staggered batch reveal: rows of a fresh generation cascade in 25ms
    apart. Delays cap at 350ms (14th child onward) so big batches never
    keep the user waiting — the last row starts within the 400ms budget.

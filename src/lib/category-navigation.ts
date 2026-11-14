@@ -103,7 +103,7 @@ export const CATEGORY_BROWSE_HIGHLIGHTS: Record<ToolCategory, readonly string[]>
     "moon-phases",
     "custom-calendar",
   ],
-  fun: ["spin-wheel", "fun-holidays"],
+  fun: ["spin-wheel", "fun-holidays", "coin-flip", "dice-roller", "magic-8-ball"],
 };
 
 export function getCategoryHighlightTools(
