@@ -91,6 +91,8 @@ export const CATEGORY_BROWSE_HIGHLIGHTS: Record<ToolCategory, readonly string[]>
   ],
   datetime: [
     "timezone-converter",
+    "stopwatch",
+    "timer",
     "days-between-dates",
     "unix-timestamp",
     "date-calculator",

@@ -56,4 +56,28 @@ export const pageContentDatetime: Record<string, ToolPageContent> = {
     openingParagraph:
       "Due Date Calculator estimates the expected delivery date (EDD) by adding 280 days (40 weeks) to the first day of the last menstrual period (LMP) using Naegele's rule — the standard method used by most healthcare providers. Shows the estimated due date, current gestational week, and trimester boundaries. This is an estimate; consult a healthcare provider for medical guidance. Runs in your browser.",
   },
+
+  "stopwatch": {
+    title: "Stopwatch Online — Lap Timer with Centiseconds",
+    metaDescription:
+      "Free online stopwatch with centisecond precision, lap splits and fastest-lap highlighting. Accurate in background tabs. No signup, 100% in your browser.",
+    openingParagraph:
+      "Stopwatch measures elapsed time to the hundredth of a second, right in your browser. Start, pause and resume with a single button, record laps with split times, and see which lap was fastest highlighted in green. The counter is driven by the browser's performance clock rather than a naive interval, so it stays accurate even when the tab is in the background. Everything runs locally — no signup, no install, nothing sent anywhere.",
+  },
+
+  "timer": {
+    title: "Online Timer — Countdown Timer with Alarm",
+    metaDescription:
+      "Free online countdown timer with minute presets, a live progress bar and an audible alert at the end. Cooking, workouts, exams. No signup, 100% in your browser.",
+    openingParagraph:
+      "Online Timer counts down from any duration — pick a preset of one, three, five, ten or twenty-five minutes, or type exact minutes and seconds. A live progress bar shows how much time is left, and when the countdown reaches zero the display turns red and a short three-beep alarm sounds. The remaining time is derived from the clock instead of being decremented tick by tick, so it stays exact even if you switch tabs. Runs entirely in your browser.",
+  },
+
+  "countdown-creator": {
+    title: "Countdown Creator — Live Countdown to Any Date",
+    metaDescription:
+      "Create a live countdown to any date and time with a custom label and a shareable link. Birthdays, launches, exams. No signup, 100% in your browser.",
+    openingParagraph:
+      "Countdown Creator turns any future moment into a ticking countdown: give it a label, a date and a time, and watch the days, hours, minutes and seconds fall in real time. Copy the share link and anyone who opens it sees the same countdown pre-filled — ideal for birthdays, product launches, exams and holidays. The target is interpreted in your local timezone, and the whole tool runs in your browser with no signup or server.",
+  },
 };

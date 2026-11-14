@@ -188,6 +188,9 @@ export const TOOLS: Tool[] = [
   { slug: "graph-calculator", name: "Graph Calculator", shortName: "Graph", description: "Plot and visualize math functions interactively — multi-function graphs, scientific calculator, matrix math", category: "math", icon: "∫" },
   { slug: "linux-cheatsheet", name: "Linux Cheatsheet", shortName: "Linux", description: "Searchable Linux command reference — file ops, processes, networking, Docker, Kubernetes, permissions", category: "dev", icon: "$_" },
   { slug: "date-calculator", name: "Date Calculator", shortName: "Date", description: "Add or subtract years, months, weeks, and days from any date — calendar-safe arithmetic", category: "datetime", icon: "📅" },
+  { slug: "stopwatch", name: "Stopwatch", shortName: "Stopwatch", description: "Centisecond lap stopwatch with split times and fastest-lap highlighting — stays accurate in background tabs", category: "datetime", icon: "⏱" },
+  { slug: "timer", name: "Online Timer", shortName: "Timer", description: "Countdown timer with presets, live progress bar and an audible alert — cooking, workouts, exams", category: "datetime", icon: "⏲" },
+  { slug: "countdown-creator", name: "Countdown Creator", shortName: "Countdown", description: "Live countdown to any date and time with a custom label and a shareable link — events, launches, milestones", category: "datetime", icon: "⌛" },
   { slug: "jwt-debugger", name: "JWT Debugger", shortName: "JWT", description: "Decode, inspect, and verify JSON Web Tokens — header, payload, signature, expiry check", category: "dev", icon: "JWT" },
 
   // Dev / design extras

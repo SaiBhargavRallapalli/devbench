@@ -2660,6 +2660,158 @@ function DueDateContent() {
   );
 }
 
+function StopwatchContent() {
+  return (
+    <Section>
+      <h2 className={h2}>How to use the online stopwatch</h2>
+      <ol className={ol}>
+        <li>
+          Press <strong className="text-foreground">Start</strong> — the display
+          counts in MM:SS.cs (minutes, seconds, centiseconds) using the
+          browser&apos;s performance clock.
+        </li>
+        <li>
+          Press <strong className="text-foreground">Lap</strong> while running to
+          record a checkpoint. Every row shows the split since the previous lap
+          and the total elapsed time, with the fastest lap highlighted in green.
+        </li>
+        <li>
+          <strong className="text-foreground">Pause</strong> freezes the clock at
+          the exact millisecond and{" "}
+          <strong className="text-foreground">Resume</strong> continues from
+          there; <strong className="text-foreground">Reset</strong> clears both
+          the time and the lap list.
+        </li>
+      </ol>
+      <h2 className={h2}>Why it stays accurate in background tabs</h2>
+      <p className={prose}>
+        The display is computed from timestamps (performance.now()) rather than
+        by counting timer ticks, so a throttled or backgrounded tab does not
+        slow the count — when you return, the stopwatch shows the true elapsed
+        time. That makes it trustworthy for lab timings, workout laps, and
+        anything where interval drift would matter.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/timer" className="text-accent hover:underline">
+          Online Timer
+        </Link>
+        {", "}
+        <Link href="/tools/countdown-creator" className="text-accent hover:underline">
+          Countdown Creator
+        </Link>
+        {", and "}
+        <Link href="/tools/world-clock" className="text-accent hover:underline">
+          World Clock
+        </Link>
+        .
+      </p>
+    </Section>
+  );
+}
+
+function TimerContent() {
+  return (
+    <Section>
+      <h2 className={h2}>How to use the countdown timer</h2>
+      <ol className={ol}>
+        <li>
+          Pick a preset — 1, 3, 5, 10 or 25 minutes (the last one is the
+          pomodoro focus length) — or type exact minutes (0–999) and seconds
+          (0–59) in the fields.
+        </li>
+        <li>
+          Press <strong className="text-foreground">Start</strong>. The progress
+          bar drains as the MM:SS (or H:MM:SS) display counts down;{" "}
+          <strong className="text-foreground">Pause</strong> and{" "}
+          <strong className="text-foreground">Resume</strong> hold and continue
+          the countdown, and <strong className="text-foreground">Reset</strong>{" "}
+          returns it to the full duration.
+        </li>
+        <li>
+          At zero the display turns red, a Time&apos;s up! message appears, and
+          a three-beep alarm sounds — the audio starts from your Start click,
+          which is what browsers require before a page may play sound.
+        </li>
+      </ol>
+      <h2 className={h2}>Why the countdown never drifts</h2>
+      <p className={prose}>
+        Remaining time is recomputed from an end timestamp minus the current
+        clock on every tick, instead of decrementing a counter. A backgrounded
+        or throttled tab therefore resumes at exactly the right value — switch
+        away mid-cook, come back, and the timer still knows the truth.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/stopwatch" className="text-accent hover:underline">
+          Stopwatch
+        </Link>
+        {", "}
+        <Link href="/tools/countdown-creator" className="text-accent hover:underline">
+          Countdown Creator
+        </Link>
+        {", and "}
+        <Link href="/tools/countdown-calculator" className="text-accent hover:underline">
+          Countdown Calculator
+        </Link>
+        .
+      </p>
+    </Section>
+  );
+}
+
+function CountdownCreatorContent() {
+  return (
+    <Section>
+      <h2 className={h2}>How to create a countdown</h2>
+      <ol className={ol}>
+        <li>
+          Give the countdown a label (for example Diwali, launch day or exam
+          day), then pick the target date and time — both are interpreted in
+          your local timezone.
+        </li>
+        <li>
+          The four cards tick down live: days, hours, minutes and seconds until
+          the moment. Once the target passes, the cards are replaced by a green
+          banner announcing that the moment has arrived.
+        </li>
+        <li>
+          Press <strong className="text-foreground">Copy share link</strong> to
+          capture a URL with the target and label encoded in it — anyone who
+          opens it lands on the same countdown, already running.
+        </li>
+      </ol>
+      <h2 className={h2}>Creator or calculator?</h2>
+      <p className={prose}>
+        Use the <strong className="text-foreground">Countdown Creator</strong>{" "}
+        when you want a ticking display and a link to share. Use the{" "}
+        <Link href="/tools/countdown-calculator" className="text-accent hover:underline">
+          Countdown Calculator
+        </Link>{" "}
+        when you want the arithmetic instead — a one-off breakdown of the
+        remaining time in years, months, weeks, days, hours and minutes.
+        Everything runs in your browser: the link contains your target and
+        label because you chose to share it, and nothing else is transmitted.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/timer" className="text-accent hover:underline">
+          Online Timer
+        </Link>
+        {", "}
+        <Link href="/tools/days-between-dates" className="text-accent hover:underline">
+          Days Between Dates
+        </Link>
+        {", and "}
+        <Link href="/tools/world-clock" className="text-accent hover:underline">
+          World Clock
+        </Link>
+        .
+      </p>
+    </Section>
+  );
+}
+
 // ── Design ───────────────────────────────────────────────────────────────────
 
 function ContrastCheckerContent() {
@@ -2984,6 +3136,9 @@ export const CONTENT_MAP: Record<string, React.FC> = {
   "countdown-calculator": CountdownContent,
   "week-number-calculator": WeekNumberContent,
   "due-date-calculator": DueDateContent,
+  "stopwatch": StopwatchContent,
+  "timer": TimerContent,
+  "countdown-creator": CountdownCreatorContent,
   "world-clock": TimezoneConverterContent,
   // Image / file tools
   "background-remover": (() => (

@@ -104,4 +104,28 @@ export const faqsDatetime: Record<string, Faq[]> = {
     { q: "Why does the tool show 'always up' for the moon?", a: "Near the Arctic and Antarctic circles, the Moon can remain above or below the horizon for multiple days depending on the season and the Moon's orbital position. The calculator correctly shows this as 'always up' or 'always down' rather than fabricating a rise/set time." },
     { q: "Does the tool need my location?", a: "You can grant location access for automatic coordinates, or type any city name or latitude/longitude manually. All calculations run in your browser — your location is not sent to any server." },
   ],
+
+  "stopwatch": [
+    { q: "How accurate is the online stopwatch?", a: "Very. The display is driven by performance.now(), the browser's monotonic high-resolution clock, instead of counting setInterval ticks — so it does not drift when frames are delayed. Centiseconds (1/100 s) are shown, and the value keeps accruing correctly even while the tab is in the background." },
+    { q: "What is the difference between a lap and a split?", a: "A lap records the total time from start to that point; the split is the time taken since the previous lap. This stopwatch shows both for every lap — the split on the left (with the fastest one highlighted in green) and the running total on the right — so you can see both the individual segment and the overall pace." },
+    { q: "Does it keep timing if I switch tabs or minimise the window?", a: "Yes. Because time is computed from timestamps rather than from frames actually painted, pausing the tab does not pause the stopwatch. When you come back the display shows the true elapsed time." },
+    { q: "What can I use it for?", a: "Anything you would time by hand: lap training and run splits, cooking, lab experiments, meeting lengths, productivity sessions, or measuring how long a download takes. Press Lap at each checkpoint and the list gives you every split afterwards." },
+    { q: "Is my data sent anywhere?", a: "No. The stopwatch runs entirely in your browser — there is no server component, no account and no storage beyond the page itself." },
+  ],
+
+  "timer": [
+    { q: "What can I use this timer for?", a: "Any countdown: cooking and oven timers, workout intervals, exam practice sessions, classroom activities, and the 25-minute pomodoro focus cycle (there is a dedicated 25 min preset that shows a pomodoro tag). Set exact minutes and seconds for anything the presets do not cover." },
+    { q: "Does the countdown stay accurate if I switch tabs?", a: "Yes. The remaining time is recomputed from the wall clock (an end timestamp minus Date.now()) on every tick instead of being decremented blindly, so a backgrounded or throttled tab resumes at exactly the right value — no drift, no pausing." },
+    { q: "What happens when time is up?", a: "The display turns red, a Time's up! message appears, and a short three-beep alarm plays. The audio context is created when you press Start (a user gesture), which is what browsers require before any page may play sound. If audio is blocked, the visual alert still fires." },
+    { q: "How do I set a custom duration?", a: "Type the minutes (0–999) and seconds (0–59) in the two fields — they stay editable whenever the timer is not running, and the progress bar and remaining time update as you type. The preset chips (1, 3, 5, 10 and 25 minutes) overwrite both fields in one click." },
+    { q: "Is my data sent anywhere?", a: "No. Timing, the progress bar and the alarm all run locally in your browser. Nothing is uploaded and no account is needed." },
+  ],
+
+  "countdown-creator": [
+    { q: "How is Countdown Creator different from the Countdown Calculator?", a: "Countdown Creator is a live display: it ticks down second by second to your chosen moment and produces a shareable link with the target and label baked in. Countdown Calculator is the arithmetic view — a one-off breakdown of the remaining time in years, months, weeks, days, hours and minutes until a date." },
+    { q: "How does the share link work?", a: "The Copy share link button builds a URL containing the target date, time and label, for example /tools/countdown-creator?target=2027-01-01T00:00&label=New%20Year. Anyone who opens it lands on the same countdown, already running — no account, no setup, nothing stored on a server." },
+    { q: "Which timezone is the target interpreted in?", a: "The timezone of whoever is looking. You pick the date and time in your local timezone, and the countdown counts down to that exact instant — a recipient in another country sees the same moment rendered in their own local time, correctly offset." },
+    { q: "What happens when the countdown reaches zero?", a: "The cards are replaced with a green The moment has arrived! banner showing the label and the target date. If you open the link after the moment has passed, you see that same banner instead of a negative countdown." },
+    { q: "Is my data sent anywhere?", a: "No. The countdown, the target parsing and the link generation all happen in your browser. The share link contains your target and label because you chose to share it — nothing else is transmitted." },
+  ],
 };
