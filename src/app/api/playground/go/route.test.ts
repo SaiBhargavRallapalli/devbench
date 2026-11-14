@@ -66,8 +66,13 @@ describe("POST /api/playground/go", () => {
     await POST(makeRequest({ code: 'import "fmt"\nfunc main() { fmt.Println("hello") }' }));
 
     const [, init] = vi.mocked(fetch).mock.calls[0];
-    const sent = JSON.parse((init as RequestInit).body as string);
-    expect(sent.body).toMatch(/^package main/);
+    const body = (init as RequestInit).body as string;
+    const sent = new URLSearchParams(body);
+    expect((init as RequestInit).headers).toMatchObject({
+      "Content-Type": "application/x-www-form-urlencoded",
+    });
+    expect(sent.get("version")).toBe("2");
+    expect(sent.get("body")).toMatch(/^package main/);
   });
 
   it("does not double-wrap code that already has package declaration", async () => {
@@ -82,8 +87,8 @@ describe("POST /api/playground/go", () => {
     await POST(makeRequest({ code }));
 
     const [, init] = vi.mocked(fetch).mock.calls[0];
-    const sent = JSON.parse((init as RequestInit).body as string);
-    expect(sent.body).toBe(code);
+    const sent = new URLSearchParams((init as RequestInit).body as string);
+    expect(sent.get("body")).toBe(code);
   });
 
   it("returns combined stdout output", async () => {
