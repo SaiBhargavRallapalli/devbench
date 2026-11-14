@@ -5459,13 +5459,39 @@ export const CONTENT_MAP: Record<string, React.FC> = {
           that with a timestamp, direction and byte size.
         </li>
         <li>
-          Type a payload and send it — or press Ctrl/Cmd+Enter from the box. Watch
-          replies arrive in real time; sent and received counters track the session.
+          Type a payload and send it — or press Ctrl/Cmd+Enter from the box. The{" "}
+          <strong className="text-foreground">Format</strong> and{" "}
+          <strong className="text-foreground">Minify</strong> buttons tidy JSON
+          first, with the parser error shown inline when the text is not valid
+          JSON. Watch replies arrive in real time; sent and received counters
+          track the session.
         </li>
         <li>
-          Export the whole log as a text file when you need it in a bug report.
+          Open another tab with <strong className="text-foreground">New</strong>{" "}
+          to run up to four connections at once — each keeps its own URL, frame
+          log, composer and settings, so a producer and a consumer can be
+          watched side by side.
+        </li>
+        <li>
+          Filter the log before exporting — direction buttons (Sent, Recv, Info
+          and Error, each with its live count) or a text search over every
+          frame — then export the whole log as a text file when you need it in
+          a bug report.
         </li>
       </ol>
+      <h2 className={h2}>Keeping the connection alive</h2>
+      <p className={prose}>
+        Servers often drop sockets that sit idle, so the tool can send a
+        heartbeat: a small payload — ping by default, editable to whatever the
+        protocol expects — every 5 to 60 seconds, logged as INFO frames so the
+        sent counter only counts messages you actually wrote. When a
+        connection does drop, tick{" "}
+        <strong className="text-foreground">Auto-reconnect</strong> and it
+        comes back with exponential backoff (1s doubling to a 15s cap, eight
+        attempts), every retry logged with its countdown. Disconnects you
+        request yourself are never retried, and pending retries cancel the
+        moment you switch the toggle off.
+      </p>
       <h2 className={h2}>Reading binary and close events</h2>
       <p className={prose}>
         Text frames appear as-is, truncated in the log past 5,000 characters to keep

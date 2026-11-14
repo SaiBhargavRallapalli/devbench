@@ -236,9 +236,9 @@ export const pageContentDev: Record<string, ToolPageContent> = {
   "websocket-tester": {
     title: "WebSocket Tester — Test ws:// and wss:// Online",
     metaDescription:
-      "Open a WebSocket connection to any ws:// or wss:// endpoint online. Send messages, watch frames, export session logs. No signup, 100% in your browser.",
+      "Open a WebSocket connection to any ws:// or wss:// endpoint online — up to four at once. Send messages, watch frames, auto-reconnect, heartbeat, export logs. Free, in your browser.",
     openingParagraph:
-      "WebSocket Tester connects to any WebSocket endpoint (ws:// or wss://) directly from your browser, letting you send text and binary messages, watch incoming frames in real time, and inspect connection events. Export the complete session log for debugging or documentation. Useful for testing WebSocket APIs, chat servers, and real-time data services. Runs in your browser.",
+      "WebSocket Tester connects to any WebSocket endpoint (ws:// or wss://) directly from your browser — up to four at once, each in its own tab with a separate frame log, composer and settings. Send text payloads (with one-click JSON format and minify), watch incoming frames arrive in real time with timestamps, directions and byte sizes, and narrow a busy stream with direction filters or a text search. Auto-reconnect retries unexpected drops with exponential backoff, an optional heartbeat keeps idle servers from timing the socket out, and the complete session log exports as plain text for bug reports. Nothing is proxied or stored — it all runs in your browser.",
   },
 
   "xml-suite": {
