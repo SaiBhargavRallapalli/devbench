@@ -216,7 +216,7 @@ export default function WebSocketTesterTool({ tool }: { tool: Tool }) {
     [appendLog, stopHeartbeat],
   );
 
-  const doConnect = (id: number) => {
+  const doConnect = (id: number, isRetry = false) => {
     const conn = connsRef.current.find((c) => c.id === id);
     if (!conn) return;
     const trimmed = conn.url.trim();
@@ -239,7 +239,9 @@ export default function WebSocketTesterTool({ tool }: { tool: Tool }) {
       socketsRef.current.delete(id);
     }
     clearReconnect(id);
-    attemptRef.current.delete(id);
+    // A retry must keep the attempt counter so the backoff actually backs
+    // off; only a fresh user-initiated connect starts a new sequence.
+    if (!isRetry) attemptRef.current.delete(id);
 
     try {
       const protoArr = conn.protocols.split(",").map((s) => s.trim()).filter(Boolean);
@@ -318,7 +320,7 @@ export default function WebSocketTesterTool({ tool }: { tool: Tool }) {
         const t = window.setTimeout(() => {
           reconnTimersRef.current.delete(id);
           const next = connsRef.current.find((c) => c.id === id);
-          if (next?.autoReconnect) doConnect(id);
+          if (next?.autoReconnect) doConnect(id, true);
         }, delay);
         reconnTimersRef.current.set(id, t);
       };
