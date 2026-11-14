@@ -23,7 +23,7 @@ function wrapGoBody(src: string): string {
 }
 
 /**
- * Proxies to https://go.dev/_/compile (JSON `version` + `body`).
+ * Proxies to https://go.dev/_/compile (form-encoded `version` + `body`).
  * Unique User-Agent per https://go.dev/blog/playground "Other clients".
  */
 export async function POST(request: Request) {
@@ -64,10 +64,10 @@ export async function POST(request: Request) {
     upstream = await fetch("https://go.dev/_/compile", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "application/x-www-form-urlencoded",
         "User-Agent": "DevBench-Playground/1.0 (https://www.devbench.co.in/playground)",
       },
-      body: JSON.stringify({ version: 2, body }),
+      body: new URLSearchParams({ version: "2", body }).toString(),
       signal: controller.signal,
     });
   } catch (e) {
@@ -115,3 +115,4 @@ export async function POST(request: Request) {
   const output = lines.join("\n").trimEnd() || "(no output)";
   return NextResponse.json({ output });
 }
+
