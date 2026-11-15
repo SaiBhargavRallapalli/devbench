@@ -3429,8 +3429,424 @@ function SpinWheelContent() {
   );
 }
 
+// ── Randomness & text ───────────────────────────────────────────────────────
+
+function RandomNumberContent() {
+  return (
+    <Section>
+      <h2 className={h2}>How to generate random numbers</h2>
+      <ol className={ol}>
+        <li>
+          Set the <strong className="text-foreground">min</strong> and{" "}
+          <strong className="text-foreground">max</strong> bounds — any integers
+          work, including negative ranges and single-value ranges like 42–42.
+        </li>
+        <li>
+          Choose <strong className="text-foreground">how many</strong> numbers
+          you want (up to 100), then press{" "}
+          <strong className="text-foreground">Generate</strong>. Presets cover
+          the common 1–10, 1–50, 1–100 and 1–1000 spans for one-click draws.
+        </li>
+        <li>
+          Toggle <strong className="text-foreground">No repeats</strong> for
+          raffles and giveaways — the draw becomes a unique sample of the range —
+          and <strong className="text-foreground">Sort ascending</strong> when
+          you want ordered output instead of draw order.
+        </li>
+        <li>
+          Copy the whole set to your clipboard as a comma-separated list, and
+          keep an eye on the twelve most recent draws in the history panel
+          below, each with its lowest, highest and total.
+        </li>
+      </ol>
+      <h2 className={h2}>Are the numbers actually random?</h2>
+      <p className={prose}>
+        Yes — every value in your range is equally likely, and draws are
+        independent of each other. The generator uses your browser&apos;s
+        built-in random source, the same one that backs session tokens, so there
+        is no visible pattern to exploit and nothing to seed. That makes it
+        fair enough for raffles, group draws, lottery picks and game night, as
+        well as for sampling test data, picking a winner or assigning tasks to a
+        team.
+      </p>
+      <p className={prose}>
+        When <strong className="text-foreground">No repeats</strong> is on, the
+        tool uses a partial Fisher–Yates shuffle: instead of building every
+        number in the range, it swaps in place for just the count you asked for,
+        so even a 1–1,000,000 draw stays instant. If you request more unique
+        numbers than the range holds, it says so plainly rather than quietly
+        duplicating values.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/coin-flip" className="text-accent hover:underline">
+          Coin Flip
+        </Link>
+        {", "}
+        <Link href="/tools/dice-roller" className="text-accent hover:underline">
+          Dice Roller
+        </Link>
+        {", "}
+        <Link href="/tools/spin-wheel" className="text-accent hover:underline">
+          Spin Wheel
+        </Link>
+        {", and "}
+        <Link
+          href="/tools/password-generator"
+          className="text-accent hover:underline"
+        >
+          Password Generator
+        </Link>
+        {" — the same fair-random idea for decisions, games and secrets."}
+      </p>
+    </Section>
+  );
+}
+
+function FancyTextContent() {
+  return (
+    <Section>
+      <h2 className={h2}>How to make fancy text</h2>
+      <ol className={ol}>
+        <li>
+          Type or paste your plain text into the box — a name, a bio line, a
+          Discord username, a gaming tag.
+        </li>
+        <li>
+          Every style previews live in the grid below, so you can compare{" "}
+          <strong className="text-foreground">bold</strong>,{" "}
+          <strong className="text-foreground">italic</strong>,{" "}
+          <strong className="text-foreground">script</strong>,{" "}
+          <strong className="text-foreground">monospace</strong> and the rest
+          side by side before committing to one.
+        </li>
+        <li>
+          Click a style to select it, then press{" "}
+          <strong className="text-foreground">Copy</strong> and paste the result
+          anywhere text input is accepted.
+        </li>
+      </ol>
+      <h2 className={h2}>The fifteen styles</h2>
+      <ul className={ul}>
+        <li>
+          <strong className="text-foreground">Bold, Italic, Bold Italic</strong>{" "}
+          — the mathematical alphabets (𝐀 𝑏 𝒸), the classic social-media
+          stand-ins for real bold and italic.
+        </li>
+        <li>
+          <strong className="text-foreground">Script</strong> and{" "}
+          <strong className="text-foreground">Bold Script</strong> — cursive
+          letterforms for an elegant, handwritten look.
+        </li>
+        <li>
+          <strong className="text-foreground">Monospace</strong> and{" "}
+          <strong className="text-foreground">Fullwidth</strong> — typewriter
+          spacing, and the wide CJK-style glyphs used in pixel-art names.
+        </li>
+        <li>
+          <strong className="text-foreground">Small Caps, Circled, Squared</strong>{" "}
+          — ᴄᴀᴛ, Ⓐⓑ, 🄰🄱 for badges and headers.
+        </li>
+        <li>
+          <strong className="text-foreground">Strikethrough, Underlined,
+          Superscript, Subscript</strong> — combining marks and raised/lowered
+          digits for annotations and math.
+        </li>
+        <li>
+          <strong className="text-foreground">Upside Down</strong> — the whole
+          line rotated 180° for a playful twist.
+        </li>
+      </ul>
+      <p className={prose}>
+        Everything is plain Unicode — no images, no custom fonts, no signup —
+        so the output renders in Instagram bios, Discord names, WhatsApp
+        statuses, TikTok handles and gaming profiles alike. Characters a style
+        cannot map (emoji, CJK, other scripts) pass through untouched, so you
+        never lose content when transforming a mixed-language line. Nothing is
+        uploaded: the conversion happens entirely in your browser.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link
+          href="/tools/case-converter"
+          className="text-accent hover:underline"
+        >
+          Case Converter
+        </Link>
+        {", "}
+        <Link
+          href="/tools/string-inspector"
+          className="text-accent hover:underline"
+        >
+          String Inspector
+        </Link>
+        {", and "}
+        <Link
+          href="/tools/word-counter"
+          className="text-accent hover:underline"
+        >
+          Word Counter
+        </Link>
+        {" for the rest of your text-mangling session."}
+      </p>
+    </Section>
+  );
+}
+
+// ── HTML & SEO ──────────────────────────────────────────────────────────────
+
+function HtmlFormatterContent() {
+  return (
+    <Section>
+      <h2 className={h2}>How to format HTML</h2>
+      <ol className={ol}>
+        <li>
+          Paste your markup — a fragment, a template, or a whole document
+          including the doctype.
+        </li>
+        <li>
+          Keep <strong className="text-foreground">Beautify</strong> mode and
+          pick 2 or 4 space indentation to pretty-print the structure; input and
+          output sit side by side with live character counts so you can see what
+          changed.
+        </li>
+        <li>
+          Switch to <strong className="text-foreground">Minify</strong> when you
+          need the compact version back: whitespace between tags collapses and
+          the counts show how many bytes you saved.
+        </li>
+        <li>
+          Press <strong className="text-foreground">Copy output</strong> to take
+          the result into your editor, template or deploy pipeline.
+        </li>
+      </ol>
+      <h2 className={h2}>Formatting that cannot corrupt your code</h2>
+      <p className={prose}>
+        The formatter is deliberately conservative. Content inside{" "}
+        <code className="rounded bg-muted px-1">&lt;pre&gt;</code>,{" "}
+        <code className="rounded bg-muted px-1">&lt;script&gt;</code>,{" "}
+        <code className="rounded bg-muted px-1">&lt;style&gt;</code> and{" "}
+        <code className="rounded bg-muted px-1">&lt;textarea&gt;</code> is
+        passed through byte-for-byte, because re-indenting JavaScript or CSS can
+        change how it behaves — and collapsing whitespace inside a pre block
+        would destroy the very layout it exists to preserve. Comments and the
+        doctype keep their own lines, void tags like{" "}
+        <code className="rounded bg-muted px-1">&lt;br&gt;</code> and{" "}
+        <code className="rounded bg-muted px-1">&lt;img&gt;</code> never push
+        the indentation depth, and an element whose content is only text and
+        inline tags collapses onto a single line instead of exploding into five.
+      </p>
+      <p className={prose}>
+        That means the output is safe to commit: the document tree is identical,
+        only the whitespace between tags differs. Use Beautify to review
+        unfamiliar markup or paste a minified landing page you need to edit, and
+        Minify to trim a template before shipping. Everything runs locally —
+        your HTML never leaves the browser.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link
+          href="/tools/html-preview"
+          className="text-accent hover:underline"
+        >
+          HTML Preview
+        </Link>
+        {", "}
+        <Link
+          href="/tools/html-minifier"
+          className="text-accent hover:underline"
+        >
+          HTML Minifier
+        </Link>
+        {", "}
+        <Link
+          href="/tools/css-minifier"
+          className="text-accent hover:underline"
+        >
+          CSS Minifier
+        </Link>
+        {", and "}
+        <Link
+          href="/tools/markdown-preview"
+          className="text-accent hover:underline"
+        >
+          Markdown Preview
+        </Link>
+        {"."}
+      </p>
+    </Section>
+  );
+}
+
+function MetaTagGeneratorContent() {
+  return (
+    <Section>
+      <h2 className={h2}>How to generate meta tags</h2>
+      <ol className={ol}>
+        <li>
+          Fill in the <strong className="text-foreground">page title</strong> and{" "}
+          <strong className="text-foreground">meta description</strong> — the two
+          fields Google most often shows in search results. Live counters track
+          the ~60 and ~160 character limits so neither gets truncated.
+        </li>
+        <li>
+          Add the <strong className="text-foreground">page URL</strong> (it also
+          becomes the canonical link), the{" "}
+          <strong className="text-foreground">share image</strong>, site name,
+          og:type and an optional Twitter/X handle.
+        </li>
+        <li>
+          Pick the <strong className="text-foreground">twitter:card</strong>{" "}
+          layout — <code className="rounded bg-muted px-1">summary</code> for a
+          small card, <code className="rounded bg-muted px-1">summary_large_image</code>{" "}
+          for the wide one — and set the robots directive.
+        </li>
+        <li>
+          Copy the finished block and paste it inside your page&apos;s{" "}
+          <code className="rounded bg-muted px-1">&lt;head&gt;</code>. Empty
+          optional fields are skipped, so the output never contains blank tags.
+        </li>
+      </ol>
+      <h2 className={h2}>What each group of tags is for</h2>
+      <ul className={ul}>
+        <li>
+          <strong className="text-foreground">Search</strong> — the title tag
+          and meta description control the headline and snippet you get in
+          Google; the robots directive says whether to index and follow links.
+        </li>
+        <li>
+          <strong className="text-foreground">Social previews</strong> —
+          og:title, og:description, og:image and og:url decide how the link
+          looks when shared on Facebook, LinkedIn, Slack and iMessage, while
+          twitter:card and twitter:image do the same for X.
+        </li>
+        <li>
+          <strong className="text-foreground">Duplicate control</strong> — the
+          canonical link tells search engines which URL is authoritative when
+          the same page is reachable several ways, concentrating ranking signals
+          instead of splitting them.
+        </li>
+      </ul>
+      <p className={prose}>
+        All values are HTML-escaped automatically, so quotes and angle brackets
+        in a title cannot break out of the attribute, and a single @ on your
+        handle is normalised rather than doubled. The tool runs entirely in the
+        browser: your draft copy and URLs are never sent anywhere, which makes it
+        safe to prototype metadata for client or internal pages before they
+        exist.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link
+          href="/tools/word-counter"
+          className="text-accent hover:underline"
+        >
+          Word Counter
+        </Link>
+        {", "}
+        <Link href="/tools/slug-generator" className="text-accent hover:underline">
+          Slug Generator
+        </Link>
+        {", and "}
+        <Link
+          href="/tools/json-formatter"
+          className="text-accent hover:underline"
+        >
+          JSON Formatter
+        </Link>
+        {" for structured-data and sitemap work."}
+      </p>
+    </Section>
+  );
+}
+
+// ── Dates ───────────────────────────────────────────────────────────────────
+
+function BusinessDayContent() {
+  return (
+    <Section>
+      <h2 className={h2}>How to count business days</h2>
+      <ol className={ol}>
+        <li>
+          Enter the <strong className="text-foreground">start date</strong> and{" "}
+          <strong className="text-foreground">end date</strong> — order does not
+          matter, and both endpoints count when they fall on working days.
+        </li>
+        <li>
+          Choose which days are your{" "}
+          <strong className="text-foreground">weekend</strong>: the standard
+          Saturday–Sunday, or the Friday–Saturday and Sunday–Thursday patterns
+          used across the Middle East and elsewhere. Pick{" "}
+          <strong className="text-foreground">None</strong> if your team works
+          every day.
+        </li>
+        <li>
+          Optionally list <strong className="text-foreground">holidays</strong>{" "}
+          as YYYY-MM-DD dates, one per line or comma-separated, to exclude them
+          from the count.
+        </li>
+        <li>
+          Read the four stats: business days, weekend days off, holidays off and
+          the total non-working days skipped.
+        </li>
+      </ol>
+      <h2 className={h2}>Adding working days to a date</h2>
+      <p className={prose}>
+        The lower panel does the inverse — give it a count of working days and it
+        returns the date you land on, skipping weekends and holidays along the
+        way. That is how you find a deadline N business days out, work out when
+        a contract term ends, or count backwards to see when a task had to
+        start. Negative numbers count in the other direction, and the result is
+        printed as a readable weekday date so you can sanity-check it at a
+        glance.
+      </p>
+      <p className={prose}>
+        Everything is computed from plain calendar arithmetic at UTC midnight,
+        so daylight-saving transitions never push a day across the boundary, and
+        no holiday calendar is hard-coded — you list the dates your organisation
+        actually observes. The whole workflow runs in your browser, which makes
+        it practical for HR, payroll, project planning and SLA calculations
+        where the dates involved are commercially sensitive.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link
+          href="/tools/days-between-dates"
+          className="text-accent hover:underline"
+        >
+          Days Between Dates
+        </Link>
+        {", "}
+        <Link href="/tools/date-calculator" className="text-accent hover:underline">
+          Date Calculator
+        </Link>
+        {", "}
+        <Link
+          href="/tools/countdown-calculator"
+          className="text-accent hover:underline"
+        >
+          Countdown
+        </Link>
+        {", and "}
+        <Link
+          href="/tools/week-number-calculator"
+          className="text-accent hover:underline"
+        >
+          ISO Week Number
+        </Link>
+        {"."}
+      </p>
+    </Section>
+  );
+}
+
 export const CONTENT_MAP: Record<string, React.FC> = {
   "json-formatter": JsonFormatterContent,
+  "random-number-generator": RandomNumberContent,
+  "fancy-text": FancyTextContent,
+  "html-formatter": HtmlFormatterContent,
+  "meta-tag-generator": MetaTagGeneratorContent,
+  "business-day-calculator": BusinessDayContent,
   "base64-encode": Base64EncodeContent,
   "base64-decode": Base64DecodeContent,
   "regex-tester": RegexTesterContent,

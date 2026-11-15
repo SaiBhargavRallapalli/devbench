@@ -20,7 +20,7 @@ export const pageContentImage: Record<string, ToolPageContent> = {
   "signature-maker": {
     title: "Signature Maker — Draw or Type a Signature Online",
     metaDescription:
-      "Create a handwritten signature online — draw with mouse, finger, or keyboard, then trim and download a transparent PNG. No upload required.",
+      "Create a handwritten signature online — draw with mouse, finger or stylus, trim it and download a transparent PNG. Free signature maker, no upload needed.",
     openingParagraph:
       "Create a handwritten signature without a pen and paper — draw with your mouse, trackpad, or finger, or switch to Type mode and let a script font do the writing for you. The preview sits on a transparent checkerboard so you can see exactly what will export, and everything happens locally in your browser. Trim the whitespace, choose a standard size like 60×20mm at 300 DPI, and download a transparent PNG for documents, forms, and emails.",
   },
@@ -28,7 +28,7 @@ export const pageContentImage: Record<string, ToolPageContent> = {
   "remove-image-metadata": {
     title: "Remove Image Metadata (EXIF) — Strip GPS and Camera Data",
     metaDescription:
-      "Strip EXIF metadata from photos in your browser — remove GPS location, camera model, and timestamps, then download a clean image.",
+      "Strip EXIF metadata from photos in your browser — remove GPS location, camera model and timestamps, then download a clean image. Free, nothing uploaded.",
     openingParagraph:
       "Photos you share often contain hidden EXIF metadata, including the exact GPS coordinates where they were taken. This tool reads that metadata, shows you exactly what will be removed, and re-encodes the image so camera details, timestamps, and location are gone. You can keep the original format or switch to PNG or JPEG, and PNG or WebP files without metadata are reported as already clean. Everything happens in your browser.",
   },
@@ -36,7 +36,7 @@ export const pageContentImage: Record<string, ToolPageContent> = {
   "favicon-generator": {
     title: "Favicon Generator — PNG to ICO Converter",
     metaDescription:
-      "Turn any image into a favicon set — 16, 32, and 48px PNGs plus a favicon.ico, ready to download and drop into your site.",
+      "Turn any image into a favicon set — 16, 32 and 48px PNGs plus a favicon.ico, ready to download and drop into your site. Free online favicon generator.",
     openingParagraph:
       "Browsers expect a favicon in a few different sizes, and hand-crafting each one takes time. Upload a logo or icon and this tool pads it onto a square canvas, renders it at 16, 32, and 48 pixels, and packages everything into a single favicon.ico plus the individual PNGs. You also get the HTML link tag to paste into your site's head.",
   },
@@ -44,7 +44,7 @@ export const pageContentImage: Record<string, ToolPageContent> = {
   "image-compress-target": {
     title: "Compress Image to Exact Size (KB/MB)",
     metaDescription:
-      "Shrink any JPEG, PNG or WebP to a precise KB or MB target — perfect for upload form limits like 50KB or 1MB. Free, private, in-browser.",
+      "Shrink any JPEG, PNG or WebP to a precise KB or MB target — ideal for 50KB or 1MB upload limits. Free online image compressor, private and in-browser.",
     openingParagraph:
       "Many upload forms reject photos over a fixed size — 50KB, 100KB, 1MB. This tool automatically searches quality and, if needed, dimensions to land on your exact target size. Everything runs locally in your browser, so your images are never uploaded.",
   },

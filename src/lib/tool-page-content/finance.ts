@@ -52,7 +52,7 @@ export const pageContentFinance: Record<string, ToolPageContent> = {
   "profit-loss-calculator": {
     title: "Profit & Loss Calculator — Margin & Markup Online",
     metaDescription:
-      "Calculate profit, loss, gross margin, and markup online — enter revenue and cost to see P&L analysis. No signup, 100% in your browser.",
+      "Calculate profit, loss, gross margin and markup online — enter revenue and cost for a full P&L analysis. Free profit and loss calculator, no signup needed.",
     openingParagraph:
       "Profit & Loss Calculator computes net profit or loss from revenue and cost inputs, and shows gross profit margin (profit as % of revenue) and markup (profit as % of cost). Useful for business planning, pricing decisions, and quick financial analysis. Enter your revenue and total costs and see the full P&L breakdown instantly. Runs entirely in your browser.",
   },

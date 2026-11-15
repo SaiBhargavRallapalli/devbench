@@ -28,6 +28,7 @@ export const DATETIME_TOOL_SLUGS = new Set([
   "countdown-calculator",
   "week-number-calculator",
   "due-date-calculator",
+  "business-day-calculator",
 ]);
 
 export const CUSTOM_TOOL_SLUGS: ReadonlySet<string> = new Set([
@@ -119,4 +120,9 @@ export const CUSTOM_TOOL_SLUGS: ReadonlySet<string> = new Set([
   "barcode-generator",
   "image-watermark",
   "image-filters",
+  // 2026-11 expansion (randomness + text/dev formatters)
+  "random-number-generator",
+  "fancy-text",
+  "html-formatter",
+  "meta-tag-generator",
 ]);

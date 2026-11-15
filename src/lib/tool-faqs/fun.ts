@@ -41,4 +41,12 @@ export const faqsFun: Record<string, Faq[]> = {
     { q: "Does the ball remember my previous questions?", a: "Only on screen: the last eight exchanges are listed under the ball so you can look back at its guidance. The deck itself is stateless — every draw is independent, and clearing the history forgets everything the ball has ever said." },
     { q: "Is anything I ask stored or sent anywhere?", a: "No. Questions and answers stay in the page's memory; nothing leaves your browser, nothing is written to local storage and there is no account. It is a toy, and it behaves like one." },
   ],
+
+  "random-number-generator": [
+    { q: "How does the random number generator work?", a: "It draws integers uniformly from the range you set — every value between min and max is equally likely. Numbers are produced by your browser's built-in random source, so results are unpredictable and there is no pattern to exploit. Choose how many numbers you want and whether repeats are allowed." },
+    { q: "Can I generate numbers without repeats?", a: "Yes — turn on No repeats and the tool picks a unique set, which is exactly what a raffle, giveaway, lottery pick or classroom group draw needs. If you ask for more unique numbers than the range contains, it tells you instead of quietly duplicating values." },
+    { q: "What ranges and presets are available?", a: "Any range where the maximum is at least the minimum, including negative numbers and single-value ranges. Presets cover the popular 1–10, 1–50, 1–100 and 1–1000 spans, and you can draw up to 100 numbers in one go. Sort ascending if you want the output ordered instead of in draw order." },
+    { q: "Are the numbers truly random and fair?", a: "They come from the same cryptographically secure random number generator your browser uses for session tokens — uniform, independent and not predictable from previous draws. That makes the tool suitable for raffles and draws as well as games, sampling and test data." },
+    { q: "Can I copy the results or keep previous draws?", a: "Copy puts every number from the current draw on your clipboard as a comma-separated list, ready for a spreadsheet or form. The twelve most recent draws stay in the history panel below with a one-click clear, and each result shows the lowest, highest and total of the set." },
+  ],
 };

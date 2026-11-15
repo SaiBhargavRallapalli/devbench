@@ -33,6 +33,7 @@ export const CATEGORY_BROWSE_HIGHLIGHTS: Record<ToolCategory, readonly string[]>
     "hex-to-text",
   ],
   text: [
+    "fancy-text",
     "notepad-plus-plus",
     "regex-tester",
     "markdown-preview",
@@ -40,6 +41,8 @@ export const CATEGORY_BROWSE_HIGHLIGHTS: Record<ToolCategory, readonly string[]>
     "word-counter",
   ],
   dev: [
+    "meta-tag-generator",
+    "html-formatter",
     "hash-generator",
     "uuid-generator",
     "jwt-debugger",
@@ -93,6 +96,7 @@ export const CATEGORY_BROWSE_HIGHLIGHTS: Record<ToolCategory, readonly string[]>
     "timezone-converter",
     "stopwatch",
     "timer",
+    "business-day-calculator",
     "days-between-dates",
     "calendar-generator",
     "on-this-day",
@@ -103,7 +107,14 @@ export const CATEGORY_BROWSE_HIGHLIGHTS: Record<ToolCategory, readonly string[]>
     "moon-phases",
     "custom-calendar",
   ],
-  fun: ["spin-wheel", "fun-holidays", "coin-flip", "dice-roller", "magic-8-ball"],
+  fun: [
+    "random-number-generator",
+    "spin-wheel",
+    "fun-holidays",
+    "coin-flip",
+    "dice-roller",
+    "magic-8-ball",
+  ],
 };
 
 export function getCategoryHighlightTools(

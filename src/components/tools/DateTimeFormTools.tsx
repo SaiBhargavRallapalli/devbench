@@ -3,6 +3,12 @@
 import { cloneElement, isValidElement, useId, useMemo, useState, useEffect } from "react";
 import type { Tool } from "@/lib/tools-registry";
 import ToolPageHero from "@/components/tools/ToolPageHero";
+import {
+  DEFAULT_WEEKEND,
+  WEEKEND_PRESETS,
+  addBusinessDays,
+  countBusinessDays,
+} from "@/lib/business-days";
 
 const inp =
   "w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring/40";
@@ -316,6 +322,133 @@ function DueDateCalculator() {
   );
 }
 
+// ─── Business Day Calculator ────────────────────────────────────────────────
+function BusinessDayCalculator() {
+  const [start, setStart] = useState(() => {
+    const d = new Date();
+    d.setDate(d.getDate() + 7);
+    return d.toISOString().slice(0, 10);
+  });
+  const [end, setEnd] = useState(() => {
+    const d = new Date();
+    d.setDate(d.getDate() + 45);
+    return d.toISOString().slice(0, 10);
+  });
+  const [weekend, setWeekend] = useState("Sat–Sun");
+  const [holidayText, setHolidayText] = useState("");
+  const [addDays, setAddDays] = useState(10);
+
+  const holidays = useMemo(
+    () =>
+      holidayText
+        .split(/[\n,]/)
+        .map((s) => s.trim())
+        .filter((s) => /^\d{4}-\d{2}-\d{2}$/.test(s)),
+    [holidayText],
+  );
+  const weekendDays = WEEKEND_PRESETS[weekend] ?? DEFAULT_WEEKEND;
+
+  const count = useMemo(
+    () => countBusinessDays(start, end, weekendDays, holidays),
+    [start, end, weekendDays, holidays],
+  );
+  const added = useMemo(
+    () => addBusinessDays(start, addDays, weekendDays, holidays),
+    [start, addDays, weekendDays, holidays],
+  );
+
+  const fmt = (iso: string | null) => {
+    if (!iso) return "—";
+    const d = new Date(`${iso}T12:00:00`);
+    return d.toLocaleDateString(undefined, {
+      weekday: "short",
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
+
+  const weekendOptions = Object.keys(WEEKEND_PRESETS);
+
+  return (
+    <div className="space-y-5">
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Field label="Start date">
+          <input type="date" value={start} onChange={(e) => setStart(e.target.value)} className={inp} />
+        </Field>
+        <Field label="End date">
+          <input type="date" value={end} onChange={(e) => setEnd(e.target.value)} className={inp} />
+        </Field>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Field label="Weekend days" hint="Which days count as non-working?">
+          <select value={weekend} onChange={(e) => setWeekend(e.target.value)} className={inp}>
+            {weekendOptions.map((w) => (
+              <option key={w} value={w}>{w}</option>
+            ))}
+          </select>
+        </Field>
+        <Field label="Holidays (optional)" hint="One YYYY-MM-DD per line or comma-separated">
+          <textarea
+            value={holidayText}
+            onChange={(e) => setHolidayText(e.target.value)}
+            rows={2}
+            placeholder="2026-12-25, 2027-01-01"
+            className={inp}
+          />
+        </Field>
+      </div>
+
+      {count ? (
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <StatCard label="Business days" value={`${count.businessDays} days`} accent sub={`${count.calendarDays} calendar days`} />
+          <StatCard label="Weekend days off" value={`${count.weekendsSkipped}`} />
+          <StatCard label="Holidays off" value={`${count.holidaysSkipped}`} />
+          <StatCard
+            label="Total days skipped"
+            value={`${count.weekendsSkipped + count.holidaysSkipped}`}
+            sub="non-working days in range"
+          />
+        </div>
+      ) : (
+        <p className="text-sm text-destructive">Select valid dates.</p>
+      )}
+
+      <div className="rounded-xl border border-border bg-muted/30 p-4 space-y-3">
+        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          Add business days to a date
+        </p>
+        <div className="flex flex-wrap items-end gap-3">
+          <div className="w-32">
+            <Field label="Working days">
+              <input
+                type="number"
+                value={addDays}
+                onChange={(e) => setAddDays(parseInt(e.target.value) || 0)}
+                className={inp}
+              />
+            </Field>
+          </div>
+          <div className="text-sm text-muted-foreground">
+            {fmt(start)} + {addDays} working day{Math.abs(addDays) === 1 ? "" : "s"} ={" "}
+            <strong className="text-foreground">{fmt(added)}</strong>
+          </div>
+        </div>
+        <p className="text-xs text-muted-foreground">
+          Weekends and any holidays listed above are skipped in both directions —
+          use a negative number to count backwards.
+        </p>
+      </div>
+
+      <p className="text-xs text-muted-foreground">
+        The count includes both endpoints when they fall on working days. Business
+        days are calendar days minus weekends and holidays you specify.
+      </p>
+    </div>
+  );
+}
+
 // ─── Dispatcher ─────────────────────────────────────────────────────────────
 export default function DateTimeFormTools({ tool }: { tool: Tool }) {
   const body = (() => {
@@ -324,6 +457,7 @@ export default function DateTimeFormTools({ tool }: { tool: Tool }) {
       case "countdown-calculator":    return <CountdownCalculator />;
       case "week-number-calculator":  return <WeekNumberCalculator />;
       case "due-date-calculator":     return <DueDateCalculator />;
+      case "business-day-calculator": return <BusinessDayCalculator />;
       default:                        return null;
     }
   })();

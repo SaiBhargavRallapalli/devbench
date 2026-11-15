@@ -61,6 +61,13 @@ const CURATED_RELATED: Partial<Record<string, readonly string[]>> = {
   "dice-roller": ["coin-flip", "magic-8-ball", "spin-wheel", "uuid-generator"],
   "magic-8-ball": ["coin-flip", "dice-roller", "spin-wheel", "fun-holidays"],
   "spin-wheel": ["uuid-generator", "password-generator", "qr-code"],
+  "random-number-generator": ["coin-flip", "dice-roller", "spin-wheel", "magic-8-ball", "uuid-generator"],
+
+  // 2026-11 expansion
+  "fancy-text": ["case-converter", "word-counter", "string-inspector", "notepad-plus-plus"],
+  "html-formatter": ["html-minifier", "html-preview", "css-minifier", "markdown-preview"],
+  "meta-tag-generator": ["word-counter", "slug-generator", "html-formatter", "json-formatter"],
+  "business-day-calculator": ["days-between-dates", "date-calculator", "countdown-calculator", "week-number-calculator"],
   rot13: ["morse-code", "base64-encode", "text-to-hex"],
   "morse-code": ["rot13", "text-to-hex", "base64-encode"],
 

@@ -76,7 +76,7 @@ export const pageContentDev: Record<string, ToolPageContent> = {
   "curl-to-fetch": {
     title: "cURL to JavaScript Fetch Converter",
     metaDescription:
-      "Convert cURL commands to JavaScript fetch() calls online. Handles headers, body, auth, and common flags. No signup, 100% in your browser.",
+      "Convert cURL commands to JavaScript fetch() calls online — headers, request body, auth and common flags handled. Free cURL to fetch converter, no signup.",
     openingParagraph:
       "cURL to Fetch converts any cURL command — including those copied from browser DevTools — into the equivalent JavaScript fetch() call with all headers, HTTP method, request body, and authentication translated automatically. Handles -H, -d, -X, -u, and --json flags. The output works in both browser JavaScript and Node.js 18+ without any extra dependencies.",
   },
@@ -108,7 +108,7 @@ export const pageContentDev: Record<string, ToolPageContent> = {
   "chmod-calculator": {
     title: "chmod Calculator — Octal ↔ Symbolic Permissions",
     metaDescription:
-      "Convert Unix chmod octals (755, 0644) to rwx notation and back. Supports ls -l output and setuid/setgid/sticky. Runs in your browser.",
+      "Convert Unix chmod octal numbers (755, 0644) to rwx permission notation and back, with ls -l parsing plus setuid, setgid and sticky bits. Free, in-browser.",
     openingParagraph:
       "chmod Calculator translates between numeric octal modes and symbolic rwx strings for user, group, and others. Paste a mode like 755 or rwxr-xr-x, or a full ls -l permission field; four-digit octals show setuid, setgid, and sticky bits. Handy for Dockerfiles, deployment scripts, and infra-as-code when you need to double-check permission masks.",
   },
@@ -116,7 +116,7 @@ export const pageContentDev: Record<string, ToolPageContent> = {
   "dotenv-parser": {
     title: ".env Parser — Dotenv to JSON Online",
     metaDescription:
-      "Parse .env files into JSON in the browser: KEY=value lines, export prefix, duplicate-key warnings. No upload — safe for secrets snippets.",
+      "Parse .env files into JSON in your browser — KEY=value lines, export prefixes and duplicate-key warnings. Free .env parser and validator, no upload of secrets.",
     openingParagraph:
       ".env Parser reads dotenv-style configuration from your clipboard: it skips comments and blank lines, strips quotes, flags duplicate keys (last wins), and emits compact JSON for all variables. Use it to validate env blocks before committing .env.example files, compare environments, or document required variables — all locally in the browser.",
   },
@@ -130,7 +130,7 @@ export const pageContentDev: Record<string, ToolPageContent> = {
   },
 
   "code-playground": {
-    title: "Code playground — JavaScript, TypeScript, Python, Go & notebooks",
+    title: "Code Playground — JavaScript, Python, Go & Notebooks Online",
     metaDescription:
       "Free browser code playground: Monaco editor, Output and Stdin tabs, JS/TS/Node-style snippets in a sandboxed iframe, Python and notebooks via Pyodide, Go via the official Go Playground API. No signup.",
     openingParagraph:
@@ -196,7 +196,7 @@ export const pageContentDev: Record<string, ToolPageContent> = {
   "toml-to-json": {
     title: "TOML to JSON Converter — Free Online Tool",
     metaDescription:
-      "Convert TOML to JSON online. Handles strings, integers, floats, booleans, datetime, arrays, tables. No signup, 100% in your browser.",
+      "Convert TOML to JSON online — strings, integers, floats, booleans, datetimes, arrays and nested tables all handled. Free TOML to JSON converter, no signup.",
     openingParagraph:
       "TOML to JSON converts any TOML configuration file — including inline tables, array of tables, datetime values, and multi-line strings — to clean, valid JSON. Useful for transforming Cargo.toml, pyproject.toml, Hugo config, or any TOML-based configuration into JSON for tools and APIs that expect JSON input. Runs entirely in your browser.",
   },
@@ -244,7 +244,7 @@ export const pageContentDev: Record<string, ToolPageContent> = {
   "xml-suite": {
     title: "XML Tools — Validate, Format & XPath Query Online",
     metaDescription:
-      "Validate XML, pretty-print, minify, and run XPath queries in one tool online. Line-numbered errors. No signup, 100% in your browser.",
+      "Validate XML, pretty-print and minify it, and run XPath queries in one online tool — with line-numbered error reporting. Free XML formatter, no signup.",
     openingParagraph:
       "XML Tools Suite combines four operations in one workspace: validate well-formedness with line-numbered errors, pretty-print XML for readability, minify XML to remove whitespace, and execute XPath queries to extract specific nodes. Useful for SOAP APIs, RSS/Atom feeds, SVG files, and XML-based configuration. Runs entirely in your browser.",
   },
@@ -276,7 +276,7 @@ export const pageContentDev: Record<string, ToolPageContent> = {
   "webhook-simulator": {
     title: "Webhook Payload Simulator — Sign & Verify HMAC",
     metaDescription:
-      "Generate, send, and verify signed webhook payloads for GitHub, Stripe, Slack, Shopify, or generic HMAC. Test receivers locally. No signup.",
+      "Generate, sign and send webhook payloads to test GitHub, Stripe, Slack, Shopify or generic HMAC receivers — verify signatures locally. Free, no signup.",
     openingParagraph:
       "Webhook Payload Simulator builds realistic webhook JSON bodies with correct headers and HMAC signatures for GitHub, Stripe, Slack, Shopify, or a generic shared secret. Send test POSTs to your local endpoint or verify an incoming signature against your secret — essential for debugging webhook receivers before production traffic.",
   },
@@ -292,7 +292,7 @@ export const pageContentDev: Record<string, ToolPageContent> = {
   "license-generator": {
     title: "Open Source License Generator — MIT, Apache, GPL & More",
     metaDescription:
-      "Generate MIT, Apache 2.0, GPL 3.0, BSD, ISC, Unlicense, and MPL 2.0 license files with your name and year. Copy or download. Free.",
+      "Generate MIT, Apache 2.0, GPL 3.0, BSD, ISC, Unlicense and MPL 2.0 license files with your name and year — copy or download. Free online license generator.",
     openingParagraph:
       "License Generator creates standard open-source LICENSE files — MIT, Apache 2.0, GPL 3.0, BSD 2/3-Clause, ISC, Unlicense, and MPL 2.0 — with your name, organization, and copyright year filled in. Copy the text or download LICENSE for your repo. Not legal advice; review with counsel for commercial or dual-licensing needs.",
   },
@@ -300,7 +300,7 @@ export const pageContentDev: Record<string, ToolPageContent> = {
   "env-validator": {
     title: ".env Validator — Catch Duplicates & Weak Secrets",
     metaDescription:
-      "Validate .env files online — duplicate keys, empty values, invalid names, weak secrets. Parse to JSON. No upload, browser-only.",
+      "Validate .env files online — duplicate keys, empty values, invalid names and weak secrets, with parse-to-JSON output. Free .env checker, nothing uploaded.",
     openingParagraph:
       "Env Validator parses .env files and flags duplicate keys, empty values, invalid variable names, and weak secrets assigned to sensitive keys like PASSWORD or API_KEY. Export a clean JSON view for Docker Compose or CI. Your file stays in the browser — nothing is uploaded.",
   },
@@ -308,7 +308,7 @@ export const pageContentDev: Record<string, ToolPageContent> = {
   "dns-lookup": {
     title: "DNS Lookup — Query A, MX, TXT, CNAME Records Online",
     metaDescription:
-      "Query DNS records (A, AAAA, MX, TXT, CNAME, NS, SOA) for any domain via Cloudflare DoH. Free, instant results. No signup.",
+      "Free DNS lookup for any domain or website — query A, AAAA, MX, TXT, CNAME, NS and SOA records instantly via Cloudflare DoH. No signup needed.",
     openingParagraph:
       "DNS Lookup queries public DNS records for any domain — A, AAAA, MX, TXT, CNAME, NS, and SOA — using Cloudflare DNS-over-HTTPS. Useful for verifying mail setup, CDN cutovers, SPF/DKIM TXT records, and nameserver delegation. Results appear in a structured table with TTL values.",
   },
@@ -316,7 +316,7 @@ export const pageContentDev: Record<string, ToolPageContent> = {
   "ip-info": {
     title: "IP Info Lookup — Geolocation, ISP & ASN Online",
     metaDescription:
-      "Look up geolocation, ISP, timezone, ASN, and currency for any IP address — or check your own public IP. Free, browser-based.",
+      "Look up IP address details — geolocation, ISP, timezone, ASN and currency — or check your own public IP. Free online IP lookup and address lookup tool.",
     openingParagraph:
       "IP Info resolves any IPv4 or IPv6 address to country, region, city, ISP, timezone, ASN, and currency using ipapi.co. Click to check your own public IP or paste an address from server logs. Useful for fraud review, CDN debugging, and understanding where traffic originates.",
   },
@@ -324,7 +324,7 @@ export const pageContentDev: Record<string, ToolPageContent> = {
   "npm-compare": {
     title: "npm Package Compare — Downloads, Size & License",
     metaDescription:
-      "Compare up to 3 npm packages side-by-side: weekly downloads, bundle size, dependencies, license, last publish. Free, live registry data.",
+      "Compare up to 3 npm packages side by side — weekly downloads, bundle size, dependencies, license and last publish date from live registry data. Free to use.",
     openingParagraph:
       "npm Package Compare loads metadata from the npm registry for up to three packages — weekly download counts, approximate bundle size, dependency counts, license, and last publish date — in one table. Pick between similar libraries before adding a dependency to your project.",
   },
@@ -332,7 +332,7 @@ export const pageContentDev: Record<string, ToolPageContent> = {
   "epoch": {
     title: "Unix Timestamp Converter — Epoch to Date & Live Clock",
     metaDescription:
-      "Convert Unix timestamps (seconds or milliseconds) to human-readable dates with timezone support. Live clock. Free, browser-only.",
+      "Convert Unix timestamps (seconds or milliseconds) to readable dates, and back again, with timezone support and a live clock. Free online epoch converter.",
     openingParagraph:
       "Unix Timestamp Converter converts epoch seconds or milliseconds to local and UTC datetime strings, and converts dates back to epoch. A live clock shows the current Unix time. Supports millisecond precision and common timezone offsets — essential for debugging API timestamps and log lines.",
   },
@@ -340,7 +340,7 @@ export const pageContentDev: Record<string, ToolPageContent> = {
   "jwt-debugger": {
     title: "JWT Debugger — Decode & Verify JSON Web Tokens",
     metaDescription:
-      "Decode JWT header and payload, check expiry, and verify HMAC signatures locally. No token sent to a server. Free JWT inspector.",
+      "Decode JWT header and payload, check expiry, and verify HMAC signatures locally — your token is never sent to a server. Free online JWT decoder and inspector.",
     openingParagraph:
       "JWT Debugger splits a JSON Web Token into header, payload, and signature — pretty-prints claims, highlights expiry, and optionally verifies HMAC signatures with your secret locally. Nothing is uploaded; ideal for OAuth, session tokens, and API debugging.",
   },
@@ -348,7 +348,7 @@ export const pageContentDev: Record<string, ToolPageContent> = {
   "graph-calculator": {
     title: "Graph Calculator — Plot Functions & Matrix Math",
     metaDescription:
-      "Plot math functions interactively, use a scientific calculator, and run matrix operations in your browser. Multi-function graphs. Free.",
+      "Plot and visualize math functions interactively — multi-function graphs, a scientific calculator and matrix operations, all in your browser. Free online.",
     openingParagraph:
       "Graph Calculator plots one or more functions y = f(x) with pan and zoom, evaluates expressions with a scientific calculator, and supports matrix arithmetic. Useful for homework checks, visualizing curves, and exploring how parameter changes affect a graph — all client-side.",
   },
@@ -356,7 +356,7 @@ export const pageContentDev: Record<string, ToolPageContent> = {
   "linux-cheatsheet": {
     title: "Linux Cheatsheet — Searchable Command Reference",
     metaDescription:
-      "Searchable Linux command reference — files, processes, networking, Docker, Kubernetes, permissions. Copy commands. Free, offline-ready.",
+      "Searchable Linux command reference — file operations, permissions, processes, networking, Git, Docker and Kubernetes snippets to copy. Free, works offline.",
     openingParagraph:
       "Linux Cheatsheet is a searchable reference for everyday shell commands — file operations, permissions, processes, networking, Git, Docker, and Kubernetes snippets. Filter by topic and copy commands to your terminal. Handy when you know what you need but not the exact flags.",
   },
@@ -364,8 +364,24 @@ export const pageContentDev: Record<string, ToolPageContent> = {
   "date-calculator": {
     title: "Date Calculator — Add or Subtract Days, Months, Years",
     metaDescription:
-      "Add or subtract years, months, weeks, and days from any date with calendar-safe arithmetic. Free online date calculator.",
+      "Add or subtract years, months, weeks and days from any date with calendar-safe arithmetic. Free online date calculator with month-end edge cases handled.",
     openingParagraph:
       "Date Calculator performs calendar-safe addition and subtraction — add or subtract years, months, weeks, and days from any start date and get the resulting ISO date. Handles month-end edge cases (e.g. Jan 31 + 1 month). Pair with Days Between Dates for project planning and deadlines.",
+  },
+
+  "html-formatter": {
+    title: "HTML Formatter — Beautify & Minify HTML Online",
+    metaDescription:
+      "Beautify and minify HTML online — pretty-print markup with 2 or 4 space indentation, collapse tags for production, side-by-side preview. Free, no signup.",
+    openingParagraph:
+      "HTML Formatter takes messy, single-line or minified markup and rewrites it with clean, consistent indentation you can actually read. Paste your HTML, pick 2 or 4 space indentation, and read input and output side by side with live character counts — then switch to Minify mode to collapse the whitespace back down for production. The formatter is conservative by design: content inside pre, script, style and textarea tags is passed through exactly as written, so formatting never corrupts your JavaScript, CSS or preformatted blocks. Everything runs locally in your browser.",
+  },
+
+  "meta-tag-generator": {
+    title: "Meta Tag Generator — SEO Title, Description & OG Tags",
+    metaDescription:
+      "Generate SEO meta tags for any page — title, description, Open Graph, Twitter Card and canonical links with live length guidance. Copy-ready HTML.",
+    openingParagraph:
+      "Meta Tag Generator builds the complete block of HTML head tags a page needs for search engines and social sharing. Fill in your title, description, keywords, URL, share image, site name and og:type, and it emits the meta description, Open Graph tags, Twitter Card tags, canonical link and robots directive — all properly escaped and ready to paste inside your head element. Live length badges show the 60-character title and 160-character description limits Google typically displays, warning you before your snippet gets truncated in search results. Everything is generated in your browser.",
   },
 };

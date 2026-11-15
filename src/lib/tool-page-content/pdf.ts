@@ -3,12 +3,13 @@ import type { ToolPageContent } from "./_types";
 export const pageContentPdf: Record<string, ToolPageContent> = {
   "pdf-to-text": {
     title: "PDF to Text Extractor — Copy or Download Plain Text",
-    metaDescription: "Extract text from any PDF in your browser — choose pages, preview the result, then copy or download a clean .txt file. No upload needed.",
+    metaDescription:
+      "Extract text from any PDF in your browser — choose pages, preview the result, then copy or download a clean .txt file. Free PDF to text converter, no upload.",
     openingParagraph: "Turn any PDF into plain, editable text without installing software. This tool reads the embedded text layer of each page right in your browser, so your document is never uploaded to a server. Pick specific pages or extract the whole file, then copy the result or download it as a ready-to-use .txt file. If a PDF turns out to be scanned, the tool tells you so and suggests OCR instead of returning an empty page.",
   },
 
   "image-to-pdf": {
-    title: "Image to PDF — JPG, PNG, WebP to One PDF (Free, Browser-Only)",
+    title: "Image to PDF — JPG, PNG & WebP to PDF, Free Online",
     metaDescription:
       "Merge images into a single A4 PDF: reorder pages, PNG/JPEG/WebP/GIF supported. Runs entirely in your browser — nothing uploaded to DevBench.",
     openingParagraph:
@@ -66,7 +67,7 @@ export const pageContentPdf: Record<string, ToolPageContent> = {
   "pdf-page-numbers": {
     title: "Add Page Numbers to PDF — Free Online Tool",
     metaDescription:
-      "Add footer page numbers to a PDF online — centered, optional 'Page X of Y' format. No upload, no signup, 100% client-side in your browser.",
+      "Add footer page numbers to a PDF online — centred or justified, with an optional 'Page X of Y' format. Free, no upload, 100% client-side in your browser.",
     openingParagraph:
       "PDF Page Numbers stamps a page number at the bottom center of every page — choose between a simple number or the 'Page X of Y' format. Useful for reports, proposals, and academic papers that need consistent page references. All processing runs in your browser with pdf-lib — your file is never uploaded to a server. Free, no account needed.",
   },
@@ -74,7 +75,7 @@ export const pageContentPdf: Record<string, ToolPageContent> = {
   "pdf-page-editor": {
     title: "PDF Page Editor — Remove or Extract Pages Online",
     metaDescription:
-      "Remove specific pages from a PDF or extract selected pages into a new PDF online. No upload, no signup, 100% client-side in your browser.",
+      "Remove specific pages from a PDF or extract selected pages into a brand-new PDF online. Free page remover — no upload, no signup, runs in your browser.",
     openingParagraph:
       "PDF Page Editor lets you select individual pages to remove from a PDF or extract into a new document. Load a PDF, toggle which pages to keep or remove, and download the result. Useful for trimming cover pages, removing blank pages, and extracting specific sections from large reports. All processing happens in your browser using pdf-lib — nothing is ever uploaded.",
   },
@@ -82,7 +83,7 @@ export const pageContentPdf: Record<string, ToolPageContent> = {
   "text-to-pdf": {
     title: "Text to PDF — Convert Plain Text to PDF Online",
     metaDescription:
-      "Convert plain text to a downloadable A4 PDF online — automatic line wrapping and page breaks. No upload, no signup, 100% in your browser.",
+      "Convert plain text to a downloadable A4 PDF online — automatic line wrapping and page breaks. Free plain text to PDF converter, no upload or signup needed.",
     openingParagraph:
       "Text to PDF converts plain text into a formatted A4 PDF with automatic line wrapping and page breaks. Paste any text — notes, logs, code output, or article content — and download a clean, printable PDF in one click. Useful when you need a PDF from clipboard content without opening a word processor. All processing happens in your browser. Free, no account needed.",
   },

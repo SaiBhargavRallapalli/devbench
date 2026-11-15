@@ -20,7 +20,7 @@ export const pageContentMath: Record<string, ToolPageContent> = {
   "gcd-lcm-calculator": {
     title: "GCD & LCM Calculator — Greatest Common Divisor Online",
     metaDescription:
-      "Calculate GCD and LCM of two numbers online. Shows Euclidean algorithm steps and prime factorisation. No signup, 100% in your browser.",
+      "Calculate the GCD and LCM of two or more numbers online, with Euclidean algorithm steps and prime factorisation shown. Free greatest common divisor tool.",
     openingParagraph:
       "GCD & LCM Calculator finds the Greatest Common Divisor and Least Common Multiple for any two integers using the Euclidean algorithm. Shows the prime factorisation of each number and step-by-step working. Useful for fraction simplification, scheduling problems, and number theory exercises. Runs entirely in your browser.",
   },

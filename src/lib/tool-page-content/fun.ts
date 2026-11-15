@@ -40,4 +40,12 @@ export const pageContentFun: Record<string, ToolPageContent> = {
     openingParagraph:
       "The Magic 8-Ball answers yes-or-no questions the way it has since 1950: type your question, press Ask, and the sphere reveals one of twenty canonical replies — ten positive, five negative and five deliberately vague. Each answer appears in the ball's window, colour-coded by outlook, and the last eight exchanges stay below so you can look back on the ball's guidance. The deck is drawn at random from a fixed list, so the ball is delightfully consistent in knowing absolutely nothing — everything runs in your browser.",
   },
+
+  "random-number-generator": {
+    title: "Random Number Generator — Pick Numbers in Any Range",
+    metaDescription:
+      "Generate random numbers in any range — one or many, no repeats, sorted output and presets from 1–10 to 1–1000. Free online RNG with draw history.",
+    openingParagraph:
+      "Random Number Generator draws fair, unpredictable numbers from any range you choose. Set a minimum and maximum, decide how many numbers you need, and press Generate — optionally without repeats for raffles and draws, or sorted ascending for ordered lists. Handy presets cover the common 1–10, 1–50, 1–100 and 1–1000 ranges, and each result shows the lowest, highest and total alongside a running history of your last twelve draws you can copy in one click. Numbers come straight from your browser's cryptographic-quality random source, so nothing is predictable and nothing leaves your device.",
+  },
 };

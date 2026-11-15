@@ -36,7 +36,7 @@ export const pageContentDatetime: Record<string, ToolPageContent> = {
   "countdown-calculator": {
     title: "Countdown Calculator — Time Until a Date Online",
     metaDescription:
-      "Calculate time remaining until any future date online — days, hours, minutes, seconds. Live countdown. No signup, 100% in your browser.",
+      "Live countdown timer showing the time remaining until any future date — days, hours, minutes and seconds. Free online countdown clock for events, no signup.",
     openingParagraph:
       "Countdown Calculator shows exactly how much time remains until any future date and time — displayed in years, months, days, hours, minutes, and seconds with a live-updating counter. Useful for event planning, deadline tracking, product launch countdowns, and any milestone you need to visualise. Enter a target date and the countdown starts immediately. Runs entirely in your browser.",
   },
@@ -119,5 +119,13 @@ export const pageContentDatetime: Record<string, ToolPageContent> = {
       "See the Moon's current phase, illuminated percentage and distance, plus the exact times of the next new moon, first quarter, full moon and last quarter. Free online.",
     openingParagraph:
       "Moon Phases shows where the Moon is in its lunation right now — a precise phase disc with the illuminated percentage, waxing or waning direction, the Moon's age and its distance from Earth — and lists the next six phase instants: new moon, first quarter, full moon and last quarter, each with a live countdown. Pick any date and time to see the phase then, or jump to now. The astronomy runs entirely in your browser using the same lunar theory the USNO publishes phase times from, so no network calls, no trackers, no signup.",
+  },
+
+  "business-day-calculator": {
+    title: "Business Day Calculator — Count Working Days Between Dates",
+    metaDescription:
+      "Count and add business days between dates — skip weekends and holidays, Fri–Sat or Sun–Thu weekends, add or subtract working days. Free online.",
+    openingParagraph:
+      "Business Day Calculator answers the two questions every project plan needs: how many working days fall between two dates, and what date you land on after adding a number of business days. Pick your start and end dates, choose which days count as your weekend — the standard Saturday–Sunday, or regional Fri–Sat and Sun–Thu patterns — and optionally list holidays as plain YYYY-MM-DD dates to exclude them. The results break the range into business days, weekend days off and holidays off, and the adder works backwards too, so counting down to a deadline is just as easy. Everything is computed locally in your browser.",
   },
 };

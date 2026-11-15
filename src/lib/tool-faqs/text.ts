@@ -138,4 +138,12 @@ export const faqsText: Record<string, Faq[]> = {
     { q: "How do I compare two open tabs?", a: "Open at least two tabs, then use Compare with in the toolbar to pick another tab. DevBench opens Text Diff in a new tab with both documents pre-filled. You can also copy either tab and use the dedicated Diff checker workspace at /diff-checker." },
     { q: "Can I open a vault entry in the editor?", a: "Yes. From the vault page, open a notepad vault entry — it links to /notepad?vault=ENTRY_ID (or the compact tool page). Vault entries saved with tool slug notepad-plus-plus appear when you browse the vault." },
   ],
+
+  "fancy-text": [
+    { q: "What is a fancy text generator?", a: "It converts ordinary ASCII characters into styled Unicode equivalents — mathematical bold, italic, script, monospace and dozens of other alphabets — so you can paste stylish text anywhere. The characters are real Unicode codepoints, not images, so they render in Instagram bios, Discord names, WhatsApp messages and gaming tags without any app or font installation." },
+    { q: "Which fancy styles can I create?", a: "Fifteen styles: bold, italic, bold italic, script (cursive), bold script, monospace (typewriter), fullwidth, small caps, circled letters, squared letters, strikethrough, underlined, superscript, subscript and upside-down. Each one previews live beside your original text so you can compare them all before copying." },
+    { q: "Can I make bold or italic text for Instagram and Discord?", a: "Yes — that is the most common use. Type your text, pick Bold or Italic, then press Copy and paste it into your Instagram bio, Discord username, WhatsApp status, TikTok handle or Twitter/X name. Because the output is plain Unicode, it works in every app that accepts text input." },
+    { q: "Why do emoji and Chinese or Hindi characters stay the same?", a: "Those characters have no styled counterpart in the Unicode alphabets the generator uses, so they pass through untouched. That is deliberate: your output never loses content. Latin letters, digits and common punctuation are transformed; everything else is preserved exactly as you typed it." },
+    { q: "Is my text uploaded anywhere?", a: "No. Every transformation runs in your browser using local Unicode tables — nothing is sent to a server, nothing is stored and there is no account or signup. You can paste sensitive text and copy the styled result with full confidence it never left your device." },
+  ],
 };

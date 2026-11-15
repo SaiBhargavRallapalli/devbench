@@ -144,4 +144,12 @@ export const pageContentText: Record<string, ToolPageContent> = {
     openingParagraph:
       "Notepad++ Editor replicates the core Notepad++ experience in your browser: multiple document tabs, 30+ syntax highlighting modes, split editor, side panels (documents, outline, bookmarks, character map), macro record/playback, named sessions, line numbers, minimap, word wrap, find and replace, go to line, UTF-8/UTF-16 encoding on save, EOL conversion (LF/CRLF), text transforms, download, print, share via URL, compare two tabs in Text Diff, and save drafts to your local DevBench vault. Open the full workspace at /notepad or use this compact tool page. Your session auto-restores from this device — nothing is uploaded to a server.",
   },
+
+  "fancy-text": {
+    title: "Fancy Text Generator — Bold, Italic & Stylish Fonts",
+    metaDescription:
+      "Turn plain text into bold, italic, script, monospace and 15+ fancy Unicode styles. Copy stylish text for Instagram, Discord and WhatsApp — free, no signup.",
+    openingParagraph:
+      "Fancy Text Generator converts ordinary words into eye-catching Unicode styles — bold, italic, bold italic, script, monospace, fullwidth, small caps, circled, squared, strikethrough, underlined, superscript, subscript and upside-down. Type or paste any text and every style previews live side by side, so you can compare them instantly before copying the one you like. It works for Instagram bios, Discord usernames, WhatsApp messages, gaming tags and social posts, runs entirely in your browser, and never loses emoji or non-Latin characters.",
+  },
 };

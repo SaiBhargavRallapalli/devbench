@@ -84,7 +84,7 @@ export const pageContentJson: Record<string, ToolPageContent> = {
   "json-to-tsv": {
     title: "JSON to TSV — Tab-Separated Spreadsheet Export",
     metaDescription:
-      "Convert JSON arrays to TSV online for Excel and Sheets — tabs instead of commas. Runs in your browser with no upload.",
+      "Convert JSON arrays to TSV online for Excel and Google Sheets — tab-separated instead of comma-separated. Free JSON to TSV converter, runs in your browser.",
     openingParagraph:
       "JSON → TSV turns an array of flat JSON objects into tab-separated rows with a header line. Tabs reduce quoting friction when your cells often contain commas. Values with tabs or line breaks are quoted. Pair with TSV → JSON for round trips.",
   },
@@ -92,7 +92,7 @@ export const pageContentJson: Record<string, ToolPageContent> = {
   "tsv-to-json": {
     title: "TSV to JSON — Parse Tab-Separated Values",
     metaDescription:
-      "Parse TSV with header row into JSON arrays in your browser. Supports quoted cells. Free, no signup.",
+      "Parse TSV with a header row into JSON arrays in your browser — supports quoted cells and pasted spreadsheet data. Free online TSV to JSON converter, no signup.",
     openingParagraph:
       "TSV → JSON reads a tab-separated table from your clipboard or paste buffer and emits a JSON array of objects using the first row as keys. Ideal for analytics exports and Unix-style dumps — processing stays on-device.",
   },

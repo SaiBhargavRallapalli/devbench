@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getToolBySlug, TOOLS } from "@/lib/tools-registry";
+import { getToolBySlug, TOOLS, CATEGORIES } from "@/lib/tools-registry";
 import { TOOL_FAQS } from "@/lib/tool-faqs";
 import { TOOL_PAGE_CONTENT } from "@/lib/tool-page-content";
 import ToolSeoContent from "@/components/tools/ToolSeoContent";
@@ -43,10 +43,22 @@ export async function generateMetadata({
     `${tool.description} Runs entirely in your browser — no signup, no uploads, client-side only.`;
   const canonicalPath = publicHrefForToolSlug(tool.slug);
   const ogImageUrl = `${SITE_URL}/tools/${tool.slug}/opengraph-image`;
+  const cat = CATEGORIES[tool.category];
   return {
     title,
     description,
-    keywords: [tool.shortName, tool.name, "online tool", "free developer tools", "devbench"],
+    keywords: [
+      tool.shortName,
+      tool.name,
+      `${tool.name} online`,
+      `${tool.name} free`,
+      `${tool.name} no signup`,
+      `${cat.label} tools`,
+      `${cat.label} utilities online`,
+      "free online tool",
+      "free developer tools",
+      "devbench",
+    ],
     alternates: { canonical: `${SITE_URL}${canonicalPath}` },
     ...socialMetadata({
       title,
