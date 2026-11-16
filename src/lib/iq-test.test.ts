@@ -5,6 +5,7 @@ import {
   VERBAL_POOL,
   buildTest,
   classify,
+  competingDotsOps,
   figKey,
   mirror,
   normalCdf,
@@ -168,5 +169,68 @@ describe("normal curve helpers", () => {
     expect(classify(100)).toBe("Average");
     expect(classify(131)).toBe("Very high");
     expect(classify(75)).toBe("Low");
+  });
+});
+
+describe("dot matrix ambiguity (IQ-01)", () => {
+  type Bits = boolean[];
+  const OPS: Record<string, (a: boolean, b: boolean) => boolean> = {
+    union: (a, b) => a || b,
+    xor: (a, b) => a !== b,
+    minus: (a, b) => a && !b,
+  };
+  const bitsOf = (f: Fig | undefined): Bits => (f && f.kind === "dots" ? f.bits : []);
+
+  /** Independent check: rules that fit both completed rows but give a different figure for row 3. */
+  function rivals(grid: Fig[], answer: Bits): string[] {
+    return Object.keys(OPS).filter((name) => {
+      const op = OPS[name] as (a: boolean, b: boolean) => boolean;
+      const fits = [0, 1].every((r) =>
+        bitsOf(grid[r * 3]).every((a, i) => op(a, bitsOf(grid[r * 3 + 1])[i] as boolean) === bitsOf(grid[r * 3 + 2])[i]),
+      );
+      if (!fits) return false;
+      const out = bitsOf(grid[6]).map((a, i) => op(a, bitsOf(grid[7])[i] as boolean));
+      return out.some((v, i) => v !== answer[i]);
+    });
+  }
+
+  // Seed 338 / m12 as captured by QA from the deployed generator before the fix (XOR answer E).
+  const captured: number[][] = [
+      [1, 0, 0, 0, 1, 0, 0, 0, 1],
+      [1, 0, 0, 0, 1, 0, 0, 0, 1],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [1, 0, 0, 1, 1, 0, 1, 0, 0],
+      [1, 0, 0, 1, 1, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 1, 0, 0],
+      [0, 1, 0, 0, 1, 0, 0, 0, 1],
+      [1, 1, 0, 0, 0, 1, 0, 0, 0],
+  ];
+  const capturedGrid: Fig[] = captured.map((b) => ({ kind: "dots", bits: b.map(Boolean) }));
+  const capturedAnswer = (captured[6] as number[]).map((a, i) => a !== (captured[7] as number[])[i]);
+
+  it("detects the captured seed 338 grid as ambiguous (minus rival to XOR)", () => {
+    expect(rivals(capturedGrid, capturedAnswer)).toEqual(["minus"]);
+    expect(competingDotsOps("xor", capturedGrid, capturedAnswer)).toEqual(["minus"]);
+  });
+
+  function check(seed: number, only?: string) {
+    for (const item of buildTest(seed)) {
+      if (item.section !== "matrix" || item.grid?.[0]?.kind !== "dots") continue;
+      if (only && item.id !== only) continue;
+      const answer = bitsOf(item.options[item.correct]?.fig);
+      expect(rivals(item.grid, answer), `seed ${seed} ${item.id}`).toEqual([]);
+    }
+  }
+
+  it.each([
+    [338, "m12"],
+    [859, "m8"],
+    [885, "m12"],
+  ])("regression: seed %i %s has a single consistent answer", (seed, id) => {
+    check(seed, id);
+  });
+
+  it("no dot matrix in seeds 0-999 has a rival rule with a different answer", () => {
+    for (let seed = 0; seed < 1000; seed++) check(seed);
   });
 });
