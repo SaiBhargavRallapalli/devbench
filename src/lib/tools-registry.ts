@@ -467,6 +467,14 @@ export const TOOLS: Tool[] = [
     icon: ".env",
   },
   {
+    slug: "har-analyzer",
+    name: "HAR Performance Analyzer",
+    shortName: "HAR",
+    description: "Analyze a browser HAR capture locally - request waterfall, slowest and failed requests, bytes by domain and type, plus a shareable summary",
+    category: "dev",
+    icon: "HAR",
+  },
+  {
     slug: "dns-lookup",
     name: "DNS Lookup",
     shortName: "DNS",
