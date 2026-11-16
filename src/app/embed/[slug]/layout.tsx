@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { getToolBySlug, TOOLS } from "@/lib/tools-registry";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -18,6 +19,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default function EmbedSlugLayout({ children }: { children: React.ReactNode }) {
+export default async function EmbedSlugLayout({
+  children,
+  params,
+}: Props & { children: React.ReactNode }) {
+  const { slug } = await params;
+  if (!getToolBySlug(slug)) notFound();
   return <>{children}</>;
 }
