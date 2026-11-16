@@ -4789,6 +4789,60 @@ export const CONTENT_MAP: Record<string, React.FC> = {
       </p>
     </Section>
   )) as React.FC,
+  "image-to-text": (() => (
+    <Section>
+      <h2 className={h2}>How to extract text from an image or scanned PDF</h2>
+      <ol className={ol}>
+        <li>
+          Drop in a photo, screenshot or scanned PDF — the file is read locally and never
+          uploaded to a server.
+        </li>
+        <li>
+          Select the language (or languages) in the document — English, Hindi, Telugu, Tamil and
+          ten more are supported, and mixed-language pages can be selected together.
+        </li>
+        <li>
+          For a PDF, optionally enter a page range (e.g. 1-3,5); each page is rendered as an
+          image, so scans with no text layer work too. OCR is capped at 20 pages per run.
+        </li>
+        <li>
+          Press Extract text, watch the progress bar, then copy the result or download it as a
+          .txt file.
+        </li>
+      </ol>
+      <h2 className={h2}>How OCR here works</h2>
+      <p className={prose}>
+        The tool runs the Tesseract OCR engine compiled to WebAssembly, downloaded on first use
+        from the same CDN the site already trusts for its video tools. Small images are upscaled
+        before recognition because OCR accuracy climbs with resolution, and oversized photos are
+        scaled down to keep memory use in check. The result is plain text: words in reading
+        order, without fonts, colours or layout.
+      </p>
+      <h2 className={h2}>Getting the best results</h2>
+      <p className={prose}>
+        Sharp, straight-on, high-contrast images read best. Blur, shadows, heavy compression and
+        skewed pages are the usual causes of misread characters — re-shooting a photo flat-on
+        helps more than any setting. Screenshots of digital text come out near-perfect; fancy
+        display fonts and handwriting are the hardest cases. When the output comes back empty,
+        the tool says so plainly instead of pretending nothing was there.
+      </p>
+      <p className={prose}>
+        Also useful:{" "}
+        <Link href="/tools/pdf-to-text" className="text-accent hover:underline">
+          PDF to Text
+        </Link>
+        {", "}
+        <Link href="/tools/image-to-pdf" className="text-accent hover:underline">
+          Image to PDF
+        </Link>
+        {", and "}
+        <Link href="/tools/exif-viewer" className="text-accent hover:underline">
+          EXIF Viewer
+        </Link>
+        .
+      </p>
+    </Section>
+  )) as React.FC,
   "pdf-to-text": (() => (
     <Section>
       <h2 className={h2}>How to extract text from a PDF</h2>
