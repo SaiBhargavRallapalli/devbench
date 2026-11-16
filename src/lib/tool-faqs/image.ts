@@ -167,4 +167,12 @@ export const faqsImage: Record<string, Faq[]> = {
     { q: "Which output formats can I download?", a: "PNG, JPEG, or WebP. PNG is lossless and keeps transparency; JPEG and WebP are lossy and expose a quality slider (JPEG is composited onto white because it has no alpha channel). The preview renders at up to 1,000px on the longest side for speed — downloads always render at full original resolution." },
     { q: "Why does part of my filter do nothing?", a: "Blur, brightness, contrast, saturation, grayscale, sepia and invert use the Canvas filter property, supported in Chrome, Edge, Firefox and Safari 16.4+. On older browsers the tool tells you those filters are skipped instead of silently ignoring them. Pixelate is implemented with plain canvas scaling and works everywhere." },
   ],
+
+  "image-to-text": [
+    { q: "Which files can I extract text from?", a: "Images (PNG, JPG, WebP, GIF, BMP) up to 15 MB, and scanned PDFs up to 25 MB. For PDFs you can OCR the whole document or a page range like 1-3,5 — each page is rendered as an image first, so scans with no text layer work. OCR is capped at 20 pages per run to keep your browser responsive." },
+    { q: "Which languages are supported?", a: "English, Hindi, Telugu, Tamil, Spanish, French, German, Portuguese, Italian, Russian, Arabic, Japanese, Korean and Chinese (Simplified). Select every language that appears in the document — the engine can read mixed-language pages when all of them are selected." },
+    { q: "Is my image or PDF uploaded anywhere?", a: "No. The OCR engine (Tesseract, compiled to WebAssembly) runs entirely in your browser. The file is read from your device and never sent to a server — only the engine and language data are downloaded, on the first run. That makes it safe for IDs, receipts and confidential paperwork." },
+    { q: "How do I get the best results?", a: "Use a sharp, well-lit, straight-on image with good contrast — blurry photos, heavy shadows and skewed pages are the main causes of misread characters. Small images are upscaled automatically before recognition. For PDFs, a higher-quality original scan helps more than any setting." },
+    { q: "What is the difference between this and the PDF to Text tool?", a: "PDF to Text reads the embedded text layer of a digital PDF — instant and exact, but it finds nothing in a scan. This tool uses OCR to read the pixels themselves, so it works on scanned pages and plain images, at the cost of being slower and occasionally imperfect." },
+  ],
 };
