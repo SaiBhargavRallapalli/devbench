@@ -11,7 +11,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const tool = getToolBySlug(slug);
   return {
-    title: tool ? `${tool.name} — Embed | DevBench` : "Embed | DevBench",
+    // absolute: the root title template would otherwise append a second
+    // "| DevBench" suffix.
+    title: { absolute: tool ? `${tool.name} — Embed | DevBench` : "Embed | DevBench" },
     robots: { index: false, follow: false },
   };
 }
