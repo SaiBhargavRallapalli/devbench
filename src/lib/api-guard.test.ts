@@ -62,3 +62,20 @@ describe("createRateLimiter", () => {
     expect(limited("other")).toBe(false);
   });
 });
+
+describe("createAsyncRateLimiter", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it("falls back to the in-memory limiter when no store is configured", async () => {
+    vi.stubEnv("UPSTASH_REDIS_REST_URL", "");
+    vi.stubEnv("UPSTASH_REDIS_REST_TOKEN", "");
+    const { createAsyncRateLimiter } = await import("./api-guard");
+    const limited = createAsyncRateLimiter("test", 2, 60_000);
+    expect(await limited("ip")).toBe(false);
+    expect(await limited("ip")).toBe(false);
+    expect(await limited("ip")).toBe(true);
+    expect(await limited("other")).toBe(false);
+  });
+});
