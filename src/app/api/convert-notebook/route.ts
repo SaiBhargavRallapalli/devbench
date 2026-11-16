@@ -6,7 +6,7 @@ import { join } from "path";
 import { tmpdir } from "os";
 import { randomBytes } from "crypto";
 import { notebookToHtml, type Notebook } from "@/lib/notebook-to-html";
-import { clientIp, createRateLimiter, isAllowedOrigin } from "@/lib/api-guard";
+import { clientIp, createAsyncRateLimiter, isAllowedOrigin } from "@/lib/api-guard";
 
 export const runtime = "nodejs";
 /** Chromium PDF needs headroom on serverless (Hobby default is often too short). */
@@ -16,7 +16,7 @@ const execAsync = promisify(exec);
 
 const MAX_FILE_BYTES = 50 * 1024 * 1024;
 
-const isRateLimited = createRateLimiter(5);
+const isRateLimited = createAsyncRateLimiter("convert-notebook", 5);
 
 /** Safe Content-Disposition filename (no quotes/CRLF/path separators). */
 export function sanitizeDownloadFilename(name: string, fallback = "notebook.pdf"): string {
@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
   }
 
   const ip = clientIp(req);
-  if (isRateLimited(ip)) {
+  if (await isRateLimited(ip)) {
     return NextResponse.json(
       { error: "Rate limit exceeded. Max 5 conversions per minute." },
       { status: 429 },
@@ -146,6 +146,20 @@ export async function POST(req: NextRequest) {
     let pdfBytes: Uint8Array;
     try {
       const page = await browser.newPage();
+      await page.setJavaScriptEnabled(false);
+      // Network isolation: the HTML comes from an untrusted upload. Block
+      // every network request so hostile markup can't make this function
+      // reach internal addresses or exfiltrate data (blind SSRF). data:
+      // and about: stay so inline notebook images still render.
+      await page.setRequestInterception(true);
+      page.on("request", (intercepted) => {
+        const u = intercepted.url();
+        if (u.startsWith("data:") || u.startsWith("about:")) {
+          void intercepted.continue();
+        } else {
+          void intercepted.abort();
+        }
+      });
       await page.setContent(html, { waitUntil: "load", timeout: 60_000 });
       pdfBytes = await page.pdf({
         format: "A4",
