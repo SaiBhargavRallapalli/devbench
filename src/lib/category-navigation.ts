@@ -114,6 +114,7 @@ export const CATEGORY_BROWSE_HIGHLIGHTS: Record<ToolCategory, readonly string[]>
     "coin-flip",
     "dice-roller",
     "magic-8-ball",
+    "iq-test",
   ],
 };
 
