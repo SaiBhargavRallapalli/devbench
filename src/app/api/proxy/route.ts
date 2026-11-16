@@ -6,7 +6,7 @@ import {
   sanitizeProxyHeaders,
   MAX_PROXY_REDIRECTS,
 } from "./validation";
-import { clientIp, createRateLimiter, isAllowedOrigin } from "@/lib/api-guard";
+import { clientIp, createAsyncRateLimiter, isAllowedOrigin } from "@/lib/api-guard";
 import { logger } from "@/lib/logger";
 
 const MAX_BODY_SIZE = 5 * 1024 * 1024; // 5 MB
@@ -14,7 +14,7 @@ const TIMEOUT_MS = 30_000;
 
 // Sliding-window rate limiter: 20 req/min per IP.
 // In-memory — per warm instance. Adequate for serverless abuse prevention.
-const isRateLimited = createRateLimiter(20);
+const isRateLimited = createAsyncRateLimiter("proxy", 20);
 
 class ProxyBlockedError extends Error {
   constructor(message: string) {
@@ -88,7 +88,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Forbidden." }, { status: 403 });
   }
 
-  if (isRateLimited(ip)) {
+  if (await isRateLimited(ip)) {
     return NextResponse.json(
       { error: "Rate limit exceeded. Max 20 requests per minute." },
       { status: 429 },
