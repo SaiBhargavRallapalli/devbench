@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { clientIp, createRateLimiter, isAllowedOrigin } from "@/lib/api-guard";
+import { clientIp, createAsyncRateLimiter, isAllowedOrigin } from "@/lib/api-guard";
 import { DOWN_CHECK_HOSTS } from "@/lib/down-check/catalog";
 
 // Probing ~108 hosts at concurrency 8 with a 3s cap per host needs headroom:
@@ -15,7 +15,7 @@ const CONCURRENCY = 8;
 // Sliding-window rate limiter: 30 req/min per IP. A full catalog check is
 // ceil(108/32) = 4 requests, so ~7 complete checks per minute are allowed.
 // In-memory — per warm instance. Adequate for serverless abuse prevention.
-const isRateLimited = createRateLimiter(30);
+const isRateLimited = createAsyncRateLimiter("down-check", 30);
 
 export type ProbeState = "up" | "degraded" | "down";
 
@@ -84,7 +84,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Forbidden." }, { status: 403 });
   }
 
-  if (isRateLimited(clientIp(req))) {
+  if (await isRateLimited(clientIp(req))) {
     return NextResponse.json(
       { error: "Rate limit exceeded. Max 30 requests per minute." },
       { status: 429 },
@@ -119,4 +119,4 @@ export async function POST(req: NextRequest) {
   const unique = [...new Set(hosts as string[])];
   const results = await probeAll(unique);
   return NextResponse.json({ results });
-}
+                               }
