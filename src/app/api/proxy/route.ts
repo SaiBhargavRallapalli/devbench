@@ -158,7 +158,6 @@ export async function POST(req: NextRequest) {
     });
 
     const contentType = response.headers.get("content-type") || "";
-    let responseBody: string;
     // Enforce the cap while streaming, before buffering an arbitrary response.
     const reader = response.body?.getReader();
     const chunks: Uint8Array[] = [];
@@ -180,7 +179,7 @@ export async function POST(req: NextRequest) {
     const buffer = new Uint8Array(size);
     let offset = 0;
     for (const chunk of chunks) { buffer.set(chunk, offset); offset += chunk.length; }
-    responseBody = new TextDecoder().decode(buffer);
+    const responseBody = new TextDecoder().decode(buffer);
 
     return NextResponse.json({
       status: response.status,
