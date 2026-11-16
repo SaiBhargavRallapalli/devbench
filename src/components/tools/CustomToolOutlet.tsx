@@ -97,6 +97,7 @@ const RandomNumberTool        = dynamic(() => import("@/components/tools/RandomN
 const FancyTextTool           = dynamic(() => import("@/components/tools/FancyTextTool"), { ssr: false });
 const HtmlFormatterTool       = dynamic(() => import("@/components/tools/HtmlFormatterTool"), { ssr: false });
 const MetaTagGeneratorTool    = dynamic(() => import("@/components/tools/MetaTagGeneratorTool"), { ssr: false });
+const TextExtractionTool      = dynamic(() => import("@/components/tools/TextExtractionTool"), { ssr: false });
 
 export default function CustomToolOutlet({ slug, tool }: { slug: string; tool: Tool }) {
   if (FINANCE_TOOL_SLUGS.has(slug))  return <FinanceFormTools tool={tool} />;
@@ -188,6 +189,7 @@ export default function CustomToolOutlet({ slug, tool }: { slug: string; tool: T
     case "barcode-generator":        return <BarcodeGeneratorTool tool={tool} />;
     case "image-watermark":          return <ImageWatermarkTool tool={tool} />;
     case "image-filters":            return <ImageFiltersTool tool={tool} />;
+    case "image-to-text":            return <TextExtractionTool tool={tool} />;
     case "random-number-generator":  return <RandomNumberTool tool={tool} />;
     case "fancy-text":               return <FancyTextTool tool={tool} />;
     case "html-formatter":           return <HtmlFormatterTool tool={tool} />;
