@@ -48,4 +48,12 @@ export const pageContentFun: Record<string, ToolPageContent> = {
     openingParagraph:
       "Random Number Generator draws fair, unpredictable numbers from any range you choose. Set a minimum and maximum, decide how many numbers you need, and press Generate — optionally without repeats for raffles and draws, or sorted ascending for ordered lists. Handy presets cover the common 1–10, 1–50, 1–100 and 1–1000 ranges, and each result shows the lowest, highest and total alongside a running history of your last twelve draws you can copy in one click. Numbers come straight from your browser's cryptographic-quality random source, so nothing is predictable and nothing leaves your device.",
   },
+
+  "iq-test": {
+    title: "IQ Test - Free Timed Practice Test with Percentile",
+    metaDescription:
+      "Take a free 40-question IQ practice test in 35 minutes: matrices, number series, verbal, numerical and spatial puzzles. Get an estimated IQ and percentile.",
+    openingParagraph:
+      "This IQ test is a timed 40-question reasoning check covering the skills most online and professional tests sample: matrix patterns, number and letter series, verbal logic, numerical word problems and spatial rotation. Questions get harder as you go, and every attempt generates new puzzles. You finish with an estimated IQ, a likely range, a percentile and a score for each skill, plus an explanation for every answer. It runs entirely in your browser and is a practice estimate, not a clinical assessment.",
+  },
 };
