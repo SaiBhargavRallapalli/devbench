@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { clientIp, createRateLimiter, isAllowedOrigin } from "@/lib/api-guard";
+import { clientIp, createAsyncRateLimiter, isAllowedOrigin } from "@/lib/api-guard";
 import { logger } from "@/lib/logger";
 
 const MAX_BYTES = 96_000;
 const TIMEOUT_MS = 15_000;
-const isRateLimited = createRateLimiter(20);
+const isRateLimited = createAsyncRateLimiter("playground-go", 20);
 
 const PlaygroundSchema = z.object({
   code: z
@@ -33,7 +33,7 @@ export async function POST(request: Request) {
   }
 
   const ip = clientIp(request);
-  if (isRateLimited(ip)) {
+  if (await isRateLimited(ip)) {
     return NextResponse.json(
       { error: "Rate limit exceeded. Max 20 requests per minute." },
       { status: 429 },
@@ -115,4 +115,3 @@ export async function POST(request: Request) {
   const output = lines.join("\n").trimEnd() || "(no output)";
   return NextResponse.json({ output });
 }
-
