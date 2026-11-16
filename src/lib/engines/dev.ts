@@ -290,6 +290,7 @@ export function generatePassword(
   length: number,
   opts: { uppercase: boolean; lowercase: boolean; digits: boolean; symbols: boolean }
 ): Result {
+  length = Math.min(128, Math.max(4, Math.floor(length) || 16));
   let chars = "";
   if (opts.uppercase) chars += "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   if (opts.lowercase) chars += "abcdefghijklmnopqrstuvwxyz";
