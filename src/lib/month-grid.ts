@@ -59,3 +59,7 @@ export function getMonthGrid(
   }
   return { year, month, leadingBlanks, days, weeks };
 }
+
+export function isSundayColumn(col: number, weekStart: WeekStart): boolean {
+  return (col + weekStart) % 7 === 0;
+}
