@@ -425,7 +425,7 @@ function BusinessDayCalculator() {
               <input
                 type="number"
                 value={addDays}
-                onChange={(e) => setAddDays(parseInt(e.target.value) || 0)}
+                onChange={(e) => setAddDays(Math.min(10000, Math.max(-10000, parseInt(e.target.value) || 0)))}
                 className={inp}
               />
             </Field>
