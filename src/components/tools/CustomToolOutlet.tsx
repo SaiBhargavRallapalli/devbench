@@ -98,6 +98,7 @@ const FancyTextTool           = dynamic(() => import("@/components/tools/FancyTe
 const HtmlFormatterTool       = dynamic(() => import("@/components/tools/HtmlFormatterTool"), { ssr: false });
 const MetaTagGeneratorTool    = dynamic(() => import("@/components/tools/MetaTagGeneratorTool"), { ssr: false });
 const TextExtractionTool      = dynamic(() => import("@/components/tools/TextExtractionTool"), { ssr: false });
+const IqTestTool              = dynamic(() => import("@/components/tools/IqTestTool"), { ssr: false });
 
 export default function CustomToolOutlet({ slug, tool }: { slug: string; tool: Tool }) {
   if (FINANCE_TOOL_SLUGS.has(slug))  return <FinanceFormTools tool={tool} />;
@@ -194,6 +195,7 @@ export default function CustomToolOutlet({ slug, tool }: { slug: string; tool: T
     case "fancy-text":               return <FancyTextTool tool={tool} />;
     case "html-formatter":           return <HtmlFormatterTool tool={tool} />;
     case "meta-tag-generator":       return <MetaTagGeneratorTool tool={tool} />;
+    case "iq-test":                  return <IqTestTool tool={tool} />;
     default:                         return null;
   }
 }
