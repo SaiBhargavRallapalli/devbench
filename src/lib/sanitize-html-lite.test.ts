@@ -30,3 +30,36 @@ describe("sanitizeSvgLite", () => {
     expect(svg).toContain("circle");
   });
 });
+
+describe("sanitizeHtmlLite hardening", () => {
+  it("defeats tag reassembly across passes", () => {
+    const html = sanitizeHtmlLite("<scri<script>pt>alert(1)</scri</script>pt>");
+    expect(html.toLowerCase()).not.toContain("<script");
+    expect(html).not.toContain("alert(1)");
+  });
+
+  it("strips lone unclosed script tags", () => {
+    const html = sanitizeHtmlLite('<script src="https://evil.example/x.js">');
+    expect(html.toLowerCase()).not.toContain("<script");
+  });
+
+  it("removes dangerous container tags", () => {
+    for (const tag of ["iframe", "object", "embed", "base", "meta", "link", "form"]) {
+      const html = sanitizeHtmlLite(`<${tag} src="https://evil.example" href="https://evil.example">x</${tag}>`);
+      expect(html.toLowerCase()).not.toContain(`<${tag}`);
+    }
+  });
+
+  it("neutralizes whitespace-obfuscated javascript: schemes", () => {
+    const html = sanitizeHtmlLite('<a href="java\tscript:alert(1)">x</a>');
+    expect(html).not.toContain("alert(1)");
+  });
+
+  it("keeps benign links and images", () => {
+    const html = sanitizeHtmlLite(
+      '<a href="https://example.com">ok</a><img src="data:image/png;base64,AAAA">',
+    );
+    expect(html).toContain('href="https://example.com"');
+    expect(html).toContain("data:image/png");
+  });
+});
