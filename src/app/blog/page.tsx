@@ -1,23 +1,20 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Clock, Tag } from "lucide-react";
-import { headers } from "next/headers";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import JsonLd from "@/components/JsonLd";
 import { BLOG_POSTS } from "@/lib/blog";
 import { socialMetadata, SITE_URL } from "@/lib/social-metadata";
 import { breadcrumbSchema } from "@/lib/breadcrumb-schema";
-import { BLOG_HOST, BLOG_ORIGIN, normaliseHost } from "@/lib/site-config";
 
 const BLOG_TITLE = "DevBench Blog — Developer Guides & Tutorials";
 const BLOG_DESC =
   "In-depth guides for developers: JWT, UUID, regex, JSON, URL encoding, and more. Written by the team behind DevBench's free browser-based developer tools.";
 
-export async function generateMetadata(): Promise<Metadata> {
-  const h = await headers();
-  const host = normaliseHost(h.get("x-forwarded-host") ?? h.get("host"));
-  const canonical = host === BLOG_HOST ? `${BLOG_ORIGIN}/` : `${SITE_URL}/blog`;
+export function generateMetadata(): Metadata {
+  // The blog subdomain is an alternate view of the same www blog index.
+  const canonical = `${SITE_URL}/blog`;
   const social = socialMetadata({ title: BLOG_TITLE, description: BLOG_DESC, canonicalPath: "/blog" });
   return {
     title: BLOG_TITLE,
