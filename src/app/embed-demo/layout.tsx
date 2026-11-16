@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "https://www.devbench.co.in/embed-demo" },
   title: "Embed API Demo",
   description: "Live demo of the DevBench embed postMessage API for controlling tool iframes.",
 };
