@@ -182,4 +182,12 @@ export const pageContentImage: Record<string, ToolPageContent> = {
     openingParagraph:
       "Apply classic photo filters in your browser — grayscale, sepia, invert, blur, brightness, contrast, and saturation, each with an intensity slider, plus a pixelate effect for redacting details. Press and hold the compare button to flash the untouched original, reset everything in one click, and download a full-resolution PNG, JPEG, or WebP. The preview is capped for speed, but downloads always render at your image's original dimensions.",
   },
+
+  "image-to-text": {
+    title: "Image to Text (OCR) — Extract Text from Photos & Scans",
+    metaDescription:
+      "Extract text from images and scanned PDFs online with OCR — English, Hindi, Telugu, Tamil and 10 more languages. Copy or download as .txt. No upload, 100% in your browser.",
+    openingParagraph:
+      "Turn photos, screenshots and scanned PDFs into editable, copyable text with optical character recognition (OCR) — entirely in your browser. Drop a PNG, JPG or WebP, or a scanned PDF (pick a page range), choose the languages in the document, and the engine reads the text on your device. Copy the result or download it as a clean .txt file. Nothing is uploaded to a server, so it is safe for receipts, IDs and confidential documents.",
+  },
 };
