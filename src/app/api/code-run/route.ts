@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { clientIp, createRateLimiter, isAllowedOrigin } from "@/lib/api-guard";
+import { clientIp, createAsyncRateLimiter, isAllowedOrigin } from "@/lib/api-guard";
 import { logger } from "@/lib/logger";
 import { normalizeWandboxResponse, parseRuntimes } from "@/lib/code-runner";
 
@@ -11,7 +11,7 @@ export const maxDuration = 30;
 const MAX_CODE_CHARS = 100_000;
 const MAX_STDIN_CHARS = 50_000;
 const TIMEOUT_MS = 24_000;
-const isRateLimited = createRateLimiter(10);
+const isRateLimited = createAsyncRateLimiter("code-run", 10);
 
 // Verified 2026-10: Wandbox's public API (free, no key). `compile.json`
 // answers HTTP 200 for program failures and 500 + plain text for bad input
@@ -103,7 +103,7 @@ export async function POST(request: Request) {
   }
 
   const ip = clientIp(request);
-  if (isRateLimited(ip)) {
+  if (await isRateLimited(ip)) {
     return NextResponse.json(
       { error: "Rate limit exceeded. Max 10 runs per minute." },
       { status: 429 },
@@ -242,4 +242,4 @@ export async function GET() {
       "Cache-Control": "public, s-maxage=21600, stale-while-revalidate=86400",
     },
   });
-}
+      }
