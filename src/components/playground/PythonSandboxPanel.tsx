@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import Editor, { loader } from "@monaco-editor/react";
 import { Info, Loader2, Play, Trash2, Keyboard } from "lucide-react";
-import { PLAYGROUND_MONACO_VS_CDN, PYODIDE_ALLOWED_PACKAGES } from "@/lib/playground/constants";
+import { PLAYGROUND_MONACO_VS_CDN } from "@/lib/playground/constants";
 import { ensurePyodide } from "@/lib/playground/pyodide-loader";
 import { installPyodideStdin } from "@/lib/playground/pyodide-stdin";
 import PlaygroundEditorFrame from "@/components/playground/PlaygroundEditorFrame";
@@ -95,10 +95,10 @@ export default function PythonSandboxPanel({ dark }: { dark: boolean }) {
           </span>
           <span
             className="inline-flex items-center gap-1 text-xs text-muted-foreground cursor-default"
-            title={`micropip.install() is restricted to these packages:\n${[...PYODIDE_ALLOWED_PACKAGES].sort().join(", ")}`}
+            title="Python and downloaded packages run in an isolated browser runtime, not on our server."
           >
             <Info className="h-3.5 w-3.5 shrink-0" aria-hidden />
-            Allowed packages
+            Isolated runtime
           </span>
         </>
       }
