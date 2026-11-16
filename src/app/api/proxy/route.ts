@@ -35,7 +35,7 @@ async function fetchWithSafeRedirects(
   let currentUrl = initialUrl;
   let method = (init.method ?? "GET").toUpperCase();
   let body = init.body;
-  const headers = init.headers;
+  let headers = init.headers;
 
   for (let hop = 0; hop <= MAX_PROXY_REDIRECTS; hop++) {
     const allowed = isAllowedProxyUrl(currentUrl);
@@ -66,9 +66,12 @@ async function fetchWithSafeRedirects(
     }
 
     // Consume body so the connection can be reused / closed cleanly.
-    await response.arrayBuffer().catch(() => undefined);
+    await response.body?.cancel().catch(() => undefined);
 
-    currentUrl = new URL(location, currentUrl).href;
+    const nextUrl = new URL(location, currentUrl);
+    // Do not leak caller-supplied API keys or Authorization to another host.
+    if (nextUrl.origin !== new URL(currentUrl).origin) headers = {};
+    currentUrl = nextUrl.href;
 
     // Match browser/fetch semantics: 301/302/303 drop body and become GET.
     if ([301, 302, 303].includes(response.status) && method !== "GET" && method !== "HEAD") {
@@ -133,7 +136,6 @@ export async function POST(req: NextRequest) {
 
     const response = await fetchWithSafeRedirects(url, fetchOpts, controller.signal);
     const elapsed = Math.round(performance.now() - startTime);
-    clearTimeout(timer);
 
     // Re-check final URL after any redirect chain (defense in depth).
     if (response.url) {
@@ -154,13 +156,28 @@ export async function POST(req: NextRequest) {
 
     const contentType = response.headers.get("content-type") || "";
     let responseBody: string;
-    const buffer = await response.arrayBuffer();
-
-    if (buffer.byteLength > MAX_BODY_SIZE) {
-      responseBody = `[Response too large: ${(buffer.byteLength / 1024 / 1024).toFixed(1)} MB — truncated]`;
-    } else {
-      responseBody = new TextDecoder().decode(buffer);
+    // Enforce the cap while streaming, before buffering an arbitrary response.
+    const reader = response.body?.getReader();
+    const chunks: Uint8Array[] = [];
+    let size = 0;
+    if (reader) {
+      try {
+        for (;;) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          size += value.byteLength;
+          if (size > MAX_BODY_SIZE) {
+            await reader.cancel();
+            return NextResponse.json({ error: "Response exceeds the 5 MB limit." }, { status: 413 });
+          }
+          chunks.push(value);
+        }
+      } finally { reader.releaseLock(); }
     }
+    const buffer = new Uint8Array(size);
+    let offset = 0;
+    for (const chunk of chunks) { buffer.set(chunk, offset); offset += chunk.length; }
+    responseBody = new TextDecoder().decode(buffer);
 
     return NextResponse.json({
       status: response.status,
@@ -185,5 +202,7 @@ export async function POST(req: NextRequest) {
     }
     logger.error("/api/proxy", "Fetch failed", { url, method, error: msg });
     return NextResponse.json({ error: msg }, { status: 502 });
+  } finally {
+    clearTimeout(timer);
   }
 }
