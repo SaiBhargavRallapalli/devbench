@@ -5,6 +5,7 @@ import {
   assertHostnameResolvesPublic,
   sanitizeProxyHeaders,
   MAX_PROXY_REDIRECTS,
+  publicNetworkDispatcher,
 } from "./validation";
 import { clientIp, createAsyncRateLimiter, isAllowedOrigin } from "@/lib/api-guard";
 import { logger } from "@/lib/logger";
@@ -48,13 +49,15 @@ async function fetchWithSafeRedirects(
       throw new ProxyBlockedError(resolved.error);
     }
 
-    const response = await fetch(currentUrl, {
+    const pinnedInit: RequestInit & { dispatcher: typeof publicNetworkDispatcher } = {
       method,
       headers,
       body: method === "GET" || method === "HEAD" ? undefined : body,
       signal,
       redirect: "manual",
-    });
+      dispatcher: publicNetworkDispatcher,
+    };
+    const response = await fetch(currentUrl, pinnedInit);
 
     if (response.status < 300 || response.status >= 400) {
       return response;
