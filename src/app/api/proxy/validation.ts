@@ -1,4 +1,6 @@
 import { lookup } from "dns/promises";
+import { Agent } from "undici";
+import type { LookupFunction } from "node:net";
 import { z } from "zod";
 
 export const MAX_URL_LENGTH = 2048;
@@ -56,7 +58,8 @@ function isPrivateIpv4Parts(parts: number[]): boolean {
     (a === 100 && b >= 64 && b <= 127) || // CGNAT (RFC 6598)
     a === 127 || // Loopback
     a === 0 || // "This" network
-    a === 255 // Broadcast
+    a >= 224 || // Multicast and reserved
+    (a === 198 && (b === 18 || b === 19)) // Benchmark networks
   );
 }
 
@@ -79,7 +82,7 @@ export function isPrivateAddress(hostname: string): boolean {
     h === "::" ||
     h.startsWith("fc") ||
     h.startsWith("fd") ||
-    h.startsWith("fe80:")
+    /^fe[89ab]/i.test(h)
   );
 }
 
@@ -194,3 +197,17 @@ export const ProxyRequestSchema = z.object({
 });
 
 export type ProxyRequest = z.infer<typeof ProxyRequestSchema>;
+
+/** Validate the addresses used by the actual socket, not a separate DNS check.
+ * This closes the DNS-check/fetch race while keeping the hostname for TLS. */
+export const safeLookup: LookupFunction = (hostname, options, callback) => {
+  lookup(hostname, { all: true, verbatim: true }).then((records) => {
+    if (!records.length || records.some(({ address }) => isBlockedHost(address))) {
+      callback(new Error("Hostname resolves to a private/internal address."), []);
+      return;
+    }
+    if (options.all) callback(null, records);
+    else callback(null, records[0].address, records[0].family);
+  }, (error: NodeJS.ErrnoException) => callback(error, []));
+};
+export const publicNetworkDispatcher = new Agent({ connect: { lookup: safeLookup } });
