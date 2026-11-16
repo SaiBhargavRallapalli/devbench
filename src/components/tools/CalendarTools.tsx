@@ -6,6 +6,18 @@ import type { Tool } from "@/lib/tools-registry";
 import ToolPageHero from "@/components/tools/ToolPageHero";
 import { getMonthGrid, type WeekStart } from "@/lib/month-grid";
 
+const calendarPrintStyles = `@media print {
+  body:has(.calendar-print-root) *:not(.calendar-print-root):not(.calendar-print-root *):not(:has(.calendar-print-root)) { display: none !important; }
+  body:has(.calendar-print-root), body:has(.calendar-print-root) main { margin: 0 !important; padding: 0 !important; background: white !important; color: black !important; }
+  .calendar-print-root { width: 100%; color: black; }
+  .calendar-print-root .print\\:hidden { display: none !important; }
+  .calendar-print-root .calendar-months { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .calendar-print-root .calendar-month { break-inside: avoid; background: white; color: black; }
+  .calendar-print-root * { box-shadow: none !important; }
+  @page { margin: 12mm; }
+}`;
+
+
 const inp =
   "w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring/40";
 const btn =
@@ -88,7 +100,7 @@ function MonthGridCard({
   const m = String(month).padStart(2, "0");
 
   return (
-    <div className="rounded-xl border border-border bg-card p-3 sm:p-4 break-inside-avoid">
+    <div className="calendar-month rounded-xl border border-border bg-card p-3 sm:p-4 break-inside-avoid">
       <p className="mb-3 text-center text-sm font-semibold text-foreground">
         {MONTH_NAMES[month - 1]} {year}
       </p>
@@ -163,7 +175,8 @@ function CalendarGenerator() {
   const months = scope === "year" ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] : [month];
 
   return (
-    <div className="space-y-5">
+    <div className="calendar-print-root space-y-5">
+      <style>{calendarPrintStyles}</style>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 print:hidden">
         <div>
           <label htmlFor="cal-year" className="mb-1.5 block text-sm font-medium">
@@ -246,7 +259,7 @@ function CalendarGenerator() {
         </p>
       )}
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="calendar-months grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {months.map((m) => (
           <MonthGridCard key={m} year={year} month={m} weekStart={weekStart} />
         ))}
@@ -398,7 +411,8 @@ function CustomCalendar() {
   const handlePickDay = (iso: string) => setDraftDate(iso);
 
   return (
-    <div className="space-y-5">
+    <div className="calendar-print-root space-y-5">
+      <style>{calendarPrintStyles}</style>
       {/* Month navigation */}
       <div className="flex flex-wrap items-center justify-between gap-3 print:hidden">
         <div className="flex items-center gap-1.5">
