@@ -120,6 +120,7 @@ export const CUSTOM_TOOL_SLUGS: ReadonlySet<string> = new Set([
   "barcode-generator",
   "image-watermark",
   "image-filters",
+  "image-to-text",
   // 2026-11 expansion (randomness + text/dev formatters)
   "random-number-generator",
   "fancy-text",
