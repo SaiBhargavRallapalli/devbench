@@ -305,6 +305,14 @@ export const pageContentDev: Record<string, ToolPageContent> = {
       "Env Validator parses .env files and flags duplicate keys, empty values, invalid variable names, and weak secrets assigned to sensitive keys like PASSWORD or API_KEY. Export a clean JSON view for Docker Compose or CI. Your file stays in the browser — nothing is uploaded.",
   },
 
+  "har-analyzer": {
+    title: "HAR Performance Analyzer - Waterfall, Slow & Failed Requests",
+    metaDescription:
+      "Analyze a HAR file in your browser - request waterfall, slowest and failed requests, bytes by domain and type. Nothing is uploaded or replayed.",
+    openingParagraph:
+      "HAR Performance Analyzer reads a HAR capture exported from your browser's network panel and shows where time and bytes went: a request waterfall, the slowest and failed requests, and size by domain and type. The file is processed in your browser and is not uploaded or replayed. It does not sanitize the capture, so review it before sharing, because URLs can still contain sensitive IDs.",
+  },
+
   "dns-lookup": {
     title: "DNS Lookup — Query A, MX, TXT, CNAME Records Online",
     metaDescription:

@@ -3841,6 +3841,18 @@ function BusinessDayContent() {
   );
 }
 
+const HarAnalyzerContent: React.FC = () => (
+  <Section>
+    <h2 className={h2}>How to analyze a HAR file</h2>
+    <ol className={ol}>
+      <li>Open your browser DevTools, go to the Network panel and export the capture as HAR.</li>
+      <li>Drop the .har file onto the tool, or choose it. It is read in your browser and not uploaded.</li>
+      <li>Check the waterfall for long waits and large downloads, then the slowest and failed request lists.</li>
+      <li>Copy or download the summary. It leaves out query strings, but paths can still contain IDs, so review it before sharing.</li>
+    </ol>
+  </Section>
+);
+
 export const CONTENT_MAP: Record<string, React.FC> = {
   "json-formatter": JsonFormatterContent,
   "random-number-generator": RandomNumberContent,
@@ -3982,6 +3994,7 @@ export const CONTENT_MAP: Record<string, React.FC> = {
   "chmod-calculator": ChmodCalculatorContent,
   "dotenv-parser": DotenvParserContent,
   "log-parser": LogParserContent,
+  "har-analyzer": HarAnalyzerContent,
   "html-preview": HtmlPreviewContent,
   "markdown-preview": MarkdownPreviewContent,
   // Text

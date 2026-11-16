@@ -96,6 +96,7 @@ export const CUSTOM_TOOL_SLUGS: ReadonlySet<string> = new Set([
   "gitignore-generator",
   "license-generator",
   "env-validator",
+  "har-analyzer",
   "dns-lookup",
   "ip-info",
   "npm-compare",

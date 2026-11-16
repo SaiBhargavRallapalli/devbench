@@ -310,6 +310,14 @@ export const faqsDev: Record<string, Faq[]> = {
     { q: "Does it support multiline values and comments?", a: "Yes. Multiline values must be wrapped in double quotes with \\n escape sequences or use actual newlines inside quotes. Lines starting with # are treated as comments and excluded from the parsed output. Both formats follow the dotenv specification." },
   ],
 
+  "har-analyzer": [
+    { q: "What is a HAR file?", a: "A HAR (HTTP Archive) file is a JSON recording of a page's network activity: URLs, status codes, sizes and timings. Export one from the Network panel in Chrome, Firefox or Edge DevTools." },
+    { q: "Is my HAR file uploaded?", a: "No. The file is read in your browser and this page does not upload, save or replay it. Only URLs, status, sizes, MIME types and timings are used; header, cookie and body contents are not displayed." },
+    { q: "Does it remove secrets from the file?", a: "No. DevBench does not sanitize the original file. HAR files can contain tokens and personal data, and host and path can still contain sensitive IDs. The copyable summary leaves out query strings, but review it before sharing." },
+    { q: "How is this different from the API Tester HAR import?", a: "The API Tester imports requests from a HAR so you can run them. This tool does not send any request. It analyzes timings, sizes and failures from the capture." },
+    { q: "How large a file can it handle?", a: "Files up to 300 MB are accepted. The waterfall lists the first 500 matching requests, and the totals and summary cover every request." },
+  ],
+
   "gitignore-generator": [
     { q: "Which languages and frameworks are supported?", a: "The generator covers 20+ templates including Node.js, Python, Java, Go, Rust, Ruby, PHP, Swift, Kotlin, C/C++, .NET/C#, Unity, Android, macOS, Windows, Linux, Visual Studio Code, JetBrains IDEs, Vim, and more. Combine multiple templates to get a merged .gitignore in one click." },
     { q: "Can I combine multiple templates?", a: "Yes. Select as many templates as you need — for example, Node.js + macOS + VS Code. The generator merges all selected templates, deduplicates entries, and produces a single .gitignore file you can copy or download." },
