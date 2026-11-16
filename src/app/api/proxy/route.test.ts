@@ -39,6 +39,7 @@ function mockFetchResponse(opts: {
     statusText: "OK",
     ok: status >= 200 && status < 300,
     headers: responseHeaders,
+    body: new Response(body).body,
     arrayBuffer: vi.fn().mockResolvedValue(buffer),
     url: "https://api.example.com/data",
     redirected: false,
@@ -251,4 +252,11 @@ describe("POST /api/proxy", () => {
     expect(res.status).toBe(400);
     expect(vi.mocked(fetch)).not.toHaveBeenCalled();
   });
+  it("stops reading responses above 5 MB", async () => {
+    const { POST } = await import("./route");
+    vi.mocked(fetch).mockResolvedValue(mockFetchResponse({ body: "x".repeat(5 * 1024 * 1024 + 1) }));
+    const res = await POST(makeRequest({ url: "https://api.example.com/large", method: "GET" }, "9.9.9.99"));
+    expect(res.status).toBe(413);
+  });
+
 });
