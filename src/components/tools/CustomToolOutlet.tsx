@@ -62,6 +62,7 @@ const IpynbToPdfTool          = dynamic(() => import("@/components/tools/IpynbTo
 const GitignoreGeneratorTool  = dynamic(() => import("@/components/tools/GitignoreGeneratorTool"));
 const LicenseGeneratorTool    = dynamic(() => import("@/components/tools/LicenseGeneratorTool"));
 const EnvValidatorTool        = dynamic(() => import("@/components/tools/EnvValidatorTool"));
+const HarAnalyzerTool         = dynamic(() => import("@/components/tools/HarAnalyzerTool"));
 const DnsLookupTool           = dynamic(() => import("@/components/tools/DnsLookupTool"));
 const IpInfoTool              = dynamic(() => import("@/components/tools/IpInfoTool"));
 const NpmCompareTool          = dynamic(() => import("@/components/tools/NpmCompareTool"));
@@ -168,6 +169,7 @@ export default function CustomToolOutlet({ slug, tool }: { slug: string; tool: T
     case "gitignore-generator":      return <GitignoreGeneratorTool tool={tool} />;
     case "license-generator":        return <LicenseGeneratorTool tool={tool} />;
     case "env-validator":            return <EnvValidatorTool tool={tool} />;
+    case "har-analyzer":             return <HarAnalyzerTool tool={tool} />;
     case "dns-lookup":               return <DnsLookupTool tool={tool} />;
     case "ip-info":                  return <IpInfoTool tool={tool} />;
     case "npm-compare":              return <NpmCompareTool tool={tool} />;
