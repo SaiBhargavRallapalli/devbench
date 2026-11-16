@@ -279,4 +279,4 @@ function EmbedFooter({ slug, name }: { slug: string; name: string }) {
       </a>
     </div>
   );
-}
+        }
