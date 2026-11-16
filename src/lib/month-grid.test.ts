@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { daysInMonth, firstWeekdayColumn, getMonthGrid, isLeapYear } from "./month-grid";
+import { daysInMonth, firstWeekdayColumn, getMonthGrid, isLeapYear, isSundayColumn } from "./month-grid";
 
 describe("isLeapYear", () => {
   it("applies the Gregorian leap rules", () => {
@@ -69,5 +69,12 @@ describe("getMonthGrid", () => {
     const sun = getMonthGrid(2026, 1, 0);
     const mon = getMonthGrid(2026, 1, 1);
     expect(mon.leadingBlanks).toBe((sun.leadingBlanks + 6) % 7);
+  });
+});
+
+describe("isSundayColumn", () => {
+  it("tracks Sunday for either week start", () => {
+    expect(Array.from({ length: 7 }, (_, c) => isSundayColumn(c, 0))).toEqual([true, false, false, false, false, false, false]);
+    expect(Array.from({ length: 7 }, (_, c) => isSundayColumn(c, 1))).toEqual([false, false, false, false, false, false, true]);
   });
 });
