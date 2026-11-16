@@ -255,6 +255,33 @@ const DOTS_TEXT: Record<DotsOp, string> = {
   minus: "The third figure in each row keeps the dots of the first figure that do not appear in the second figure.",
 };
 
+const DOTS_OPS: readonly DotsOp[] = ["union", "xor", "minus"];
+
+/**
+ * Other supported dot rules that also explain the two completed rows but would
+ * give a different figure for the missing cell. A puzzle with any is ambiguous.
+ * `grid` holds the eight visible figures in reading order.
+ */
+export function competingDotsOps(op: DotsOp, grid: Fig[], answerBits: boolean[]): DotsOp[] {
+  const bitsAt = (i: number): boolean[] => {
+    const f = grid[i];
+    return f && f.kind === "dots" ? f.bits : [];
+  };
+  const answerKey = figKey({ kind: "dots", bits: answerBits });
+  return DOTS_OPS.filter((other) => {
+    if (other === op) return false;
+    for (const row of [0, 1]) {
+      const a = bitsAt(row * 3);
+      const b = bitsAt(row * 3 + 1);
+      const c = bitsAt(row * 3 + 2);
+      const out = applyDots(other, a, b);
+      if (out.some((v, i) => v !== c[i])) return false;
+    }
+    const alt = applyDots(other, bitsAt(6), bitsAt(7));
+    return figKey({ kind: "dots", bits: alt }) !== answerKey;
+  });
+}
+
 function randomBits(rng: Rng, minOn: number, maxOn: number): boolean[] {
   for (;;) {
     const bits = Array.from({ length: 9 }, () => rng() < 0.45);
@@ -284,6 +311,8 @@ function generateDotsMatrix(rng: Rng, op: DotsOp, id: string, difficulty: number
         grid.push({ kind: "dots", bits: (rows[r] as boolean[][])[c] as boolean[] });
       }
     }
+    // Reject puzzles where another supported rule also fits but points to a different figure.
+    if (competingDotsOps(op, grid, answerBits).length > 0) continue;
     const answer: Fig = { kind: "dots", bits: answerBits };
     const seen = new Set<string>([figKey(answer)]);
     const distractors: Fig[] = [];
