@@ -698,6 +698,14 @@ export const TOOLS: Tool[] = [
     inputLabel: "min=… max=…",
     outputLabel: "Numbers",
   },
+  {
+    slug: "iq-test",
+    name: "IQ Test",
+    shortName: "IQ Test",
+    description: "Free timed IQ practice test with 40 pattern, number, verbal and spatial questions - get an estimated IQ, percentile and skill breakdown. Runs in your browser, nothing uploaded",
+    category: "fun",
+    icon: "IQ",
+  },
 ];
 
 export function getToolBySlug(slug: string): Tool | undefined {
