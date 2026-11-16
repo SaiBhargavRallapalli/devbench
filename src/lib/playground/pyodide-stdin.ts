@@ -1,8 +1,8 @@
-import type { PyodideInterface } from "pyodide";
+import type { PyodideHandle } from "@/lib/playground/pyodide-loader";
 import { stdinLinesFromText } from "@/lib/playground/js-sandbox-preamble";
 
 /** Feed `sys.stdin` line-by-line from the Stdin tab (one line per read). */
-export function installPyodideStdin(py: PyodideInterface, stdinText: string): void {
+export function installPyodideStdin(py: PyodideHandle, stdinText: string): void {
   const lines = stdinLinesFromText(stdinText);
   let i = 0;
   py.setStdin({
