@@ -7,6 +7,7 @@ import ToolPageHero from "@/components/tools/ToolPageHero";
 import { getMonthGrid, type WeekStart } from "@/lib/month-grid";
 
 const calendarPrintStyles = `@media print {
+  body:has(.calendar-print-root) * { animation: none !important; transition: none !important; opacity: 1 !important; transform: none !important; }
   body:has(.calendar-print-root) *:not(.calendar-print-root):not(.calendar-print-root *):not(:has(.calendar-print-root)) { display: none !important; }
   body:has(.calendar-print-root), body:has(.calendar-print-root) main { margin: 0 !important; padding: 0 !important; background: white !important; color: black !important; }
   .calendar-print-root { width: 100%; color: black; }
