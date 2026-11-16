@@ -69,6 +69,11 @@ const nextConfig: NextConfig = {
   // Do NOT externalize isomorphic-dompurify — on Vercel, requiring it as an
   // external hits ERR_REQUIRE_ESM via @exodus/bytes and breaks /api/convert-notebook.
   serverExternalPackages: ["jsdom", "@sparticuz/chromium", "puppeteer-core"],
+  // Chromium resolves its compressed binaries dynamically; Next's tracer
+  // otherwise omits them from the Vercel function bundle.
+  outputFileTracingIncludes: {
+    "/api/convert-notebook": ["./node_modules/@sparticuz/chromium/bin/**"],
+  },
 
   // Prevents readable source code appearing in browser DevTools on production
   productionBrowserSourceMaps: false,
