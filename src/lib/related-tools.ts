@@ -62,6 +62,7 @@ const CURATED_RELATED: Partial<Record<string, readonly string[]>> = {
   "dice-roller": ["coin-flip", "magic-8-ball", "spin-wheel", "uuid-generator"],
   "magic-8-ball": ["coin-flip", "dice-roller", "spin-wheel", "fun-holidays"],
   "spin-wheel": ["uuid-generator", "password-generator", "qr-code"],
+  "iq-test": ["spin-wheel", "random-number-generator", "stopwatch", "magic-8-ball", "timer"],
   "random-number-generator": ["coin-flip", "dice-roller", "spin-wheel", "magic-8-ball", "uuid-generator"],
 
   // 2026-11 expansion
