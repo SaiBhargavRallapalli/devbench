@@ -1,8 +1,15 @@
-"use client";
-
+import type { Metadata } from "next";
 import Link from "next/link";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import OpenPaletteButton from "@/components/OpenPaletteButton";
+
+export const metadata: Metadata = {
+  title: "Page Not Found",
+  description:
+    "That URL doesn't match a DevBench tool or page. Browse the full catalog of free online developer tools.",
+  robots: { index: false, follow: false },
+};
 
 export default function NotFound() {
   return (
@@ -29,13 +36,9 @@ export default function NotFound() {
           >
             Browse tools
           </Link>
-          <button
-            type="button"
-            onClick={() => window.dispatchEvent(new Event("devbench:open-palette"))}
-            className="inline-flex items-center rounded-lg border border-border px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-muted"
-          >
+          <OpenPaletteButton className="inline-flex items-center rounded-lg border border-border px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-muted">
             Search ⌘K
-          </button>
+          </OpenPaletteButton>
         </div>
       </main>
       <Footer />
