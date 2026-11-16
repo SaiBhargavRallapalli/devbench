@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getToolBySlug, CATEGORIES } from "@/lib/tools-registry";
+import IqTestContent from "@/components/tools/IqTestContent";
 
 const prose =
   "text-sm text-muted-foreground leading-relaxed";
@@ -3846,6 +3847,7 @@ export const CONTENT_MAP: Record<string, React.FC> = {
   "fancy-text": FancyTextContent,
   "html-formatter": HtmlFormatterContent,
   "meta-tag-generator": MetaTagGeneratorContent,
+  "iq-test": IqTestContent,
   "business-day-calculator": BusinessDayContent,
   "base64-encode": Base64EncodeContent,
   "base64-decode": Base64DecodeContent,
