@@ -180,6 +180,7 @@ const CURATED_RELATED: Partial<Record<string, readonly string[]>> = {
   "gitignore-generator": ["license-generator", "env-validator", "dotenv-parser"],
   "license-generator": ["gitignore-generator", "semver-compare", "uuid-generator"],
   "env-validator": ["dotenv-parser", "gitignore-generator", "password-generator"],
+  "har-analyzer": ["curl-formatter", "log-parser", "http-status-reference", "json-formatter"],
   "dns-lookup": ["ip-info", "url-parser", "curl-formatter"],
   "ip-info": ["dns-lookup", "url-parser", "curl-formatter"],
   "npm-compare": ["semver-compare", "hash-generator", "uuid-generator"],
