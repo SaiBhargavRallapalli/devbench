@@ -161,6 +161,15 @@ export default function Footer() {
               Raise an issue
               <ExternalLink aria-hidden="true" className="h-3 w-3 opacity-50" />
             </a>
+            <a
+              href="https://github.com/sponsors/SaiBhargavRallapalli"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-muted-foreground transition-colors hover:text-foreground inline-flex items-center gap-1"
+            >
+              Sponsor
+              <ExternalLink aria-hidden="true" className="h-3 w-3 opacity-50" />
+            </a>
           </div>
         </div>
 
