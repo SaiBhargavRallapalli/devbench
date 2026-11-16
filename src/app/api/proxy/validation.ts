@@ -144,6 +144,11 @@ export function isAllowedProxyUrl(urlString: string): { ok: true; url: URL } | {
   if (url.protocol !== "http:" && url.protocol !== "https:") {
     return { ok: false, error: "Only http and https URLs are allowed." };
   }
+  // Standard web ports only (URL normalizes default ports to "") — stops the
+  // proxy being used as a port scanner / banner grabber against public hosts.
+  if (url.port !== "" && url.port !== "80" && url.port !== "443") {
+    return { ok: false, error: "Only standard HTTP/HTTPS ports are allowed." };
+  }
   if (isBlockedHost(url.hostname)) {
     return {
       ok: false,
