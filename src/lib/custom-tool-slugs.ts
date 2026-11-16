@@ -126,4 +126,5 @@ export const CUSTOM_TOOL_SLUGS: ReadonlySet<string> = new Set([
   "fancy-text",
   "html-formatter",
   "meta-tag-generator",
+  "iq-test",
 ]);
