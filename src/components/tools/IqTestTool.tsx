@@ -22,6 +22,7 @@ import {
   SECTIONS,
   TIME_LIMIT_SECONDS,
   TOTAL_QUESTIONS,
+  VERBAL_POOL,
   buildTest,
   formatPercentile,
   scoreTest,
@@ -146,8 +147,20 @@ function describeFig(fig: Fig): string {
     const sizes = ["small", "medium", "large"];
     return `${fig.count} ${sizes[fig.size]} ${fills[fig.fill]} ${shapes[fig.shape]}${fig.count > 1 ? "s" : ""}`;
   }
-  if (fig.kind === "dots") return `${fig.bits.filter(Boolean).length} filled dots in a 3 by 3 grid`;
-  return `a shape made of ${fig.cells.length} squares`;
+  if (fig.kind === "dots") {
+    const rows = [0, 1, 2].map((r) => {
+      const cols = [0, 1, 2].filter((c) => fig.bits[r * 3 + c]).map((c) => c + 1);
+      return `row ${r + 1} ${cols.length === 0 ? "empty" : `filled in column${cols.length > 1 ? "s" : ""} ${cols.join(" and ")}`}`;
+    });
+    return `${fig.bits.filter(Boolean).length} filled dots in a 3 by 3 grid, ${rows.join("; ")}`;
+  }
+  const maxX = Math.max(...fig.cells.map((c) => c[0]));
+  const maxY = Math.max(...fig.cells.map((c) => c[1]));
+  const rows = Array.from({ length: maxY + 1 }, (_, y) => {
+    const cols = fig.cells.filter((c) => c[1] === y).map((c) => c[0] + 1).sort((a, b) => a - b);
+    return `row ${y + 1}${y === 0 ? " (top)" : y === maxY ? " (bottom)" : ""} ${cols.length === 0 ? "empty" : `squares in column${cols.length > 1 ? "s" : ""} ${cols.join(" and ")}`}`;
+  });
+  return `a shape made of ${fig.cells.length} squares in a ${maxX + 1} wide by ${maxY + 1} tall grid, columns counted from the left, ${rows.join("; ")}`;
 }
 
 /* ── Question view ────────────────────────────────────────── */
@@ -259,6 +272,50 @@ function IqScale({ result }: { result: IqResult }) {
   );
 }
 
+function ReviewFigures({ item, chosen }: { item: IqItem; chosen: number | null }) {
+  if (!item.options.some((o) => o.fig)) return null;
+  return (
+    <div className="space-y-3">
+      {item.section === "matrix" && <MatrixBoard item={item} />}
+      {item.section === "spatial" && item.target && (
+        <div className="flex items-center justify-center gap-3">
+          <span className="text-xs text-muted-foreground">Original</span>
+          <div className="aspect-square w-28 rounded-lg border border-border bg-background p-1.5">
+            <FigureSvg fig={item.target} label={`The original shape: ${describeFig(item.target)}`} />
+          </div>
+        </div>
+      )}
+      <ul className="grid grid-cols-2 gap-2 sm:grid-cols-5" aria-label="Answer options">
+        {item.options.map((opt, i) => {
+          const isCorrect = i === item.correct;
+          const isChosen = i === chosen;
+          const tags = [isCorrect ? "Correct answer" : "", isChosen ? "Your answer" : ""].filter(Boolean);
+          return (
+            <li
+              key={i}
+              className={`flex flex-col items-center gap-1.5 rounded-xl border-2 p-2 ${
+                isCorrect ? "border-emerald-500 bg-emerald-500/10" : isChosen ? "border-dashed border-rose-500 bg-rose-500/10" : "border-border bg-background"
+              }`}
+            >
+              <span className="text-xs font-semibold text-foreground">Option {OPTION_LABELS[i]}</span>
+              {opt.fig && (
+                <span className="block aspect-square w-full max-w-[6.5rem]">
+                  <FigureSvg fig={opt.fig} label={`Option ${OPTION_LABELS[i]}: ${describeFig(opt.fig)}`} />
+                </span>
+              )}
+              <span className="min-h-4 text-center text-[11px] font-medium text-foreground">
+                {isCorrect && <Check className="mr-0.5 inline h-3 w-3" aria-hidden />}
+                {isChosen && !isCorrect && <X className="mr-0.5 inline h-3 w-3" aria-hidden />}
+                {tags.join(" · ")}
+              </span>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+}
+
 function ReviewList({ items, answers }: { items: IqItem[]; answers: Array<number | null> }) {
   const [open, setOpen] = useState<number | null>(null);
   return (
@@ -306,6 +363,7 @@ function ReviewList({ items, answers }: { items: IqItem[]; answers: Array<number
                     </>
                   )}
                 </p>
+                <ReviewFigures item={item} chosen={a} />
                 <p>{item.explanation}</p>
               </div>
             )}
@@ -334,6 +392,7 @@ export default function IqTestTool({ tool }: { tool: Tool }) {
   const endAtRef = useRef(0);
   const startedAtRef = useRef(0);
   const topRef = useRef<HTMLDivElement | null>(null);
+  const headingRef = useRef<HTMLHeadingElement | null>(null);
 
   const result = useMemo(
     () => (phase === "results" ? scoreTest(items, answers) : null),
@@ -419,6 +478,15 @@ export default function IqTestTool({ tool }: { tool: Tool }) {
     if (phase === "results") topRef.current?.scrollIntoView({ block: "start" });
   }, [phase]);
 
+  // On start, retake and question changes, move focus and scroll to the current question heading.
+  useEffect(() => {
+    if (phase !== "test") return;
+    const h = headingRef.current;
+    if (!h) return;
+    h.focus({ preventScroll: true });
+    h.scrollIntoView({ block: "start" });
+  }, [phase, index, items]);
+
   const answeredCount = answers.filter((a) => a !== null).length;
   const item = items[index];
 
@@ -464,7 +532,11 @@ export default function IqTestTool({ tool }: { tool: Tool }) {
               <li>The timer starts when you press Start and cannot be paused. Unanswered questions count as wrong.</li>
               <li>You can move back and forth, change answers and flag questions to revisit. Guessing is fine.</li>
               <li>Keyboard: press 1 to 5 to choose an answer and use the left and right arrow keys to move.</li>
-              <li>Every attempt uses newly generated puzzles, so retaking it will not repeat the same questions.</li>
+              <li>
+                Pattern, number, series and spatial puzzles are newly generated every attempt. The{" "}
+                8 verbal questions are picked from a fixed pool of {VERBAL_POOL.length}, so
+                some of them can repeat when you retake the test.
+              </li>
             </ul>
 
             <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-3 text-sm text-amber-900 dark:text-amber-200">
@@ -482,7 +554,7 @@ export default function IqTestTool({ tool }: { tool: Tool }) {
 
         {phase === "test" && item && (
           <div className="space-y-5">
-            <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="sticky top-[3.25rem] z-20 -mx-6 -mt-2 flex flex-wrap items-center justify-between gap-3 border-b border-border bg-card/95 px-6 py-2 backdrop-blur">
               <div>
                 <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                   {SECTIONS.find((s) => s.id === item.section)?.label}
@@ -508,7 +580,14 @@ export default function IqTestTool({ tool }: { tool: Tool }) {
             </div>
 
             <section aria-label={`Question ${index + 1}`} className="space-y-4">
-              <h2 className="text-base font-semibold leading-snug">{item.prompt}</h2>
+              <h2
+                ref={headingRef}
+                tabIndex={-1}
+                aria-label={`Question ${index + 1} of ${TOTAL_QUESTIONS}: ${item.prompt}`}
+                className="scroll-mt-36 text-base font-semibold leading-snug focus:outline-none"
+              >
+                {item.prompt}
+              </h2>
 
               {item.section === "matrix" && <MatrixBoard item={item} />}
 
@@ -516,7 +595,7 @@ export default function IqTestTool({ tool }: { tool: Tool }) {
                 <div className="flex items-center justify-center gap-3">
                   <span className="text-xs text-muted-foreground">Original</span>
                   <div className="aspect-square w-28 rounded-lg border border-border bg-background p-1.5">
-                    <FigureSvg fig={item.target} label="The original shape" />
+                    <FigureSvg fig={item.target} label={`The original shape: ${describeFig(item.target)}`} />
                   </div>
                 </div>
               )}
@@ -591,7 +670,7 @@ export default function IqTestTool({ tool }: { tool: Tool }) {
             )}
 
             <nav aria-label="Question navigator">
-              <ol className="grid grid-cols-10 gap-1.5 sm:grid-cols-[repeat(20,minmax(0,1fr))]">
+              <ol className="grid grid-cols-5 gap-2 sm:grid-cols-[repeat(20,minmax(0,1fr))] sm:gap-1.5">
                 {items.map((it, i) => {
                   const answered = answers[i] !== null;
                   const current = i === index;
@@ -602,7 +681,7 @@ export default function IqTestTool({ tool }: { tool: Tool }) {
                         onClick={() => go(i)}
                         aria-label={`Question ${i + 1}${answered ? ", answered" : ""}${flags[i] ? ", flagged" : ""}`}
                         aria-current={current ? "step" : undefined}
-                        className={`relative flex h-8 w-full items-center justify-center rounded-md border text-xs font-medium transition-colors ${
+                        className={`relative flex h-11 w-full items-center sm:h-8 justify-center rounded-md border text-xs font-medium transition-colors ${
                           current
                             ? "border-accent bg-accent text-accent-foreground"
                             : answered
