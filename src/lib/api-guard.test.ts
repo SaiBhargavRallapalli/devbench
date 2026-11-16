@@ -79,3 +79,28 @@ describe("createAsyncRateLimiter", () => {
     expect(await limited("other")).toBe(false);
   });
 });
+
+describe("shared rate limiter store", () => {
+  afterEach(() => { vi.unstubAllEnvs(); vi.unstubAllGlobals(); });
+  it("uses one atomic expiry operation and enforces shared counts", async () => {
+    vi.stubEnv("UPSTASH_REDIS_REST_URL", "https://redis.example");
+    vi.stubEnv("UPSTASH_REDIS_REST_TOKEN", "test-only");
+    const fetcher = vi.fn().mockResolvedValue(new Response(JSON.stringify({ result: 3 })));
+    vi.stubGlobal("fetch", fetcher);
+    const { createAsyncRateLimiter } = await import("./api-guard");
+    expect(await createAsyncRateLimiter("test", 2)("ip")).toBe(true);
+    const command = JSON.parse(fetcher.mock.calls[0][1].body);
+    expect(command[0]).toBe("EVAL");
+    expect(command[1]).toContain("PEXPIRE");
+    expect(fetcher).toHaveBeenCalledTimes(1);
+  });
+  it("uses the bounded local fallback on malformed store responses", async () => {
+    vi.stubEnv("UPSTASH_REDIS_REST_URL", "https://redis.example");
+    vi.stubEnv("UPSTASH_REDIS_REST_TOKEN", "test-only");
+    vi.stubGlobal("fetch", vi.fn().mockImplementation(async () => new Response(JSON.stringify({ error: "unavailable" }))));
+    const { createAsyncRateLimiter } = await import("./api-guard");
+    const limited = createAsyncRateLimiter("test", 1);
+    expect(await limited("ip")).toBe(false);
+    expect(await limited("ip")).toBe(true);
+  });
+});
