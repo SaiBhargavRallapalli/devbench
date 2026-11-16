@@ -652,7 +652,9 @@ function renderOptions(
               min={1}
               max={50}
               value={(options.count as number) || 3}
-              onChange={(e) => setOption("count", parseInt(e.target.value) || 3)}
+              onChange={(e) =>
+                setOption("count", Math.min(50, Math.max(1, parseInt(e.target.value) || 3)))
+              }
               className={inputClass}
             />
           </div>
@@ -681,7 +683,9 @@ function renderOptions(
             min={1}
             max={25}
             value={(options.count as number) || 5}
-            onChange={(e) => setOption("count", parseInt(e.target.value) || 5)}
+            onChange={(e) =>
+              setOption("count", Math.min(25, Math.max(1, parseInt(e.target.value) || 5)))
+            }
             className={inputClass}
           />
         </div>
@@ -698,7 +702,7 @@ function renderOptions(
               max={128}
               value={(options.length as number) || 16}
               onChange={(e) =>
-                setOption("length", parseInt(e.target.value) || 16)
+                setOption("length", Math.min(128, Math.max(4, parseInt(e.target.value) || 16)))
               }
               className={inputClass}
             />
@@ -1029,7 +1033,7 @@ function renderOptions(
                   max={128}
                   value={(options.aesPwLen as number) || 24}
                   onChange={(e) =>
-                    setOption("aesPwLen", parseInt(e.target.value) || 24)
+                    setOption("aesPwLen", Math.min(128, Math.max(4, parseInt(e.target.value) || 24)))
                   }
                   className={inputClass}
                 />
