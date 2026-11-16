@@ -610,6 +610,14 @@ export const TOOLS: Tool[] = [
     category: "image",
     icon: "FX",
   },
+  {
+    slug: "image-to-text",
+    name: "Image to Text (OCR)",
+    shortName: "OCR",
+    description: "Extract text from photos, screenshots and scanned PDFs with OCR — English, Hindi, Telugu and 11 more languages, copy or download as .txt. 100% in your browser, nothing uploaded",
+    category: "image",
+    icon: "OCR",
+  },
 
   // ── Documents & text-to-image ──
   {
