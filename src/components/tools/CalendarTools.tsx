@@ -1,20 +1,27 @@
 "use client";
+/* eslint-disable @next/next/no-img-element -- browser-local uploaded images */
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight, Plus, Printer, Trash2 } from "lucide-react";
 import type { Tool } from "@/lib/tools-registry";
 import ToolPageHero from "@/components/tools/ToolPageHero";
-import { getMonthGrid, type WeekStart } from "@/lib/month-grid";
+import { getMonthGrid, isSundayColumn, type WeekStart } from "@/lib/month-grid";
+
+import { imageFileToDataUrl, renderCalendarCanvas, canvasToPngBlob, canvasToPdfBlob, downloadBlob } from "@/lib/calendar-export";
 
 const calendarPrintStyles = `@media print {
   body:has(.calendar-print-root) * { animation: none !important; transition: none !important; opacity: 1 !important; transform: none !important; }
   body:has(.calendar-print-root) *:not(.calendar-print-root):not(.calendar-print-root *):not(:has(.calendar-print-root)) { display: none !important; }
   body:has(.calendar-print-root), body:has(.calendar-print-root) main { margin: 0 !important; padding: 0 !important; background: white !important; color: black !important; }
-  .calendar-print-root { width: 100%; color: black; }
+  .calendar-print-root { width: 100%; color: black; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .calendar-print-root .print\\:hidden { display: none !important; }
   .calendar-print-root .calendar-months { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
   .calendar-print-root .calendar-month { break-inside: avoid; background: white; color: black; }
   .calendar-print-root * { box-shadow: none !important; }
+  .calendar-print-root .cal-sunday { color: #dc2626 !important; }
+  .calendar-print-root .cal-cell { min-height: 64px; }
+  .calendar-print-root .cal-event-chip { background: #f3f4f6 !important; color: #111827 !important; }
+  .calendar-print-root .calendar-month.cal-month-bg { background: transparent !important; }
   @page { margin: 12mm; }
 }`;
 
@@ -83,14 +90,15 @@ function MonthGridCard({
   month,
   weekStart,
   onPickDay,
-  markers,
+  eventsByDate,
+  transparent = false,
 }: {
   year: number;
   month: number;
   weekStart: WeekStart;
   onPickDay?: (dateIso: string) => void;
-  /** date (YYYY-MM-DD) → number of events; dots render on such days. */
-  markers?: ReadonlyMap<string, number>;
+  eventsByDate?: ReadonlyMap<string, CalendarEvent[]>;
+  transparent?: boolean;
 }) {
   const grid = useMemo(() => getMonthGrid(year, month, weekStart), [year, month, weekStart]);
   const now = new Date();
@@ -101,54 +109,32 @@ function MonthGridCard({
   const m = String(month).padStart(2, "0");
 
   return (
-    <div className="calendar-month rounded-xl border border-border bg-card p-3 sm:p-4 break-inside-avoid">
+    <div className={`calendar-month relative rounded-xl border border-border p-3 sm:p-4 break-inside-avoid ${transparent ? "cal-month-bg bg-transparent" : "bg-card"}`}>
       <p className="mb-3 text-center text-sm font-semibold text-foreground">
         {MONTH_NAMES[month - 1]} {year}
       </p>
       <div className="mb-1.5 grid grid-cols-7 gap-1 text-center text-[11px] font-medium uppercase text-muted-foreground">
-        {weekdayLabels(weekStart).map((d) => (
-          <div key={d}>{d.slice(0, 2)}</div>
+        {weekdayLabels(weekStart).map((d, col) => (
+          <div key={d} className={isSundayColumn(col, weekStart) ? "cal-sunday text-red-600" : ""}>{d.slice(0, 2)}</div>
         ))}
       </div>
       <div className="grid grid-cols-7 gap-1">
         {grid.weeks.flat().map((day, i) => {
-          if (day === 0) return <div key={i} aria-hidden className="aspect-square" />;
+          if (day === 0) return <div key={i} aria-hidden className={eventsByDate ? "cal-cell min-h-[5.5rem]" : "aspect-square"} />;
           const isToday = ctx.isToday && day === todayDate;
           const iso = `${year}-${m}-${String(day).padStart(2, "0")}`;
-          const cls = `aspect-square rounded-md flex items-center justify-center text-sm tabular-nums ${
-            isToday
-              ? "bg-accent text-accent-foreground font-semibold"
-              : "text-foreground hover:bg-muted"
-          }`;
-          if (onPickDay) {
-            const count = markers?.get(iso) ?? 0;
-            return (
-              <button
-                key={i}
-                type="button"
-                aria-label={`${MONTH_NAMES[month - 1]} ${day}${
-                  count > 0 ? `, ${count} event${count > 1 ? "s" : ""}` : ""
-                }`}
-                onClick={() => onPickDay(iso)}
-                className={cls}
-              >
-                <span className="flex flex-col items-center leading-none">
-                  {day}
-                  {count > 0 && (
-                    <span
-                      className="mt-0.5 h-1 w-1 rounded-full bg-accent"
-                      aria-hidden
-                    />
-                  )}
-                </span>
-              </button>
-            );
-          }
-          return (
-            <div key={i} className={cls}>
-              {day}
-            </div>
-          );
+          const dayEvents = eventsByDate?.get(iso) ?? [];
+          const cls = `rounded-md text-sm tabular-nums ${eventsByDate ? "cal-cell min-h-[5.5rem] flex flex-col items-stretch justify-start p-1 text-left border border-border/50" : "aspect-square flex items-center justify-center"} ${isToday ? "bg-accent/15 font-semibold" : "hover:bg-muted/60"}`;
+          const content = <>
+            <span className={isSundayColumn(i % 7, weekStart) ? "cal-sunday text-red-600" : "text-foreground"}>{day}</span>
+            {dayEvents.map((ev) => <span key={ev.id} className="cal-event-chip mt-1 block overflow-hidden rounded bg-muted px-1 py-0.5 text-[10px] leading-tight font-normal text-foreground break-words">
+              {ev.image && <img src={ev.image} alt={ev.title || "Day image"} className="mb-0.5 h-9 w-full rounded object-cover print:h-7" />}
+              {ev.title}
+            </span>)}
+          </>;
+          return onPickDay ? (
+            <button key={i} type="button" aria-label={`${MONTH_NAMES[month - 1]} ${day}, ${dayEvents.length} events`} onClick={() => onPickDay(iso)} className={cls}>{content}</button>
+          ) : <div key={i} className={cls}>{content}</div>;
         })}
       </div>
     </div>
@@ -164,6 +150,8 @@ function CalendarGenerator() {
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [weekStart, setWeekStart] = useState<WeekStart>(0);
   const [title, setTitle] = useState("");
+  const [exporting, setExporting] = useState(false);
+  const [exportError, setExportError] = useState<string | null>(null);
 
   const commitYear = () => {
     const n = Number(yearText);
@@ -174,6 +162,16 @@ function CalendarGenerator() {
   };
 
   const months = scope === "year" ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] : [month];
+
+  const exportCalendar = async (format: "png" | "pdf") => {
+    setExporting(true); setExportError(null);
+    try {
+      const canvas = renderCalendarCanvas({ year, months, weekStart, title });
+      const blob = await (format === "png" ? canvasToPngBlob(canvas) : canvasToPdfBlob(canvas));
+      downloadBlob(blob, `calendar-${year}${scope === "month" ? `-${String(month).padStart(2, "0")}` : ""}.${format}`);
+    } catch { setExportError("Could not export the calendar. Try again."); }
+    finally { setExporting(false); }
+  };
 
   return (
     <div className="calendar-print-root space-y-5">
@@ -248,12 +246,17 @@ function CalendarGenerator() {
 
       <div className="flex flex-wrap items-center justify-between gap-3 print:hidden">
         <WeekStartToggle value={weekStart} onChange={setWeekStart} />
+        <div className="flex flex-wrap gap-2">
+        <button disabled={exporting} onClick={() => void exportCalendar("png")} className={btnMuted}>Download PNG</button>
+        <button disabled={exporting} onClick={() => void exportCalendar("pdf")} className={btnMuted}>Download PDF</button>
         <button onClick={() => window.print()} className={btnAccent}>
           <Printer className="w-4 h-4" aria-hidden />
           Print calendar
         </button>
+        </div>
       </div>
 
+      {exportError && <p role="alert" className="text-destructive print:hidden">{exportError}</p>}
       {title.trim() && (
         <p className="text-center text-lg font-semibold text-foreground">
           {title.trim()} — {year}
@@ -281,8 +284,19 @@ interface CalendarEvent {
   id: string;
   date: string; // YYYY-MM-DD
   title: string;
+  image?: string;
 }
 
+interface MonthImage { image: string; mode: "header" | "background"; }
+const MONTH_IMAGES_KEY = "devbench-calendar-month-images.v1";
+const IMAGE_STORAGE_BUDGET = 4_000_000;
+function loadMonthImages(): Record<string, MonthImage> {
+  try {
+    const value: unknown = JSON.parse(localStorage.getItem(MONTH_IMAGES_KEY) || "{}");
+    if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+    return Object.fromEntries(Object.entries(value).filter(([key, v]) => /^\d{4}-\d{2}$/.test(key) && v && typeof v.image === "string" && v.image.startsWith("data:image/jpeg;") && ["header", "background"].includes(v.mode)));
+  } catch { return {}; }
+}
 const STORAGE_KEY = "devbench-custom-calendar.v1";
 
 function newEventId(): string {
@@ -340,22 +354,36 @@ function CustomCalendar() {
   const [events, setEvents] = useState<CalendarEvent[]>(loadEvents);
   const [draftDate, setDraftDate] = useState(todayIso);
   const [draftTitle, setDraftTitle] = useState("");
+  const [draftImage, setDraftImage] = useState<string>();
+  const [monthImages, setMonthImages] = useState<Record<string, MonthImage>>(loadMonthImages);
+  const [imageBusy, setImageBusy] = useState(false);
+  const monthKey = `${cursor.y}-${String(cursor.m).padStart(2, "0")}`;
+  const monthImage = monthImages[monthKey];
+  const save = (nextEvents: CalendarEvent[], nextImages = monthImages) => {
+    try {
+      const eventJson = JSON.stringify(nextEvents), imageJson = JSON.stringify(nextImages);
+      if (eventJson.length + imageJson.length > IMAGE_STORAGE_BUDGET) throw new Error("Calendar image storage is full. Remove an image or event first.");
+      localStorage.setItem(MONTH_IMAGES_KEY, imageJson);
+      localStorage.setItem(STORAGE_KEY, eventJson);
+      setEvents(nextEvents); setMonthImages(nextImages); setError(null);
+      return true;
+    } catch (err) { setError(err instanceof Error ? err.message : "Could not save this calendar in your browser."); return false; }
+  };
+  const uploadImage = async (file: File | undefined, target: "month" | "event") => {
+    if (!file) return;
+    setImageBusy(true); setError(null);
+    try {
+      const image = await imageFileToDataUrl(file, target === "month" ? 1400 : 360, target === "month" ? 0.78 : 0.75);
+      if (target === "event") setDraftImage(image);
+      else save(events, { ...monthImages, [monthKey]: { image, mode: monthImage?.mode || "header" } });
+    } catch { setError("Could not read that image. Try a JPEG, PNG or WebP file."); }
+    finally { setImageBusy(false); }
+  };
   const [error, setError] = useState<string | null>(null);
 
-  // Persist events — write-only sync to an external system; never setState here.
-  useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
-    } catch {
-      // Storage full or blocked — events just won't persist.
-    }
-  }, [events]);
-
-  const markerCounts = useMemo(() => {
-    const map = new Map<string, number>();
-    for (const ev of events) {
-      map.set(ev.date, (map.get(ev.date) ?? 0) + 1);
-    }
+  const eventsByDate = useMemo(() => {
+    const map = new Map<string, CalendarEvent[]>();
+    for (const ev of events) map.set(ev.date, [...(map.get(ev.date) || []), ev]);
     return map;
   }, [events]);
 
@@ -383,8 +411,8 @@ function CustomCalendar() {
 
   const addEvent = () => {
     const title = draftTitle.trim();
-    if (!title) {
-      setError("Give the event a name.");
+    if (!title && !draftImage) {
+      setError("Give the event a name or add an image.");
       return;
     }
     if (daysUntil(draftDate) === null) {
@@ -392,15 +420,16 @@ function CustomCalendar() {
       return;
     }
     setError(null);
-    setEvents((prev) => [...prev, { id: newEventId(), date: draftDate, title }]);
-    setDraftTitle("");
+    if (events.length >= 500) { setError("You can save up to 500 events. Delete an event first."); return; }
+    if (!save([...events, { id: newEventId(), date: draftDate, title, image: draftImage }])) return;
+    setDraftTitle(""); setDraftImage(undefined);
     // Jump the view to the event's month so it is visible immediately.
     const [y, m] = draftDate.split("-").map(Number);
     setCursor({ y, m });
   };
 
   const removeEvent = (id: string) => {
-    setEvents((prev) => prev.filter((e) => e.id !== id));
+    save(events.filter((e) => e.id !== id));
   };
 
   const jumpToToday = () => {
@@ -443,6 +472,17 @@ function CustomCalendar() {
         </div>
       </div>
 
+      <div className="rounded-xl border border-border p-4 space-y-3 print:hidden">
+        <label className="block text-sm font-medium" htmlFor="month-image">Image for {MONTH_NAMES[cursor.m - 1]} {cursor.y}</label>
+        <input id="month-image" type="file" accept="image/*" disabled={imageBusy} onChange={(e) => { void uploadImage(e.target.files?.[0], "month"); e.target.value = ""; }} className={inp} />
+        {monthImage && <div className="flex flex-wrap gap-2 items-center">
+          <label htmlFor="month-image-mode">Image style</label>
+          <select id="month-image-mode" value={monthImage.mode} onChange={(e) => save(events, { ...monthImages, [monthKey]: { ...monthImage, mode: e.target.value as MonthImage["mode"] } })} className={inp + " max-w-48"}>
+            <option value="header">Header banner</option><option value="background">Background</option>
+          </select>
+          <button className={btnMuted} onClick={() => { const next = { ...monthImages }; delete next[monthKey]; save(events, next); }}>Remove month image</button>
+        </div>}
+      </div>
       {/* Add event */}
       <div className="rounded-xl border border-border bg-muted/30 p-4 print:hidden">
         <div className="grid gap-3 sm:grid-cols-[1fr_1.4fr_auto] sm:items-end">
@@ -475,10 +515,16 @@ function CustomCalendar() {
               className={inp}
             />
           </div>
-          <button onClick={addEvent} className={btnAccent}>
+          <button onClick={addEvent} disabled={imageBusy} className={btnAccent}>
             <Plus className="w-4 h-4" aria-hidden />
             Add event
           </button>
+        </div>
+        <div className="mt-3">
+          <label htmlFor="ev-image" className="mb-1 block text-sm font-medium">Event / day image (optional)</label>
+          <input id="ev-image" type="file" accept="image/*" disabled={imageBusy} onChange={(e) => { void uploadImage(e.target.files?.[0], "event"); e.target.value = ""; }} className={inp} />
+          {draftImage && <div className="mt-2 flex items-center gap-2"><img src={draftImage} alt="Event image preview" className="h-16 w-24 rounded object-cover" /><button className={btnMuted} onClick={() => setDraftImage(undefined)}>Remove event image</button></div>}
+          {imageBusy && <p role="status" className="text-sm">Processing image...</p>}
         </div>
         {error && (
           <p className="mt-2 text-sm text-destructive" role="alert">
@@ -491,16 +537,21 @@ function CustomCalendar() {
         </p>
       </div>
 
+      <div className="relative isolate overflow-hidden rounded-xl">
+        {monthImage?.mode === "background" && <><img src={monthImage.image} alt="" className="absolute inset-0 -z-20 h-full w-full object-cover" /><div className="absolute inset-0 -z-10 bg-white/80" /></>}
+        {monthImage?.mode === "header" && <img src={monthImage.image} alt={`${MONTH_NAMES[cursor.m - 1]} banner`} className="h-44 w-full object-cover print:h-28" />}
       <MonthGridCard
         year={cursor.y}
         month={cursor.m}
         weekStart={weekStart}
         onPickDay={handlePickDay}
-        markers={markerCounts}
+        eventsByDate={eventsByDate}
+        transparent={monthImage?.mode === "background"}
       />
+      </div>
 
       {/* Event list for the visible month */}
-      <div className="rounded-xl border border-border bg-card p-4">
+      <div className="rounded-xl border border-border bg-card p-4 print:hidden">
         <p className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
           Events in {MONTH_NAMES[cursor.m - 1]} ({monthEvents.length})
         </p>
@@ -518,7 +569,7 @@ function CustomCalendar() {
                   className="flex items-center justify-between gap-3 rounded-lg bg-muted/40 px-3 py-2 text-sm"
                 >
                   <span className="min-w-0">
-                    <span className="font-medium text-foreground">{ev.title}</span>
+                    <span className="font-medium text-foreground">{ev.title || "Day image"}</span>
                     <span className="ml-2 text-muted-foreground">
                       {ev.date}
                       {delta !== null && (
@@ -553,7 +604,7 @@ function CustomCalendar() {
         {events.length > 0
           ? `${events.length} event${events.length === 1 ? "" : "s"} saved in this browser. `
           : ""}
-        The calendar prints with the grid and event list only — navigation,
+        The calendar prints with its images and in-cell events only — navigation,
         forms and buttons stay off the paper.
       </p>
     </div>
