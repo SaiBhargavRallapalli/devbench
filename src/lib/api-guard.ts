@@ -32,9 +32,20 @@ export function clientIp(req: NextRequest | Request): string {
 /** Sliding-window rate limiter (in-memory, per warm instance). */
 export function createRateLimiter(limit: number, windowMs = 60_000) {
   const rateLimitMap = new Map<string, number[]>();
+  let lastSweep = 0;
 
   return function isRateLimited(ip: string): boolean {
     const now = Date.now();
+    if (now - lastSweep > windowMs) {
+      for (const [key, hits] of rateLimitMap) {
+        if (!hits.some((t) => now - t < windowMs)) rateLimitMap.delete(key);
+      }
+      lastSweep = now;
+    }
+    if (!rateLimitMap.has(ip) && rateLimitMap.size >= 10000) {
+      const oldest = rateLimitMap.keys().next().value;
+      if (oldest !== undefined) rateLimitMap.delete(oldest);
+    }
     const timestamps = (rateLimitMap.get(ip) ?? []).filter((t) => now - t < windowMs);
     if (timestamps.length >= limit) return true;
     timestamps.push(now);
@@ -84,4 +95,4 @@ export function createAsyncRateLimiter(name: string, limit: number, windowMs = 6
       return fallback(ip);
     }
   };
-}
+  }
