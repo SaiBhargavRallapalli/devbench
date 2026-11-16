@@ -190,3 +190,16 @@ describe("ProxyRequestSchema", () => {
     expect(r.success).toBe(false);
   });
 });
+
+
+describe("connection-time DNS validation", () => {
+  it("rejects an address that turns private at socket lookup", async () => {
+    const { safeLookup } = await import("./validation");
+    const { lookup } = await import("dns/promises");
+    vi.mocked(lookup).mockResolvedValueOnce([{ address: "127.0.0.1", family: 4 }] as never);
+    const result = await new Promise<Error | null>((resolve) => {
+      safeLookup("rebinding.example", { all: true }, (error) => resolve(error));
+    });
+    expect(result?.message).toMatch(/private/);
+  });
+});
