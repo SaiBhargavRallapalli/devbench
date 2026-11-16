@@ -58,7 +58,7 @@ const NotepadPlusPlusTool     = dynamic(() => import("@/components/tools/Notepad
 const MermaidEditorTool       = dynamic(() => import("@/components/tools/MermaidEditorTool"), { ssr: false });
 const TimezoneConverterTool   = dynamic(() => import("@/components/tools/TimezoneConverterTool"));
 const WebSocketTesterTool     = dynamic(() => import("@/components/tools/WebSocketTesterTool"), { ssr: false });
-const IpynbToPdfTool          = dynamic(() => import("@/components/tools/IpynbToPdfTool"), { ssr: false });
+const IpynbToPdfTool          = dynamic(() => import("@/components/tools/IpynbToPdfTool"));
 const GitignoreGeneratorTool  = dynamic(() => import("@/components/tools/GitignoreGeneratorTool"));
 const LicenseGeneratorTool    = dynamic(() => import("@/components/tools/LicenseGeneratorTool"));
 const EnvValidatorTool        = dynamic(() => import("@/components/tools/EnvValidatorTool"));
