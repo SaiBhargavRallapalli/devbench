@@ -7,7 +7,7 @@
  * Replace each `href` below with your own tracked referral URL (e.g.
  * `https://vercel.com/?ref=devbench`). Every entry ships with the plain
  * product URL so links are useful and safe to ship *before* you have referral
- * codes â swapping in your link is the only step required to monetise.
+ * codes — swapping in your link is the only step required to monetise.
  *
  * ## Compliance (do not skip)
  * - Every link with `isAffiliate: true` renders with
@@ -17,21 +17,21 @@
  * - `AFFILIATE_DISCLOSURE` is shown adjacent to the links and summarised in
  *   the site privacy policy (FTC endorsement-guide requirement).
  *
- * These are deliberately *not* ad slots â they are editorial recommendations,
+ * These are deliberately *not* ad slots — they are editorial recommendations,
  * which monetise far better than display ads for a developer audience.
  */
 
 export type AffiliateCategory = "hosting" | "domains" | "learning" | "tooling";
 
 export type AffiliateProgram = {
-  /** Stable id â used as the React key and for analytics event labels. */
+  /** Stable id — used as the React key and for analytics event labels. */
   id: string;
   name: string;
   /** One-line, non-hyperbolic reason this is worth a developer's attention. */
   blurb: string;
   /**
    * Destination URL. Replace with your referral link to earn.
-   * Left as the plain product URL until then â `isAffiliate` stays true so the
+   * Left as the plain product URL until then — `isAffiliate` stays true so the
    * `sponsored` rel is already correct the moment you swap the URL in.
    */
   href: string;
@@ -59,7 +59,7 @@ export const AFFILIATE_PROGRAMS: AffiliateProgram[] = [
   {
     id: "vercel",
     name: "Vercel",
-    blurb: "Deploy frontend apps with zero config â what DevBench itself runs on.",
+    blurb: "Deploy frontend apps with zero config — what DevBench itself runs on.",
     href: "https://vercel.com/?ref=devbench",
     isAffiliate: true,
     category: "hosting",
@@ -122,7 +122,7 @@ export function affiliateRel(isAffiliate: boolean): string {
 
 /** Programs for a given category, or all programs when category is omitted. */
 export function getAffiliatePrograms(category?: AffiliateCategory): AffiliateProgram[] {
-  // Hidden while AFFILIATE_ENABLED is false â AffiliateRecommendations renders
+  // Hidden while AFFILIATE_ENABLED is false — AffiliateRecommendations renders
   // nothing when this returns empty, so every surface hides at once.
   if (!AFFILIATE_ENABLED) return [];
   // Only programs with a real tracked referral link (`live`) are shown;
