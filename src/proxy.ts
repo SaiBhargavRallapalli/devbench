@@ -25,7 +25,8 @@ function isSharedAssetPath(pathname: string): boolean {
 }
 
 /**
- * Subdomain routing: playground.devbench.co.in and blog.devbench.co.in.
+ * Subdomain routing: playground.devbench.co.in (legacy; DNS removed) and
+ * blog.devbench.co.in (pure 308 alias to www).
  */
 export function proxy(request: NextRequest) {
   const host = requestHost(request);
@@ -51,19 +52,13 @@ export function proxy(request: NextRequest) {
   }
 
   if (host === BLOG_HOST) {
-    if (pathname === "/" || pathname === "") {
-      const url = request.nextUrl.clone();
-      url.pathname = "/blog";
-      return NextResponse.rewrite(url);
-    }
-    if (pathname === "/blog" || pathname === "/blog/") {
-      const url = request.nextUrl.clone();
-      url.pathname = "/";
-      url.search = search;
-      return NextResponse.redirect(url, 308);
-    }
-    if (pathname.startsWith("/blog/")) {
-      return NextResponse.next();
+    // Pure alias: every blog-host URL permanently redirects to its www
+    // equivalent. Serving a second copy here made Google arbitrate between
+    // two identical pages (GSC "duplicate, Google chose different canonical")
+    // and, via relative links on the served page, spawned dozens of
+    // blog-host /tools/* redirect URLs (GSC "page with redirect").
+    if (pathname === "/" || pathname === "" || pathname === "/blog" || pathname === "/blog/") {
+      return NextResponse.redirect(new URL("/blog" + search, SITE_URL), 308);
     }
     return NextResponse.redirect(new URL(pathname + search, SITE_URL), 308);
   }

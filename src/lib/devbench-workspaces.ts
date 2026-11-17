@@ -115,8 +115,8 @@ export const DEVBENCH_WORKSPACES: readonly WorkspaceShortcut[] = [
     href: "/playground",
     label: "Code playground",
     shortLabel: "Play",
-    description: "Sandboxed JS/TS, Python (Pyodide), and .ipynb code cells — also at playground.devbench.co.in",
-    keywords: ["monaco", "typescript", "python", "jupyter", "pyodide", "snippet", "repl", "wasm", "playground.devbench"],
+    description: "Sandboxed JS/TS, Python (Pyodide), and .ipynb code cells in your browser",
+    keywords: ["monaco", "typescript", "python", "jupyter", "pyodide", "snippet", "repl", "wasm", "code playground"],
   },
   {
     id: "workflows",
