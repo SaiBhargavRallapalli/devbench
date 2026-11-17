@@ -85,11 +85,15 @@ export const AFFILIATE_PROGRAMS: AffiliateProgram[] = [
   },
 ];
 
-/** FTC / Google endorsement disclosure shown next to affiliate links. */
+/**
+ * FTC / Google endorsement disclosure shown next to affiliate links.
+ * Leads with the exact wording DigitalOcean's affiliate manager (Awin)
+ * requires for approval, so one disclosure covers every link it sits above.
+ */
 export const AFFILIATE_DISCLOSURE =
-  "Some links on this page are affiliate links. If you sign up, DevBench may earn a " +
-  "commission at no extra cost to you. We only list products we'd use ourselves — and " +
-  "every DevBench tool stays free.";
+  "These are affiliate links: we earn commissions, at no additional cost to you, " +
+  "when you shop through the links below. We only list products we'd use " +
+  "ourselves - and every DevBench tool stays free.";
 
 /**
  * Builds the `rel` attribute for an external link.
