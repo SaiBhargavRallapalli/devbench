@@ -142,6 +142,12 @@ export default function Footer() {
             >
               Terms
             </Link>
+            <Link
+              href="/disclosure"
+              className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+            >
+              Affiliate Disclosure
+            </Link>
             <CookieSettingsButton />
             <a
               href="https://github.com/saibhargavrallapalli/devbench/issues/new?template=tool-request.md&title=Tool+request%3A+"
@@ -188,4 +194,4 @@ export default function Footer() {
       </div>
     </footer>
   );
-}
+              }
