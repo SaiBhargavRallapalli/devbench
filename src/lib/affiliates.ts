@@ -38,17 +38,22 @@ export type AffiliateProgram = {
   /** Whether this href is (or will be) a tracked referral link. */
   isAffiliate: boolean;
   category: AffiliateCategory;
+  /**
+   * Whether this program shows on the site. True only when `href` is the
+   * program's real tracked referral link (placeholder URLs earn $0 and stay
+   * hidden).
+   */
+  live: boolean;
 };
 
 /**
  * Master switch for showing affiliate recommendations.
  *
- * Currently OFF: the `href`s below are still placeholder referral URLs (they
- * earn $0), so the cards are hidden across every surface (home, tool pages,
- * blog) rather than shown as dead links. Flip this to `true` once real tracked
- * referral URLs are in place — nothing else needs to change.
+ * ON: DigitalOcean (below) carries its real Awin tracking link, so the
+ * recommendation cards show. Other programs stay hidden via `live: false`
+ * until their real tracked URLs are in place.
  */
-export const AFFILIATE_ENABLED = false;
+export const AFFILIATE_ENABLED = true;
 
 export const AFFILIATE_PROGRAMS: AffiliateProgram[] = [
   {
@@ -58,14 +63,18 @@ export const AFFILIATE_PROGRAMS: AffiliateProgram[] = [
     href: "https://vercel.com/?ref=devbench",
     isAffiliate: true,
     category: "hosting",
+    live: false,
   },
   {
     id: "digitalocean",
     name: "DigitalOcean",
     blurb: "Straightforward VPS and app hosting with predictable pricing.",
-    href: "https://www.digitalocean.com/?refcode=devbench",
+    // Real Awin tracking link (publisher 3157348, advertiser 123996),
+    // generated in the Awin Link Builder and approved by DigitalOcean.
+    href: "https://www.awin1.com/cread.php?awinmid=123996&awinaffid=3157348&ued=https%3A%2F%2Fwww.digitalocean.com%2F",
     isAffiliate: true,
     category: "hosting",
+    live: true,
   },
   {
     id: "namecheap",
@@ -74,6 +83,7 @@ export const AFFILIATE_PROGRAMS: AffiliateProgram[] = [
     href: "https://www.namecheap.com/?aff=devbench",
     isAffiliate: true,
     category: "domains",
+    live: false,
   },
   {
     id: "github-copilot",
@@ -82,6 +92,7 @@ export const AFFILIATE_PROGRAMS: AffiliateProgram[] = [
     href: "https://github.com/features/copilot?aff=devbench",
     isAffiliate: true,
     category: "tooling",
+    live: false,
   },
 ];
 
@@ -114,7 +125,8 @@ export function getAffiliatePrograms(category?: AffiliateCategory): AffiliatePro
   // Hidden while AFFILIATE_ENABLED is false — AffiliateRecommendations renders
   // nothing when this returns empty, so every surface hides at once.
   if (!AFFILIATE_ENABLED) return [];
-  return category
-    ? AFFILIATE_PROGRAMS.filter((p) => p.category === category)
-    : AFFILIATE_PROGRAMS;
+  // Only programs with a real tracked referral link (`live`) are shown;
+  // placeholder URLs stay hidden even when the master switch is on.
+  const live = AFFILIATE_PROGRAMS.filter((p) => p.live);
+  return category ? live.filter((p) => p.category === category) : live;
 }
