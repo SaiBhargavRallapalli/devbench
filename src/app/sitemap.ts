@@ -38,6 +38,7 @@ const WORKSPACE_ROUTES = [
   { path: "/contact",          priority: 0.5,  freq: "yearly"  },
   { path: "/privacy",          priority: 0.4,  freq: "yearly"  },
   { path: "/terms",            priority: 0.4,  freq: "yearly"  },
+  { path: "/disclosure",       priority: 0.3,  freq: "yearly"  },
 ] as const;
 
 export default function sitemap(): MetadataRoute.Sitemap {
