@@ -25,5 +25,11 @@ export default async function EmbedSlugLayout({
 }: Props & { children: React.ReactNode }) {
   const { slug } = await params;
   if (!getToolBySlug(slug)) notFound();
-  return <>{children}</>;
-}
+  return (
+    <>
+      {/* Embeds never carry affiliate links, so hide the sitewide disclosure strip */}
+      <style>{`.affiliate-disclosure-bar{display:none}`}</style>
+      {children}
+    </>
+  );
+             }
