@@ -32,4 +32,4 @@ export default async function EmbedSlugLayout({
       {children}
     </>
   );
-             }
+}
