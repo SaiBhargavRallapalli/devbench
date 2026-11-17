@@ -54,10 +54,22 @@ describe("affiliate registry", () => {
     const { AFFILIATE_ENABLED } = await import("@/lib/affiliates");
     const all = getAffiliatePrograms();
     if (AFFILIATE_ENABLED) {
-      expect(all).toHaveLength(AFFILIATE_PROGRAMS.length);
+      // Only programs with real tracked links (`live`) show, never placeholders.
+      expect(all).toHaveLength(AFFILIATE_PROGRAMS.filter((p) => p.live).length);
+      expect(all.every((p) => p.live)).toBe(true);
     } else {
       // Hidden surfaces: returns empty so AffiliateRecommendations renders nothing.
       expect(all).toHaveLength(0);
+    }
+  });
+
+  it("only marks programs live when their href is a real tracked link", () => {
+    const live = AFFILIATE_PROGRAMS.filter((p) => p.live);
+    expect(live.length).toBeGreaterThan(0);
+    for (const p of live) {
+      // Placeholder links point straight at the product domain with a fake ref
+      // param; live links go through the affiliate network's tracker.
+      expect(p.href).toContain("awin1.com");
     }
   });
 });
