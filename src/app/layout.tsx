@@ -12,6 +12,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import JsonLd from "@/components/JsonLd";
 import StatusToastHost from "@/components/StatusToastHost";
 import ConsentBanner from "@/components/ConsentBanner";
+import AffiliateDisclosureBar from "@/components/AffiliateDisclosureBar";
 import { organizationSchema } from "@/lib/site-organization-schema";
 
 const geistSans = Geist({
@@ -142,6 +143,8 @@ export default function RootLayout({
         >
           Skip to main content
         </a>
+        {/* Sitewide affiliate disclosure — server-rendered at the top of every page (FTC + affiliate-program verification) */}
+        <AffiliateDisclosureBar />
         {/* Google Tag Manager — noscript fallback */}
         <noscript>
           <iframe
