@@ -44,6 +44,10 @@ export async function GET() {
   }
 
   lines.push(
+    "## Roadmaps",
+    "",
+    `- [Developer Roadmaps](${SITE_URL}/roadmaps): Free interactive learning paths — frontend, backend, DevOps, Python, React and SQL, with progress tracking in the browser`,
+    "",
     "## Reference",
     "",
     `- [Linux Cheatsheet](${SITE_URL}/linux-cheatsheet): Quick reference for common Linux commands — searchable, with copy-ready examples`,

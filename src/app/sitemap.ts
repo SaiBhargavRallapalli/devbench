@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { TOOLS } from "@/lib/tools-registry";
 import { BLOG_POSTS } from "@/lib/blog";
+import { ROADMAPS } from "@/lib/roadmaps";
 import { TOOL_COMPARISONS } from "@/lib/tool-comparisons";
 import { publicHrefForToolSlug } from "@/lib/devbench-workspaces";
 
@@ -28,6 +29,7 @@ const WORKSPACE_ROUTES = [
   { path: "/code-beautify",    priority: 0.8,  freq: "monthly" },
   { path: "/graph-calculator", priority: 0.8,  freq: "monthly" },
   { path: "/playground",       priority: 0.75, freq: "monthly" },
+  { path: "/roadmaps",         priority: 0.85, freq: "weekly"  },
   { path: "/workflows",        priority: 0.75, freq: "monthly" },
   { path: "/vault",            priority: 0.7,  freq: "monthly" },
   { path: "/embed-demo",       priority: 0.5,  freq: "monthly" },
@@ -87,5 +89,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.65,
   }));
 
-  return [...staticRoutes, ...compareRoutes, ...toolRoutes, ...blogRoutes];
+  const roadmapRoutes: MetadataRoute.Sitemap = ROADMAPS.map((r) => ({
+    url: `${BASE}/roadmaps/${r.slug}`,
+    lastModified: SITE_LASTMOD,
+    changeFrequency: "monthly" as const,
+    priority: 0.75,
+  }));
+
+  return [...staticRoutes, ...roadmapRoutes, ...compareRoutes, ...toolRoutes, ...blogRoutes];
 }

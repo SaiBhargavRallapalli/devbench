@@ -25,6 +25,7 @@ export const HEADER_NAV_LINKS: HeaderNavLink[] = [
   { href: "/jwt-debugger", label: "JWT", ariaLabel: "Access JWT Debugger Tool" },
   { href: "/diff-checker", label: "Diff", ariaLabel: "Access Diff Checker Tool" },
   { href: "/playground", label: "Playground", ariaLabel: "Access Code Playground" },
+  { href: "/roadmaps", label: "Roadmaps", ariaLabel: "Access Developer Roadmaps" },
   { href: "/blog", label: "Blog", ariaLabel: "Read DevBench developer blog" },
 ];
 
@@ -36,6 +37,7 @@ export const SIDE_NAV_LINKS: HeaderNavLink[] = [
   { href: "/image", label: "Image", ariaLabel: "Access Image Tools", group: "Workspaces" },
   { href: "/notepad", label: "Notepad", ariaLabel: "Access Notepad++ Editor", group: "Workspaces" },
   { href: "/playground", label: "Playground", ariaLabel: "Access Code Playground", group: "Workspaces" },
+  { href: "/roadmaps", label: "Roadmaps", ariaLabel: "Access Developer Roadmaps", group: "Workspaces" },
   { href: "/workflows", label: "Pipelines", ariaLabel: "Access Tool Pipelines", group: "Workspaces" },
   { href: "/vault", label: "Vault", ariaLabel: "Access DevBench Vault", group: "Workspaces" },
   { href: "/api-tester", label: "API Tester", ariaLabel: "Access API Tester Tool", group: "Developer" },
