@@ -54,8 +54,11 @@ describe("affiliate registry", () => {
     const { AFFILIATE_ENABLED } = await import("@/lib/affiliates");
     const all = getAffiliatePrograms();
     if (AFFILIATE_ENABLED) {
-      // Only programs with real tracked links (`live`) show, never placeholders.
-      expect(all).toHaveLength(AFFILIATE_PROGRAMS.filter((p) => p.live).length);
+      // Only live, site-wide programs show; scoped programs stay off generic mounts.
+      const expected = AFFILIATE_PROGRAMS.filter(
+        (p) => p.live && (p.surfaces ?? "all") === "all",
+      );
+      expect(all).toHaveLength(expected.length);
       expect(all.every((p) => p.live)).toBe(true);
     } else {
       // Hidden surfaces: returns empty so AffiliateRecommendations renders nothing.
@@ -68,9 +71,25 @@ describe("affiliate registry", () => {
     expect(live.length).toBeGreaterThan(0);
     for (const p of live) {
       // Placeholder links point straight at the product domain with a fake ref
-      // param; live links go through the affiliate network's tracker.
-      expect(p.href).toContain("awin1.com");
+      // param; live links go through an affiliate network's tracker.
+      expect(p.href).toMatch(/awin1\.com|jdoqocy\.com/);
     }
+  });
+
+  it("keeps hosting-pages-scoped programs off the site-wide set but in the hosting category", () => {
+    const scoped = AFFILIATE_PROGRAMS.filter(
+      (p) => p.live && p.surfaces === "hosting-pages",
+    );
+    const siteWide = getAffiliatePrograms();
+    for (const p of scoped) {
+      expect(siteWide.find((s) => s.id === p.id)).toBeUndefined();
+    }
+    const hosting = getAffiliatePrograms("hosting");
+    for (const p of scoped) {
+      expect(hosting.find((s) => s.id === p.id)).toBeDefined();
+    }
+    // Category calls never leak programs from other categories.
+    expect(hosting.every((p) => p.category === "hosting")).toBe(true);
   });
 });
 

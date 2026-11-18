@@ -44,6 +44,14 @@ export type AffiliateProgram = {
    * hidden).
    */
   live: boolean;
+  /**
+   * Where a live program may render. Defaults to `"all"` (every
+   * AffiliateRecommendations surface). `"hosting-pages"` restricts the
+   * program to the hosting-category mount on the five hosting-relevant
+   * tool pages (see `HOSTING_TOOL_SLUGS` in `src/app/tools/[slug]/layout.tsx`),
+   * keeping it off the homepage, other tool pages and blog posts.
+   */
+  surfaces?: "all" | "hosting-pages";
 };
 
 /**
@@ -75,6 +83,21 @@ export const AFFILIATE_PROGRAMS: AffiliateProgram[] = [
     isAffiliate: true,
     category: "hosting",
     live: true,
+  },
+  {
+    id: "contabo",
+    name: "Contabo",
+    blurb: "Configurable cloud VPS: opens Contabo's Core VPS 18 setup page.",
+    // Real CJ tracking link (CID 8128847, website property 101930074,
+    // advertiser 4639721, link 15807108), from the CJ Links & Products
+    // dashboard after Contabo approved the application on 18 Nov 2026.
+    // Placement approved by the site owner for the five hosting-relevant
+    // tool pages only.
+    href: "https://www.jdoqocy.com/click-101930074-15807108",
+    isAffiliate: true,
+    category: "hosting",
+    live: true,
+    surfaces: "hosting-pages",
   },
   {
     id: "namecheap",
@@ -119,7 +142,12 @@ export function affiliateRel(isAffiliate: boolean): string {
   return relationships.join(" ");
 }
 
-/** Programs for a given category, or all programs when category is omitted. */
+/**
+ * Programs for a given category, or the site-wide programs when category is
+ * omitted. A category call returns every live program in that category,
+ * including scoped ones; the no-category call excludes programs scoped to
+ * `hosting-pages` so they never render outside their approved placement.
+ */
 export function getAffiliatePrograms(category?: AffiliateCategory): AffiliateProgram[] {
   // Hidden while AFFILIATE_ENABLED is false — AffiliateRecommendations renders
   // nothing when this returns empty, so every surface hides at once.
@@ -127,5 +155,6 @@ export function getAffiliatePrograms(category?: AffiliateCategory): AffiliatePro
   // Only programs with a real tracked referral link (`live`) are shown;
   // placeholder URLs stay hidden even when the master switch is on.
   const live = AFFILIATE_PROGRAMS.filter((p) => p.live);
-  return category ? live.filter((p) => p.category === category) : live;
+  if (category) return live.filter((p) => p.category === category);
+  return live.filter((p) => (p.surfaces ?? "all") === "all");
 }

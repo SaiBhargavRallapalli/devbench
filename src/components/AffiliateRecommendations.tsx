@@ -24,10 +24,14 @@ const CATEGORY_META: Record<AffiliateCategory, { label: string; icon: typeof Ser
  */
 export default function AffiliateRecommendations({
   className,
+  category,
 }: {
   className?: string;
+  /** Render every live program in one category, including scoped ones. Omit
+   * for the site-wide set (excludes programs scoped to specific pages). */
+  category?: AffiliateCategory;
 }) {
-  const programs = getAffiliatePrograms();
+  const programs = getAffiliatePrograms(category);
   if (programs.length === 0) return null;
 
   return (

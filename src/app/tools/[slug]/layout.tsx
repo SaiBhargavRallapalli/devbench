@@ -20,6 +20,19 @@ import {
   TOOL_SLUG_TO_WORKSPACE,
 } from "@/lib/devbench-workspaces";
 
+/**
+ * Hosting-relevant tool pages: the only surfaces that show hosting-category
+ * affiliate programs (DigitalOcean and Contabo) together. Every other tool
+ * page renders the site-wide set, which excludes hosting-pages-scoped programs.
+ */
+const HOSTING_TOOL_SLUGS: ReadonlySet<string> = new Set([
+  "down-detector",
+  "speed-test",
+  "http-status-reference",
+  "dns-lookup",
+  "ip-info",
+]);
+
 export function generateStaticParams() {
   // Workspace-backed tools redirect away from /tools/[slug] — skip static shells.
   return TOOLS.filter((tool) => !(tool.slug in TOOL_SLUG_TO_WORKSPACE)).map(
@@ -159,7 +172,11 @@ export default async function ToolSlugLayout({
         </div>
       )}
       <div className="max-w-6xl mx-auto px-4 pb-6 w-full">
-        <AffiliateRecommendations />
+        {HOSTING_TOOL_SLUGS.has(slug) ? (
+          <AffiliateRecommendations category="hosting" />
+        ) : (
+          <AffiliateRecommendations />
+        )}
       </div>
       <ToolSeoContent slug={slug} />
       <ToolFaqSection slug={slug} />
