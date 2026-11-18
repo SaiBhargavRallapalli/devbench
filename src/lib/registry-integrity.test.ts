@@ -80,6 +80,53 @@ describe("CustomToolOutlet wiring", () => {
   });
 });
 
+describe("tool page shell hero", () => {
+  // Exactly one hero per tool page. The shell must render it (so ssr:false
+  // tool bodies still ship an <h1> in the server HTML) and must scope the
+  // outlet (so the tool's own copy is suppressed). Pages that host the
+  // outlet without the shell — the embed route — must do neither, or they'd
+  // end up with zero or two heroes.
+  const shell = readFileSync(
+    path.join(process.cwd(), "src/components/tools/CustomToolPageClient.tsx"),
+    "utf8",
+  );
+  const hero = readFileSync(
+    path.join(process.cwd(), "src/components/tools/ToolPageHero.tsx"),
+    "utf8",
+  );
+  const embed = readFileSync(
+    path.join(process.cwd(), "src/app/embed/[slug]/page.tsx"),
+    "utf8",
+  );
+
+  it("shell renders ToolPageHero above CustomToolOutlet", () => {
+    const heroAt = shell.indexOf("<ToolPageHero");
+    const outletAt = shell.indexOf("<CustomToolOutlet");
+    expect(heroAt, "shell must render ToolPageHero").toBeGreaterThanOrEqual(0);
+    expect(outletAt, "shell must render CustomToolOutlet").toBeGreaterThanOrEqual(0);
+    expect(heroAt, "hero must precede the outlet in the shell").toBeLessThan(outletAt);
+  });
+
+  it("shell wraps the outlet in ShellHeroScope", () => {
+    expect(shell).toContain("<ShellHeroScope>");
+    expect(shell).toContain("</ShellHeroScope>");
+    expect(shell.indexOf("<ShellHeroScope>")).toBeGreaterThan(shell.indexOf("<ToolPageHero"));
+  });
+
+  it("ToolPageHero suppresses itself inside ShellHeroScope", () => {
+    expect(hero).toContain("export function ShellHeroScope");
+    expect(hero).toMatch(/useContext\(ShellHeroContext\)/);
+    expect(hero).toMatch(/if \(inShellScope\) return null/);
+  });
+
+  it("embed route hosts the outlet with neither shell hero nor scope", () => {
+    // Embed pages rely on the tool component's own hero. Adding the shell
+    // pattern here without both halves yields zero or duplicate <h1>s.
+    expect(embed).not.toContain("ToolPageHero");
+    expect(embed).not.toContain("ShellHeroScope");
+  });
+});
+
 describe("SEO content coverage", () => {
   it("every TOOL_PAGE_CONTENT key is a real tool", () => {
     for (const slug of Object.keys(TOOL_PAGE_CONTENT)) {

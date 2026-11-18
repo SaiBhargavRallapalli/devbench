@@ -1,3 +1,4 @@
+import { createContext, useContext, type ReactNode } from "react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import type { Tool } from "@/lib/tools-registry";
@@ -11,7 +12,27 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import ToolPageNav from "@/components/ToolPageNav";
 import ToolContextualLinks from "@/components/ToolContextualLinks";
 
+/**
+ * Set by the tool-page shell (CustomToolPageClient) when it renders the hero
+ * itself into the server HTML. Tool components loaded with `ssr: false`
+ * previously carried the only copy of the hero, so those pages shipped no
+ * `<h1>` or opening paragraph in the raw HTML Google crawls. Inside the
+ * provider, `ToolPageHero` renders nothing — exactly one hero per page.
+ */
+const ShellHeroContext = createContext(false);
+
+/** Renders `children` with any nested `ToolPageHero` suppressed. */
+export function ShellHeroScope({ children }: { children: ReactNode }) {
+  return (
+    <ShellHeroContext.Provider value={true}>
+      {children}
+    </ShellHeroContext.Provider>
+  );
+}
+
 export default function ToolPageHero({ tool }: { tool: Tool }) {
+  const inShellScope = useContext(ShellHeroContext);
+  if (inShellScope) return null;
   const category = CATEGORIES[tool.category];
   const extraContent = TOOL_PAGE_CONTENT[tool.slug];
   const connectivity = getToolConnectivity(tool.slug);
