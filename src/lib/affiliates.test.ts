@@ -75,8 +75,10 @@ describe("affiliate registry", () => {
 });
 
 describe("affiliate disclosure", () => {
-  it("mentions that links may be affiliate links and that tools stay free", () => {
+  it("uses the exact wording approved by the affiliate manager", () => {
     expect(AFFILIATE_DISCLOSURE.toLowerCase()).toContain("affiliate");
-    expect(AFFILIATE_DISCLOSURE.toLowerCase()).toContain("free");
+    expect(AFFILIATE_DISCLOSURE).toContain(
+      "we earn commissions, at no additional cost to you, when you shop through the links below"
+    );
   });
 });
