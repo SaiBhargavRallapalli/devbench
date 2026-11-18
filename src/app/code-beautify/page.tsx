@@ -68,8 +68,8 @@ const STANDALONE_HUB: HubLink[] = [
 const POPULAR: HubLink[] = [
   { href: "/json", label: "JSON Beautifier" },
   { href: "/tools/xml-to-json", label: "XML Viewer → JSON" },
-  { href: "/tools/yaml-to-json", label: "YAML → JSON" },
-  { href: "/tools/json-to-yaml", label: "JSON → YAML" },
+  { href: "/yaml", label: "YAML → JSON" },
+  { href: "/yaml", label: "JSON → YAML" },
   { href: "/tools/sql-formatter", label: "SQL Formatter" },
   { href: "/tools/base64-encode", label: "Base64 Encode" },
   { href: "/tools/base64-decode", label: "Base64 Decode" },
@@ -114,8 +114,8 @@ const CATEGORY_SECTIONS: {
     icon: Braces,
     links: [
       { href: "/json", label: "JSON workspace (all-in-one)" },
-      { href: "/tools/json-to-yaml", label: "JSON → YAML" },
-      { href: "/tools/yaml-to-json", label: "YAML → JSON" },
+      { href: "/yaml", label: "JSON → YAML" },
+      { href: "/yaml", label: "YAML → JSON" },
       { href: "/tools/json-to-xml", label: "JSON → XML" },
       { href: "/tools/xml-to-json", label: "XML → JSON" },
       { href: "/tools/xml-suite", label: "XML Tools Suite (validate, XPath, …)" },
