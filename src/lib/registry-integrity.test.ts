@@ -127,6 +127,39 @@ describe("tool page shell hero", () => {
   });
 });
 
+describe("notepad workspace page", () => {
+  // /notepad ships no <h1> in its server HTML unless the page renders one
+  // outside <Suspense> (NotepadApp streams in behind the boundary). The page
+  // also owns the viewport-height column now — NotepadApp workspace mode
+  // must be h-full, not its own 100dvh calc, or the editor overflows.
+  const page = readFileSync(
+    path.join(process.cwd(), "src/app/notepad/page.tsx"),
+    "utf8",
+  );
+  const app = readFileSync(
+    path.join(process.cwd(), "src/components/notepad/NotepadApp.tsx"),
+    "utf8",
+  );
+
+  it("page renders an <h1> outside the Suspense boundary", () => {
+    const h1At = page.indexOf("<h1");
+    const suspenseAt = page.indexOf("<Suspense");
+    expect(h1At, "page must render an <h1>").toBeGreaterThanOrEqual(0);
+    expect(suspenseAt, "page must still stream NotepadApp").toBeGreaterThanOrEqual(0);
+    expect(h1At, "<h1> must be in the first HTML flush, before Suspense").toBeLessThan(suspenseAt);
+  });
+
+  it("page owns the viewport height; workspace mode fills it with h-full", () => {
+    expect(page, "page must size the title+editor column").toContain("h-[calc(100dvh-3.5rem)]");
+    expect(app).toMatch(
+      /mode === "workspace"\s*\n\s*\/\/[^\n]*\n\s*\? "flex h-full flex-col bg-background"/,
+    );
+    expect(app, "workspace mode must not carry its own 100dvh calc").not.toMatch(
+      /mode === "workspace"\s*\n\s*\? "flex h-\[calc\(100dvh/,
+    );
+  });
+});
+
 describe("SEO content coverage", () => {
   it("every TOOL_PAGE_CONTENT key is a real tool", () => {
     for (const slug of Object.keys(TOOL_PAGE_CONTENT)) {

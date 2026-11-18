@@ -416,7 +416,8 @@ export default function NotepadApp({ mode = "workspace", tool }: NotepadAppProps
   const shellClass = np.session.fullScreen
     ? "fixed inset-0 z-50 flex flex-col bg-background"
     : mode === "workspace"
-      ? "flex h-[calc(100dvh-3.5rem)] flex-col bg-background"
+      // Page owns the viewport height (title block + editor); fill it.
+      ? "flex h-full flex-col bg-background"
       : "flex min-h-[70vh] flex-col bg-background";
 
   return (

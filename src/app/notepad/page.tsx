@@ -36,18 +36,37 @@ export default function NotepadWorkspacePage() {
       <Header />
       <JsonLd data={breadcrumbSchema([{ name: "Notepad++", path: "/notepad" }])} />
       <main className="flex-1">
-        <Suspense
-          fallback={
-            <div
-              className="flex h-[calc(100vh-4rem)] items-center justify-center text-sm text-muted-foreground"
-              aria-busy
+        {/* Title block + editor share one viewport-height column: the page
+            owns the height (100dvh minus site header), the editor stretches
+            to fill what's left. The <h1> sits outside <Suspense> so it is
+            always in the first server-HTML flush Google crawls. */}
+        <div className="flex h-[calc(100dvh-3.5rem)] flex-col">
+          <div className="px-4 pt-4 pb-3">
+            <h1 className="text-2xl font-bold tracking-tight">
+              Notepad++ — Multi-tab Code Editor
+            </h1>
+            <p className="mt-1 max-w-3xl text-sm text-muted-foreground">
+              Browser-based Notepad++ style editor: multi-tab documents,
+              syntax highlighting, find/replace, split view, bookmarks, macros,
+              encoding options, and local session restore. Files stay on your
+              device — free, no account.
+            </p>
+          </div>
+          <div className="flex min-h-0 flex-1 flex-col">
+            <Suspense
+              fallback={
+                <div
+                  className="flex h-full items-center justify-center text-sm text-muted-foreground"
+                  aria-busy
+                >
+                  Loading editor…
+                </div>
+              }
             >
-              Loading editor…
-            </div>
-          }
-        >
-          <NotepadApp mode="workspace" />
-        </Suspense>
+              <NotepadApp mode="workspace" />
+            </Suspense>
+          </div>
+        </div>
       </main>
     </>
   );
