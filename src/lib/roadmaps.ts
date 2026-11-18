@@ -1720,6 +1720,633 @@ export const ROADMAPS: Roadmap[] = [
       },
     ],
   },
+  {
+  "slug": "qa-engineer",
+  "title": "QA Engineer",
+  "kind": "role",
+  "tagline": "Design useful tests, explore risks and communicate quality",
+  "description": "An original learning path for software testers: QA fundamentals, test design, exploratory testing, API and data checks, accessibility, performance and release decisions. Practice with free resources and DevBench tools before moving into automation.",
+  "estimate": "3-5 months part-time",
+  "communityUrl": "https://roadmap.sh/qa",
+  "sections": [
+    {
+      "id": "quality-basics",
+      "title": "Quality and testing fundamentals",
+      "intro": "Start with the product, its users and the failures that matter.",
+      "nodes": [
+        {
+          "id": "quality-risk",
+          "title": "Quality, risk and the tester's role",
+          "summary": "Describe who uses a feature and what failure would cost them. Testing gathers evidence about risk; it cannot prove that a product has no defects.",
+          "resources": [
+            {
+              "label": "ISTQB: Foundation Level and free syllabus",
+              "url": "https://www.istqb.org/certifications/certified-tester-foundation-level/"
+            }
+          ]
+        },
+        {
+          "id": "development-lifecycle",
+          "title": "Testing through the development lifecycle",
+          "summary": "Review ideas and acceptance criteria before implementation, then test changes throughout delivery. Prevention and fast feedback matter more than finding bugs at the end.",
+          "resources": [
+            {
+              "label": "ISTQB: Foundation Level and free syllabus",
+              "url": "https://www.istqb.org/certifications/certified-tester-foundation-level/"
+            }
+          ]
+        },
+        {
+          "id": "test-levels",
+          "title": "Unit, integration, system and acceptance tests",
+          "summary": "Choose a test level based on the failure you want to detect. A fast isolated check and a realistic end-to-end journey answer different questions.",
+          "resources": [
+            {
+              "label": "ISTQB: Foundation Level and free syllabus",
+              "url": "https://www.istqb.org/certifications/certified-tester-foundation-level/"
+            }
+          ]
+        },
+        {
+          "id": "requirements",
+          "title": "Requirements and acceptance examples",
+          "summary": "Turn vague requirements into examples with inputs, outcomes and constraints. Ask about errors, permissions and limits before writing a long checklist.",
+          "resources": [
+            {
+              "label": "Cucumber: Gherkin reference",
+              "url": "https://cucumber.io/docs/gherkin/reference/"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "test-design",
+      "title": "Test design and coverage",
+      "intro": "Build a small set of cases that exercises meaningful differences.",
+      "nodes": [
+        {
+          "id": "partitions-boundaries",
+          "title": "Equivalence classes and boundary values",
+          "summary": "Group inputs that should behave alike, then test just below, at and above each limit. Include missing values, empty strings and invalid types rather than only the happy path.",
+          "resources": [
+            {
+              "label": "ISTQB: Foundation Level and free syllabus",
+              "url": "https://www.istqb.org/certifications/certified-tester-foundation-level/"
+            }
+          ],
+          "playground": {
+            "lang": "javascript",
+            "code": "const validAge = age => Number.isInteger(age) && age >= 18 && age <= 65;\nfor (const age of [17, 18, 19, 64, 65, 66, null, \"18\"]) {\n  console.log(JSON.stringify(age), validAge(age));\n}"
+          }
+        },
+        {
+          "id": "decision-tables",
+          "title": "Decision tables and state transitions",
+          "summary": "List combinations of rules for discounts or permissions, and map legal state changes for a workflow. Check forbidden transitions as well as successful ones.",
+          "resources": [
+            {
+              "label": "ISTQB: Foundation Level and free syllabus",
+              "url": "https://www.istqb.org/certifications/certified-tester-foundation-level/"
+            }
+          ],
+          "playground": {
+            "lang": "javascript",
+            "code": "const allowed = { draft: [\"submitted\"], submitted: [\"approved\", \"rejected\"], approved: [], rejected: [\"draft\"] };\nconst canMove = (from, to) => allowed[from]?.includes(to) ?? false;\nconsole.log(\"draft -> approved:\", canMove(\"draft\", \"approved\"));\nconsole.log(\"submitted -> approved:\", canMove(\"submitted\", \"approved\"));"
+          }
+        },
+        {
+          "id": "exploratory-testing",
+          "title": "Exploratory testing and charters",
+          "summary": "Write a short mission, set a time limit and record what you learned while exploring. Follow surprising behavior and keep reproducible notes instead of treating exploration as random clicking.",
+          "resources": [
+            {
+              "label": "ISTQB: Foundation Level and free syllabus",
+              "url": "https://www.istqb.org/certifications/certified-tester-foundation-level/"
+            }
+          ]
+        },
+        {
+          "id": "defect-reports",
+          "title": "Reproducible defect reports",
+          "summary": "Record the environment, exact steps, expected result, actual result and evidence. Explain impact separately from priority, and remove personal data from screenshots and logs.",
+          "resources": [
+            {
+              "label": "Mozilla: Bug writing guidelines",
+              "url": "https://bugzilla.mozilla.org/page.cgi?id=bug-writing.html"
+            }
+          ],
+          "tools": [
+            "text-diff",
+            "json-diff"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "web-api-data",
+      "title": "Web, API and data testing",
+      "intro": "Understand the system well enough to isolate a failure.",
+      "nodes": [
+        {
+          "id": "web-http",
+          "title": "HTTP and browser debugging",
+          "summary": "Inspect request methods, response codes, headers and timing in browser developer tools. Separate a UI error from a server rejection or a cached response.",
+          "resources": [
+            {
+              "label": "MDN: HTTP overview",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview"
+            }
+          ],
+          "internalLinks": [
+            {
+              "label": "Inspect requests with API Tester",
+              "href": "/api-tester"
+            }
+          ]
+        },
+        {
+          "id": "forms-validation",
+          "title": "Forms and negative cases",
+          "summary": "Try required fields, long input, Unicode, pasted whitespace and invalid combinations. Compare client and server validation and verify that error messages help users recover.",
+          "resources": [
+            {
+              "label": "MDN: Form validation",
+              "url": "https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Forms/Form_validation"
+            }
+          ],
+          "tools": [
+            "unicode-checker",
+            "string-inspector"
+          ]
+        },
+        {
+          "id": "api-contracts",
+          "title": "API contracts and error responses",
+          "summary": "Check response structure, values and error behavior, not only status 200. Test pagination, repeated requests and malformed input against a disposable test environment.",
+          "resources": [
+            {
+              "label": "OpenAPI specification",
+              "url": "https://spec.openapis.org/oas/latest.html"
+            }
+          ],
+          "tools": [
+            "json-formatter",
+            "json-diff"
+          ],
+          "internalLinks": [
+            {
+              "label": "Open API Tester",
+              "href": "/api-tester"
+            }
+          ]
+        },
+        {
+          "id": "sql-data-checks",
+          "title": "SQL and test data",
+          "summary": "Use joins, filters and aggregates to verify stored outcomes. Create small synthetic fixtures, keep environments separate and never copy production personal data into tests.",
+          "resources": [
+            {
+              "label": "PostgreSQL: SQL tutorial",
+              "url": "https://www.postgresql.org/docs/current/tutorial-sql.html"
+            }
+          ],
+          "internalLinks": [
+            {
+              "label": "Learn SQL fundamentals",
+              "href": "/roadmaps/sql"
+            }
+          ],
+          "playground": {
+            "lang": "javascript",
+            "code": "const orders = [{id: 1, total: 20}, {id: 2, total: 0}, {id: 1, total: 20}];\nconst ids = orders.map(x => x.id);\nconsole.log(\"Unique IDs:\", new Set(ids).size === ids.length);\nconsole.log(\"Non-negative totals:\", orders.every(x => x.total >= 0));"
+          }
+        }
+      ]
+    },
+    {
+      "id": "non-functional",
+      "title": "Accessibility, performance and security basics",
+      "intro": "A working feature must also be usable, responsive and safe.",
+      "nodes": [
+        {
+          "id": "accessibility",
+          "title": "Keyboard and accessibility checks",
+          "summary": "Complete key journeys with a keyboard and inspect focus, labels, headings and error announcements. Automated scans catch some issues but do not replace checks with people and assistive technology.",
+          "resources": [
+            {
+              "label": "W3C WAI: Easy Checks",
+              "url": "https://www.w3.org/WAI/test-evaluate/easy-checks/"
+            }
+          ]
+        },
+        {
+          "id": "compatibility",
+          "title": "Browser and device compatibility",
+          "summary": "Choose a browser and device matrix from actual audience needs. Check small screens, zoom, orientation, slow connections and interrupted sessions instead of relying on one desktop browser.",
+          "resources": [
+            {
+              "label": "Playwright: Emulation",
+              "url": "https://playwright.dev/docs/emulation"
+            }
+          ]
+        },
+        {
+          "id": "performance",
+          "title": "Performance and workload basics",
+          "summary": "Distinguish page responsiveness from server throughput. Define a realistic workload and success limits before load testing, and only generate traffic against systems you have permission to test.",
+          "resources": [
+            {
+              "label": "Grafana k6: Testing guides",
+              "url": "https://grafana.com/docs/k6/latest/testing-guides/"
+            }
+          ]
+        },
+        {
+          "id": "security-awareness",
+          "title": "Security and authorization checks",
+          "summary": "Check that different test users cannot read or change each other's records and that logout ends access. Use a scoped test environment; security probing requires explicit permission.",
+          "resources": [
+            {
+              "label": "OWASP: Web Security Testing Guide",
+              "url": "https://owasp.org/www-project-web-security-testing-guide/"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "delivery",
+      "title": "Release evidence and a practical portfolio",
+      "intro": "Make your work useful to the team and repeatable for yourself.",
+      "nodes": [
+        {
+          "id": "regression",
+          "title": "Smoke tests and regression selection",
+          "summary": "Keep a small smoke suite for critical journeys and select regression checks based on what changed. Revisit stale cases so the suite remains useful rather than just growing.",
+          "resources": [
+            {
+              "label": "ISTQB: Foundation Level and free syllabus",
+              "url": "https://www.istqb.org/certifications/certified-tester-foundation-level/"
+            }
+          ]
+        },
+        {
+          "id": "release-report",
+          "title": "Coverage and release reporting",
+          "summary": "Report tested scope, environments, remaining defects and untested risks. A pass rate without context is not a release recommendation, and the team needs to know what evidence is missing.",
+          "resources": [
+            {
+              "label": "ISTQB: Foundation Level and free syllabus",
+              "url": "https://www.istqb.org/certifications/certified-tester-foundation-level/"
+            }
+          ]
+        },
+        {
+          "id": "automation-handoff",
+          "title": "Deciding what to automate",
+          "summary": "Automate stable, repeatable checks where failures give useful feedback. Keep human exploration for uncertainty and use the automation path to build maintainable checks, not a recording of every click.",
+          "resources": [
+            {
+              "label": "Playwright: Best practices",
+              "url": "https://playwright.dev/docs/best-practices"
+            }
+          ],
+          "internalLinks": [
+            {
+              "label": "Continue to Test Automation",
+              "href": "/roadmaps/test-automation"
+            }
+          ]
+        },
+        {
+          "id": "qa-project",
+          "title": "Portfolio: test a small web application",
+          "summary": "Use your own demo or an explicitly permitted practice app. Deliver a risk map, boundary cases, an exploratory session report, clear defects and a release summary with known gaps.",
+          "resources": [
+            {
+              "label": "Playwright: Writing tests",
+              "url": "https://playwright.dev/docs/writing-tests"
+            }
+          ],
+          "internalLinks": [
+            {
+              "label": "Practice JavaScript",
+              "href": "/playground"
+            },
+            {
+              "label": "Test Automation roadmap",
+              "href": "/roadmaps/test-automation"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+},
+  {
+  "slug": "test-automation",
+  "title": "Test Automation",
+  "kind": "skill",
+  "tagline": "Build trustworthy unit, API and browser checks that run in CI",
+  "description": "A hands-on test automation learning path using JavaScript and TypeScript: assertions, unit tests, API checks, Playwright browser tests, fixtures, CI and failure diagnosis. Learn to build reliable checks with free documentation and runnable DevBench exercises.",
+  "estimate": "3-5 months part-time",
+  "communityUrl": "https://roadmap.sh/qa",
+  "sections": [
+    {
+      "id": "automation-foundations",
+      "title": "Programming and testing foundations",
+      "intro": "Learn the code you need to express clear, repeatable checks.",
+      "nodes": [
+        {
+          "id": "js-ts",
+          "title": "JavaScript, TypeScript and asynchronous code",
+          "summary": "Practice functions, arrays, objects, modules and promises before choosing a framework. Understand async/await so the test actually waits for the operation it checks.",
+          "resources": [
+            {
+              "label": "MDN: JavaScript guide",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide"
+            }
+          ],
+          "internalLinks": [
+            {
+              "label": "JavaScript learning path",
+              "href": "/roadmaps/frontend"
+            }
+          ],
+          "playground": {
+            "lang": "javascript",
+            "code": "async function loadUser() { return { id: 7, name: \"Asha\" }; }\nasync function main() {\n  const user = await loadUser();\n  if (user.id !== 7) throw new Error(\"Wrong user ID\");\n  console.log(\"PASS: awaited user has expected ID\");\n}\nmain();"
+          }
+        },
+        {
+          "id": "git-node",
+          "title": "Node.js, npm and Git",
+          "summary": "Create a small project, install a test runner and commit a lockfile. Learn branches, diffs and scripts so teammates and CI can reproduce the same checks.",
+          "resources": [
+            {
+              "label": "Node.js: Introduction",
+              "url": "https://nodejs.org/en/learn/getting-started/introduction-to-nodejs"
+            }
+          ]
+        },
+        {
+          "id": "assertions",
+          "title": "Assertions that fail clearly",
+          "summary": "Check a specific outcome with an informative message. A test must fail when behavior is wrong; printing a value or checking that nothing threw is usually not enough.",
+          "resources": [
+            {
+              "label": "Vitest: Expect",
+              "url": "https://vitest.dev/api/expect.html"
+            }
+          ],
+          "playground": {
+            "lang": "javascript",
+            "code": "const sum = (a, b) => a + b;\nfor (const [a, b, expected] of [[2, 3, 5], [-1, 1, 0], [0, 0, 0]]) {\n  const actual = sum(a, b);\n  if (actual !== expected) throw new Error(`${a} + ${b}: expected ${expected}, got ${actual}`);\n}\nconsole.log(\"PASS: all addition cases\");"
+          }
+        },
+        {
+          "id": "test-strategy",
+          "title": "Choosing the right test level",
+          "summary": "Use unit checks for isolated logic, integration checks for boundaries and a small browser suite for critical journeys. Choose checks by risk and maintenance cost, not by a fixed percentage.",
+          "resources": [
+            {
+              "label": "Playwright: Best practices",
+              "url": "https://playwright.dev/docs/best-practices"
+            }
+          ],
+          "internalLinks": [
+            {
+              "label": "QA fundamentals and test design",
+              "href": "/roadmaps/qa-engineer"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "unit-integration",
+      "title": "Unit and integration testing",
+      "intro": "Build a fast feedback loop before opening a browser.",
+      "nodes": [
+        {
+          "id": "vitest",
+          "title": "Arrange, act and assert with Vitest",
+          "summary": "Describe observable behavior, set up the smallest fixture, run the code and assert the result. Make each failure point to a behavior rather than a private implementation detail.",
+          "resources": [
+            {
+              "label": "Vitest: Getting started",
+              "url": "https://vitest.dev/guide/"
+            }
+          ]
+        },
+        {
+          "id": "parameterized-tests",
+          "title": "Table-driven and boundary tests",
+          "summary": "Run the same behavior against a table of meaningful inputs. Cover boundaries and invalid inputs, and give each case a name that makes failures easy to understand.",
+          "resources": [
+            {
+              "label": "Vitest: Test API",
+              "url": "https://vitest.dev/api/"
+            }
+          ]
+        },
+        {
+          "id": "mocks-time",
+          "title": "Mocks, clocks and external dependencies",
+          "summary": "Replace network calls and control time when isolation is needed. Reset mocks between cases and keep real integration checks so a fake response does not hide a broken contract.",
+          "resources": [
+            {
+              "label": "Vitest: Mocking",
+              "url": "https://vitest.dev/guide/mocking"
+            }
+          ]
+        },
+        {
+          "id": "coverage",
+          "title": "Coverage and useful failure signals",
+          "summary": "Use coverage to find code that was never exercised, then ask which behaviors remain unchecked. High coverage is not proof of correctness; try a deliberate implementation mistake to check test sensitivity.",
+          "resources": [
+            {
+              "label": "Vitest: Coverage",
+              "url": "https://vitest.dev/guide/coverage.html"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "api-automation",
+      "title": "API checks and test data",
+      "intro": "Check contracts and workflows without paying the cost of a UI.",
+      "nodes": [
+        {
+          "id": "api-requests",
+          "title": "HTTP requests and response assertions",
+          "summary": "Check status, headers and relevant response fields, including failure cases. Keep tokens out of source and logs, and aim requests only at an authorized test environment.",
+          "resources": [
+            {
+              "label": "Playwright: API testing",
+              "url": "https://playwright.dev/docs/api-testing"
+            }
+          ],
+          "internalLinks": [
+            {
+              "label": "Explore an API manually first",
+              "href": "/api-tester"
+            }
+          ]
+        },
+        {
+          "id": "schema-contract",
+          "title": "Schemas and contract checks",
+          "summary": "Validate response shape while separately checking business values. Decide which changes should fail a contract check so optional fields and harmless additions do not create noisy failures.",
+          "resources": [
+            {
+              "label": "JSON Schema: Learn",
+              "url": "https://json-schema.org/learn"
+            }
+          ],
+          "tools": [
+            "json-formatter",
+            "json-diff"
+          ]
+        },
+        {
+          "id": "fixtures-cleanup",
+          "title": "Fixtures, isolation and cleanup",
+          "summary": "Give each test its own synthetic records and clean them up even after a failure. Avoid order dependencies and shared accounts that make parallel runs change each other's state.",
+          "resources": [
+            {
+              "label": "Playwright: Fixtures",
+              "url": "https://playwright.dev/docs/test-fixtures"
+            }
+          ],
+          "tools": [
+            "uuid-generator"
+          ]
+        },
+        {
+          "id": "auth-negative",
+          "title": "Authentication and negative scenarios",
+          "summary": "Use separate test identities to check role boundaries, expiry and malformed requests. Keep credentials in the CI secret store and never commit storage-state files or real customer data.",
+          "resources": [
+            {
+              "label": "Playwright: Authentication",
+              "url": "https://playwright.dev/docs/auth"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "browser-automation",
+      "title": "Reliable browser tests with Playwright",
+      "intro": "Use user-visible behavior rather than fragile implementation details.",
+      "nodes": [
+        {
+          "id": "playwright-start",
+          "title": "First browser test and configuration",
+          "summary": "Install Playwright in a local project and write one short critical journey. Keep a predictable base URL and separate test configuration from production credentials.",
+          "resources": [
+            {
+              "label": "Playwright: Installation",
+              "url": "https://playwright.dev/docs/intro"
+            }
+          ]
+        },
+        {
+          "id": "locators",
+          "title": "Accessible locators and web-first assertions",
+          "summary": "Prefer roles, accessible names and labels that describe how people use the page. Assert the final visible state rather than relying on brittle CSS paths or a click returning successfully.",
+          "resources": [
+            {
+              "label": "Playwright: Locators",
+              "url": "https://playwright.dev/docs/locators"
+            }
+          ]
+        },
+        {
+          "id": "waiting",
+          "title": "Auto-waiting, navigation and asynchronous UI",
+          "summary": "Wait for a meaningful UI condition or response instead of sleeping for a fixed number of seconds. Understand which assertions retry and ensure every asynchronous test action is awaited.",
+          "resources": [
+            {
+              "label": "Playwright: Auto-waiting",
+              "url": "https://playwright.dev/docs/actionability"
+            }
+          ]
+        },
+        {
+          "id": "browser-matrix",
+          "title": "Browsers, mobile emulation and accessibility scans",
+          "summary": "Run high-value checks in the browsers and viewports your audience uses. Add automated accessibility scans, then keep manual keyboard and assistive-technology testing for gaps that scans miss.",
+          "resources": [
+            {
+              "label": "Playwright: Accessibility testing",
+              "url": "https://playwright.dev/docs/accessibility-testing"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "automation-delivery",
+      "title": "CI, diagnosis and a maintainable suite",
+      "intro": "A suite is useful when the team can trust both passes and failures.",
+      "nodes": [
+        {
+          "id": "continuous-integration",
+          "title": "Run tests in continuous integration",
+          "summary": "Install locked dependencies and browsers, run checks on changes and publish reports. Use isolated test services and scoped secrets, and keep untrusted contributions away from privileged jobs.",
+          "resources": [
+            {
+              "label": "Playwright: CI",
+              "url": "https://playwright.dev/docs/ci"
+            }
+          ]
+        },
+        {
+          "id": "traces",
+          "title": "Reports, traces and failure diagnosis",
+          "summary": "Keep failure screenshots and traces when they help explain a problem. Treat artifacts as sensitive because they can contain tokens, personal data or internal page content.",
+          "resources": [
+            {
+              "label": "Playwright: Trace viewer",
+              "url": "https://playwright.dev/docs/trace-viewer-intro"
+            }
+          ]
+        },
+        {
+          "id": "flaky-tests",
+          "title": "Flaky tests, retries and parallel execution",
+          "summary": "Investigate timing, shared data and environment changes when a test is inconsistent. Retries can collect evidence but must not turn a recurring defect into an apparently green suite.",
+          "resources": [
+            {
+              "label": "Playwright: Retries",
+              "url": "https://playwright.dev/docs/test-retries"
+            }
+          ]
+        },
+        {
+          "id": "automation-project",
+          "title": "Portfolio: a small dependable test suite",
+          "summary": "For a demo you own or may test, combine table-driven unit checks, API success/error checks and a short browser journey. Run them in CI and document fixtures, known gaps and how to debug a failure.",
+          "resources": [
+            {
+              "label": "Playwright: Best practices",
+              "url": "https://playwright.dev/docs/best-practices"
+            }
+          ],
+          "playground": {
+            "lang": "javascript",
+            "code": "const cases = [\n  { input: \" hello \", expected: \"hello\" },\n  { input: \"\", expected: \"\" },\n  { input: \"  नमस्ते  \", expected: \"नमस्ते\" }\n];\nfor (const { input, expected } of cases) {\n  const actual = input.trim();\n  if (actual !== expected) throw new Error(`Expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)}`);\n}\nconsole.log(`PASS: ${cases.length} trim cases`);"
+          }
+        }
+      ]
+    }
+  ]
+},
 ];
 
 export function getRoadmap(slug: string): Roadmap | undefined {

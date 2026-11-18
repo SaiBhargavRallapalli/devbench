@@ -11,7 +11,7 @@ import { breadcrumbSchema } from "@/lib/breadcrumb-schema";
 
 const TITLE = "Developer Roadmaps — Free Interactive Learning Paths";
 const DESC =
-  "Free, interactive developer roadmaps: frontend, backend, DevOps, Python, React, SQL and AI engineer. Track your progress in the browser, follow curated free resources, and practice each topic with DevBench's free tools and code playground.";
+  "Free, interactive developer roadmaps: frontend, backend, DevOps, Python, React, SQL, AI engineer, QA and test automation. Track your progress in the browser, follow curated free resources, and practice each topic with DevBench's free tools and code playground.";
 
 export function generateMetadata(): Metadata {
   const canonical = `${SITE_URL}/roadmaps`;
@@ -20,7 +20,7 @@ export function generateMetadata(): Metadata {
     title: TITLE,
     description: DESC,
     keywords:
-      "developer roadmap, frontend roadmap, backend roadmap, devops roadmap, python roadmap, react roadmap, sql roadmap, ai engineer roadmap, learn to code, programming learning path, free developer resources",
+      "developer roadmap, frontend roadmap, backend roadmap, devops roadmap, python roadmap, react roadmap, sql roadmap, ai engineer roadmap, qa roadmap, testing roadmap, test automation roadmap, learn to code, programming learning path, free developer resources",
     alternates: { canonical },
     openGraph: { ...social.openGraph, url: canonical },
     twitter: social.twitter,

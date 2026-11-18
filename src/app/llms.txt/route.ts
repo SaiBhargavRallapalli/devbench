@@ -46,7 +46,7 @@ export async function GET() {
   lines.push(
     "## Roadmaps",
     "",
-    `- [Developer Roadmaps](${SITE_URL}/roadmaps): Free interactive learning paths — frontend, backend, DevOps, Python, React, SQL and AI engineer, with progress tracking in the browser`,
+    `- [Developer Roadmaps](${SITE_URL}/roadmaps): Free interactive learning paths — frontend, backend, DevOps, Python, React, SQL, AI engineer, QA and test automation, with progress tracking in the browser`,
     "",
     "## Reference",
     "",

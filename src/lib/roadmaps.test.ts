@@ -83,7 +83,27 @@ describe("roadmaps registry", () => {
   it("getRoadmap resolves slugs and rejects unknown ones", () => {
     expect(getRoadmap("frontend")?.title).toBe("Frontend Developer");
     expect(getRoadmap("ai-engineer")?.title).toBe("AI Engineer");
+    expect(getRoadmap("qa-engineer")?.title).toBe("QA Engineer");
+    expect(getRoadmap("test-automation")?.title).toBe("Test Automation");
     expect(getRoadmap("nope")).toBeUndefined();
+  });
+
+  it("testing paths have distinct coverage and working roadmap cross-links", () => {
+    for (const slug of ["qa-engineer", "test-automation"]) {
+      const roadmap = getRoadmap(slug)!;
+      expect(roadmap.sections).toHaveLength(5);
+      expect(countRoadmapNodes(roadmap)).toBe(20);
+      expect(roadmap.sections.flatMap(s => s.nodes).some(n => n.playground)).toBe(true);
+      for (const section of roadmap.sections) {
+        for (const node of section.nodes) {
+          for (const link of node.internalLinks ?? []) {
+            if (link.href.startsWith("/roadmaps/")) {
+              expect(getRoadmap(link.href.slice("/roadmaps/".length))).toBeTruthy();
+            }
+          }
+        }
+      }
+    }
   });
 
   it("computes progress percent safely", () => {
