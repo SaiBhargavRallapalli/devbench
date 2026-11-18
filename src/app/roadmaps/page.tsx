@@ -73,8 +73,8 @@ export default function RoadmapsPage() {
           </div>
         </div>
 
-        <p className="mb-8 flex items-center gap-1.5 text-xs text-muted-foreground max-w-2xl">
-          <Compass className="h-3.5 w-3.5 shrink-0" aria-hidden />
+        <p className="mb-8 text-xs text-muted-foreground max-w-2xl leading-relaxed">
+          <Compass className="mr-1 inline h-3.5 w-3.5 align-[-2px]" aria-hidden />
           Each path also links to the matching community roadmap on{" "}
           <a
             href="https://roadmap.sh"
