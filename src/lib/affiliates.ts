@@ -103,8 +103,7 @@ export const AFFILIATE_PROGRAMS: AffiliateProgram[] = [
  */
 export const AFFILIATE_DISCLOSURE =
   "These are affiliate links: we earn commissions, at no additional cost to you, " +
-  "when you shop through the links below. We only list products we'd use " +
-  "ourselves - and every DevBench tool stays free.";
+  "when you shop through the links below.";
 
 /**
  * Builds the `rel` attribute for an external link.
