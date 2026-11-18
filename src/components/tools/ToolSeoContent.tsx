@@ -143,7 +143,7 @@ function JsonFormatterContent() {
           JSON Diff
         </Link>
         {", "}
-        <Link href="/tools/json-to-yaml" className="text-accent hover:underline">
+        <Link href="/yaml" className="text-accent hover:underline">
           JSON → YAML
         </Link>
         {", "}
@@ -1154,7 +1154,7 @@ function YamlToJsonContent() {
       </p>
       <p className={prose}>
         Also useful:{" "}
-        <Link href="/tools/json-to-yaml" className="text-accent hover:underline">JSON → YAML</Link>
+        <Link href="/yaml" className="text-accent hover:underline">JSON → YAML</Link>
         {", "}
         <Link href="/json" className="text-accent hover:underline">JSON Formatter</Link>.
       </p>
@@ -2902,7 +2902,7 @@ function CustomCalendarContent() {
           Calendar Generator
         </Link>
         {", "}
-        <Link href="/tools/date-calculator" className="text-accent hover:underline">
+        <Link href="/date-calculator" className="text-accent hover:underline">
           Date Calculator
         </Link>
         {", and "}
@@ -3750,7 +3750,7 @@ function MetaTagGeneratorContent() {
         </Link>
         {", and "}
         <Link
-          href="/tools/json-formatter"
+          href="/json"
           className="text-accent hover:underline"
         >
           JSON Formatter
@@ -3818,7 +3818,7 @@ function BusinessDayContent() {
           Days Between Dates
         </Link>
         {", "}
-        <Link href="/tools/date-calculator" className="text-accent hover:underline">
+        <Link href="/date-calculator" className="text-accent hover:underline">
           Date Calculator
         </Link>
         {", "}
@@ -4195,7 +4195,7 @@ export const CONTENT_MAP: Record<string, React.FC> = {
       </p>
       <p className={prose}>
         Also useful:{" "}
-        <Link href="/tools/json-formatter" className="text-accent hover:underline">
+        <Link href="/json" className="text-accent hover:underline">
           JSON Formatter
         </Link>
         {", "}
@@ -4203,7 +4203,7 @@ export const CONTENT_MAP: Record<string, React.FC> = {
           Regex Tester
         </Link>
         {", and "}
-        <Link href="/tools/code-playground" className="text-accent hover:underline">
+        <Link href="/playground" className="text-accent hover:underline">
           Code Playground
         </Link>
         .
@@ -5620,11 +5620,11 @@ export const CONTENT_MAP: Record<string, React.FC> = {
           cURL Formatter
         </Link>
         {", "}
-        <Link href="/tools/webhook-simulator" className="text-accent hover:underline">
+        <Link href="/webhook-simulator" className="text-accent hover:underline">
           Webhook Payload Simulator
         </Link>
         {", and "}
-        <Link href="/tools/json-formatter" className="text-accent hover:underline">
+        <Link href="/json" className="text-accent hover:underline">
           JSON Formatter
         </Link>
         .
@@ -6002,11 +6002,11 @@ export const CONTENT_MAP: Record<string, React.FC> = {
           HTTP Status Reference
         </Link>
         {", "}
-        <Link href="/tools/webhook-simulator" className="text-accent hover:underline">
+        <Link href="/webhook-simulator" className="text-accent hover:underline">
           Webhook Payload Simulator
         </Link>
         {", and "}
-        <Link href="/tools/json-formatter" className="text-accent hover:underline">
+        <Link href="/json" className="text-accent hover:underline">
           JSON Formatter
         </Link>
         .
@@ -6262,7 +6262,7 @@ export const CONTENT_MAP: Record<string, React.FC> = {
           Gitignore Generator
         </Link>
         {", and "}
-        <Link href="/tools/jwt-debugger" className="text-accent hover:underline">
+        <Link href="/jwt-debugger" className="text-accent hover:underline">
           JWT Debugger
         </Link>
         .
@@ -6426,7 +6426,7 @@ export const CONTENT_MAP: Record<string, React.FC> = {
           Gitignore Generator
         </Link>
         {", and "}
-        <Link href="/tools/json-formatter" className="text-accent hover:underline">
+        <Link href="/json" className="text-accent hover:underline">
           JSON Formatter
         </Link>
         .

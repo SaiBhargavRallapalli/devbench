@@ -3,7 +3,7 @@ import { SITE_URL } from "@/lib/social-metadata";
 export interface BreadcrumbItem {
   /** Human-readable name shown in the SERP breadcrumb trail */
   name: string;
-  /** Path relative to SITE_URL (e.g. "/blog" or "/tools/json-formatter"). Omit for the final item if you prefer to skip the URL — Google accepts that. */
+  /** Path relative to SITE_URL (e.g. "/blog" or "/json"). Omit for the final item if you prefer to skip the URL — Google accepts that. */
   path?: string;
 }
 
