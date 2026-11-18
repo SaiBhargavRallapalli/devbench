@@ -71,8 +71,12 @@ describe("affiliate registry", () => {
     expect(live.length).toBeGreaterThan(0);
     for (const p of live) {
       // Placeholder links point straight at the product domain with a fake ref
-      // param; live links go through an affiliate network's tracker.
-      expect(p.href).toMatch(/awin1\.com|jdoqocy\.com/);
+      // param; live links go through an affiliate network's tracker host.
+      const host = new URL(p.href).hostname;
+      expect(
+        host === "awin1.com" || host.endsWith(".awin1.com") ||
+        host === "jdoqocy.com" || host.endsWith(".jdoqocy.com"),
+      ).toBe(true);
     }
   });
 
