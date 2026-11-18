@@ -146,7 +146,7 @@ export const BLOG_POSTS: BlogPost[] = [
     readMinutes: 8,
     relatedToolSlug: "yaml-formatter",
     relatedToolLabel: "YAML Formatter & Validator",
-    relatedToolHref: "/tools/yaml-formatter",
+    relatedToolHref: "/yaml",
     relatedBlogSlugs: ["how-to-validate-json-online", "common-json-errors", "json-to-csv"],
   },
   {
