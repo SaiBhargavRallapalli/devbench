@@ -1299,6 +1299,427 @@ export const ROADMAPS: Roadmap[] = [
       },
     ],
   },
+  {
+    slug: "ai-engineer",
+    title: "AI Engineer",
+    kind: "role",
+    tagline: "Build, evaluate and ship products on top of large language models",
+    description:
+      "A practical path to becoming an AI engineer: the Python and API basics, how LLMs work, prompting and structured output, retrieval, tool use and agents, and the evaluation and safety habits that make AI features reliable in production.",
+    estimate: "4-6 months part-time",
+    communityUrl: "https://roadmap.sh/ai-engineer",
+    sections: [
+      {
+        id: "foundations",
+        title: "Foundations",
+        intro: "The programming and ML ideas everything else sits on.",
+        nodes: [
+          {
+            id: "python-for-ai",
+            title: "Python for AI work",
+            summary:
+              "Most AI tooling ships Python first. Get comfortable with functions, dicts, comprehensions, virtual environments and reading other people's library code.",
+            resources: [
+              { label: "Python docs: The Python Tutorial", url: "https://docs.python.org/3/tutorial/" },
+              { label: "Pydantic documentation", url: "https://docs.pydantic.dev/latest/" },
+            ],
+            playground: {
+              lang: "python",
+              code: [
+                "# Group and count words: the kind of glue code AI work is full of",
+                'text = "the model reads the prompt and the model writes the answer"',
+                "counts = {}",
+                "for word in text.split():",
+                "    counts[word] = counts.get(word, 0) + 1",
+                "top = sorted(counts.items(), key=lambda kv: kv[1], reverse=True)[:3]",
+                "print(top)",
+              ].join("\n"),
+            },
+          },
+          {
+            id: "http-apis-json",
+            title: "HTTP APIs and JSON",
+            summary:
+              "Every hosted model is an HTTP API. Know how requests, headers, API keys, status codes and JSON bodies work, and never put a key in client-side code.",
+            resources: [
+              { label: "MDN: Using the Fetch API", url: "https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch" },
+              { label: "JSON Schema: Getting started", url: "https://json-schema.org/learn/getting-started-step-by-step" },
+            ],
+            tools: ["json-formatter", "curl-to-fetch", "http-status-reference"],
+          },
+          {
+            id: "ml-basics",
+            title: "Machine learning basics",
+            summary:
+              "Training adjusts model weights to reduce a loss on examples. Understand features, overfitting, train/test splits and why more data usually beats clever tricks.",
+            resources: [
+              { label: "Google: Machine Learning Crash Course", url: "https://developers.google.com/machine-learning/crash-course" },
+              { label: "3Blue1Brown: Neural networks", url: "https://www.3blue1brown.com/topics/neural-networks" },
+            ],
+          },
+        ],
+      },
+      {
+        id: "llm-fundamentals",
+        title: "How LLMs work",
+        intro: "You don't need to train one, but you do need a correct mental model.",
+        nodes: [
+          {
+            id: "transformers-intro",
+            title: "Transformers and next-token prediction",
+            summary:
+              "An LLM predicts the next token from everything before it, using attention to weigh earlier tokens. Fluent text is a side effect of that prediction, not proof of understanding.",
+            resources: [
+              { label: "Andrej Karpathy: Intro to Large Language Models (video)", url: "https://www.youtube.com/watch?v=zjkBMFhNj_g" },
+              { label: "Jay Alammar: The Illustrated Transformer", url: "https://jalammar.github.io/illustrated-transformer/" },
+            ],
+          },
+          {
+            id: "tokens-context",
+            title: "Tokens and context windows",
+            summary:
+              "Models read tokens, not characters, and have a limited context window. Tokens drive cost, latency and what fits in a prompt.",
+            resources: [
+              { label: "Hugging Face LLM course: Tokenizers", url: "https://huggingface.co/learn/llm-course/chapter2/4" },
+              { label: "tiktoken on GitHub", url: "https://github.com/openai/tiktoken" },
+            ],
+            playground: {
+              lang: "javascript",
+              code: [
+                "// Rough budget check. Real tokenizers differ, but ~4 characters per token is a fair estimate for English.",
+                'const prompt = "Summarize the following support ticket in two sentences and list any action items.";',
+                "const approxTokens = Math.ceil(prompt.length / 4);",
+                "const contextWindow = 8000;",
+                "console.log(`~${approxTokens} tokens used of ${contextWindow}`);",
+                "console.log(`room left for the answer: ~${contextWindow - approxTokens}`);",
+              ].join("\n"),
+            },
+          },
+          {
+            id: "sampling-params",
+            title: "Sampling: temperature and top-p",
+            summary:
+              "Temperature and top-p control how random the next-token pick is. Use low values for extraction and classification, higher ones for brainstorming.",
+            resources: [
+              { label: "Prompt Engineering Guide: LLM settings", url: "https://www.promptingguide.ai/introduction/settings" },
+              { label: "OpenAI API reference", url: "https://platform.openai.com/docs/api-reference" },
+            ],
+          },
+          {
+            id: "hallucinations",
+            title: "Limits and hallucinations",
+            summary:
+              "Models state wrong things confidently, go stale after their training cutoff and struggle with exact arithmetic. Design around that instead of hoping a better prompt fixes it.",
+            resources: [
+              { label: "Hugging Face LLM course", url: "https://huggingface.co/learn/llm-course" },
+              { label: "NIST: AI Risk Management Framework", url: "https://www.nist.gov/itl/ai-risk-management-framework" },
+            ],
+          },
+        ],
+      },
+      {
+        id: "building-with-llms",
+        title: "Building with LLM APIs",
+        intro: "Turn a model into a dependable component of a product.",
+        nodes: [
+          {
+            id: "prompt-engineering",
+            title: "Prompting that works",
+            summary:
+              "Be specific, give examples, state the output format and separate instructions from data. Treat prompts like code: version them and test changes.",
+            resources: [
+              { label: "Anthropic: Prompt engineering overview", url: "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview" },
+              { label: "OpenAI: Prompt engineering guide", url: "https://platform.openai.com/docs/guides/prompt-engineering" },
+              { label: "Prompt Engineering Guide", url: "https://www.promptingguide.ai/" },
+            ],
+            tools: ["text-diff"],
+          },
+          {
+            id: "api-calls",
+            title: "Calling a model API",
+            summary:
+              "Send messages with a system prompt, handle errors and rate limits with retries and backoff, set timeouts, and keep keys on the server.",
+            resources: [
+              { label: "Anthropic: Getting started with the API", url: "https://docs.anthropic.com/en/api/getting-started" },
+              { label: "OpenAI API reference", url: "https://platform.openai.com/docs/api-reference" },
+            ],
+            tools: ["curl-to-fetch"],
+            playground: {
+              lang: "javascript",
+              code: [
+                "// Retry with exponential backoff: wrap any flaky API call",
+                "async function withRetry(fn, attempts = 4) {",
+                "  for (let i = 0; i < attempts; i++) {",
+                "    try { return await fn(i); }",
+                "    catch (err) {",
+                "      const delay = 100 * 2 ** i;",
+                "      console.log(`attempt ${i + 1} failed (${err.message}), retrying in ${delay}ms`);",
+                "      await new Promise((r) => setTimeout(r, delay));",
+                "    }",
+                "  }",
+                '  throw new Error("gave up");',
+                "}",
+                "",
+                "withRetry(async (i) => {",
+                '  if (i < 2) throw new Error("429 rate limited");',
+                '  return "ok on attempt " + (i + 1);',
+                "}).then(console.log);",
+              ].join("\n"),
+            },
+          },
+          {
+            id: "streaming-ux",
+            title: "Streaming responses",
+            summary:
+              "Streaming tokens as they arrive makes slow answers feel fast. Handle partial output, cancellation and mid-stream errors in your UI.",
+            resources: [
+              { label: "OpenAI: Streaming responses", url: "https://platform.openai.com/docs/guides/streaming-responses" },
+              { label: "MDN: Using the Fetch API", url: "https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch" },
+            ],
+          },
+          {
+            id: "structured-output",
+            title: "Structured output and validation",
+            summary:
+              "Ask for JSON that matches a schema, then validate it before using it. Never trust model output as already-correct data.",
+            resources: [
+              { label: "OpenAI: Structured outputs", url: "https://platform.openai.com/docs/guides/structured-outputs" },
+              { label: "Pydantic documentation", url: "https://docs.pydantic.dev/latest/" },
+            ],
+            tools: ["json-formatter", "json-to-typescript"],
+            playground: {
+              lang: "javascript",
+              code: [
+                "// Validate model output before trusting it",
+                'const raw = \'{"sentiment":"positive","confidence":0.92}\';',
+                "function parseReply(text) {",
+                "  const data = JSON.parse(text);",
+                '  const okSentiment = ["positive", "neutral", "negative"].includes(data.sentiment);',
+                '  const okConfidence = typeof data.confidence === "number" && data.confidence >= 0 && data.confidence <= 1;',
+                '  if (!okSentiment || !okConfidence) throw new Error("reply failed validation");',
+                "  return data;",
+                "}",
+                "console.log(parseReply(raw));",
+              ].join("\n"),
+            },
+          },
+        ],
+      },
+      {
+        id: "retrieval",
+        title: "Retrieval and your own data",
+        intro: "Give the model facts it was never trained on.",
+        nodes: [
+          {
+            id: "embeddings",
+            title: "Embeddings and similarity search",
+            summary:
+              "An embedding turns text into a vector so similar meaning lands close together. Cosine similarity ranks how close two pieces of text are.",
+            resources: [
+              { label: "OpenAI: Embeddings guide", url: "https://platform.openai.com/docs/guides/embeddings" },
+              { label: "Sentence Transformers documentation", url: "https://sbert.net/" },
+            ],
+            playground: {
+              lang: "javascript",
+              code: [
+                "// Cosine similarity on toy 3-d vectors",
+                "const dot = (a, b) => a.reduce((s, x, i) => s + x * b[i], 0);",
+                "const norm = (a) => Math.sqrt(dot(a, a));",
+                "const cosine = (a, b) => dot(a, b) / (norm(a) * norm(b));",
+                "",
+                "const query = [0.9, 0.1, 0.0];",
+                "const docs = {",
+                '  "refund policy": [0.8, 0.2, 0.1],',
+                '  "office parking": [0.0, 0.1, 0.9],',
+                "};",
+                "for (const [name, vec] of Object.entries(docs)) {",
+                "  console.log(name.padEnd(15), cosine(query, vec).toFixed(3));",
+                "}",
+              ].join("\n"),
+            },
+          },
+          {
+            id: "chunking",
+            title: "Chunking documents",
+            summary:
+              "Long documents are split into pieces before indexing. Chunks that are too big dilute the match; too small lose context. Overlap helps at the edges.",
+            resources: [
+              { label: "Pinecone: Chunking strategies", url: "https://www.pinecone.io/learn/chunking-strategies/" },
+              { label: "LangChain: Build a RAG app", url: "https://python.langchain.com/docs/tutorials/rag/" },
+            ],
+            playground: {
+              lang: "javascript",
+              code: [
+                "// Fixed-size chunks with overlap",
+                "function chunk(text, size = 40, overlap = 10) {",
+                "  const out = [];",
+                "  for (let i = 0; i < text.length; i += size - overlap) out.push(text.slice(i, i + size));",
+                "  return out;",
+                "}",
+                'const doc = "Refunds are issued within 14 days. Shipping is free over 50 dollars. Support is open on weekdays.";',
+                "chunk(doc).forEach((c, i) => console.log(i, JSON.stringify(c)));",
+              ].join("\n"),
+            },
+          },
+          {
+            id: "vector-stores",
+            title: "Vector databases",
+            summary:
+              "A vector store finds nearest neighbours fast. For many apps, Postgres with pgvector is enough before you add a dedicated service.",
+            resources: [
+              { label: "pgvector on GitHub", url: "https://github.com/pgvector/pgvector" },
+              { label: "Pinecone: What is RAG", url: "https://www.pinecone.io/learn/retrieval-augmented-generation/" },
+            ],
+          },
+          {
+            id: "rag-pipeline",
+            title: "Retrieval-augmented generation (RAG)",
+            summary:
+              "Retrieve relevant chunks, put them in the prompt, and tell the model to answer only from them and cite sources. Most RAG failures are retrieval failures, so inspect what was fetched.",
+            resources: [
+              { label: "LangChain: Build a RAG app", url: "https://python.langchain.com/docs/tutorials/rag/" },
+              { label: "Pinecone: Retrieval-augmented generation", url: "https://www.pinecone.io/learn/retrieval-augmented-generation/" },
+            ],
+          },
+        ],
+      },
+      {
+        id: "agents-tools",
+        title: "Tools and agents",
+        intro: "Let models take actions, carefully.",
+        nodes: [
+          {
+            id: "tool-calling",
+            title: "Tool and function calling",
+            summary:
+              "You describe functions with a schema, the model asks to call one with arguments, your code runs it and returns the result. The model never executes anything itself.",
+            resources: [
+              { label: "Anthropic: Tool use", url: "https://docs.anthropic.com/en/docs/build-with-claude/tool-use" },
+              { label: "OpenAI: Function calling", url: "https://platform.openai.com/docs/guides/function-calling" },
+            ],
+            tools: ["json-formatter"],
+            playground: {
+              lang: "javascript",
+              code: [
+                "// A tool-call dispatcher with a pretend model reply",
+                "const tools = {",
+                "  add: ({ a, b }) => a + b,",
+                "  shout: ({ text }) => text.toUpperCase(),",
+                "};",
+                'const modelReply = { name: "add", arguments: { a: 2, b: 40 } };',
+                "",
+                "const fn = tools[modelReply.name];",
+                'if (!fn) throw new Error("unknown tool: " + modelReply.name);',
+                "console.log(`${modelReply.name} ->`, fn(modelReply.arguments));",
+              ].join("\n"),
+            },
+          },
+          {
+            id: "agent-patterns",
+            title: "Agent loops and workflows",
+            summary:
+              "Start with a fixed workflow of prompts and code. Reach for an open-ended agent loop only when the steps truly can't be known ahead, and cap its iterations.",
+            resources: [
+              { label: "Anthropic: Building effective agents", url: "https://www.anthropic.com/engineering/building-effective-agents" },
+              { label: "DeepLearning.AI short courses", url: "https://www.deeplearning.ai/short-courses/" },
+            ],
+          },
+          {
+            id: "mcp",
+            title: "Model Context Protocol (MCP)",
+            summary:
+              "MCP is an open protocol for connecting models to tools and data through a common interface, so one integration works across many AI apps.",
+            resources: [
+              { label: "Model Context Protocol", url: "https://modelcontextprotocol.io/" },
+            ],
+          },
+          {
+            id: "open-models",
+            title: "Open models and running locally",
+            summary:
+              "Open-weight models can run on your own machine or server for privacy and cost control. Expect a quality and speed trade-off against the largest hosted models.",
+            resources: [
+              { label: "Ollama", url: "https://ollama.com/" },
+              { label: "Hugging Face Transformers documentation", url: "https://huggingface.co/docs/transformers/index" },
+            ],
+          },
+          {
+            id: "fine-tuning",
+            title: "Fine-tuning basics",
+            summary:
+              "Fine-tuning teaches style or format from examples; it is a poor way to add new facts. Try prompting and retrieval first, and tune only when evals show a gap.",
+            resources: [
+              { label: "Hugging Face LLM course: Fine-tuning", url: "https://huggingface.co/learn/llm-course/chapter3/1" },
+              { label: "Hugging Face PEFT documentation", url: "https://huggingface.co/docs/peft/index" },
+            ],
+          },
+        ],
+      },
+      {
+        id: "production",
+        title: "Evaluation, safety and production",
+        intro: "What separates a demo from a feature people can rely on.",
+        nodes: [
+          {
+            id: "evals",
+            title: "Evaluating LLM output",
+            summary:
+              "Build a small test set from real cases, define what a good answer is, and score every prompt or model change against it. Without evals you are guessing.",
+            resources: [
+              { label: "Hamel Husain: Your AI product needs evals", url: "https://hamel.dev/blog/posts/evals/" },
+              { label: "Anthropic: Create strong empirical evaluations", url: "https://docs.anthropic.com/en/docs/test-and-evaluate/develop-tests" },
+              { label: "OpenAI: Evals guide", url: "https://platform.openai.com/docs/guides/evals" },
+            ],
+            playground: {
+              lang: "javascript",
+              code: [
+                "// A tiny eval harness: score a classifier on labelled cases",
+                "const cases = [",
+                '  { input: "love it", expected: "positive" },',
+                '  { input: "total waste of money", expected: "negative" },',
+                '  { input: "arrived on tuesday", expected: "neutral" },',
+                "];",
+                "// Stand-in for a model call",
+                "const classify = (t) => (/love|great/.test(t) ? \"positive\" : /waste|bad/.test(t) ? \"negative\" : \"neutral\");",
+                "const passed = cases.filter((c) => classify(c.input) === c.expected).length;",
+                "console.log(`${passed}/${cases.length} passed`);",
+              ].join("\n"),
+            },
+          },
+          {
+            id: "prompt-injection",
+            title: "Prompt injection and safety",
+            summary:
+              "Text the model reads can contain instructions that hijack it. Treat model output and retrieved content as untrusted, limit tool permissions and require approval for risky actions.",
+            resources: [
+              { label: "OWASP Top 10 for LLM Applications", url: "https://genai.owasp.org/llm-top-10/" },
+              { label: "Simon Willison: Prompt injection series", url: "https://simonwillison.net/series/prompt-injection/" },
+            ],
+          },
+          {
+            id: "cost-latency",
+            title: "Cost, latency and caching",
+            summary:
+              "Cost scales with tokens, and latency with output length. Trim prompts, cache repeated prefixes, pick the smallest model that passes your evals and stream where it helps.",
+            resources: [
+              { label: "Anthropic: Prompt caching", url: "https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching" },
+              { label: "OpenAI API reference", url: "https://platform.openai.com/docs/api-reference" },
+            ],
+          },
+          {
+            id: "observability",
+            title: "Logging and observability",
+            summary:
+              "Log prompts, retrieved context, tool calls, latency and cost for every request, scrubbing personal data. You can't fix a failure you can't replay.",
+            resources: [
+              { label: "Langfuse documentation", url: "https://langfuse.com/docs" },
+              { label: "OpenTelemetry documentation", url: "https://opentelemetry.io/docs/" },
+            ],
+          },
+        ],
+      },
+    ],
+  },
 ];
 
 export function getRoadmap(slug: string): Roadmap | undefined {

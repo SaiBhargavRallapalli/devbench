@@ -82,6 +82,7 @@ describe("roadmaps registry", () => {
 
   it("getRoadmap resolves slugs and rejects unknown ones", () => {
     expect(getRoadmap("frontend")?.title).toBe("Frontend Developer");
+    expect(getRoadmap("ai-engineer")?.title).toBe("AI Engineer");
     expect(getRoadmap("nope")).toBeUndefined();
   });
 
