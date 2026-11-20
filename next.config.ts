@@ -134,6 +134,12 @@ const nextConfig: NextConfig = {
       { source: "/tools/date-calculator", destination: "/date-calculator", permanent: true },
       { source: "/tools/jwt-debugger", destination: "/jwt-debugger", permanent: true },
       { source: "/tools/notepad-plus-plus", destination: "/notepad", permanent: true },
+      // Legacy blog slugs: keep old/renamed post URLs working via permanent redirects.
+      {
+        source: "/blog/devbench-browser-based-developer-tools",
+        destination: "/blog/choosing-privacy-first-online-developer-tools",
+        permanent: true,
+      },
     ];
   },
 };
