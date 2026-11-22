@@ -98,9 +98,9 @@ export const pageContentImage: Record<string, ToolPageContent> = {
   },
 
   "image-merger": {
-    title: "Image Merger — Combine Multiple Images Online Free",
+    title: "Merge Images Online — Combine Photos Side by Side, Free",
     metaDescription:
-      "Merge multiple images into one — side by side, stacked, or 2-column grid. Reorder photos, set gap and background, download PNG/JPEG/WebP. 100% in your browser.",
+      "Merge images online — combine two or more photos side by side, stacked, or in a grid. Reorder, set gap and background, download PNG/JPEG/WebP. 100% in your browser.",
     openingParagraph:
       "Image Merger stitches two or more photos into a single image entirely in your browser. Choose side-by-side, vertical stack, or a two-column grid layout; drag to reorder; adjust spacing and background color; then preview or download as PNG, JPEG, or WebP. Nothing is uploaded — ideal for before/after collages, social carousels flattened to one file, and screenshot strips.",
   },

@@ -33,9 +33,9 @@ export const pageContentPdf: Record<string, ToolPageContent> = {
   },
 
   "organize-pdf": {
-    title: "Organize PDF — Reorder Pages Online Free",
+    title: "Organize PDF — Rearrange & Reorder Pages Online Free",
     metaDescription:
-      "Reorder PDF pages online — drag pages to new positions, then download the reorganised PDF. No upload, no signup, 100% client-side in your browser.",
+      "Rearrange PDF pages online — drag pages into a new order, then download the reorganised PDF. No upload, no signup, 100% client-side in your browser.",
     openingParagraph:
       "Organize PDF lets you drag and drop pages into any order and download the reorganised document. Load a PDF, see page thumbnails, drag to reorder, and export the new PDF. Useful for fixing scanned documents with out-of-order pages and reordering report sections. All processing runs in your browser with pdf-lib — nothing is ever uploaded.",
   },

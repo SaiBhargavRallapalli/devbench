@@ -7,9 +7,9 @@ import { TOOL_FAQS } from "@/lib/tool-faqs";
 import { breadcrumbSchema } from "@/lib/breadcrumb-schema";
 import { webApplicationEnrichment } from "@/lib/web-application-schema";
 
-const title = "Date Calculator — Add or Subtract Years, Months, Weeks, Days";
+const title = "Date Calculator — Add or Subtract Days, Weeks, Months, Years";
 const description =
-  "Add or subtract time from any date — calendar-safe months/years, weeks and days. See the resulting weekday instantly. Free, runs in your browser.";
+  "Add days, weeks, months or years to any date — or subtract to go back. Calendar-safe arithmetic with the resulting weekday shown instantly. Free, runs in your browser.";
 
 export const metadata: Metadata = {
   title,
