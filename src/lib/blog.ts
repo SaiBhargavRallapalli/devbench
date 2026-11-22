@@ -14,6 +14,23 @@ export interface BlogPost {
 
 export const BLOG_POSTS: BlogPost[] = [
   {
+    slug: "http-status-codes-explained",
+    title: "HTTP Status Codes Explained: The Codes Developers Actually Use",
+    date: "2026-11-22",
+    excerpt:
+      "401 vs 403, 502 vs 504, 301 vs 308 — the status codes that decide whose fault a failure is, how caches and search engines treat your site, and a debugging habit that shortens every incident.",
+    tags: ["web", "reference", "debugging"],
+    readMinutes: 7,
+    relatedToolSlug: "http-status-reference",
+    relatedToolLabel: "HTTP Status Reference",
+    relatedToolHref: "/tools/http-status-reference",
+    relatedBlogSlugs: [
+      "jwt-explained",
+      "common-json-errors",
+      "url-encoding-explained",
+    ],
+  },
+  {
     slug: "passport-photo-size-for-online-forms",
     title: "Passport Photo Size for Online Forms: 35×45mm, 2×2in & Other Official Specs",
     date: "2026-10-26",

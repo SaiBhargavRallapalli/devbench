@@ -4367,7 +4367,107 @@ function GovernmentFormPhotoSpecsIndia() {
   );
 }
 
+function HttpStatusCodesExplained() {
+  return (
+    <div className="space-y-4">
+      <p className={prose}>
+        Every API response, every page load, every failed deploy comes down to a three-digit number. HTTP status codes look like trivia until you are debugging a production incident at 2 AM and the difference between a <code className={code}>502</code> and a <code className={code}>504</code> tells you which service to restart. This is the working set of codes that actually show up in logs, plus the ones that quietly change how browsers and caches treat your site.
+      </p>
+
+      <h2 className={h2}>The five classes, in one glance</h2>
+      <p className={prose}>
+        The first digit is the category. <strong>1xx</strong> is informational (rare in practice, mostly protocol upgrades like <code className={code}>101 Switching Protocols</code> for WebSockets). <strong>2xx</strong> means success. <strong>3xx</strong> means the resource lives somewhere else, or has not changed. <strong>4xx</strong> means the client sent something wrong. <strong>5xx</strong> means the server failed. If you remember nothing else: 4xx is your caller's fault, 5xx is yours.
+      </p>
+
+      <h2 className={h2}>2xx — success is not always 200</h2>
+      <p className={prose}>
+        <code className={code}>200 OK</code> covers most responses, but three others carry real meaning:
+      </p>
+      <ul className={ul}>
+        <li><code className={code}>201 Created</code> — the correct response to a POST that makes a new resource. Return it with a <code className={code}>Location</code> header pointing at the new resource. Clients that poll for creation depend on this.</li>
+        <li><code className={code}>204 No Content</code> — success with an empty body. Ideal for DELETE endpoints and fire-and-forget updates. Sending a 200 with <code className={code}>{`{}`}</code> instead forces clients to parse a meaningless payload.</li>
+        <li><code className={code}>206 Partial Content</code> — the server honored a <code className={code}>Range</code> request. This is what makes resumable downloads and video scrubbing work; if you serve large files, check that your CDN passes it through.</li>
+      </ul>
+
+      <h2 className={h2}>3xx — the redirect codes that change SEO and caching</h2>
+      <p className={prose}>
+        <code className={code}>301 Moved Permanently</code> tells browsers and search engines the old URL is gone forever; Google transfers ranking signals to the target. <code className={code}>302 Found</code> is a temporary move and passes nothing. Sending a 302 when you mean 301 is one of the most common silent SEO bugs — the old URL keeps competing with the new one in search results.
+      </p>
+      <p className={prose}>
+        <code className={code}>307</code> and <code className={code}>308</code> are the strict modern versions: unlike 301/302, they forbid changing the request method, so a POST stays a POST. Use <code className={code}>308 Permanent Redirect</code> for API endpoint migrations where a method flip would break clients.
+      </p>
+      <p className={prose}>
+        <code className={code}>304 Not Modified</code> is the quiet performance win. When a browser revalidates with <code className={code}>If-None-Match</code> or <code className={code}>If-Modified-Since</code> and your ETag or timestamp still matches, a 304 sends no body at all. On repeat visits this is the difference between transferring 200 KB and transferring 200 bytes.
+      </p>
+
+      <h2 className={h2}>4xx — client errors, and the two everyone confuses</h2>
+      <p className={prose}>
+        <code className={code}>401 Unauthorized</code> means "you are not authenticated" — no valid credentials were presented. <code className={code}>403 Forbidden</code> means "I know who you are, and you are not allowed." Returning 403 for a logged-out user sends them in circles; returning 401 when permissions are the problem sends them to re-login for no reason. The names are misleading (401 should have been called Unauthenticated), but the distinction matters for client retry logic.
+      </p>
+      <ul className={ul}>
+        <li><code className={code}>400 Bad Request</code> — malformed syntax; the request could not be parsed at all.</li>
+        <li><code className={code}>404 Not Found</code> — no resource at this URL. For APIs, also correct when the ID does not exist; do not return 200 with an error body.</li>
+        <li><code className={code}>409 Conflict</code> — the request collides with current state, like creating a username that exists or editing a stale version of a record.</li>
+        <li><code className={code}>413 Payload Too Large</code> — body exceeds the server limit; check nginx <code className={code}>client_max_body_size</code> and your platform's cap before blaming app code.</li>
+        <li><code className={code}>415 Unsupported Media Type</code> — wrong <code className={code}>Content-Type</code>, usually JSON sent as form data or vice versa.</li>
+        <li><code className={code}>422 Unprocessable Content</code> — syntactically valid JSON that fails validation. Preferred over 400 for field-level errors in modern APIs.</li>
+        <li><code className={code}>429 Too Many Requests</code> — rate limited. Always pair it with a <code className={code}>Retry-After</code> header so well-behaved clients back off instead of hammering.</li>
+      </ul>
+
+      <h2 className={h2}>5xx — server errors, and which service to blame</h2>
+      <p className={prose}>
+        <code className={code}>500 Internal Server Error</code> is the generic "code threw an exception." <code className={code}>502 Bad Gateway</code> means a proxy (nginx, a load balancer, Cloudflare) got an invalid response from the upstream — the app server answered badly or crashed mid-response. <code className={code}>503 Service Unavailable</code> means the server is alive but refusing work: overload, maintenance mode, or a deploy in progress; send <code className={code}>Retry-After</code> with it. <code className={code}>504 Gateway Timeout</code> means the proxy waited and the upstream never answered — the request is probably still running somewhere.
+      </p>
+      <p className={prose}>
+        The practical split: 502 says "the upstream talked nonsense," 504 says "the upstream said nothing." If you see 504s during traffic spikes, look at slow queries and worker pools, not crashes.
+      </p>
+
+      <h2 className={h2}>Quick reference: the 15 codes worth memorizing</h2>
+      <table className={table}>
+        <thead>
+          <tr>
+            <th className={th}>Code</th>
+            <th className={th}>Name</th>
+            <th className={th}>What it means in practice</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td className={td}><code className={code}>200</code></td><td className={td}>OK</td><td className={td}>Standard success with a body</td></tr>
+          <tr><td className={td}><code className={code}>201</code></td><td className={td}>Created</td><td className={td}>POST made a new resource; check Location header</td></tr>
+          <tr><td className={td}><code className={code}>204</code></td><td className={td}>No Content</td><td className={td}>Success, nothing to return</td></tr>
+          <tr><td className={td}><code className={code}>301</code></td><td className={td}>Moved Permanently</td><td className={td}>URL is gone for good; SEO transfers</td></tr>
+          <tr><td className={td}><code className={code}>304</code></td><td className={td}>Not Modified</td><td className={td}>Cache is fresh; no body sent</td></tr>
+          <tr><td className={td}><code className={code}>308</code></td><td className={td}>Permanent Redirect</td><td className={td}>301 that keeps the request method</td></tr>
+          <tr><td className={td}><code className={code}>400</code></td><td className={td}>Bad Request</td><td className={td}>Unparseable request syntax</td></tr>
+          <tr><td className={td}><code className={code}>401</code></td><td className={td}>Unauthorized</td><td className={td}>Not logged in (or bad credentials)</td></tr>
+          <tr><td className={td}><code className={code}>403</code></td><td className={td}>Forbidden</td><td className={td}>Logged in, but not allowed</td></tr>
+          <tr><td className={td}><code className={code}>404</code></td><td className={td}>Not Found</td><td className={td}>No resource at this URL</td></tr>
+          <tr><td className={td}><code className={code}>409</code></td><td className={td}>Conflict</td><td className={td}>Collides with current state</td></tr>
+          <tr><td className={td}><code className={code}>422</code></td><td className={td}>Unprocessable Content</td><td className={td}>Valid JSON, failed validation</td></tr>
+          <tr><td className={td}><code className={code}>429</code></td><td className={td}>Too Many Requests</td><td className={td}>Rate limited; respect Retry-After</td></tr>
+          <tr><td className={td}><code className={code}>502</code></td><td className={td}>Bad Gateway</td><td className={td}>Upstream sent an invalid response</td></tr>
+          <tr><td className={td}><code className={code}>503</code></td><td className={td}>Service Unavailable</td><td className={td}>Overloaded or in maintenance</td></tr>
+        </tbody>
+      </table>
+
+      <h2 className={h2}>A debugging habit that pays off</h2>
+      <p className={prose}>
+        When an integration fails, read the status code before the error message. The code tells you whose problem it is and whether a retry will help: 4xx means fix the request (retrying unchanged is pointless), 429 means retry later with backoff, 5xx means retry soon but alert if it persists. Half of API debugging is just honoring that split.
+      </p>
+      <p className={prose}>
+        Need the full list, searchable, with what triggers each code and when to use it? Our <Link href="/tools/http-status-reference" className="text-accent hover:underline">HTTP Status Reference</Link> covers every code from 100 to 599, free and in your browser.
+      </p>
+      <p className={prose}>
+        Related reading: <Link href="/blog/jwt-explained" className="text-accent hover:underline">how JWT authentication works</Link> (the source of many 401s),{" "}
+        <Link href="/blog/common-json-errors" className="text-accent hover:underline">the JSON mistakes behind most 400s</Link>, and{" "}
+        <Link href="/blog/url-encoding-explained" className="text-accent hover:underline">URL encoding</Link> for the 414s and malformed-query 400s.
+      </p>
+    </div>
+  );
+}
+
 export const POST_CONTENT: Record<string, React.ReactNode> = {
+    "http-status-codes-explained": <HttpStatusCodesExplained />,
   "passport-photo-size-for-online-forms": <PassportPhotoSizeForOnlineForms />,
   "compress-photo-under-50kb-for-forms": <CompressPhotoUnder50KbForForms />,
   "signature-size-for-online-forms": <SignatureSizeForOnlineForms />,

@@ -29,6 +29,21 @@ interface MonthGroup {
 
 const changelog: MonthGroup[] = [
   {
+    month: "November 2026",
+    entries: [
+      {
+        date: "November 22, 2026",
+        title: "Blog & Discoverability",
+        items: [
+          { tag: "new", text: "New guide: HTTP Status Codes Explained — the codes that matter when debugging APIs and deploys" },
+          { tag: "improved", text: "Blog consolidated to devbench.co.in/blog — old blog.devbench.co.in links now permanently redirect to the canonical URLs" },
+          { tag: "improved", text: "Legacy blog slug redirect added so older shared links keep working" },
+          { tag: "fixed", text: "Search Console cleanup — stale sitemap entries removed, canonical validation passed" },
+        ],
+      },
+    ],
+  },
+  {
     month: "May 2026",
     entries: [
       {
