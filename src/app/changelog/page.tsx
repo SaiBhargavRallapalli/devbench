@@ -32,6 +32,13 @@ const changelog: MonthGroup[] = [
     month: "November 2026",
     entries: [
       {
+        date: "November 23, 2026",
+        title: "Blog",
+        items: [
+          { tag: "new", text: "New guide: DNS Record Types Explained — A, AAAA, CNAME, MX, TXT, NS, SOA and the mistakes that break email and migrations" },
+        ],
+      },
+      {
         date: "November 22, 2026",
         title: "Blog & Discoverability",
         items: [

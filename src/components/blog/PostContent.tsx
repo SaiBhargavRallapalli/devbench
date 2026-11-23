@@ -4466,8 +4466,100 @@ function HttpStatusCodesExplained() {
   );
 }
 
+function DnsRecordTypesExplained() {
+  return (
+    <div className="space-y-4">
+      <p className={prose}>
+        DNS is the phone book of the internet, but the "phone book" metaphor hides the part that actually bites developers: there is no single record per domain, there are a dozen record types, each with its own rules. Misconfigure a CNAME at your apex and email breaks. Set the wrong TTL before a migration and users see the old server for hours. This is the working guide to the record types you will actually touch, what breaks when you get them wrong, and how to check any of them in seconds.
+      </p>
+
+      <h2 className={h2}>A and AAAA — the address records</h2>
+      <p className={prose}>
+        The <code className={code}>A</code> record maps a name to an IPv4 address (<code className={code}>93.184.216.34</code>); the <code className={code}>AAAA</code> record does the same for IPv6. These are the only records that point directly at a server. Everything else either aliases to a name that eventually resolves to an A/AAAA record, or carries metadata.
+      </p>
+      <p className={prose}>
+        Practical notes: you can have multiple A records for one name (round-robin load distribution — clients pick one, roughly at random). And when you move hosts, the A record is what you change; everything about "DNS propagation" is really about how long caches keep the old A record answer, which brings us to TTL below.
+      </p>
+
+      <h2 className={h2}>CNAME — the alias, with one hard rule</h2>
+      <p className={prose}>
+        A <code className={code}>CNAME</code> says "this name is just another name for that name" — <code className={code}>www.example.com</code> → <code className={code}>example.com</code>, or <code className={code}>app.example.com</code> → <code className={code}>my-app.vercel.app</code>. The resolver follows the chain until it hits an A or AAAA record.
+      </p>
+      <p className={prose}>
+        <strong>The hard rule: a CNAME cannot coexist with any other record type at the same name.</strong> This is why you cannot put a CNAME at your apex (bare domain): the apex must have SOA and NS records, so a CNAME there is illegal. Providers work around this with proprietary flattening (Cloudflare calls it CNAME flattening, Route53 calls them alias records) that resolves the target and serves the result as synthetic A records. If your apex "CNAME" works, that is what is happening underneath.
+      </p>
+
+      <h2 className={h2}>MX — where your email goes</h2>
+      <p className={prose}>
+        <code className={code}>MX</code> records name the mail servers that accept email for your domain, each with a priority number — lower wins, and the others are fallbacks. Two things trip people up: MX targets must be hostnames, not IP addresses, and those hostnames must themselves have A/AAAA records (a MX pointing at a CNAME is technically allowed but widely discouraged because it doubles lookups). If email suddenly stops after a DNS change, check MX first — it often gets clobbered when someone recreates the zone file.
+      </p>
+
+      <h2 className={h2}>TXT — the junk drawer that runs security</h2>
+      <p className={prose}>
+        <code className={code}>TXT</code> records hold arbitrary strings, and an entire ecosystem grew up inside them:
+      </p>
+      <ul className={ul}>
+        <li><strong>SPF</strong> — which servers may send email as your domain (<code className={code}>v=spf1 include:_spf.google.com ~all</code>)</li>
+        <li><strong>DKIM</strong> — the public key recipients use to verify your mail signatures</li>
+        <li><strong>DMARC</strong> — what recipients should do when SPF or DKIM fails</li>
+        <li><strong>Verification</strong> — proving domain ownership to Google Search Console, Microsoft, Stripe, and everyone else ("add this TXT record")</li>
+      </ul>
+      <p className={prose}>
+        One domain can have many TXT records, and order does not matter. The classic mistake is creating a second SPF record instead of merging includes into the existing one — two SPF records make both invalid, and your email deliverability silently degrades.
+      </p>
+
+      <h2 className={h2}>NS and SOA — who is in charge</h2>
+      <p className={prose}>
+        <code className={code}>NS</code> records delegate a zone to nameservers; they are set at your registrar and inside the zone itself. Changing hosts or moving to Cloudflare means changing NS at the registrar, and the old and new nameservers must serve the same records during the transition or things flap. <code className={code}>SOA</code> (Start of Authority) is the zone's metadata record: primary nameserver, admin contact, and the serial number secondary servers use to know when to re-sync. You rarely edit SOA by hand, but its refresh/retry/expire timers explain why some secondaries lag hours behind.
+      </p>
+
+      <h2 className={h2}>TTL — the number that decides how fast changes apply</h2>
+      <p className={prose}>
+        Every record carries a TTL in seconds: how long resolvers may cache the answer. A TTL of 3600 means your change can take an hour to be visible everywhere; 86400 means a day. <strong>Before any migration, lower the TTL to 300 a day ahead</strong>, make the change, verify, then raise it back. Forgetting this is the difference between a 5-minute cutover and a day of "it works for me but not for the client."
+      </p>
+
+      <h2 className={h2}>Quick reference</h2>
+      <table className={table}>
+        <thead>
+          <tr>
+            <th className={th}>Type</th>
+            <th className={th}>Holds</th>
+            <th className={th}>Watch out for</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td className={td}><code className={code}>A</code></td><td className={td}>IPv4 address</td><td className={td}>Multiple records = round-robin</td></tr>
+          <tr><td className={td}><code className={code}>AAAA</code></td><td className={td}>IPv6 address</td><td className={td}>Missing AAAA on an IPv6-only host = unreachable</td></tr>
+          <tr><td className={td}><code className={code}>CNAME</code></td><td className={td}>Alias to another name</td><td className={td}>Illegal at the apex; cannot coexist with other records</td></tr>
+          <tr><td className={td}><code className={code}>MX</code></td><td className={td}>Mail servers + priority</td><td className={td}>Target must be a hostname with an A record</td></tr>
+          <tr><td className={td}><code className={code}>TXT</code></td><td className={td}>Arbitrary strings</td><td className={td}>Two SPF records invalidate both</td></tr>
+          <tr><td className={td}><code className={code}>NS</code></td><td className={td}>Authoritative nameservers</td><td className={td}>Keep old and new serving during moves</td></tr>
+          <tr><td className={td}><code className={code}>SOA</code></td><td className={td}>Zone metadata + serial</td><td className={td}>Timers explain secondary lag</td></tr>
+          <tr><td className={td}><code className={code}>SRV</code></td><td className={td}>Service host + port</td><td className={td}>Used by SIP, XMPP, Minecraft, not web</td></tr>
+          <tr><td className={td}><code className={code}>CAA</code></td><td className={td}>Which CAs may issue certs</td><td className={td}>A wrong CAA blocks certificate issuance</td></tr>
+          <tr><td className={td}><code className={code}>PTR</code></td><td className={td}>Reverse: IP → name</td><td className={td}>Set at the IP owner, not your DNS provider</td></tr>
+        </tbody>
+      </table>
+
+      <h2 className={h2}>Debugging in the real world</h2>
+      <p className={prose}>
+        When something DNS-shaped breaks, work the chain: query the record, then query it against a specific resolver (<code className={code}>dig example.com A @1.1.1.1</code>), then against the authoritative nameserver (<code className={code}>dig example.com A @ns1.yourhost.com</code>). If the authoritative answer is right but the resolver answer is stale, you are waiting on TTL. If the authoritative answer is wrong, the problem is your zone file, and no amount of waiting fixes it.
+      </p>
+      <p className={prose}>
+        No terminal handy? Our <Link href="/tools/dns-lookup" className="text-accent hover:underline">DNS Lookup</Link> tool queries A, AAAA, MX, TXT, CNAME, NS, and SOA for any domain via DNS-over-HTTPS, straight from your browser — handy on a phone mid-incident.
+      </p>
+      <p className={prose}>
+        Related reading: <Link href="/blog/http-status-codes-explained" className="text-accent hover:underline">HTTP status codes</Link> for the layer above DNS,{" "}
+        <Link href="/blog/url-encoding-explained" className="text-accent hover:underline">URL encoding</Link> for what happens to hostnames and query strings, and{" "}
+        <Link href="/blog/unix-timestamps-explained" className="text-accent hover:underline">Unix timestamps</Link> for the TTL and SOA timer math.
+      </p>
+    </div>
+  );
+}
+
 export const POST_CONTENT: Record<string, React.ReactNode> = {
-    "http-status-codes-explained": <HttpStatusCodesExplained />,
+      "dns-record-types-explained": <DnsRecordTypesExplained />,
+  "http-status-codes-explained": <HttpStatusCodesExplained />,
   "passport-photo-size-for-online-forms": <PassportPhotoSizeForOnlineForms />,
   "compress-photo-under-50kb-for-forms": <CompressPhotoUnder50KbForForms />,
   "signature-size-for-online-forms": <SignatureSizeForOnlineForms />,
