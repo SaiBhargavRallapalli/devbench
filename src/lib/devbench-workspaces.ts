@@ -146,6 +146,7 @@ export const TOOL_SLUG_TO_WORKSPACE: Readonly<Record<string, string>> = {
   "webhook-simulator": "/webhook-simulator",
   "code-playground": "/playground",
   "epoch": "/epoch",
+  "unix-timestamp": "/epoch",
   "graph-calculator": "/graph-calculator",
   "linux-cheatsheet": "/linux-cheatsheet",
   "date-calculator": "/date-calculator",

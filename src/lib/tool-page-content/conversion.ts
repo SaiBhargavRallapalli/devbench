@@ -26,9 +26,9 @@ export const pageContentConversion: Record<string, ToolPageContent> = {
   },
 
   "number-to-words": {
-    title: "Number to Words Converter — Free Online Tool",
+    title: "Number to Words Converter — Amount in Words (Lakh, Crore)",
     metaDescription:
-      "Convert numbers to English words online — supports lakh/crore (Indian system), currency cheque format, ordinals. Up to trillions. No signup, browser-only.",
+      "Convert any number or amount to words online — Indian (lakh, crore) and international formats, cheque-ready currency wording, ordinals. Free, no signup, runs in your browser.",
     openingParagraph:
       "Number to Words converts any number to its English word form — type 1234567 and get \"one million two hundred thirty-four thousand five hundred sixty-seven\" instantly. Supports the Indian numbering system (lakh and crore) for cheques and financial documents, currency mode for formal amounts, and ordinal output (first, second, third). Handles numbers up to the quadrillions. Runs entirely in your browser.",
   },

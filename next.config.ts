@@ -129,6 +129,7 @@ const nextConfig: NextConfig = {
       { source: "/tools/webhook-simulator", destination: "/webhook-simulator", permanent: true },
       { source: "/tools/code-playground", destination: "/playground", permanent: true },
       { source: "/tools/epoch", destination: "/epoch", permanent: true },
+      { source: "/tools/unix-timestamp", destination: "/epoch", permanent: true },
       { source: "/tools/graph-calculator", destination: "/graph-calculator", permanent: true },
       { source: "/tools/linux-cheatsheet", destination: "/linux-cheatsheet", permanent: true },
       { source: "/tools/date-calculator", destination: "/date-calculator", permanent: true },
