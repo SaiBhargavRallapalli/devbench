@@ -14,6 +14,23 @@ export interface BlogPost {
 
 export const BLOG_POSTS: BlogPost[] = [
   {
+    slug: "dns-record-types-explained",
+    title: "DNS Record Types Explained: A, AAAA, CNAME, MX, TXT, NS, SOA and When Each Matters",
+    date: "2026-11-23",
+    excerpt:
+      "Why you can't CNAME your apex, how two SPF records break your email, what TTL really controls during a migration, and a debugging chain that isolates any DNS problem in three queries.",
+    tags: ["web", "reference", "devtools"],
+    readMinutes: 7,
+    relatedToolSlug: "dns-lookup",
+    relatedToolLabel: "DNS Lookup",
+    relatedToolHref: "/tools/dns-lookup",
+    relatedBlogSlugs: [
+      "http-status-codes-explained",
+      "url-encoding-explained",
+      "unix-timestamps-explained",
+    ],
+  },
+  {
     slug: "http-status-codes-explained",
     title: "HTTP Status Codes Explained: The Codes Developers Actually Use",
     date: "2026-11-22",
