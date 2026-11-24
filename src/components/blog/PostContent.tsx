@@ -4557,7 +4557,136 @@ function DnsRecordTypesExplained() {
   );
 }
 
+function CurlCheatSheet() {
+  return (
+    <div className="space-y-4">
+      <p className={prose}>
+        curl is the HTTP client that is already installed on your machine, your CI runner, your Docker image, and the server you just SSH'd into. It is also the format every API's documentation secretly uses: when a doc shows you a request, it shows you a curl command. This cheat sheet covers the flags you will actually use, the ones that save you during debugging, and the shell traps that make curl look broken when it is not.
+      </p>
+
+      <h2 className={h2}>The anatomy: method, header, body</h2>
+      <p className={prose}>
+        Three flags cover most requests: <code className={code}>-X</code> sets the method, <code className={code}>-H</code> adds a header, <code className={code}>-d</code> attaches a body.
+      </p>
+      <p className={prose}>
+        <code className={code}>{"curl -X POST -H \"Content-Type: application/json\" -d '{\"name\":\"ada\"}' https://api.example.com/users"}</code>
+      </p>
+      <p className={prose}>
+        Two things to know. First, <code className={code}>-d</code> implies POST, so <code className={code}>-X POST</code> is redundant there; you only need <code className={code}>-X</code> for PUT, PATCH, and DELETE. Second, <code className={code}>-d</code> does not set a Content-Type for you: it defaults to <code className={code}>application/x-www-form-urlencoded</code>, which is why APIs reject JSON bodies sent without the header.
+      </p>
+
+      <h2 className={h2}>GET requests with query strings</h2>
+      <p className={prose}>
+        Never hand-assemble query strings. Use <code className={code}>-G</code> with <code className={code}>--data-urlencode</code> and curl encodes each parameter correctly:
+      </p>
+      <p className={prose}>
+        <code className={code}>curl -G https://api.example.com/search --data-urlencode "q=hello world" --data-urlencode "lang=en"</code>
+      </p>
+      <p className={prose}>
+        This produces <code className={code}>?q=hello%20world&lang=en</code>. Spaces, ampersands, and non-ASCII text are handled for you. If you paste a raw query string into the URL instead, quote the whole URL or the shell will split it at the <code className={code}>&</code> and run half your request as a background job.
+      </p>
+
+      <h2 className={h2}>Sending JSON the short way</h2>
+      <p className={prose}>
+        Since curl 7.82, <code className={code}>--json</code> bundles the three flags a JSON POST needs: it sets the Content-Type and Accept headers and attaches the body.
+      </p>
+      <p className={prose}>
+        <code className={code}>{"curl --json '{\"name\":\"ada\"}' https://api.example.com/users"}</code>
+      </p>
+      <p className={prose}>
+        To send a JSON file instead of an inline string, use <code className={code}>--json @payload.json</code>. The <code className={code}>@</code> prefix reads from a file with <code className={code}>-d</code> too, but <code className={code}>--json</code> gets the headers right in one step.
+      </p>
+
+      <h2 className={h2}>Forms and file uploads</h2>
+      <p className={prose}>
+        HTML-style form posts use <code className={code}>-d</code> with <code className={code}>key=value</code> pairs (repeat the flag for each field). Multipart uploads, the kind with files, use <code className={code}>-F</code>:
+      </p>
+      <p className={prose}>
+        <code className={code}>curl -F "file=@report.pdf" -F "title=Q3 report" https://api.example.com/upload</code>
+      </p>
+      <p className={prose}>
+        <code className={code}>-F</code> builds a proper multipart/form-data request; <code className={code}>-d @file</code> sends the raw file bytes as the whole body, which is what you want for a plain PUT of a file to signed storage URLs. Mixing them up is a classic source of "the server says my file is empty."
+      </p>
+
+      <h2 className={h2}>Auth patterns</h2>
+      <ul className={ul}>
+        <li><strong>Basic auth:</strong> <code className={code}>-u username:password</code> (prompts for the password if you write <code className={code}>-u username</code>, keeping it out of your shell history)</li>
+        <li><strong>Bearer tokens:</strong> <code className={code}>-H "Authorization: Bearer $TOKEN"</code>, with the token in an environment variable so it never lands in the command itself</li>
+        <li><strong>API keys:</strong> usually just a header, <code className={code}>-H "X-API-Key: ..."</code></li>
+        <li><strong>Cookies:</strong> <code className={code}>-c jar.txt</code> saves cookies from a response, <code className={code}>-b jar.txt</code> sends them on the next request; use both together to stay logged in across a scripted session</li>
+      </ul>
+
+      <h2 className={h2}>Seeing what actually happened</h2>
+      <p className={prose}>
+        When a request misbehaves, three flags tell you everything. <code className={code}>-i</code> includes the response headers (status line, cookies, caching) above the body. <code className={code}>-v</code> shows the full conversation: the exact request curl sent, TLS details, and every response header. And <code className={code}>-w</code> prints timing and status after the body:
+      </p>
+      <p className={prose}>
+        <code className={code}>{"curl -s -o /dev/null -w \"%{http_code} %{time_total}s\\n\" https://api.example.com/health"}</code>
+      </p>
+      <p className={prose}>
+        That last one is the uptime-check pattern: discard the body, print just the status code and total time. Pair <code className={code}>-s</code> (silent) with <code className={code}>-S</code> (show errors) as <code className={code}>-sS</code> in scripts so progress noise disappears but real failures still surface.
+      </p>
+
+      <h2 className={h2}>Downloads that behave</h2>
+      <p className={prose}>
+        <code className={code}>-o name.zip</code> saves to a filename you choose; <code className={code}>-O</code> keeps the server's filename. <code className={code}>-L</code> follows redirects, and you almost always want it for downloads, since most file hosts 302 to a CDN. <code className={code}>--fail</code> (or <code className={code}>-f</code>) makes curl exit non-zero on HTTP errors instead of happily saving an HTML error page as your download. A resumable download adds <code className={code}>-C -</code>, which picks up where the previous attempt stopped.
+      </p>
+      <p className={prose}>
+        The working download incantation: <code className={code}>curl -fLO --retry 3 -C - https://example.com/big.tar.gz</code>
+      </p>
+
+      <h2 className={h2}>The quoting trap</h2>
+      <p className={prose}>
+        Most "curl is broken" reports are shell quoting. Single quotes protect everything but cannot contain a single quote; double quotes allow <code className={code}>$VARIABLE</code> expansion but also let the shell eat backticks and <code className={code}>!</code> in interactive shells. A JSON body with a variable in it needs the hybrid: <code className={code}>{"-d '{\"name\":\"'\"$NAME\"'\"}'"}</code>, or better, build the body with a tool like jq. On Windows, cmd.exe does not understand single quotes at all: use double quotes outside and escape the inner ones.
+      </p>
+      <p className={prose}>
+        And a word on <code className={code}>-k</code> (<code className={code}>--insecure</code>): it disables certificate verification. Fine against your own staging box with a self-signed cert, never fine as a permanent fix. If you need it in production, the real problem is a missing or misconfigured certificate.
+      </p>
+
+      <h2 className={h2}>Quick reference</h2>
+      <table className={table}>
+        <thead>
+          <tr>
+            <th className={th}>Flag</th>
+            <th className={th}>Does</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td className={td}><code className={code}>-X PUT</code></td><td className={td}>Set the HTTP method</td></tr>
+          <tr><td className={td}><code className={code}>-H "K: V"</code></td><td className={td}>Add a request header (repeatable)</td></tr>
+          <tr><td className={td}><code className={code}>-d data</code></td><td className={td}>Request body; implies POST; <code className={code}>@file</code> reads a file</td></tr>
+          <tr><td className={td}><code className={code}>--json data</code></td><td className={td}>JSON body with correct headers in one flag</td></tr>
+          <tr><td className={td}><code className={code}>-G --data-urlencode</code></td><td className={td}>Build an encoded query string for GET</td></tr>
+          <tr><td className={td}><code className={code}>-F field=@file</code></td><td className={td}>Multipart form upload</td></tr>
+          <tr><td className={td}><code className={code}>-u user:pass</code></td><td className={td}>Basic auth</td></tr>
+          <tr><td className={td}><code className={code}>-b / -c jar</code></td><td className={td}>Send / save cookies</td></tr>
+          <tr><td className={td}><code className={code}>-i / -v</code></td><td className={td}>Show response headers / full debug trace</td></tr>
+          <tr><td className={td}><code className={code}>-sS</code></td><td className={td}>Quiet but still show errors</td></tr>
+          <tr><td className={td}><code className={code}>-o / -O</code></td><td className={td}>Save body to named / server-named file</td></tr>
+          <tr><td className={td}><code className={code}>-L</code></td><td className={td}>Follow redirects</td></tr>
+          <tr><td className={td}><code className={code}>--fail</code></td><td className={td}>Exit non-zero on HTTP errors</td></tr>
+          <tr><td className={td}><code className={code}>-C -</code></td><td className={td}>Resume an interrupted download</td></tr>
+          <tr><td className={td}><code className={code}>-w format</code></td><td className={td}>Print status, timing, sizes after the body</td></tr>
+          <tr><td className={td}><code className={code}>--retry 3</code></td><td className={td}>Retry transient failures</td></tr>
+        </tbody>
+      </table>
+
+      <h2 className={h2}>Putting it together: an API test in one line</h2>
+      <p className={prose}>
+        <code className={code}>{"curl -sS --fail --json '{\"email\":\"ada@example.com\"}' https://api.example.com/users | jq .id"}</code>
+      </p>
+      <p className={prose}>
+        Quiet unless something fails, non-zero exit when the API returns an error, JSON headers handled, and the response piped into jq for the one field you care about. This pattern drops straight into CI scripts and health checks.
+      </p>
+      <p className={prose}>
+        When your query strings get complicated, our <Link href="/tools/url-encode" className="text-accent hover:underline">URL Encoder</Link> shows exactly how each character encodes, useful for checking what curl will send. Related reading: <Link href="/blog/http-status-codes-explained" className="text-accent hover:underline">HTTP status codes</Link> for reading the responses, <Link href="/blog/url-encoding-explained" className="text-accent hover:underline">URL encoding</Link> for the percent-encoding rules, and <Link href="/blog/dns-record-types-explained" className="text-accent hover:underline">DNS record types</Link> for when curl cannot resolve the host at all.
+      </p>
+    </div>
+  );
+}
+
 export const POST_CONTENT: Record<string, React.ReactNode> = {
+  "curl-cheat-sheet": <CurlCheatSheet />,
       "dns-record-types-explained": <DnsRecordTypesExplained />,
   "http-status-codes-explained": <HttpStatusCodesExplained />,
   "passport-photo-size-for-online-forms": <PassportPhotoSizeForOnlineForms />,

@@ -32,6 +32,13 @@ const changelog: MonthGroup[] = [
     month: "November 2026",
     entries: [
       {
+        date: "November 24, 2026",
+        title: "Blog",
+        items: [
+          { tag: "new", text: "New guide: curl Cheat Sheet, the commands you actually use with the shell traps explained" },
+        ],
+      },
+      {
         date: "November 23, 2026",
         title: "Blog",
         items: [

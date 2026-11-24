@@ -14,6 +14,23 @@ export interface BlogPost {
 
 export const BLOG_POSTS: BlogPost[] = [
   {
+    slug: "curl-cheat-sheet",
+    title: "curl Cheat Sheet: The Commands You Actually Use, Explained",
+    date: "2026-11-24",
+    excerpt:
+      "POST JSON in one flag, encode query strings safely, upload files, stay logged in with cookies, debug with -v and -w, and dodge the shell quoting traps that make curl look broken.",
+    tags: ["reference", "cli", "devtools"],
+    readMinutes: 8,
+    relatedToolSlug: "url-encode",
+    relatedToolLabel: "URL Encoder",
+    relatedToolHref: "/tools/url-encode",
+    relatedBlogSlugs: [
+      "http-status-codes-explained",
+      "url-encoding-explained",
+      "dns-record-types-explained",
+    ],
+  },
+  {
     slug: "dns-record-types-explained",
     title: "DNS Record Types Explained: A, AAAA, CNAME, MX, TXT, NS, SOA and When Each Matters",
     date: "2026-11-23",
