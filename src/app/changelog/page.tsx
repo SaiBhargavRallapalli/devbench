@@ -32,6 +32,13 @@ const changelog: MonthGroup[] = [
     month: "November 2026",
     entries: [
       {
+        date: "November 25, 2026",
+        title: "Blog",
+        items: [
+          { tag: "new", text: "New guide: Git Rebase vs Merge, what each does to your commits and the one rule that keeps rebase safe" },
+        ],
+      },
+      {
         date: "November 24, 2026",
         title: "Blog",
         items: [

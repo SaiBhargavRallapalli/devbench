@@ -4685,7 +4685,93 @@ function CurlCheatSheet() {
   );
 }
 
+function GitRebaseVsMergeExplained() {
+  return (
+    <div className="space-y-4">
+      <p className={prose}>
+        Every team eventually has the argument: should feature branches merge or rebase onto main? The honest answer is that both are right, for different jobs. Merge preserves history exactly as it happened. Rebase rewrites history into a straight line. The trouble starts when someone rebases a branch other people have pulled, or merges everything and turns the log into spaghetti. This guide explains what each one actually does to your commits, when to use which, and the one rule that keeps rebase safe.
+      </p>
+
+      <h2 className={h2}>What a merge really does</h2>
+      <p className={prose}>
+        <code className={code}>git merge feature</code> takes the two branch tips and their common ancestor and creates a <strong>merge commit</strong> with two parents. Nothing that already existed changes: every commit keeps its original hash, author, and timestamp. The history is a faithful record, including the fact that work happened in parallel.
+      </p>
+      <p className={prose}>
+        The cost is shape. On a busy repo where everyone merges their feature branches into main, the log becomes a braid of crossing lines, and <code className={code}>git log</code> fills up with "Merge branch 'x' into main" commits that carry no information. <code className={code}>git log --first-parent</code> helps, but the underlying graph is still noisy.
+      </p>
+
+      <h2 className={h2}>What a rebase really does</h2>
+      <p className={prose}>
+        <code className={code}>git rebase main</code> takes your branch's commits, temporarily sets them aside, fast-forwards your branch to main's tip, then <strong>replays your commits one by one on top</strong>. Each replayed commit is a new commit: same changes and same message, but a new hash and a new committer date. When it finishes, your branch looks like you started from the latest main all along.
+      </p>
+      <p className={prose}>
+        The payoff is a linear history: every feature lands as a clean sequence of commits, <code className={code}>git log</code> reads like a changelog, and <code className={code}>git bisect</code> works without navigating merge commits. The danger is exactly the thing that makes it work: it rewrites commits.
+      </p>
+
+      <h2 className={h2}>The golden rule of rebase</h2>
+      <p className={prose}>
+        <strong>Never rebase commits that exist anywhere outside your local repo.</strong> If you pushed a branch and a teammate pulled it, rebasing it gives the same logical commits new hashes. Their copy and yours now disagree about history, and the next pull merges the old and new versions together, duplicating every commit. This is the accident that gives rebase its scary reputation.
+      </p>
+      <p className={prose}>
+        The safe scope for rebase is work only you have: your local branch, or a feature branch that is genuinely yours alone. If you do rebase a branch you already pushed, the push needs <code className={code}>--force-with-lease</code>, which refuses to overwrite the remote if someone else added commits since your last fetch. Plain <code className={code}>--force</code> skips that check; there is almost never a reason to use it.
+      </p>
+
+      <h2 className={h2}>A practical workflow that uses both</h2>
+      <p className={prose}>
+        The common pattern in teams that like clean history:
+      </p>
+      <ul className={ul}>
+        <li><strong>While you work:</strong> rebase your feature branch onto main regularly (<code className={code}>git fetch && git rebase origin/main</code>) so it stays current and conflicts arrive in small, understandable doses.</li>
+        <li><strong>Before opening the PR:</strong> optionally <code className={code}>git rebase -i</code> to squash fixup commits, so reviewers see the story, not your typos.</li>
+        <li><strong>Landing the PR:</strong> merge it (or squash-merge, which is a different beast: GitHub builds one new commit from the whole branch) so the main branch records when the feature actually landed.</li>
+        <li><strong>On shared long-lived branches</strong> (main, release branches): merge only. Rebase never touches these.</li>
+      </ul>
+
+      <h2 className={h2}>Conflicts: the real difference in feel</h2>
+      <p className={prose}>
+        With a merge you resolve every conflict <strong>once</strong>, in the merge commit. With a rebase you resolve conflicts <strong>per replayed commit</strong>, in the order they were written. If three of your commits all touch the same lines that changed on main, you may resolve the same hunk three times, but each resolution is small and sits next to the commit that caused it. <code className={code}>git rerere</code> (reuse recorded resolution) remembers how you resolved a conflict and applies it automatically next time; turn it on if you rebase often.
+      </p>
+      <p className={prose}>
+        Mid-rebase you have three exits: fix and <code className={code}>git rebase --continue</code>, skip the commit with <code className={code}>--skip</code>, or bail out entirely with <code className={code}>git rebase --abort</code>, which puts your branch back exactly as it was. Abort is the feature that makes rebasing safe to learn on.
+      </p>
+
+      <h2 className={h2}>Interactive rebase in three commands</h2>
+      <p className={prose}>
+        <code className={code}>git rebase -i HEAD~5</code> opens the last five commits in your editor. Change <code className={code}>pick</code> to <code className={code}>reword</code> to fix a message, <code className={code}>squash</code> to fold a commit into the one above it, or <code className={code}>drop</code> to delete it. Save and git rewrites the sequence. This is how "wip", "fix", "actually fix" becomes one presentable commit, and it only touches commits that are already yours.
+      </p>
+
+      <h2 className={h2}>Quick reference</h2>
+      <table className={table}>
+        <thead>
+          <tr>
+            <th className={th}>Question</th>
+            <th className={th}>Merge</th>
+            <th className={th}>Rebase</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td className={td}>Rewrites existing commits?</td><td className={td}>Never</td><td className={td}>Yes (new hashes)</td></tr>
+          <tr><td className={td}>History shape</td><td className={td}>True graph, can get noisy</td><td className={td}>Linear, reads like a changelog</td></tr>
+          <tr><td className={td}>Safe on shared branches?</td><td className={td}>Yes</td><td className={td}>No, never</td></tr>
+          <tr><td className={td}>Conflict resolution</td><td className={td}>Once, at the merge</td><td className={td}>Per replayed commit</td></tr>
+          <tr><td className={td}>Undo path</td><td className={td}>Revert the merge commit</td><td className={td}><code className={code}>--abort</code> mid-way, reflog after</td></tr>
+          <tr><td className={td}>Best for</td><td className={td}>Landing PRs, shared branches</td><td className={td}>Updating and cleaning your own branch</td></tr>
+        </tbody>
+      </table>
+
+      <h2 className={h2}>When it goes wrong anyway</h2>
+      <p className={prose}>
+        If you rebased something you should not have, or lost a commit in an interactive rebase, <code className={code}>git reflog</code> is the safety net: it records everywhere HEAD has been, including the state before the rebase. Find the pre-rebase entry and <code className={code}>git reset --hard</code> to it. Commits are almost never truly lost; they are just unreferenced for a while.
+      </p>
+      <p className={prose}>
+        Ever wondered what those commit hashes actually are? Our <Link href="/tools/hash-generator" className="text-accent hover:underline">Hash Generator</Link> shows the SHA family git uses, and <Link href="/blog/sha256-vs-md5-hash-functions" className="text-accent hover:underline">SHA-256 vs MD5</Link> explains why git moved to SHA-256. Related reading: the <Link href="/blog/curl-cheat-sheet" className="text-accent hover:underline">curl cheat sheet</Link> for the CLI commands that pair with git in daily work, and <Link href="/blog/semantic-versioning-explained" className="text-accent hover:underline">semantic versioning</Link> for what a clean history should produce at release time.
+      </p>
+    </div>
+  );
+}
+
 export const POST_CONTENT: Record<string, React.ReactNode> = {
+  "git-rebase-vs-merge-explained": <GitRebaseVsMergeExplained />,
   "curl-cheat-sheet": <CurlCheatSheet />,
       "dns-record-types-explained": <DnsRecordTypesExplained />,
   "http-status-codes-explained": <HttpStatusCodesExplained />,
