@@ -14,6 +14,23 @@ export interface BlogPost {
 
 export const BLOG_POSTS: BlogPost[] = [
   {
+    slug: "git-rebase-vs-merge-explained",
+    title: "Git Rebase vs Merge: What Each Actually Does, and the One Rule That Keeps Rebase Safe",
+    date: "2026-11-25",
+    excerpt:
+      "Merge preserves history, rebase rewrites it. What each does to your commits, how conflicts differ, the golden rule for shared branches, and the reflog escape hatch for when it goes wrong.",
+    tags: ["git", "reference", "devtools"],
+    readMinutes: 8,
+    relatedToolSlug: "hash-generator",
+    relatedToolLabel: "Hash Generator",
+    relatedToolHref: "/tools/hash-generator",
+    relatedBlogSlugs: [
+      "curl-cheat-sheet",
+      "sha256-vs-md5-hash-functions",
+      "semantic-versioning-explained",
+    ],
+  },
+  {
     slug: "curl-cheat-sheet",
     title: "curl Cheat Sheet: The Commands You Actually Use, Explained",
     date: "2026-11-24",
