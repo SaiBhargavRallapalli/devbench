@@ -4770,7 +4770,152 @@ function GitRebaseVsMergeExplained() {
   );
 }
 
+
+function WebsocketVsPolling() {
+  return (
+    <div className="space-y-4">
+      <p className={prose}>
+        HTTP has one awkward limitation: the server can never start the conversation. Every response needs a request first. That works fine for pages and APIs, but the moment you build a live dashboard, a chat, a multiplayer game, or a "someone is typing" indicator, you need the server to push news to the client the instant it happens. There are four ways people solve this: short polling, long polling, Server-Sent Events, and WebSocket. This guide explains how each one actually works, what it costs, and how to choose.
+      </p>
+
+      <h2 className={h2}>Short polling: ask over and over</h2>
+      <p className={prose}>
+        Short polling is the brute-force answer: the client fires a request every few seconds and asks "anything new?". Most of the time the answer is no.
+      </p>
+      <pre className="bg-muted rounded-lg px-4 py-3 text-xs font-mono overflow-x-auto my-3">
+{`setInterval(async () => {
+  const res = await fetch("/api/messages");
+  const messages = await res.json();
+  render(messages);
+}, 5000);`}
+      </pre>
+      <p className={prose}>
+        It is simple, stateless, and works through every proxy and firewall on earth. The cost is waste: if updates arrive once a minute and you poll every 5 seconds, roughly 11 out of 12 requests return nothing. Each one still pays the full price of connection setup, TLS, authentication, and a database query. Multiply by a few thousand connected users and you are running a self-inflicted DDoS for data that has not changed.
+      </p>
+      <p className={prose}>
+        Updates also arrive late by up to the poll interval, and every client sees them at a different moment. For a notification badge, fine. For a stock ticker, unusable.
+      </p>
+
+      <h2 className={h2}>Long polling: ask, then wait</h2>
+      <p className={prose}>
+        Long polling flips the timing. The client sends a request and the server <strong>holds it open</strong> instead of answering immediately. When new data arrives, the server finally responds; the client processes it and immediately opens the next request. If nothing happens within a timeout (usually 30-60 seconds), the server responds empty and the client reconnects.
+      </p>
+      <p className={prose}>
+        Now every response carries real news, and latency drops to near zero because a request is always parked on the server waiting. The costs move server-side: each waiting client ties up a connection (and on naive stacks, a thread or worker), and you need careful timeout handling so load balancers do not kill the parked request early. It also still creates a fresh HTTP request per message burst, so chatty streams are inefficient. Long polling was the backbone of early web chat and still survives as a fallback in libraries like Socket.IO.
+      </p>
+
+      <h2 className={h2}>Server-Sent Events: a one-way firehose</h2>
+      <p className={prose}>
+        Server-Sent Events (SSE) are the underused middle option. The client opens one ordinary HTTP request and the server never finishes it: it keeps the response open and streams events down as text, one <code className={code}>data:</code> block at a time. The browser's <code className={code}>EventSource</code> API handles parsing and, crucially, <strong>reconnects automatically</strong> with the last event ID.
+      </p>
+      <pre className="bg-muted rounded-lg px-4 py-3 text-xs font-mono overflow-x-auto my-3">
+{`const source = new EventSource("/api/stock-feed");
+source.onmessage = (event) => {
+  const tick = JSON.parse(event.data);
+  updatePrice(tick);
+};`}
+      </pre>
+      <p className={prose}>
+        SSE is just HTTP, so it works with standard proxies, auth headers are tricky but cookies work, and it needs no special server framework. Its limits: it is strictly server-to-client (the client talks back over ordinary fetch calls), it is text-only, and browsers cap HTTP/1.1 connections per domain (six), which a few open SSE streams can eat into. For feeds, notifications, live logs, and progress bars, SSE is often the right answer and far simpler than WebSocket.
+      </p>
+
+      <h2 className={h2}>WebSocket: a real two-way channel</h2>
+      <p className={prose}>
+        WebSocket is a different protocol that starts life as HTTP. The client sends a normal request with an <code className={code}>Upgrade: websocket</code> header; if the server agrees, it replies <code className={code}>101 Switching Protocols</code> and the TCP connection stops speaking HTTP at all. From then on both sides send lightweight frames whenever they want, in either direction, with a few bytes of overhead per message instead of full HTTP headers.
+      </p>
+      <pre className="bg-muted rounded-lg px-4 py-3 text-xs font-mono overflow-x-auto my-3">
+{`GET /chat HTTP/1.1
+Host: example.com
+Upgrade: websocket
+Connection: Upgrade
+Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==
+Sec-WebSocket-Version: 13
+
+HTTP/1.1 101 Switching Protocols
+Upgrade: websocket
+Connection: Upgrade
+Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=`}
+      </pre>
+      <p className={prose}>
+        The browser side is a small API:
+      </p>
+      <pre className="bg-muted rounded-lg px-4 py-3 text-xs font-mono overflow-x-auto my-3">
+{`const ws = new WebSocket("wss://example.com/chat");
+
+ws.onopen = () => ws.send(JSON.stringify({ type: "join", room: "general" }));
+ws.onmessage = (event) => showMessage(JSON.parse(event.data));
+ws.onclose = () => scheduleReconnect(); // sockets do not reconnect on their own`}
+      </pre>
+      <p className={prose}>
+        A minimal server with the <code className={code}>ws</code> package in Node:
+      </p>
+      <pre className="bg-muted rounded-lg px-4 py-3 text-xs font-mono overflow-x-auto my-3">
+{`import { WebSocketServer } from "ws";
+
+const wss = new WebSocketServer({ port: 8080 });
+wss.on("connection", (socket) => {
+  socket.on("message", (data) => {
+    // broadcast to everyone else
+    wss.clients.forEach((client) => client.send(data.toString()));
+  });
+});`}
+      </pre>
+      <p className={prose}>
+        Note <code className={code}>wss://</code> in the client URL: it is the TLS version, and you should treat plain <code className={code}>ws://</code> as development-only, exactly like HTTP vs HTTPS.
+      </p>
+
+      <h2 className={h2}>Side by side</h2>
+      <table className={table}>
+        <thead>
+          <tr>
+            <th className={th}></th>
+            <th className={th}>Short polling</th>
+            <th className={th}>Long polling</th>
+            <th className={th}>SSE</th>
+            <th className={th}>WebSocket</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td className={td}>Direction</td><td className={td}>Client pulls</td><td className={td}>Client pulls</td><td className={td}>Server pushes</td><td className={td}>Both ways</td></tr>
+          <tr><td className={td}>Latency</td><td className={td}>Up to the interval</td><td className={td}>Near zero</td><td className={td}>Near zero</td><td className={td}>Near zero</td></tr>
+          <tr><td className={td}>Overhead per message</td><td className={td}>Full HTTP request</td><td className={td}>Full HTTP request per burst</td><td className={td}>Tiny text frame</td><td className={td}>A few bytes</td></tr>
+          <tr><td className={td}>Auto-reconnect</td><td className={td}>N/A (always retries)</td><td className={td}>You build it</td><td className={td}>Built in</td><td className={td}>You build it</td></tr>
+          <tr><td className={td}>Binary data</td><td className={td}>Yes</td><td className={td}>Yes</td><td className={td}>No (text only)</td><td className={td}>Yes</td></tr>
+          <tr><td className={td}>Proxy/firewall friendly</td><td className={td}>Perfectly</td><td className={td}>Mostly</td><td className={td}>Mostly</td><td className={td}>Sometimes blocked</td></tr>
+          <tr><td className={td}>Server complexity</td><td className={td}>None</td><td className={td}>Moderate</td><td className={td}>Low</td><td className={td}>Highest</td></tr>
+        </tbody>
+      </table>
+
+      <h2 className={h2}>How to choose</h2>
+      <ul className={ul}>
+        <li><strong>Updates every minute or more, one screen, low stakes:</strong> short polling. An interval fetch behind <code className={code}>setInterval</code> or SWR/React Query's <code className={code}>refetchInterval</code> is boring and correct. Do not over-engineer.</li>
+        <li><strong>Server-to-client stream only</strong> (feeds, notifications, live logs, progress): SSE. One endpoint, automatic reconnection, plain HTTP infrastructure.</li>
+        <li><strong>Both sides talk frequently</strong> (chat, collaborative editing, multiplayer, live cursors): WebSocket. The bidirectional, low-overhead channel is what it was built for.</li>
+        <li><strong>Must work through hostile corporate proxies, or as a fallback:</strong> long polling, or let Socket.IO negotiate for you (it starts on long polling and upgrades to WebSocket when it can).</li>
+      </ul>
+
+      <h2 className={h2}>The gotchas that bite in production</h2>
+      <p className={prose}>
+        <strong>Idle timeouts kill connections.</strong> Load balancers and proxies (nginx, Cloudflare, AWS ALB) close connections that look idle, often after 60 seconds. Send a ping/heartbeat every 20-30 seconds, or your "real-time" channel silently dies whenever traffic pauses.
+      </p>
+      <p className={prose}>
+        <strong>WebSocket does not reconnect.</strong> Networks drop, laptops sleep, mobile radios switch towers. Implement reconnect with exponential backoff and jitter, and replay any state the client missed while it was gone. SSE does this for you; WebSocket does not.
+      </p>
+      <p className={prose}>
+        <strong>Auth happens at the handshake.</strong> A WebSocket connection is authenticated once, at the HTTP upgrade request, usually with a cookie or a short-lived token in the query string. If the session expires at 2 PM, the open socket does not notice. Decide how your server handles expiry mid-connection.
+      </p>
+      <p className={prose}>
+        <strong>Scaling past one server is a design problem.</strong> With polling, any server can answer any request. With WebSocket or SSE, the connection lives on one specific server: you need sticky sessions at the load balancer, and a pub/sub layer (Redis, NATS, Kafka) so a message produced on server A reaches clients connected to server B. Plan for this before launch day, not after.
+      </p>
+      <p className={prose}>
+        <strong>Test the HTTP side too.</strong> The upgrade request, your SSE endpoint, and your auth callback are all ordinary HTTP. The <Link href="/blog/http-status-codes-explained" className="text-accent hover:underline">HTTP status codes guide</Link> covers the responses you will see while debugging, including the 101 upgrade, and the <Link href="/blog/curl-cheat-sheet" className="text-accent hover:underline">curl cheat sheet</Link> shows how to probe those endpoints directly (<code className={code}>curl -N</code> keeps an SSE stream open so you can watch events arrive). When your events are JSON, our <Link href="/tools/json-formatter" className="text-accent hover:underline">JSON Formatter</Link> makes raw frames readable, and <Link href="/blog/jwt-explained" className="text-accent hover:underline">JWT explained</Link> covers the tokens most teams use to authenticate the handshake.
+      </p>
+    </div>
+  );
+}
+
 export const POST_CONTENT: Record<string, React.ReactNode> = {
+  "websocket-vs-polling": <WebsocketVsPolling />,
   "git-rebase-vs-merge-explained": <GitRebaseVsMergeExplained />,
   "curl-cheat-sheet": <CurlCheatSheet />,
       "dns-record-types-explained": <DnsRecordTypesExplained />,

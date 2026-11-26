@@ -32,6 +32,13 @@ const changelog: MonthGroup[] = [
     month: "November 2026",
     entries: [
       {
+        date: "November 26, 2026",
+        title: "Blog",
+        items: [
+          { tag: "new", text: "New guide: WebSocket vs Polling — short polling, long polling, SSE and WebSocket, and how to choose for real-time features" },
+        ],
+      },
+      {
         date: "November 25, 2026",
         title: "Blog",
         items: [

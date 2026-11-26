@@ -14,6 +14,23 @@ export interface BlogPost {
 
 export const BLOG_POSTS: BlogPost[] = [
   {
+    slug: "websocket-vs-polling",
+    title: "WebSocket vs Polling: How Real-Time Features Actually Work (and When Polling Is Fine)",
+    date: "2026-11-26",
+    excerpt:
+      "Short polling, long polling, Server-Sent Events and WebSocket explained: how each one gets around HTTP's no-push rule, what it costs, and how to choose for chat, feeds and dashboards.",
+    tags: ["reference", "networking", "devtools"],
+    readMinutes: 8,
+    relatedToolSlug: "json-formatter",
+    relatedToolLabel: "JSON Formatter",
+    relatedToolHref: "/tools/json-formatter",
+    relatedBlogSlugs: [
+      "http-status-codes-explained",
+      "curl-cheat-sheet",
+      "jwt-explained",
+    ],
+  },
+  {
     slug: "git-rebase-vs-merge-explained",
     title: "Git Rebase vs Merge: What Each Actually Does, and the One Rule That Keeps Rebase Safe",
     date: "2026-11-25",
