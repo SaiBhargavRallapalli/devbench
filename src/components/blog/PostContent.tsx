@@ -4914,7 +4914,134 @@ wss.on("connection", (socket) => {
   );
 }
 
+
+function CorsExplainedForDevelopers() {
+  return (
+    <div className="space-y-4">
+      <p className={prose}>
+        Every web developer meets the same red console message: <em>Access to fetch at 'https://api.example.com' from origin 'http://localhost:3000' has been blocked by CORS policy.</em> The reflex is to search for a browser flag or a proxy that makes it go away. Resist it. CORS is a conversation between the browser and the server, and the only real fix is on the server side. This guide explains what the browser is actually enforcing, when the preflight OPTIONS request fires, the exact headers that fix each failure, and the mistakes that make CORS errors look like something they are not.
+      </p>
+
+      <h2 className={h2}>Why the browser blocks you at all</h2>
+      <p className={prose}>
+        Your browser sends your cookies with every request to a domain, automatically. That ambient authority is what keeps you logged in, and it is exactly what makes cross-site requests dangerous: without a rule, any page you open could quietly call your bank's API as you. The <strong>same-origin policy</strong> says a page may read responses only from its own origin, where an origin is the triple of scheme, host, and port. <code className={code}>https://app.example.com</code> and <code className={code}>https://api.example.com</code> are different origins. So are <code className={code}>http</code> vs <code className={code}>https</code>, and <code className={code}>:3000</code> vs <code className={code}>:8080</code>.
+      </p>
+      <p className={prose}>
+        CORS (Cross-Origin Resource Sharing) is the controlled exception: the server tells the browser which other origins may read its responses. The key mental model: <strong>the request usually happens; the browser blocks your code from reading the response.</strong> That is why the API works in curl and Postman but fails in the browser, and why the server log shows the request arriving.
+      </p>
+
+      <h2 className={h2}>Simple requests vs the preflight</h2>
+      <p className={prose}>
+        Requests that a plain HTML form could already make (GET, HEAD, POST with <code className={code}>text/plain</code>, <code className={code}>application/x-www-form-urlencoded</code>, or <code className={code}>multipart/form-data</code>, and only safelisted headers) go straight out as "simple" requests. The browser attaches an <code className={code}>Origin</code> header and checks the response for permission afterwards.
+      </p>
+      <p className={prose}>
+        Anything more interesting triggers a <strong>preflight</strong>: the browser first sends an OPTIONS request asking permission. Preflights fire when you use:
+      </p>
+      <ul className={ul}>
+        <li>Methods beyond GET/HEAD/POST: <code className={code}>PUT</code>, <code className={code}>PATCH</code>, <code className={code}>DELETE</code></li>
+        <li><code className={code}>Content-Type: application/json</code> — this alone is why every JSON API call preflights</li>
+        <li>Custom headers, most commonly <code className={code}>Authorization</code> (so every Bearer-token call preflights too)</li>
+      </ul>
+      <p className={prose}>
+        The preflight asks: may this origin use this method with these headers? The server answers with <code className={code}>Access-Control-Allow-Origin</code>, <code className={code}>Access-Control-Allow-Methods</code>, and <code className={code}>Access-Control-Allow-Headers</code>. Only if the answer covers the real request does the browser send it.
+      </p>
+
+      <h2 className={h2}>The server-side fix, header by header</h2>
+      <p className={prose}>
+        An Express example that covers the common cases:
+      </p>
+      <pre className="bg-muted rounded-lg px-4 py-3 text-xs font-mono overflow-x-auto my-3">
+{`app.use((req, res, next) => {
+  const allowed = ["https://app.example.com", "http://localhost:3000"];
+  const origin = req.headers.origin;
+  if (allowed.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin); // echo, never "*"
+  }
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.setHeader("Access-Control-Max-Age", "86400"); // cache the preflight for a day
+  if (req.method === "OPTIONS") return res.sendStatus(204); // answer preflights here
+  next();
+});`}
+      </pre>
+      <ul className={ul}>
+        <li><code className={code}>Access-Control-Allow-Origin</code> — the one required header. An exact origin, or <code className={code}>*</code> for genuinely public APIs. When you echo the requesting origin from an allowlist, also send <code className={code}>Vary: Origin</code> so caches do not serve one origin's answer to another.</li>
+        <li><code className={code}>Access-Control-Allow-Methods</code> / <code className={code}>Access-Control-Allow-Headers</code> — preflight answers. List what you actually support; <code className={code}>Content-Type, Authorization</code> covers most JSON APIs.</li>
+        <li><code className={code}>Access-Control-Max-Age</code> — lets the browser cache the preflight so it does not OPTIONS before every call.</li>
+        <li><code className={code}>Access-Control-Allow-Credentials: true</code> — required if the frontend sends cookies or uses <code className={code}>credentials: "include"</code>. With credentials, <code className={code}>*</code> is forbidden: the header must name the exact origin. The wildcard-plus-credentials combination is silently rejected and is a classic hour-eater.</li>
+        <li><code className={code}>Access-Control-Expose-Headers</code> — by default JS can read only a handful of response headers. If your API returns pagination in <code className={code}>X-Total-Count</code> or tokens in a custom header, expose them explicitly.</li>
+      </ul>
+
+      <h2 className={h2}>The client side is one line</h2>
+      <pre className="bg-muted rounded-lg px-4 py-3 text-xs font-mono overflow-x-auto my-3">
+{`// cookie-based session: opt in on BOTH sides
+const res = await fetch("https://api.example.com/me", {
+  credentials: "include",
+});
+
+// token-based: the Authorization header triggers a preflight
+const res2 = await fetch("https://api.example.com/data", {
+  headers: { Authorization: "Bearer " + token },
+});`}
+      </pre>
+      <p className={prose}>
+        There is no CORS "mode" you set on fetch to get permission. <code className={code}>mode: "no-cors"</code> does not bypass the policy; it tells the browser to send the request and hand you back an opaque, unreadable response. It exists for things like analytics pings, and it is never the answer for an API you need to read.
+      </p>
+
+      <h2 className={h2}>Mistakes that waste hours</h2>
+      <ul className={ul}>
+        <li><strong>Fixing the happy path only.</strong> If your error handler returns a 500 without the CORS headers, the browser reports a CORS failure and hides the real error. Put the headers on every response, including errors and 404s. Half of all "random CORS errors in production" are unhandled 500s.</li>
+        <li><strong>Thinking CORS protects the server.</strong> It does not. curl, Postman, and every server-to-server call ignore it completely. CORS only governs what browsers let page JavaScript read. Rate limiting, auth, and CSRF tokens are still your job.</li>
+        <li><strong>Routing through a public CORS proxy.</strong> Services that fetch the API for you and add permissive headers "work" in demos, but you are sending your users' data and tokens through a stranger's server, and production apps that depend on them break the day the proxy rate-limits or shuts down. Use a dev-only proxy you control instead.</li>
+        <li><strong>Wildcard with credentials.</strong> As above: <code className={code}>Access-Control-Allow-Origin: *</code> plus <code className={code}>Allow-Credentials: true</code> is rejected by every browser. Echo the exact origin.</li>
+        <li><strong>Preflight answered by the wrong layer.</strong> With nginx or a CDN in front, make sure OPTIONS actually reaches (or is answered by) something that returns the headers. A preflight that hits a static-file rule and returns 405 fails the whole request.</li>
+      </ul>
+
+      <h2 className={h2}>Local development without the pain</h2>
+      <p className={prose}>
+        The clean dev fix is a proxy on the dev server: Vite and the Next.js rewrites config forward <code className={code}>/api/*</code> to the real backend, so the browser only ever talks to one origin and CORS never enters the picture. This mirrors production when the API and app sit behind the same domain, which is the most robust setup of all.
+      </p>
+      <pre className="bg-muted rounded-lg px-4 py-3 text-xs font-mono overflow-x-auto my-3">
+{`// vite.config.ts
+export default {
+  server: {
+    proxy: { "/api": "https://api.example.com" },
+  },
+};`}
+      </pre>
+
+      <h2 className={h2}>Error message to fix, quickly</h2>
+      <table className={table}>
+        <thead>
+          <tr>
+            <th className={th}>Console says</th>
+            <th className={th}>Actual cause</th>
+            <th className={th}>Fix</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td className={td}>No 'Access-Control-Allow-Origin' header</td><td className={td}>Server did not send the header (or the response was an error page without it)</td><td className={td}>Add the header on every response, errors included</td></tr>
+          <tr><td className={td}>Request header field authorization is not allowed</td><td className={td}>Preflight answer missing <code className={code}>Authorization</code></td><td className={td}>Add it to <code className={code}>Access-Control-Allow-Headers</code></td></tr>
+          <tr><td className={td}>Method PUT is not allowed</td><td className={td}>Preflight answer missing the method</td><td className={td}>Add it to <code className={code}>Access-Control-Allow-Methods</code></td></tr>
+          <tr><td className={td}>Credential is not supported if the CORS header is '*'</td><td className={td}>Wildcard origin plus credentials</td><td className={td}>Echo the exact origin instead of <code className={code}>*</code></td></tr>
+          <tr><td className={td}>CORS error but curl works fine</td><td className={td}>Normal: curl ignores CORS</td><td className={td}>Debug in the browser's Network tab, inspect the OPTIONS response</td></tr>
+          <tr><td className={td}>Worked yesterday, fails after deploy</td><td className={td}>New error page or proxy layer lost the headers</td><td className={td}>Check who now answers OPTIONS and error paths</td></tr>
+        </tbody>
+      </table>
+
+      <h2 className={h2}>Debugging methodically</h2>
+      <p className={prose}>
+        Open the Network tab and find the OPTIONS request, not just the failed one. Its response headers are the server's actual answer; compare them against what your request needs. If OPTIONS never appears, your request was "simple" and the missing header is on the main response. If OPTIONS returns 404/405/500, the preflight is being routed wrong. And if you want to see the raw exchange without the browser, the <Link href="/blog/curl-cheat-sheet" className="text-accent hover:underline">curl cheat sheet</Link> covers <code className={code}>curl -v -X OPTIONS -H "Origin: ..."</code> for simulating a preflight from the terminal.
+      </p>
+      <p className={prose}>
+        Related reading: <Link href="/blog/http-status-codes-explained" className="text-accent hover:underline">HTTP status codes</Link> for the 204 your preflight should return and the 500s that masquerade as CORS errors, and <Link href="/blog/jwt-explained" className="text-accent hover:underline">JWT explained</Link> for the Authorization header pattern that triggers preflights on every authenticated call. When the JSON finally comes through, our <Link href="/tools/json-formatter" className="text-accent hover:underline">JSON Formatter</Link> makes the response readable.
+      </p>
+    </div>
+  );
+}
+
 export const POST_CONTENT: Record<string, React.ReactNode> = {
+  "cors-explained-for-developers": <CorsExplainedForDevelopers />,
   "websocket-vs-polling": <WebsocketVsPolling />,
   "git-rebase-vs-merge-explained": <GitRebaseVsMergeExplained />,
   "curl-cheat-sheet": <CurlCheatSheet />,

@@ -14,6 +14,23 @@ export interface BlogPost {
 
 export const BLOG_POSTS: BlogPost[] = [
   {
+    slug: "cors-explained-for-developers",
+    title: "CORS Explained for Developers: Why the Browser Blocks Your fetch (and How to Actually Fix It)",
+    date: "2026-11-27",
+    excerpt:
+      "What the same-origin policy really enforces, when the preflight OPTIONS fires, the exact headers that fix each CORS error, and the mistakes that make 500s look like CORS failures.",
+    tags: ["reference", "webdev", "devtools"],
+    readMinutes: 9,
+    relatedToolSlug: "json-formatter",
+    relatedToolLabel: "JSON Formatter",
+    relatedToolHref: "/tools/json-formatter",
+    relatedBlogSlugs: [
+      "http-status-codes-explained",
+      "jwt-explained",
+      "curl-cheat-sheet",
+    ],
+  },
+  {
     slug: "websocket-vs-polling",
     title: "WebSocket vs Polling: How Real-Time Features Actually Work (and When Polling Is Fine)",
     date: "2026-11-26",
