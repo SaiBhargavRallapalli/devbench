@@ -32,6 +32,13 @@ const changelog: MonthGroup[] = [
     month: "November 2026",
     entries: [
       {
+        date: "November 27, 2026",
+        title: "Blog",
+        items: [
+          { tag: "new", text: "New guide: CORS Explained for Developers — why the browser blocks your fetch, when preflights fire, and the headers that actually fix it" },
+        ],
+      },
+      {
         date: "November 26, 2026",
         title: "Blog",
         items: [
